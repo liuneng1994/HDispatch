@@ -48,4 +48,28 @@ databaseChangeLog(logicalFilePath: "hdispatch/core/db/2016-06-01-init-migration.
         }
     }
 
+    changeSet(author: "liuneng", id: "20160906-liuneng-1") {
+        createTable(tableName: "HDISPATCH_GROUP") {
+            column(autoIncrement: "true", name: "id", type: "BIGINT") {
+                constraints(primaryKey: "true")
+            }
+            column(name: "group_name", type: "VARCHAR(128)")
+            column(name: "layer_id", type: "BIGINT")
+            column(name: "schedule_expression", type: "VARCHAR(256)")
+            column(name: "flow_id", type: "VARCHAR(128)")
+            column(name: "active", type: "TINYINT")
+            column(name: "create_at", type: "DATETIME")
+            column(name: "update_at", type: "DATETIME")
+        }
+    }
+
+    changeSet(author: "liuneng", id: "20160906-liuneng-2") {
+        createTable(tableName: "HDISPATCH_GROUP_DEPENDENCY") {
+            column(autoIncrement: "true", name: "id", type: "BIGINT") {
+                constraints(primaryKey: "true")
+            }
+            column(name: "group_id", type: "BIGINT")
+            column(name: "depent_group_id", type: "BIGINT")
+        }
+    }
 }
