@@ -35,7 +35,12 @@ public class DemoController  extends BaseController{
         List<Demo> datas = demoService.select(iRequest, condition, page, pagesize);
         return new ResponseData(datas);
     }
-
+    @RequestMapping("/demo/select")
+    @ResponseBody
+    public List<Demo> selectAll(HttpServletRequest request) {
+        
+        return demoService.selectAll();
+    }
     @RequestMapping(value = "/demo/submit", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData submit(HttpServletRequest request, @RequestBody List<Demo> demos) {
