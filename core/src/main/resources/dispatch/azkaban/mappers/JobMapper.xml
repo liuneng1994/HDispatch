@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.azkaban.mapper.JobMapper">
+  <resultMap id="job" type="hdispatch.core.dispatch.azkaban.dto.Job">
+    <result column="project_id" property="projectId"/>
+    <result column="version" property="version"/>
+    <result column="name" property="jobName"/>
+    <result column="modified_time" property="modifiedTime"/>
+    <result column="property" property="property"/>
+  </resultMap>
+  <insert id="insert" parameterType="hdispatch.core.dispatch.azkaban.dto.Job">
+      INSERT INTO project_properties(project_id,version,`name`,modified_time,encoding_type,property)
+      VALUES (#{projectId},#{version},#{jobName},#{modifiedTime},1,#{property})
+  </insert>
+
+  <update id="update" parameterType="hdispatch.core.dispatch.azkaban.dto.Job">
+      UPDATE project_properties
+      SET property=#{property}, modified_time=#{modifiedTime}
+      WHERE project_id=#{projectId} AND version=#{version} AND `name`=#{jobName}
+  </update>
+
+  <select id="get">
+      SELECT *
+      FROM project_properties
+      WHERE project_id=#{projectId} AND version=#{version} AND `name`=#{jobName}
+  </select>
+</mapper>

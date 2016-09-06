@@ -2,28 +2,28 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="hbi.core.azkaban.mapper.FlowMapper">
-    <resultMap id="flow" type="Flow">
-        <result column="project_id" property="projectId"/>
-        <result column="version" property="version"/>
-        <result column="flow_id" property="flow"/>
-        <result column="modified_time" property="modifiedTime"/>
-        <result column="json" property="json"/>
-    </resultMap>
+<mapper namespace="hdispatch.core.dispatch.azkaban.mapper.FlowMapper">
+  <resultMap id="flow" type="hdispatch.core.dispatch.azkaban.dto.Flow">
+    <result column="project_id" property="projectId"/>
+    <result column="version" property="version"/>
+    <result column="flow_id" property="flow"/>
+    <result column="modified_time" property="modifiedTime"/>
+    <result column="json" property="json"/>
+  </resultMap>
 
-    <select id="get" resultMap="flow">
+  <select id="get" resultMap="flow">
         SELECT project_id, version, flow_id, modified_time, json
         FROM project_flows
         WHERE project_id=#{projectId} AND version=#{version} AND flow_id=#{flowId}
     </select>
 
-    <update id="update" parameterType="Flow">
+  <update id="update" parameterType="hdispatch.core.dispatch.azkaban.dto.Flow">
         UPDATE project_flows
         SET json=#{json}, modefied_time=#{modefiedTime}
         WHERE project_id=#{projectId} AND version=#{version} AND flow_id=#{flowId}
     </update>
 
-    <insert id="insert" parameterType="Flow">
+  <insert id="insert" parameterType="hdispatch.core.dispatch.azkaban.dto.Flow">
         INSERT INTO project_flows(project_id,version,flow_id,modified_time,encoding_type,json)
         VALUES (#{projectId},#{version},#{flowId},#{modifiedTime},1,#{json})
     </insert>

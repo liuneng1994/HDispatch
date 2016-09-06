@@ -1,4 +1,4 @@
-package hdispatch.core.dispatch.azkaban.mapper;
+package hdispatch.core.dispatch.mapper;
 
 
 import hdispatch.core.dispatch.azkaban.entity.theme.Theme;

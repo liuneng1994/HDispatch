@@ -1,4 +1,4 @@
-package hdispatch.core.dispatch.azkaban.service;
+package hdispatch.core.dispatch.service;
 
 /**
  * Created by yyz on 2016/9/5.

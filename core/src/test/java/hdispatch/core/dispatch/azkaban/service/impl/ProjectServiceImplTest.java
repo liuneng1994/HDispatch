@@ -1,8 +1,7 @@
-package hbi.core.azkaban.service.impl;
+package hdispatch.core.dispatch.azkaban.service.impl;
 
-import hbi.core.azkaban.entity.project.SimpleProject;
-import hbi.core.azkaban.service.ProjectService;
-import org.json.JSONObject;
+import hdispatch.core.dispatch.azkaban.entity.project.SimpleProject;
+import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import org.junit.*;
 
 import java.util.List;

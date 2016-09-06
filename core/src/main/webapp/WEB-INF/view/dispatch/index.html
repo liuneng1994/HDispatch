@@ -1,0 +1,90 @@
+<#include "../include/header.html">
+
+  <body  ng-app="schgroup">
+
+  <div style=" height:auto; width: 20%;float: left;">
+    <div id="example" >
+
+      <div class="demo-section k-content k-rtl">
+        <ul id="panelbar">
+          <li class="k-state-active">
+            First Item
+            <ul>
+              <li>Sub Item 1</li>
+              <li>Sub Item 2</li>
+              <li>Sub Item 3</li>
+              <li>Sub Item 4</li>
+            </ul>
+          </li>
+          <li>
+            Second Item
+            <ul>
+              <li>Sub Item 1</li>
+              <li>Sub Item 2</li>
+              <li>Sub Item 3</li>
+              <li>Sub Item 4</li>
+            </ul>
+          </li>
+          <li>
+            Third Item
+            <ul>
+              <li>Sub Item 1</li>
+              <li>Sub Item 2</li>
+              <li>Sub Item 3</li>
+              <li>Sub Item 4</li>
+            </ul>
+          </li>
+          <li>
+            Fourth Item
+            <ul>
+              <li>Sub Item 1</li>
+              <li>Sub Item 2</li>
+              <li>Sub Item 3</li>
+              <li>Sub Item 4</li>
+            </ul>
+          </li>
+          <li>
+            Fifth Item
+            <ul>
+              <li>Sub Item 1</li>
+              <li>Sub Item 2</li>
+              <li>Sub Item 3</li>
+              <li>Sub Item 4</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <script>
+        $(document).ready(function() {
+          $("#panelbar").kendoPanelBar();
+        });
+
+      </script>
+    </div>
+
+  </div>
+  <div style="height:1000px; width: 80%;float: left; border: 1px solid;" ng-controller="VMController as vm">
+    <div class="row">
+      <div class="col-lg-12 col-sm-12 col-xs-12">
+        <div class="widget">
+          <div class="widget-body">
+            <div kendo-grid="grid" k-options="vm.getMainGridOptions();" class="table-striped"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../lib/jquery/jquery-1.9.0.min.js"></script>
+  <script src="../lib/jquery/sidebar.js"></script>
+  <script src="../lib/angularJs/angular.min.js"></script>
+  <script src="../lib/jquery/kendo.all.min.js"></script>
+  <script src="../lib/angularJs/angular-ui-router.min.js"></script>
+  <script src="../lib/kendoui/kendo.grid.js"></script>
+  <!-- <script src="../lib/angularJs/schgroupService.js"></script> -->
+  <script src="../lib/angularJs/schgroupController.js"></script>
+
+
+  </body>
+
+  </html>
