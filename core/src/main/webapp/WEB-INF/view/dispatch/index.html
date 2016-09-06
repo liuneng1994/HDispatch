@@ -1,8 +1,8 @@
 <#include "../include/head.html">
   <body>
-  <div id="app" class="container-fluid">
+  <div id="app" class="container-fluid" style="padding:0;">
     <div class="row-fluid">
-      <div class="col-md-3">
+      <div class="col-md-3" style="padding:0;">
         <div class="demo-section k-content" ng-controller="MyCtrl">
           <ul kendo-panel-bar k-options="panelBarOptions">
             <li class="k-state-active">
@@ -54,7 +54,7 @@
         </div>
 
       </div>
-      <div class="col-md-9" style="border: 1px; height: 300px">
+      <div class="col-md-9" style="padding:0;">
         <ui-view></ui-view>
       </div>
     </div>
