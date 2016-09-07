@@ -37,10 +37,12 @@
             name: 'groupCreate',
             url: 'groupCreate',
             templateUrl: '/dispatch/group/group_create.html',
+            controller: 'groupCreatingController',
+            controllerAs: 'vm',
             resolve: {
                 dept: ['$ocLazyLoad', function ($ocLazyLoad) {
-                    return $ocLazyLoad.load(['../resources/js/dispatch/controller/group/groupCreatingController.js',
-                        '../resources/js/dispatch/service/group/groupCreatingService.js']);
+                    return $ocLazyLoad.load(['../resources/js/dispatch/service/group/groupCreatingService.js',
+                        '../resources/js/dispatch/controller/group/groupCreatingController.js']);
                 }]
             }
         })
