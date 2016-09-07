@@ -21,7 +21,22 @@
         var aboutState = {
             name: 'about',
             url: '/about',
-            templateUrl: '/dispatch/sch_group/sch_group.html'
+            templateUrl: '/dispatch/sch_group/sch_group.html',
+            resolve: {
+                deps: [
+                    '$ocLazyLoad',
+                    function ($ocLazyLoad) {
+                        return $ocLazyLoad.load(
+                            {
+                                serie: true,
+                                files: [
+                                    '/resources/js/dispatch/controller/sch_group/sch_groupController.js',
+                                    '/resources/js/dispatch/controller/sch_group/sch_groupService.js'
+                                    
+                                ]
+                            });
+                    }]
+            }
         }
 
         $stateProvider.state(helloState);

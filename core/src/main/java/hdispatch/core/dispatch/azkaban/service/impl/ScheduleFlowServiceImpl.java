@@ -9,10 +9,14 @@ import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by 邓志龙 on 2016/8/31.
  */
+@Service
+@Transactional
 public class ScheduleFlowServiceImpl implements ScheduleFlowService {
     private static Logger logger = Logger.getLogger(ScheduleFlowService.class);
     private HttpResponse<JsonNode> response;
