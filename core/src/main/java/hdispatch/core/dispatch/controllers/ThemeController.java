@@ -28,13 +28,13 @@ public class ThemeController {
         //TODO 这里模拟的是将相应数据以json的格式发送,后续需要完善
         String msg = "[\n" +
                 "  {\"themeId\":\"themeId1\",\"themeName\":\"name1\",\"description\":\"description1\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription1\"},\n" +
-                "  {\"themeId\":\"themeId2\",\"themeName\":\"name1\",\"description\":\"description2\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription2\"},\n" +
-                "  {\"themeId\":\"themeId3\",\"themeName\":\"name1\",\"description\":\"description3\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription3\"},\n" +
-                "  {\"themeId\":\"themeId4\",\"themeName\":\"name1\",\"description\":\"description4\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription4\"},\n" +
-                "  {\"themeId\":\"themeId5\",\"themeName\":\"name1\",\"description\":\"description1\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription1\"},\n" +
-                "  {\"themeId\":\"themeId6\",\"themeName\":\"name1\",\"description\":\"description2\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription2\"},\n" +
-                "  {\"themeId\":\"themeId7\",\"themeName\":\"name1\",\"description\":\"description3\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription3\"},\n" +
-                "  {\"themeId\":\"themeId8\",\"themeName\":\"name1\",\"description\":\"description4\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription4\"}\n" +
+                "  {\"themeId\":\"themeId2\",\"themeName\":\"name2\",\"description\":\"description2\",\"projectName\":\"projectName2\",\"projectDescription\":\"projectDescription2\"},\n" +
+                "  {\"themeId\":\"themeId3\",\"themeName\":\"name3\",\"description\":\"description3\",\"projectName\":\"projectName3\",\"projectDescription\":\"projectDescription3\"},\n" +
+                "  {\"themeId\":\"themeId4\",\"themeName\":\"name4\",\"description\":\"description4\",\"projectName\":\"projectName4\",\"projectDescription\":\"projectDescription4\"},\n" +
+                "  {\"themeId\":\"themeId5\",\"themeName\":\"name5\",\"description\":\"description5\",\"projectName\":\"projectName5\",\"projectDescription\":\"projectDescription5\"},\n" +
+                "  {\"themeId\":\"themeId6\",\"themeName\":\"name6\",\"description\":\"description6\",\"projectName\":\"projectName6\",\"projectDescription\":\"projectDescription6\"},\n" +
+                "  {\"themeId\":\"themeId7\",\"themeName\":\"name7\",\"description\":\"description7\",\"projectName\":\"projectName7\",\"projectDescription\":\"projectDescription7\"},\n" +
+                "  {\"themeId\":\"themeId8\",\"themeName\":\"name8\",\"description\":\"description8\",\"projectName\":\"projectName8\",\"projectDescription\":\"projectDescription8\"}\n" +
                 "]";
 //        String themeName = request.getParameter("themeName");
 //        System.out.println(themeName);
@@ -74,5 +74,8 @@ public class ThemeController {
 
             isSuccessArray[i] = isSuccess;
         }
+
+        getAllTheme(request,response);
+
     }
 }

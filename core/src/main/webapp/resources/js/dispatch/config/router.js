@@ -24,7 +24,14 @@
             templateUrl: '/dispatch/sch_group/sch_group.html'
         }
 
+        var themeAddingState = {
+            name: 'themeAdding',
+            url: '/themeAdd',
+            templateUrl: '/dispatch/theme/theme_add.html'
+        }
+
         $stateProvider.state(helloState);
         $stateProvider.state(aboutState);
+        $stateProvider.state(themeAddingState);
     }
 })();
