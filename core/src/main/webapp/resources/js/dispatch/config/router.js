@@ -39,7 +39,27 @@
             }
         }
 
+        var themeAddingState = {
+            name: 'themeAdding',
+            url: '/themeAdd',
+            templateUrl: '/dispatch/theme/theme_add.html'
+        }
+
         $stateProvider.state(helloState);
         $stateProvider.state(aboutState);
+        $stateProvider.state(themeAddingState);
+        $stateProvider.state({
+            name: 'groupCreate',
+            url: 'groupCreate',
+            templateUrl: '/dispatch/group/group_create.html',
+            controller: 'groupCreatingController',
+            controllerAs: 'vm',
+            resolve: {
+                dept: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load(['../resources/js/dispatch/service/group/groupCreatingService.js',
+                        '../resources/js/dispatch/controller/group/groupCreatingController.js']);
+                }]
+            }
+        })
     }
 })();

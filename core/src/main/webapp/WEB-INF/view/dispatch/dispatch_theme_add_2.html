@@ -9,7 +9,7 @@
 <div id='example'>
     <div class='demo-section k-content wide'>
         <div>
-            <h4>添加主题</h4>
+            <h2>添加主题</h2>
             <div data-role="grid"
                  data-editable="true"
                  data-toolbar="[{name:'create',text:'新建'},{name:'save',text:'保存'},{name:'cancel',text:'取消'}]"
@@ -57,10 +57,10 @@
                         },
                         parameterMap: function(options, operation) {
                             if (operation !== "read" && options.models) {
-                                alert("进入非read");
+//                                alert("进入非read");
                                 var datas = options.models;
-                                alert(datas);
-                                alert(datas.themeName);
+//                                alert(datas);
+//                                alert(datas.themeName);
                                 console.log(datas);
                                 if(operation =='create' || operation =='update'){
                                     datas = options.models.map(function(data){
@@ -76,9 +76,10 @@
                                 return map;
                             } else if (operation === "read") {
 //                                alert("进入read");
-                                var map = {
-                                    themeName: '主题名称1',
-                                };
+//                                var map = {
+//                                    themeName: '主题名称1',
+//                                };
+                                var map={};
 ////                                if (options.page)
 ////                                    map.page = options.page;
 ////                                if (options.pageSize)
