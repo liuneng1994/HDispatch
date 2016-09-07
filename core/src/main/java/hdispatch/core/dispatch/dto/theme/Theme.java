@@ -1,4 +1,4 @@
-package hdispatch.core.dispatch.azkaban.entity.theme;
+package hdispatch.core.dispatch.dto.theme;
 
 /**
  * Created by yyz on 2016/9/5.
@@ -10,6 +10,7 @@ public class Theme {
     private String description;
     private String projectName;
     private int projectVersion;
+    private int projectId;
 
     public int getThemeId() {
         return themeId;
@@ -49,5 +50,13 @@ public class Theme {
 
     public void setProjectVersion(int projectVersion) {
         this.projectVersion = projectVersion;
+    }
+
+    public int getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
     }
 }

@@ -1,6 +1,6 @@
 package hdispatch.core.dispatch.service.impl;
 
-import hdispatch.core.dispatch.azkaban.entity.theme.Theme;
+import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.azkaban.service.impl.ProjectServiceImpl;
 import hdispatch.core.dispatch.mapper.ThemeMapper;

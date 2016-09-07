@@ -1,7 +1,7 @@
 package hdispatch.core.dispatch.mapper;
 
 
-import hdispatch.core.dispatch.azkaban.entity.theme.Theme;
+import hdispatch.core.dispatch.dto.theme.Theme;
 
 /**
  * Created by yyz on 2016/9/5.
