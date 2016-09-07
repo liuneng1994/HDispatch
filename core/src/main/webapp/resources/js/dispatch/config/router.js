@@ -33,5 +33,16 @@
         $stateProvider.state(helloState);
         $stateProvider.state(aboutState);
         $stateProvider.state(themeAddingState);
+        $stateProvider.state({
+            name: 'groupCreate',
+            url: 'groupCreate',
+            templateUrl: '/dispatch/group/group_create.html',
+            resolve: {
+                dept: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load(['../resources/js/dispatch/controller/group/groupCreatingController.js',
+                        '../resources/js/dispatch/service/group/groupCreatingService.js']);
+                }]
+            }
+        })
     }
 })();
