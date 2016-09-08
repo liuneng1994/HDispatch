@@ -25,9 +25,26 @@
         }
 
         var themeAddingState = {
-            name: 'themeAdding',
-            url: '/themeAdd',
-            templateUrl: '/dispatch/theme/theme_add.html'
+            name: 'themeCreate',
+            url: '/themeCreate',
+            templateUrl: '/dispatch/theme/theme_add.html',
+            controller:'themeCreateController',
+            resolve: {
+                dept: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load(['../resources/js/dispatch/controller/theme/themeCreateController.js']);
+                }]
+            }
+        }
+        var layerAddingState = {
+            name: 'layerCreate',
+            url: '/layerCreate',
+            controller:'layerCreateController',
+            templateUrl: '/dispatch/layer/layer_add.html',
+            resolve: {
+                dept: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load(['../resources/js/dispatch/controller/layer/layerCreateController.js']);
+                }]
+            }
         }
 
         $stateProvider.state(helloState);
@@ -45,6 +62,7 @@
                         '../resources/js/dispatch/controller/group/groupCreatingController.js']);
                 }]
             }
-        })
+        });
+        $stateProvider.state(layerAddingState);
     }
 })();
