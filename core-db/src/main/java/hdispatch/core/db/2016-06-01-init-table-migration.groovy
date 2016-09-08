@@ -31,4 +31,12 @@ databaseChangeLog(logicalFilePath: "hdispatch/core/db/2016-06-01-init-migration.
             column(name: "depent_group_id", type: "BIGINT")
         }
     }
+
+    changeSet(author: "yangyazheng", id: "20160907-yangyazheng-1") {
+        sqlFile(path: MigrationHelper.getInstance().dataPath("hdispatch/core/db/data/mysql/tables/hdispatch_theme.sql"), encoding: "UTF-8")
+    }
+    changeSet(author: "yangyazheng", id: "20160907-yangyazheng-2") {
+        sqlFile(path: MigrationHelper.getInstance().dataPath("hdispatch/core/db/data/mysql/tables/hdispatch_layer.sql"), encoding: "UTF-8")
+    }
+
 }
