@@ -2,13 +2,17 @@
   <form class="form-horizontal" role="form" novalidate>
     <div class="form-group">
       <label class="col-md-2 control-label">主题</label>
-      <select class="col-md-8" kendo-drop-down-list k-placeholder="'请选择主题'"
+      <select class="col-md-8" kendo-drop-down-list k-data-text-field="'themeName'"
+              k-data-value-field="'themeId'" k-data-source="vm.themes"
+              k-placeholder="'请选择主题'" ng-model="vm.group.theme"
               style="padding-left:0;padding-right:0">
       </select>
     </div>
     <div class="form-group">
       <label class="col-md-2 control-label">层级</label>
-      <select class="col-md-8" kendo-drop-down-list k-placeholder="'请选择层级'" style="padding-left:0;padding-right:0">
+      <select class="col-md-8" kendo-drop-down-list k-data-text-field="'layerName'"
+              k-data-value-field="'layerId'"
+              k-data-source="vm.layers" k-placeholder="'请选择层级'" style="padding-left:0;padding-right:0">
       </select>
     </div>
     <div class="form-group">
@@ -25,7 +29,7 @@
     </div>
     <div class="form-group col-md-8">
       <label class="col-md-3 control-label">重复周期</label>
-      <input type="number" class="com-md-4 k-textbox" style="clear: both;"/>
+      <input type="number" class="com-md-4 k-textbox" min="0" style="clear: both;"/>
       <div class="col-md-5" style="float:right;">
         <select kendo-drop-down-list style="padding-left:0;padding-right:0">
           <option>请选择单位</option>
@@ -37,7 +41,7 @@
     </div>
     <div class="form-group" style="clear: both">
       <label class="col-md-2 control-label">描述</label>
-      <input type="text" class="col-md-8 k-textbox" ng-model="vm.group.description"/>
+      <input type="text" class="col-md-8 k-textbox" maxlength="256" ng-model="vm.group.description"/>
     </div>
     <div class="form-group">
       <label class="col-md-2 control-label">配置依赖组</label>
