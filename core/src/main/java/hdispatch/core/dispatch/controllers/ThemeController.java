@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.context.ThemeSource;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,8 +25,10 @@ public class ThemeController {
 //    private ThemeService themeService;
 
     @RequestMapping("/dispatcher/theme/query")
-    public void getAllTheme(HttpServletRequest request, HttpServletResponse response){
+    public void getAllTheme(HttpServletRequest request,@RequestParam int page,
+                            @RequestParam int pagesize, HttpServletResponse response){
         //TODO 这里模拟的是将相应数据以json的格式发送,后续需要完善
+        System.out.println(page+"----"+pagesize);
         String msg = "[\n" +
                 "  {\"themeId\":\"themeId1\",\"themeName\":\"name1\",\"description\":\"description1\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription1\"},\n" +
                 "  {\"themeId\":\"themeId2\",\"themeName\":\"name2\",\"description\":\"description2\",\"projectName\":\"projectName2\",\"projectDescription\":\"projectDescription2\"},\n" +
