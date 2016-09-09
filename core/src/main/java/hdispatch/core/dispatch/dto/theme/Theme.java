@@ -1,16 +1,20 @@
 package hdispatch.core.dispatch.dto.theme;
 
+import com.hand.hap.system.dto.BaseDTO;
+
 /**
  * Created by yyz on 2016/9/5.
  * yazheng.yang@hand-china.com
  */
-public class Theme {
+public class Theme extends BaseDTO{
     private int themeId;
     private String themeName;
     private String description;
     private String projectName;
     private int projectVersion;
     private int projectId;
+    private String projectDescription;
+
 
     public int getThemeId() {
         return themeId;
@@ -58,5 +62,13 @@ public class Theme {
 
     public void setProjectId(int projectId) {
         this.projectId = projectId;
+    }
+
+    public String getProjectDescription() {
+        return projectDescription;
+    }
+
+    public void setProjectDescription(String projectDescription) {
+        this.projectDescription = projectDescription;
     }
 }

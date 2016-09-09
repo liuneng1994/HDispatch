@@ -3,4 +3,41 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hdispatch.core.dispatch.mapper.ThemeMapper">
+    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.theme.Theme">
+        <id column="theme_id" property="themeId"/>
+        <result column="name" property="themeName"/>
+        <result column="description" property="description"/>
+        <result column="project_name" property="projectName"/>
+        <result column="project_version" property="projectVersion"/>
+        <result column="project_id" property="projectId"/>
+        <result column="project_description" property="projectDescription"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="baseMap">
+        SELECT * FROM HDISPATCH_THEME
+    </select>
+    <select id="selectByTheme" resultMap="baseMap">
+        SELECT * FROM HDISPATCH_THEME
+        <where>
+            <if test="themeId != null and themeId>0">
+                and theme_id = #{themeId,jdbcType=DECIMAL}
+            </if>
+            <if test="themeName != null">
+                AND name = #{themeName,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                <bind name="pattern" value="'%' + _parameter.description + '%'" />
+                AND description like #{pattern}
+            </if>
+            <if test="projectName != null">
+                AND project_name like #{projectName,jdbcType=VARCHAR}
+            </if>
+            <if test="projectVersion != null and projectVersion>0">
+                and project_version = #{projectVersion,jdbcType=DECIMAL}
+            </if>
+            <if test="projectId != null and projectId>0">
+                and project_id = #{projectId,jdbcType=DECIMAL}
+            </if>
+        </where>
+    </select>
 </mapper>
