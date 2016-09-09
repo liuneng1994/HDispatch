@@ -25,10 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-/**
- * Created by yyz on 2016/9/6.
- * yazheng.yang@hand-china.com
- */
 @Controller
 public class HdispatchGroupController {
    @Autowired
