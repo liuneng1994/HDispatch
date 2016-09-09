@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
-       
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 
+
+
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+  <!--  <context:property-placeholder location="classpath:azkabanConfig.properties"></context:property-placeholder>
+
+    <bean id="azkabanDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+      <property name="driverClass" value="${azkaban.db.driverClass}"></property>
+      <property name="jdbcUrl" value="${azkaban.db.jdbcUrl}"></property>
+      <property name="user" value="${azkaban.db.username}"></property>
+      <property name="password" value="${azkaban.db.password}"></property>
+    </bean>
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+      <property name="basePackage" value="hdispatch.azkaban.mappers"></property>
+      <property name="sqlSessionTemplateBeanName" value="azkabanSqlSession"></property>
+    </bean>
+
+    <bean id="azkabanSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="dataSource" ref="azkabanDataSource"/>
+      <property name="mapperLocations" value="classpath*:hdispatch/azkaban/mappers/*Mapper.xml"/>
+    </bean>
+
+
+    <bean id="azkabanSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+      <constructor-arg index="0" name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>-->
 </beans>

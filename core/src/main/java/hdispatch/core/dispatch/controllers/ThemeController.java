@@ -4,9 +4,7 @@ import hdispatch.core.dispatch.service.ThemeService;
 import hdispatch.core.dispatch.service.impl.ThemeServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.context.ThemeSource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,10 +23,10 @@ public class ThemeController {
 //    private ThemeService themeService;
 
     @RequestMapping("/dispatcher/theme/query")
-    public void getAllTheme(HttpServletRequest request,@RequestParam int page,
-                            @RequestParam int pagesize, HttpServletResponse response){
+    public void getAllTheme(HttpServletRequest request, @RequestParam int page,
+                            @RequestParam int pagesize, HttpServletResponse response) {
         //TODO 这里模拟的是将相应数据以json的格式发送,后续需要完善
-        System.out.println(page+"----"+pagesize);
+        System.out.println(page + "----" + pagesize);
         String msg = "[\n" +
                 "  {\"themeId\":\"themeId1\",\"themeName\":\"name1\",\"description\":\"description1\",\"projectName\":\"projectName1\",\"projectDescription\":\"projectDescription1\"},\n" +
                 "  {\"themeId\":\"themeId2\",\"themeName\":\"name2\",\"description\":\"description2\",\"projectName\":\"projectName2\",\"projectDescription\":\"projectDescription2\"},\n" +
@@ -52,15 +50,16 @@ public class ThemeController {
         }
 
     }
+
     @RequestMapping("/dispatcher/theme/submit")
-    public void addTheme(HttpServletRequest request, HttpServletResponse response){
+    public void addTheme(HttpServletRequest request, HttpServletResponse response) {
         String themes_data_array = request.getParameter("themes_data_array");
         System.out.println(themes_data_array);
 
         JSONArray jsonArray = new JSONArray(themes_data_array);
         int len = jsonArray.length();
         boolean[] isSuccessArray = new boolean[len];
-        for(int i=0; i < jsonArray.length(); i++){
+        for (int i = 0; i < jsonArray.length(); i++) {
             Object o = jsonArray.get(i);
             System.out.println(o);
             JSONObject jsonObject = new JSONObject(o.toString());
@@ -78,7 +77,7 @@ public class ThemeController {
             isSuccessArray[i] = isSuccess;
         }
 
-        getAllTheme(request,response);
+        //getAllTheme(request,response);
 
     }
 }
