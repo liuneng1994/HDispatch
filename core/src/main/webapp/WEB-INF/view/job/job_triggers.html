@@ -1,0 +1,223 @@
+<#include "../include/head.html">
+<body style="padding: 3px; overflow: hidden;">
+<form id="triggers_form"></form>
+<div id="triggers_grid" style="margin: 0; padding: 0"></div>
+<script type="text/javascript">
+
+    window.stateColor = {
+        "PAUSED"  : "color:#FFCC00;",
+        "ACQUIRED": "color:#00CC00;",
+        "COMPLETE": "color:grey;",
+        "ERROR"   : "color:#FF3333;",
+        "BLOCKED" : "color:black;",
+        "WAITING" : "color:black;"
+    };
+
+    function formatToUserTz(ts){
+	    if(ts<=0)return '';
+	    return new Date(ts).format("standard");
+    }
+
+    function viewTriggerDetail(triggerName, triggerGroup, type) {
+        if (type == 'CRON') {
+            window.popWin = $.ligerDialog.open({
+                title : 'Cron Trigger',
+                width : 420,
+                height: 260,
+                url   : 'cron_trigger.html?name=' + triggerName + "&group=" + triggerGroup + "&type=" + type
+            });
+        } else if (type == "SIMPLE") {
+            window.popWin = $.ligerDialog.open({
+                title : 'Simple Trigger',
+                width : 420,
+                height: 260,
+                url   : 'simple_trigger.html?name=' + triggerName + "&group=" + triggerGroup + "&type=" + type
+            });
+        }
+    }
+
+    $(function () {
+        function pauseSelected(_grid) {
+            var arr = _grid.getSelectedRows();
+            if (arr && arr.length) {
+                trigger_ajax(arr, '${base.contextPath}/job/pausetrigger');
+            }
+        }
+
+        function resumeSelected(_grid) {
+            var arr = _grid.getSelectedRows();
+            if (arr && arr.length) {
+                trigger_ajax(arr, '${base.contextPath}/job/resumetrigger');
+            }
+        }
+
+        function trigger_ajax(obj, url) {
+            $.ajax({
+                url        : url,
+                type       : "POST",
+                dataType   : "json",
+                contentType: "application/json",
+                data       : JSON2.stringify(obj),
+                success    : function (json) {
+                    Hap.defaultSuccessHandler({json: json});
+                },
+                error      : function () {
+                    $.ligerDialog.closeWaitting();
+                }
+            });
+        }
+
+
+        window['triggers_form'] = $("#triggers_form").ligerForm({
+            fields    : [
+                {
+                    type   : 'text',
+                    label  : '<@spring.message "triggerdto.triggerstate"/>',
+                    name   : 'triggerState',
+                    newline: false
+                },
+                {
+                    type : 'text',
+                    label: '<@spring.message "triggerdto.triggername"/>',
+                    name : 'triggerName'
+                },
+                {
+                    type   : 'text',
+                    label  : '<@spring.message "triggerdto.triggergroup"/>',
+                    name   : 'triggerGroup',
+                    newline: false
+                },
+                {
+                    type : 'text',
+                    label: '<@spring.message "triggerdto.jobname"/>',
+                    name : 'jobName'
+                },
+                {
+                    type   : 'text',
+                    label  : '<@spring.message "triggerdto.jobgroup"/>',
+                    name   : 'jobGroup',
+                    newline: false
+                }
+            ], buttons: [
+                {
+                    text: '<@spring.message "hap.query"/>', disabled: false, width: 60, click: function () {
+                    Hap.gridQuery({
+                        form: triggers_form,
+                        grid: triggers_grid
+                    })
+                }
+                }
+            ]
+        });
+
+        window['triggers_grid'] = $("#triggers_grid").ligerGrid({
+            unSetValidateAttr: false,
+            columns          : [
+                {
+                    display: '<@spring.message "triggerdto.triggername"/>',
+                    name   : 'triggerName',
+                    align  : 'left',
+                    width  : 100,
+                    render : function (item) {
+                        var args = "'" + [item.triggerName, item.triggerGroup, item.triggerType].join("','") + "'";
+                        var js = "viewTriggerDetail(" + args + ")";
+                        return item.triggerName.link("javascript:" + js);
+                    }
+                },
+                {
+                    display: '<@spring.message "triggerdto.triggergroup"/>',
+                    name   : 'triggerGroup',
+                    align  : 'center',
+                    width  : 80
+                },
+                {
+                    display: 'job',
+                    columns: [
+                        {
+                            display: '<@spring.message "triggerdto.jobname"/>',
+                            name   : 'jobName',
+                            align  : 'left',
+                            width  : 120
+                        },
+                        {
+                            display: '<@spring.message "triggerdto.jobgroup"/>',
+                            name   : 'jobGroup',
+                            align  : 'center',
+                            width  : 80
+                        }
+                    ]
+                },
+                {
+                    display: '<@spring.message "triggerdto.triggerstate"/>',
+                    name   : 'triggerState',
+                    align  : 'center',
+                    width  : 80,
+                    render : function (item) {
+	                    return "<span style='"+window.stateColor[item.triggerState]+"'>"+item.triggerState+"</span>"
+                    }
+                },
+                {
+                    display: '<@spring.message "triggerdto.priority"/>',
+                    name   : 'priority',
+                    width  : 60
+                },
+                {
+                    display: '<@spring.message "triggerdto.triggertype"/>',
+                    name   : 'triggerType',
+                    width  : 80
+                },
+                {
+                    display: '<@spring.message "triggerdto.nextfiretime"/>',
+                    name   : 'nextFireTime',
+	                align  : 'center',
+                    width  : 140,
+                    render : function (item) {
+                        return formatToUserTz(item.nextFireTime);
+                    }
+                },
+                {
+                    display: '<@spring.message "triggerdto.prevfiretime"/>',
+                    name   : 'prevFireTime',
+                    width  : 140,
+                    render : function (item) {
+                        return formatToUserTz(item.prevFireTime);
+                    }
+                },
+                {
+                    display: '<@spring.message "triggerdto.endtime"/>',
+                    name   : 'endTime',
+                    width  : 140,
+                    render : function (item) {
+                        if (item.endTime<=0) return "NEVER";
+                        return formatToUserTz(item.endTime);
+                    }
+                }
+            ],
+            url              : '${base.contextPath}/job/trigger/query',
+            toolbar          : {
+                items: [
+                    {
+                        text   : '<@spring.message "hap.pause"/>', disable: false,
+                        click  : function () {
+                            pauseSelected(triggers_grid)
+                        }, icon: 'pause'
+                    },
+                    {line: true},
+                    {
+                        text   : '<@spring.message "hap.resume"/>',
+                        click  : function () {
+                            resumeSelected(triggers_grid)
+                        }, icon: 'resume'
+                    }
+                ]
+            },
+            groupColumnName  : 'triggerGroup',
+            //groupColumnDisplay:'triggerGroup',
+            width            : '100%',
+            height           : '99%',
+            checkbox         : true
+        });
+    });
+</script>
+</body>
+</html> 

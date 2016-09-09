@@ -1,10 +1,12 @@
 package hdispatch.core.dispatch.dto.layer;
 
+import com.hand.hap.system.dto.BaseDTO;
+
 /**
  * Created by yyz on 2016/9/7.
  * yazheng.yang@hand-china.com
  */
-public class Layer {
+public class Layer extends BaseDTO{
     private long layerId;
     private String name;
     private String description;

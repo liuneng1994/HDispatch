@@ -1,0 +1,140 @@
+<#-- 
+ * description: lov界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 3px; overflow: hidden;">
+    <form id="lovForm"></form>
+    <div id="lovGrid" style="margin: 0; padding: 0"></div>
+    <script type="text/javascript">
+        function previewLov(code) {
+            $.ligerDialog.open({
+                isHidden:false,
+                height: 200,
+                width: 450,
+                load :true,
+                url:'sys_lov_preview.html?code='+code, 
+                title: 'preview'
+            });
+        }
+        window['lovForm'] = $("#lovForm").ligerForm({
+            labelWidth:60,  
+            space: 0,
+            inputWidth : 200,
+            fields : [ { 
+                type : 'text',
+                label : '<@spring.message "lov.code"/>',
+                name : 'code'
+            },{
+                type : 'text',
+                label : '<@spring.message "lov.description"/>',
+                newline:false,
+                name : 'description'
+            }],
+            buttons : [ {
+                text : '<@spring.message "hap.query"/>',
+                disabled : false,
+                width : 60,
+                click : function() {
+                    Hap.gridQuery({
+                        form : lovForm,
+                        grid : lovGrid
+                    })
+                }
+            } ]
+        });
+
+        window.newLov = function() {
+            window.popWin = $.ligerDialog.open({
+                width : 1050,
+                height : 550,
+                title : 'lov',
+                url : 'sys_lov_edit.html'
+            });
+        }
+
+        window.editLov = function(id) {
+            window.popWin = $.ligerDialog.open({
+                width : 1050, 
+                height : 550,
+                url : 'sys_lov_edit.html?isedit=1&lovId=' + id
+            });
+        }
+        window['lovGrid'] = $("#lovGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [ {
+                display : '<@spring.message "lov.code"/>',
+                name : 'code',
+                align : 'left',
+                width : 250,
+                editor : {
+                    type : 'text'
+                }
+            }, {
+                display : '<@spring.message "lov.description"/>',
+                name : 'description',
+                align : 'left',
+                width : 300, 
+                editor : {
+                    type : 'text'
+                }
+            }, {
+                display : '<@spring.message "hap.action"/>',
+                width : 120,
+                align : 'center',
+                render : function(rowdata) {
+                    return '<a href="#" onclick="editLov(' + rowdata.lovId + ')"><@spring.message "hap.edit"/></a>'
+                }
+            }, {
+                display : 'Preview',
+                width : 120,
+                align : 'center',
+                render : function(rowdata) {
+                    return '<a href="javascript:previewLov(\'' + rowdata.code + '\')">Preview</a>' 
+                }
+            } ],
+            url : '${base.contextPath}/sys/lov/query',
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : newLov,
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : lovGrid,
+                            url : '${base.contextPath}/sys/lov/remove'
+                        })
+
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : lovGrid,
+                            url : '${base.contextPath}/sys/lov/submit'
+                        })
+                    },
+                    icon : 'save'
+                } ]
+            },
+            enabledEdit : true,
+            width : '100%',
+            height : '99%',
+            checkbox : true
+        });
+        
+        
+    </script>
+</body>
+</html>

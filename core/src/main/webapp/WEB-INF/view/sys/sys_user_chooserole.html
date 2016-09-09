@@ -1,0 +1,82 @@
+<#-- 
+ * description: 用户分配角色选择界面
+ * version: 1.0 
+ * author:xiawang.liu
+ * #{copyright}#
+ * 
+-->
+
+<#include "../include/head.html">
+
+<body style="padding: 3px; overflow: hidden;">
+	<form id="userchooserole_form"></form>
+	<div id="userchooserole_grid" style="margin: 0; padding: 0"></div>
+	<script type="text/javascript">
+		$(function (){
+        	window['userchooserole_form'] = $("#userchooserole_form").ligerForm({
+              	fields: [
+                  	{ 
+                  		type: 'text', 
+                  		label: '<@spring.message "role.rolecode"/>',
+                  		name: 'roleCode' 
+                  	},
+                  	{ 
+                  		type: 'text', 
+                  		label: '<@spring.message "role.rolename"/>',
+                  		name: 'roleName', 
+                  		newline: false 
+                  	},
+                  	{ 
+                  		type: 'text', 
+                  		label: '<@spring.message "role.roledescription"/>',
+                  		name: 'roleDescription'
+                  	}
+              	], 
+              	buttons: [
+                	{ 
+                  		text: '<@spring.message "hap.query"/>',
+                  		disabled:false, 
+                  		width: 60, 
+                  		click: function(){
+                      		Hap.gridQuery({
+                          		form:userchooserole_form,
+                         		grid:userchooserole_grid
+                      		})
+                  		} 
+            		}
+				]
+			});
+      
+			window['userchooserole_grid'] = $("#userchooserole_grid").ligerGrid({
+          		columns: [
+                	{ 
+                		display: '<@spring.message "role.rolecode"/>',
+                		name: 'roleCode', 
+                		align: 'left', 
+                		width: 190,
+                    	editor: { type: 'text' }
+                	},
+                	{ 
+                		display: '<@spring.message "role.rolename"/>',
+                		name: 'roleName', 
+                		align: 'left', 
+                		width: 190,
+                    	editor: { type: 'text' }
+                	},
+                	{ 
+                		display: '<@spring.message "role.roledescription"/>',
+                		name: 'roleDescription',
+                		align: 'left', 
+                		width: 220,
+                   	 	editor: { type: 'text' }
+                	}
+              	], 
+              	url:'${base.contextPath}/sys/role/queryRoleNotUserRole?userId=' + ${RequestParameters.userId},
+              	width: '99%', 
+              	height: '99%', 
+              	checkbox: true
+          	}); 
+		});
+</script>
+</body>
+</html>

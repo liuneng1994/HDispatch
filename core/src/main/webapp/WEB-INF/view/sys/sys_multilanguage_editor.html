@@ -1,0 +1,37 @@
+<#--
+ * description: 多语言字段维护界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+    <form id="tlForm"></form> 
+    <script type="text/javascript"> 
+    var data = frameElement.dialog.get('data');
+    window['tl_form'] = $("#tlForm").ligerForm({
+        inputWidth :200, 
+        fields : [
+        <#if list??>
+            <#list list as item>
+            
+            {
+               type : 'text',
+               label : '${item.description}',
+               name : '${item.langCode}',
+               options:{
+                   value:'${item.value!""?replace("\'","\\'")}'
+               },
+               validate:{
+                   required:true
+               }
+            },
+            </#list>
+        </#if>
+       ]
+    });
+    tl_form.setData(data);
+    </script>
+</body> 
+</html>

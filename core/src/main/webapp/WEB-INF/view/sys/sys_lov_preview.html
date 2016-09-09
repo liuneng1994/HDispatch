@@ -1,0 +1,13 @@
+<center><form id="preview_form"></form></center>
+<script type="text/javascript">
+var mainform = $("#preview_form");
+mainform.ligerForm({
+    fields : [{
+        display : "lov",  
+        name : "lovId", 
+        type : "popup",  
+        newline : false,
+        options:${lovService.getLov(base.contextPath,base.locale, RequestParameters.code)}   
+        
+    }]});
+</script>

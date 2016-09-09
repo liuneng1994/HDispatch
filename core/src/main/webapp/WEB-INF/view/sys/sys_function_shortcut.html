@@ -1,0 +1,73 @@
+ <#--  
+ * description: 快捷方式界面
+ * version: 1.0 
+ * author: RUNBAI.CHEN
+ * #{copyright}#.
+ * 
+-->  
+<#include "../include/head.html">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script type="text/javascript">
+    var t;
+    $(function() {
+        t = $("#sys_function_shortcut_tree").ligerTree({
+            url : '${base.contextPath}/sys/dashboard/functionshortcut/fetch',
+            checkbox : true,
+            slide : true,
+            attribute : [ 'nodename', 'url' ],
+            onCheck: function (e,ischecked) {
+                var text = e.data.text;
+                $(e.target).find('span').eq(1).html(ischecked?'<span style="color:red">'+text+'</span>':text);
+            },
+            render : function(a) {
+                return a.ischecked?'<span style="color:red">'+a.text+'</span>':a.text;
+            },
+            iconType:'span'
+        });
+    });
+    function f_click() {
+        var data = t.getChecked();
+        
+        var len = 0;
+        var requestData = new Array();
+        for (var i = 0; i < data.length; i++) {
+            if (data[i]['data']['children'] == null) {
+                len++;
+                var functionShortcut = new Object();
+                functionShortcut.functionId = data[i]['data']['id'];
+                functionShortcut.shortcutId = data[i]['data']['shortcutId'];
+                requestData.push(functionShortcut);
+            }
+        }
+        if (len > 6) {
+            Hap.showError( '<@spring.message "msg.error.user.quick_configuration_add_qty"/>');
+            return;
+        }
+        $.ajax({
+            type : 'POST',
+            url :  "${base.contextPath}/sys/dashboard/functionshortcut/submit",
+            data : JSON2.stringify(requestData),
+            success : function(json) {
+                t.reload();
+                parent.liger.get('framecenter').reload('home');
+            },
+            contentType : "application/json; charset=utf-8"
+
+        });
+    }
+</script>
+</head>
+<body style="padding: 10px">
+<link href="${base.contextPath}/resources/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <div>
+        <input type="button" value='<@spring.message "hap.save"/>'
+            onclick="f_click()">
+    </div>
+    <ul id="sys_function_shortcut_tree">
+    </ul>
+
+</body>
+</html>

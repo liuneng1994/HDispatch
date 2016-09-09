@@ -36,6 +36,15 @@
                             return map;
                         } else if (operation === "read") {
                             var map = {};
+                            if (options.page){
+                                map.page = options.page;
+                            }
+                            if (options.pageSize){
+                                map.pageSize = options.pageSize;
+                            }
+                           for(var k in map){
+                               if(map[k]==='')delete map[k]
+                           }
                             return map;
                         }
                     }
@@ -44,6 +53,8 @@
                 serverPaging: true,
                 pageSize: 10,
                 schema: {
+                    data:'rows',
+                    total:'total',
                     model: {
                         id: 'themeId',
                         fields: {

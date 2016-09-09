@@ -1,0 +1,279 @@
+<#-- 
+* description: 新增Cron Job页面 
+* version: 1.0 
+* author:xiawang.liu 
+* #{copyright}#
+* 
+-->
+<#include "../include/head.html">
+<style>
+    #job_form {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 13px;
+    }
+</style>
+
+<body style="padding: 10px">
+<div id="job_cron_tabs" class="liger-tab">
+    <div tabid="job_cron_addtab" title="<@spring.message 'job.addjobtitle'/>" lselected="true">
+        <form id="job_form" name="job_form"></form>
+        <div id="job_grid" name="job_grid"></div>
+    </div>
+    <div tabid="job_cron_notification" title="<@spring.message 'job.notificationtitle'/>" lselected="true">
+        <form id="notification_form" name="notification_form"></form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var tab = $('#job_cron_tabs').ligerTab();
+    var notification_form = window['notification_form'] = $("#notification_form").ligerForm({
+        fields: [
+            {
+                type      : 'checkbox',
+                label     : '<@spring.message "job.sendnotification"/>',
+                name      : 'job_internal_notification',
+                labelWidth: 230,
+                style     : 'height: 34px',
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "job.emailaddress"/>',
+                name      : 'job_internal_emailAddress',
+                labelWidth: 230,
+                style     : 'height: 34px',
+                labelAlign: 'right',
+                width     : 390
+            }
+        ]
+    });
+    var job_form = window['job_form'] = $("#job_form").ligerForm({
+        fields: [
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.jobname"/>',
+                name      : 'jobName',
+                labelWidth: 130,
+                labelAlign: 'right',
+                inputWidth: 100,
+                space     : 0,
+                options   : {
+                    required: true
+                }
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.jobgroup"/>',
+                name      : 'jobGroup',
+                newline   : false,
+                labelWidth: 130,
+                inputWidth: 100,
+                space     : 0,
+                options   : {
+                    value   : 'DEFAULT',
+                    required: true
+                },
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.description"/>',
+                name      : 'description',
+                labelWidth: 130,
+                labelAlign: 'right',
+                space     : 0
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.jobclassname"/>',
+                name      : 'jobClassName',
+                width     : 495,
+                labelWidth: 130,
+                labelAlign: 'right',
+                space     : 0,
+                options   : {
+                    required: true
+                }
+            },
+            {
+                type      : 'date',
+                label     : '<@spring.message "triggerdto.starttime"/>',
+                name      : 'start',
+                labelWidth: 130,
+                labelAlign: 'right',
+                space     : 0,
+                options   : {
+                    showTime    : true,
+                    format      : "yyyy-MM-dd hh:mm:ss",
+                    onChangeDate: function () {
+                        var g = this;
+                        if (liger.get("end").getValue() != null) {
+                            var startDate = new Date(liger.get("start").getValue());
+                            var endDate = new Date(liger.get("end").getValue());
+                            if (startDate.getTime() > endDate.getTime()) {
+                                alert('<@spring.message "dateerror1"/>');
+                                g.clear();
+                            } else if (startDate.getTime() < endDate.getTime()) {
+                            } else {
+                                alert('<@spring.message "dateerror2"/>');
+                                g.clear();
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                type      : 'date',
+                label     : '<@spring.message "triggerdto.endtime"/>',
+                name      : 'end',
+                newline   : false,
+                labelWidth: 130,
+                space     : 0,
+                labelAlign: 'right',
+                options   : {
+                    showTime    : true,
+                    format      : "yyyy-MM-dd hh:mm:ss",
+                    onChangeDate: function () {
+                        var g = this;
+                        if (liger.get("start").getValue() != null) {
+                            var startDate = new Date(liger.get("start").getValue());
+                            var endDate = new Date(liger.get("end").getValue());
+                            if (startDate.getTime() > endDate.getTime()) {
+                                alert('<@spring.message "dateerror1"/>');
+                                g.clear();
+                            } else if (startDate.getTime() < endDate.getTime()) {
+                            } else {
+                                alert('<@spring.message "dateerror2"/>');
+                                g.clear();
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "crontriggerdto.cronexpression"/>',
+                name      : 'cronExpression',
+                width     : 495,
+                labelWidth: 130,
+                labelAlign: 'right',
+                space     : 0,
+                options   : {
+                    required: true,
+                    value   : '0 * * * * ?',
+                    nullText: '<@spring.message "crontriggerdto.cronexpression"/>'
+                }
+            },
+            {
+                type   : 'hidden',
+                name   : 'triggerType',
+                options: {
+                    value: 'CRON'
+                }
+            }
+        ]
+    });
+
+    var job_grid = window['job_grid'] = $("#job_grid").ligerGrid({
+        unSetValidateAttr: false,
+        columns          : [
+            {
+                display: '<@spring.message "job.attributename"/>',
+                name   : 'name',
+                align  : 'left',
+                width  : 300,
+                editor : {type: 'text'}
+            },
+            {
+                display: '<@spring.message "job.attributevalue"/>',
+                name   : 'value',
+                align  : 'left',
+                width  : 300,
+                editor : {type: 'text'}
+            }
+        ],
+        toolbar          : {
+            items: [
+                {
+                    text   : '<@spring.message "hap.new"/>',
+                    disable: false,
+                    click  : function () {
+                        job_grid.addRow({});
+                    },
+                    icon   : 'add'
+                },
+                {
+                    line: true
+                },
+                {
+                    text : '<@spring.message "hap.delete"/>',
+                    click: function () {
+                        job_grid.deleteSelectedRow();
+                    },
+                    icon : 'delete'
+                }
+            ]
+        },
+        enabledEdit      : true,
+        width            : '99%',
+        height           : '98%',
+        checkbox         : true,
+        usePager         : false
+    });
+
+    $(function () {
+        //保存整个窗口数据
+        function f_save() {
+            job_grid.endEdit();
+            var notificationData = notification_form.getData();
+            var formData = job_form.getData();
+            var gridData = job_grid.getData();
+            var jobData = $.extend({}, formData);
+            if (formData.start) {
+                jobData.startTime = formData.start.getTime();
+            }
+            if (formData.end) {
+                jobData.endTime = formData.end.getTime();
+            }
+            var requestData = [];
+            for (var k in notificationData) {
+                requestData.push({name: k, value: notificationData[k]})
+            }
+            requestData = requestData.concat(gridData);
+            jobData.jobDatas = requestData;
+
+            $.ajax({
+                url        : '${base.contextPath}/job/create',
+                type       : "POST",
+                dataType   : "json",
+                contentType: "application/json",
+                data       : JSON2.stringify(jobData),
+                success    : function (json) {
+                    if (json.success) {
+                        Hap.showSuccess($l('hap.tip.success'), function () {
+                            parent.$.ligerui.get("task_grid").reload();
+                            f_cancel();
+                        });
+                    } else {
+                        Hap.showError(json.message);
+                    }
+                },
+                error      : function () {
+                    $.ligerDialog.closeWaitting();
+                }
+            });
+        }
+
+        //关闭窗口
+        function f_cancel() {
+            var dialog = frameElement.dialog;
+            dialog.close();
+        }
+
+        //表单底部按钮
+        Hap.setFormDefaultBtn(f_cancel, f_save);
+    })
+</script>
+</body>
+</html>

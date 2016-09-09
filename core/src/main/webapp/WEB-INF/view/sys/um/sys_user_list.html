@@ -1,0 +1,191 @@
+<#--
+ * description: 用户资料查询界面
+ * version: 1.0 
+ * author:guanghui.liu
+ * Copyright LKK Health Products Group Limited.
+ * 
+-->
+<#include "../../include/head.html">
+<style>
+    #form_title {
+        margin: 0;
+        padding: 0;
+        width:99%;
+        height:29px;
+        background-color:#F0F0F0;
+        border:1px solid #D6D6D6;
+    }
+    #form_title p {
+        padding-left: 25px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+</style>
+<body style="padding: 10px;">
+    <script src="${base.contextPath}/common/code?userTypeData=SYS.USER_TYPE&userStatusData=SYS.USER_STATUS" type="text/javascript"></script>
+    <div id="form_title">
+        <p><@spring.message 'type.com.lkkhpg.dsis.common.user.userlist'/></p>
+    </div>
+    <form id="d_um_007_form" autocomplete="off"></form>
+    <div id="d_um_007_grid" style="margin: 0; padding: 0"></div> 
+    <script type="text/javascript">
+    
+    $(function(){
+        window['d_um_007_form'] = $("#d_um_007_form").ligerForm({
+            fields: [
+                { name : "loginName", display : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.account.loginname"/>', type : "text" ,newline: false},
+                {name : "userName", type : "text", display : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.username"/>', newline: false},
+                {name : "email", type : "text",display : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.email"/>', newline: false},
+                { name : "phoneNo", display : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.phone"/>', type : "text"},
+                {
+                    name : 'userType',
+                    type : 'select',
+                    label : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.usertype"/>',
+                    newline: false,
+                    options : {
+                        valueField : "value",
+                        textField : "meaning",
+                        value : "INNER",
+                        data : userTypeData
+                    }
+                },
+                {
+                    name : 'status',
+                    type : 'select',
+                    label : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.status"/>',
+                    newline: false,
+                    options : {
+                        valueField : "value",
+                        textField : "meaning",
+                        value : "ACTV",
+                        data : userStatusData
+                    }
+                }
+            ], buttons: [
+                { 
+                    text: '<@spring.message "sys.hand.btn.query"/>', disabled:false, width: 60, 
+                    click: function(){
+                        //解决autocomplete的现存bug
+                        //从输入框取值
+                        var userName = $("input[ligeruiid='userName'][type='text']").val();
+                        var email = $("input[ligeruiid='email'][type='text']").val();
+                        //以防用户不是从select选中的值，所以给隐藏input赋值
+                        $("#userName").val(userName);//这个隐藏input的值将会在gridQuery时自动使用
+                        $("#email").val(email);//这个隐藏input的值将会在gridQuery时自动使用
+                        Hap.gridQuery({
+                            form:d_um_007_form,
+                            grid:d_um_007_grid
+                        })
+                    }
+                }/* ,
+                { 
+                    text: 'chazhao', disabled:false, width: 60, 
+                    click: function(){
+                		$.ajax({
+                            type : 'POST',
+                            url : "${base.contextPath}/salesorder/listening",
+                            dataType : "json",
+                            success : function(data) {
+                alert("haha ");
+                            }
+                        });
+                    }
+                } */
+            ]
+        });
+      
+        window['d_um_007_grid'] = $("#d_um_007_grid").ligerGrid({
+            columns: [
+                {
+                    name: 'loginName',
+                    display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.account.loginname"/>',
+                    isAllowHide: false,
+                    render: function (row){
+                        var html = "<a href='#' onClick='userNameClick(\"" + row.userId + "\",\"" + row.userType + "\")'>" + row.loginName + "</a>";
+                        return html;
+                    }
+                },
+                { name: 'userName', display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.username"/>' },
+                { 
+                    name: 'userType',
+                    display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.usertype"/>',
+                    render : function(item) {
+                        for (var i = 0; i < userTypeData.length; i++) {
+                            if (userTypeData[i]['value'] == item.userType)
+                                return userTypeData[i]['meaning']
+                        }
+                        return item.userType;
+                    }
+                },
+                { 
+                    name: 'status',
+                    display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.status"/>',
+                    render : function(item) {
+                        for (var i = 0; i < userStatusData.length; i++) {
+                            if (userStatusData[i]['value'] == item.status)
+                                return userStatusData[i]['meaning']
+                        }
+                        return item.status;
+                    }
+                },
+                { name: 'memberNumber', display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.memberid"/>' },
+                { name: 'email', display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.email"/>' },
+                { name: 'phoneNo', display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.phone"/>' },
+                { 
+                    name: 'userId', display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.allocationrole"/>', width: 120,
+                    render: function (item) {
+                        var html = "<a href='#' onClick='a_click("+ item.userId +")'><@spring.message 'type.com.lkkhpg.dsis.platform.dto.system.user.allocationrole'/></a>";
+                        return html;
+                    }
+                }
+            ], 
+            url:'${base.contextPath}/sys/um/query',
+            delayLoad : true,
+            toolbar: { 
+                items: [
+                    { 
+                        text: '<@spring.message "sys.hand.btn.new"/>', disable:false, icon: 'add',
+                        click: f_createUser
+                    },
+                    { line: true }
+                ]
+            },
+            rownumbers:true,
+            enabledEdit: true,
+            width: '99%', 
+            height: '98%', 
+            checkbox: false
+        });
+        
+        Hap.gridQuery({
+            form:d_um_007_form,
+            grid:d_um_007_grid
+        });
+    });
+    //新建用户
+    function f_createUser(){
+        window.top.f_removeTab("sys_user_create");
+        parent.f_addTab("sys_user_create","<@spring.message 'type.com.lkkhpg.dsis.common.user.userdetail'/>","${base.contextPath}/sys/um/sys_user_info.html?status=create");
+    }
+    //编辑用户详情资料
+    function userNameClick(userId, userType){
+        window.top.f_removeTab("sys_user_"+userId);
+        parent.f_addTab("sys_user_"+userId,"<@spring.message 'type.com.lkkhpg.dsis.common.user.userdetail'/>","${base.contextPath}/sys/um/sys_user_info.html?userId="+userId+"&userType="+userType);
+    }
+    //分配角色
+    function a_click(data) {
+        $.ligerDialog.open({
+            height: 600,
+            width: 850,
+            title: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.allocationrole"/>',
+            url: '${base.contextPath}/sys/sys_user_role.html?userId=' + data,
+            showMax: false,
+            showToggle: true,
+            showMin: false,
+            isResize: true,
+            slide: false,
+        });
+    }
+  </script>
+</body>
+</html> 

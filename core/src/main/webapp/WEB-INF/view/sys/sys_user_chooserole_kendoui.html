@@ -1,0 +1,262 @@
+<#-- 
+* description: user_choose弹出页面的kendoui实现
+* version: 1.0 
+* author:shuo.han@hand-china.com
+--> 
+<#include "../include/header.html">
+
+<style type="text/css">
+	
+	#btn-query{
+        border:1px solid #fff;
+        border-radius:3px;
+        outline:none;
+        color:black;
+        height:35px;
+        width:70px;
+        padding:3px 3px;
+        font-size:18px;
+        letter-spacing:1px;
+	}
+
+	.spring-message{
+		font-size: 17px;
+	}
+
+</style>
+
+<body>
+	<!-- 定义一个数据源，如果这边不添加这个script的话。下面初始化数据源的时候，会undefine -->
+	<script src="${base.contextPath}/common/code?resourceTypeData=SYS.RESOURCE_TYPE&codeYesNo=SYS.YES_NO" type="text/javascript"></script>
+	
+	<div id="page-content">
+		<!-- 定义一个form表单。提交的数据通过表单提交 -->
+		<form id="userchooserole_form">
+			<!-- 
+				角色代码
+				角色描述
+				角色名称
+			 -->
+			 <div class="panel">
+    			<div class="panel-body">
+    			 	<div class="row">
+    			 		<!-- 角色代码 -->
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">
+    								<span class="spring-message">
+    									<@spring.message "role.rolecode"/>
+    								</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input type="text" data-bind="value:model.roleCode" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 角色名称 -->
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">
+                                	<span class="spring-message">
+                                		<@spring.message "role.rolename"/>
+                                	</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input type="text" data-bind="value:model.rolename" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 角色描述 -->
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">
+                                	<span class="spring-message">
+                                		<@spring.message "role.roledescription"/>
+                                	</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input type="text" data-bind="value:model.roledescription" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    			</div>
+    			<!-- 查询按钮 -->
+    			<div class="panel-footer text-right">
+    				<!-- RoleController中query方法没有User这个属性，所以查询不了 -->
+                    <span id="btn-query" class="btn btn-success" data-bind="click:queryResource" type="submit">
+                    	<@spring.message "hap.query"/>
+                    </span>
+                </div>
+    		</div>
+		</form>
+		<!-- 查询部分结束 -->
+		<!-- 表单部分 -->
+		<div class="panel" id="userchooserole_grid" style="margin: 0; padding: 0"></div>
+
+	</div>
+
+<script type="text/javascript">
+	
+	$(document).ready(function () {
+
+		//创建一个viewModel模型
+		var viewModel = kendo.observable({
+            model:{},
+            resourceTypeData:resourceTypeData,
+            loginRequireData:codeYesNo,
+            queryResource: function(e) {
+            	//定义一个数据源名叫kendoGrid
+                $('#userchooserole_grid').data('kendoGrid').dataSource.read();
+            }
+        });
+		//我的理解是，这个viewModel的作用域
+        kendo.bind($('#page-content'),viewModel)
+        //创建一个远程数据源
+        var crudServiceBaseUrl = "${base.contextPath}/sys/role",
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read:  {
+                        url: crudServiceBaseUrl + "/queryRoleNotUserRole?userId=3",
+                        //type : "POST",
+                        dataType: "json"
+                    },
+                    create : { 
+                        url : crudServiceBaseUrl + "/submit",
+                        contentType: "application/json",
+                        type : "POST" 
+                    },
+                    update : { 
+                        url : crudServiceBaseUrl + "/submit",
+                        contentType: "application/json",
+                        type : "POST" 
+                    },
+                    destroy : { 
+                        url : crudServiceBaseUrl + "/delete",
+                        contentType: "application/json",
+                        type : "POST" 
+                    },
+                    parameterMap: function(options, type) {
+                        if (type !== "read" && options.models) {
+                            var datas = options.models
+                            if(type =='create' || type =='update'){
+                                datas = options.models.map(function(data){
+                                    data['_status'] = (type =='create' ? 'insert' : 'update');
+                                    return data;
+                                })
+                            }
+                            return kendo.stringify(datas);
+                        } else if (type === "read") {
+                            var model = viewModel.model;
+                            var map = {url: model.url,name: model.name}
+                            if(model.type){
+                                map.type = model.type.value
+                            }
+                            if(model.loginRequire){
+                                map.loginRequire = model.loginRequire.value
+                            }
+                            if (options.page) 
+                                map.page = options.page; 
+                            if (options.pageSize) 
+                                map.pagesize = options.pageSize;
+                              return map;
+                        }  
+                    }
+                },
+                batch: true,
+                serverPaging : true,
+                pageSize: 10,
+                schema: {
+                    data:'rows',
+                    total:'total',
+                    model: {
+                        id: "url",
+                        fields: {
+                            loginRequire: {defaultValue :'Y'},
+                            accessCheck: {defaultValue :'Y'},
+                            type: {defaultValue:'HTML'},
+                            url: { validation: { required: true } }
+                        }
+                    },
+                    errors: function(res){
+                        if(!res.success && res.message) {
+                            return res.message;
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e.errors)
+                }
+            });
+
+		//定义一个script，为页面添加kendoui按钮
+		$("#userchooserole_grid").kendoGrid({
+            dataSource: dataSource,
+            //width:500,
+            resizable: true,
+            scrollable: false,
+            pageable: {
+            	//可以选择一个页面多少条数据
+                pageSizes:[5, 10, 20, 50],
+                refresh:true,
+                buttonCount:5,
+                //可以选择的messages信息
+                messages: {
+                    noRecords: "未找到任何数据",
+                    display: "{0} - {1} 共 {2} 条数据",
+                    empty: "没有数据",
+                    page: "页",
+                    of: "/ {0}",
+                    itemsPerPage: "条每页",
+                    first: "第一页",
+                    previous: "前一页",
+                    next: "下一页",
+                    last: "最后一页",
+                    refresh: "刷新"
+                }
+            },
+            columns: [
+            	//表格的列
+                { 	
+                	field: "roleCode", 
+                	title: '<@spring.message "role.rolecode"/>',
+                	width: 420
+                },
+                { 
+                	field: "roleName", 
+                	title: '<@spring.message "role.rolename"/>', 
+                	width: 120,
+                },
+                { 
+                	field: "roleDescription", 
+                	title: '<@spring.message "role.roledescription"/>', 
+                	width: 120,
+                },
+                //删除的button按钮
+                {
+                	title: '操作',
+                	attributes: {style: "text-align:center"}, 
+                	command : [{
+                    	text : '<@spring.message "hap.save"/>',
+                        click: function(e){
+                            e.preventDefault();
+                            var source = $("#userchooserole_grid").data('kendoGrid').dataSource, data = this.dataItem($(e.target).closest("tr"));
+                            source.remove(data)
+                            source.sync()
+                            //location.href='http://'
+                        }
+                	}], 
+                	width : 70
+                } 
+            ],
+           editable: {
+                confirmation: function(e){
+                    return "确定要删除\""+e.url+"\"么?"
+                }
+            }
+        });
+    });
+
+</script>
+
+</body>

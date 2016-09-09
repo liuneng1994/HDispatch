@@ -1,0 +1,219 @@
+<#include "include/header.html">
+<body>
+    <link href="${base.contextPath}/lib/kendoui/styles/examples-offline.css" rel="stylesheet">
+    <div id="win"></div>
+    <div id="example">
+        <div class="demo-section k-content" style="max-width:500px;">
+            <h4>DatePicker:</h4>
+            <input id="datepicker" style="width: 100%" />
+
+            <h4 style="margin-top: 2em;">Combobox</h4>
+            <input id="fabric" style="width: 100%;" />
+            
+            <h4 style="margin-top: 2em;">Lov:</h4>
+            <input id="lov" style="width: 100%" />
+            
+            <span class="btn btn-default" data-bind="click:testWindow" style="margin-top:10px;">window</span>
+        </div>
+        
+        
+        <div class="demo-section k-content" style="margin-top:10px;max-width:500px;">
+            <form>
+                <!--  <input data-role="lov" data-text-field="ProductName" data-value-field="ProductID" data-bind="value: product"></input>-->
+                <h4 style="margin-top: 2em;">Name:<span data-bind="text:name"></span></h4>
+                
+                <input id="qty" data-role="numerictextbox"  data-bind="value:qty"  style="width: 100%;" />
+                <h4 style="margin-top: 2em;">Combobox:<span data-bind="text:product.text"></span></h4>
+                <input data-role="combobox" data-text-field="text" data-value-field="value" data-bind="source:dataSource,value:product"  style="width: 100%;"></input>
+                
+                <button type="reset" class="btn btn-default" style="margin-top:10px;">Reset</button>
+            </form>
+        </div>
+        
+        
+        <div class="demo-section k-content" style="margin-top:10px;max-width:800px">
+            <h4>Grid:</h4>
+           <div id="testGrid"></div>
+        </div>
+        <div class="panel" style="max-width:600px;margin:10px  4.5em">
+            <form class="form-horizontal">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">AAA</label>
+                                <div class="col-sm-9">
+                                    <input type="text" data-bind="value:model.url" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">BBB</label>
+                                <div class="col-sm-9">
+                                     <input data-role="combobox" data-text-field="text" data-value-field="value" data-bind="source:dataSource,value:product"  style="width: 100%;"></input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer text-right">
+                    <span class="btn btn-success" data-bind="click:queryResource" type="submit"> 查询数据 </span>
+                </div>
+            </form>
+        </div>
+   </div>
+            
+            <script>
+                $("#datepicker").kendoDatePicker({
+                    placeholder:'输入日期'
+                });
+                
+                
+                $("#fabric").kendoComboBox({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: [
+                        { text: "Cotton", value: "1" },
+                        { text: "Polyester", value: "2" },
+                        { text: "Cotton/Polyester", value: "3" },
+                        { text: "Rib Knit", value: "4" }
+                    ]
+                });
+                
+                var gridConfig = {
+                    dataSource: {
+                        data: [{
+                            ProductID : 11,
+                            ProductName : "Queso Cabrales",
+                            SupplierID : 5,
+                            CategoryID : 4,
+                            QuantityPerUnit : "1 kg pkg.",
+                            UnitPrice : 21.0000,
+                            UnitsInStock : 22,
+                            UnitsOnOrder : 30,
+                            ReorderLevel : 30,
+                            Discontinued : false,
+                            Category : {
+                                CategoryID : 4,
+                                CategoryName : "Dairy Products",
+                                Description : "Cheeses"
+                            }
+                        }, {
+                            ProductID : 12,
+                            ProductName : "Queso Manchego La Pastora",
+                            SupplierID : 5,
+                            CategoryID : 4,
+                            QuantityPerUnit : "10 - 500 g pkgs.",
+                            UnitPrice : 38.0000,
+                            UnitsInStock : 86,
+                            UnitsOnOrder : 0,
+                            ReorderLevel : 0,
+                            Discontinued : false,
+                            Category : {
+                                CategoryID : 4,
+                                CategoryName : "Dairy Products",
+                                Description : "Cheeses"
+                            }
+                        },{
+                            ProductID : 13,
+                            ProductName : "Queso Manchego La Pastora",
+                            SupplierID : 5,
+                            CategoryID : 4,
+                            QuantityPerUnit : "10 - 500 g pkgs.",
+                            UnitPrice : 38.0000,
+                            UnitsInStock : 86,
+                            UnitsOnOrder : 0,
+                            ReorderLevel : 0,
+                            Discontinued : false,
+                            Category : {
+                                CategoryID : 4,
+                                CategoryName : "Dairy Products",
+                                Description : "Cheeses"
+                            }
+                        },{
+                            ProductID : 14,
+                            ProductName : "Queso Manchego La Pastora",
+                            SupplierID : 5,
+                            CategoryID : 4,
+                            QuantityPerUnit : "10 - 500 g pkgs.",
+                            UnitPrice : 38.0000,
+                            UnitsInStock : 86,
+                            UnitsOnOrder : 0,
+                            ReorderLevel : 0,
+                            Discontinued : false,
+                            Category : {
+                                CategoryID : 4,
+                                CategoryName : "Dairy Products",
+                                Description : "Cheeses"
+                            }
+                        }],
+                        pageSize: 5
+                    },
+                    height: 350,
+                    scrollable: true,
+                    pageable:true,
+                    selectable:'row',
+                    navigatable:true,
+                    change: function(e) {
+                        var selectedRows = this.select();
+                        var selectedDataItems = [];
+                        for (var i = 0; i < selectedRows.length; i++) {
+                          var dataItem = this.dataItem(selectedRows[i]);
+                          selectedDataItems.push(dataItem);
+                        }
+                    },
+                    columns: [
+                        "ProductName",
+                        { field: "UnitPrice", title: "Unit Price", format: "{0:c}", width: "100px" },
+                        { field: "UnitsInStock", title: "Units In Stock", width: "120px" },
+                        { field: "Discontinued", width: "120px" }
+                    ]
+                }
+                
+                $("#lov").kendoLov({
+                    height:500,
+                    dataTextField: "ProductName",
+                    dataValueField: "ProductID",
+                    form:'<div class="row"><div class="col-sm-6"><div class="form-group"><label class="col-sm-3 control-label">AAA</label><div class="col-sm-9"><input type="text" data-bind="value:data.url" class="k-textbox"></div></div></div><div class="col-sm-6"><div class="form-group"><label class="col-sm-3 control-label">BBB</label><div class="col-sm-9"><input type="text" data-role="numerictextbox" data-bind="value:data.qty"></div></div></div></div>',
+                    title:'选择员工',
+                    data:{},
+                    grid:gridConfig
+                });
+                
+                
+                
+                $('#testGrid').kendoGrid(gridConfig)
+                    
+                    window.viewModel = kendo.observable({
+                        gridConfig:gridConfig,
+                        dataSource: [
+                             { text: "Cotton", value: "1" },
+                             { text: "Polyester", value: "2" },
+                             { text: "Cotton/Polyester", value: "3" },
+                             { text: "Rib Knit", value: "4" }
+                         ],
+                         testWindow:function(){
+                             if($('#win').data('kendoWindow')){
+                                 $('#win').data('kendoWindow').open()
+                             }else{
+                                 $('#win').kendoWindow({
+                                     width: 600,
+                                     height:500,
+                                     modal:true,
+                                     title: "Rams's Ten Principles of Good Design",
+                                     content: "combobox.html"
+                                 }).data('kendoWindow').center();
+                             }
+                             
+                         }
+                    });
+
+                    kendo.bind($("#example"), window.viewModel);
+                
+            </script>
+        
+
+    
+</body>
+</html>

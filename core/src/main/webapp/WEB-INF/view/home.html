@@ -1,0 +1,94 @@
+<#include "./include/head.html">
+<body>
+<link href="${base.contextPath}/resources/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<style>
+    html,body{
+        height:100%;
+    }
+    .l-topmenu {
+        margin: 0;
+        padding: 0;
+        background-color: #1063aa;
+        position: relative;
+        color: #ffffff;
+    }
+    
+    .l-topmenu-logo {
+        font-size: 18px;
+        line-height: 60px;
+        height: 60px;
+    }
+    
+    .l-topmenu-logo img, .l-topmenu-logo div {
+        float: left
+    }
+    
+    .l-topmenu-welcome {
+        position: absolute;
+        height: 24px;
+        line-height: 24px;
+        right: 30px;
+        top: 20px;
+    }
+    
+    .maindiv {
+        width: 22%;
+        height: 45%;   
+        border:1px dashed #ccc;
+        background: #FFFFFF;
+        float: left;
+        color:#999;
+        margin-left: 10px;
+        margin-top: 20px;
+        text-align: center;
+    }
+    
+    .maindiv:hover {
+        cursor: pointer;
+        color:#333;
+        border:1px solid #ccc;
+        -webkit-box-shadow:1px 1px 7px 1px rgba(128,128,128,0.3);
+        box-shadow:1px 1px 7px 1px rgba(128,128,128,0.3);
+    }
+    .card-icon {
+        font-size: 40px;
+    }
+    .divcontent {
+        font-size: 20px;
+        position: relative;
+        top: 40%;
+        text-align:center;
+    }
+    
+    .l-topmenu-btn {
+        position: absolute;
+        height: 36px;
+        right: 170px;
+        top: 21px;
+    }
+    
+    .l-topmenu-logout {
+        padding: 6px;
+        font-size: 12px;
+    }
+    </style>
+    <script>
+  //main index
+    <#--$.ajax({-->
+        <#--type: 'GET',-->
+        <#--url:_basePath+"/sys/dashboard/functionshortcut/query", -->
+        <#--success: function (data) {-->
+            <#--var divStr=""; -->
+            <#--for(var i=0;i<data.length;i++){-->
+                <#--if(data[i].functionCode == 'SYSTEM_FUNCTION_SHORTCUT'){-->
+                    <#--divStr=divStr+'<div class="maindiv" onclick="parent.f_addTab(\''+data[i].functionCode+'\',\''+data[i].text+'\', \''+data[i].url+'\')"><div class="divcontent"><div class="card-icon '+data[i].icon+'"></div><div style="text-align:center">'+"<@spring.message 'type.com.lkkhpg.dsis.common.functionshortcut.add'/> "+data[i].text+'</div></div></div>';-->
+                    <#--continue;-->
+                <#--}-->
+                <#--divStr=divStr+'<div class="maindiv" onclick="parent.f_addTab(\''+data[i].functionCode+'\',\''+data[i].text+'\', \''+data[i].url+'\')"><div class="divcontent"><div class="card-icon '+data[i].icon+'"></div><div style="text-align:center">'+data[i].text+'</div></div></div>';-->
+            <#--}-->
+           <#--$("body").append(divStr);-->
+        <#--},-->
+        <#--contentType: "application/json; charset=utf-8"-->
+    <#--});-->
+</script>
+</body>

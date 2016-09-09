@@ -1,0 +1,490 @@
+<#-- 
+ * description: lov界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#
+-->
+<#include "../include/head.html">
+<body style="padding: 5px">
+<script src="${base.contextPath}/common/code?yesno=SYS.YES_NO&lovTypes=SYS.LOV_EDITOR_TYPE&alignType=SYS.ALIGN_TYPE"
+        type="text/javascript"></script>
+<form id="mainform" method="post" enctype="application/json;charset=UTF-8">
+    <input type="hidden" name="lovItems" id="lovItems" value=""/>
+</form>
+<form id="queryEditor" style="display:none"></form>
+<div id="lovItemGrid" style="margin-left: 2px; margin-top: 2px;"></div>
+<script type="text/javascript">
+
+    //将value转换成小写
+    if (lovTypes) {
+        $.each(lovTypes, function (i, n) {
+            n.value = n.value.toLowerCase();
+        })
+    }
+
+    //保存lov配置信息.
+    function saveLov() {
+        Hap.submitForm({
+            form    : form,
+            grid    : lovItemGrid,
+            gridName: 'lovItems',
+            url     : '${base.contextPath}/sys/lov/submit',
+            success : function (json, opt) {
+                $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function () {
+                    parent.lovGrid.reload();
+                    closeLovDialog();
+                });
+
+            }
+        });
+    }
+
+    //关闭lov配置窗口
+    function closeLovDialog() {
+        var dialog = frameElement.dialog;
+        dialog.close();
+
+
+    }
+	<#assign isedit = (RequestParameters.isedit!'0')/>
+    //表单底部按钮
+    Hap.setFormDefaultBtn(closeLovDialog, saveLov);
+
+    var mainform = $("#mainform");
+    var form = mainform.ligerForm({
+        inputWidth: 250,
+        fields    : [{
+            name: 'lovId',
+            type: 'hidden'
+        }, {
+            display : '<@spring.message "lov.code"/>',
+            name    : "code",
+            type    : "text",
+            newline : true,
+            validate: {
+                required: true
+            }
+        }, {
+            display: '<@spring.message "lov.description"/>',
+            name   : "description",
+            type   : "text",
+            newline: false
+        }, {
+            display : '<@spring.message "lov.sqlid"/>',
+            name    : "sqlId",
+            type    : "text",
+            newline : false,
+            width   : 635,
+            validate: {
+                required: true
+            }
+        }, {
+            display : '<@spring.message "lov.valuefield"/>',
+            name    : "valueField",
+            type    : "text",
+            validate: {
+                required: true
+            }
+        }, {
+            display : '<@spring.message "lov.textfield"/>',
+            name    : "textField",
+            type    : "text",
+            newline : false,
+            validate: {
+                required: true
+            }
+        }, {
+            display: '<@spring.message "lov.title"/>',
+            newline: true,
+            name   : "title",
+            type   : "text"
+        }, {
+            display: '<@spring.message "lov.width"/>',
+            name   : "width",
+            width  : 90,
+            space  : 0,
+            newline: false,
+            type   : "int"
+        }, {
+            display   : '<@spring.message "lov.height"/>',
+            name      : "height",
+            width     : 90,
+            labelWidth: 65,
+            space     : 0,
+            newline   : false,
+            type      : "int"
+        }, {
+            display: '<@spring.message "lov.placeholder"/>',
+            name   : 'placeholder',
+            align  : 'left',
+            editor : {
+                type: 'text'
+            },
+            newline: true
+        }, {
+            display: '<@spring.message "lov.delayload"/>',
+            type   : 'checkbox',
+            name   : 'delayLoad',
+            space  : 0,
+            width  : 40,
+            options: {
+                checkValue  : 'Y',
+                uncheckValue: 'N'
+            },
+            newline: false
+        }, {
+            display: '<@spring.message "lov.needqueryparam"/>',
+            type   : 'checkbox',
+            name   : 'needQueryParam',
+            space  : 0,
+            width  : 40,
+            options: {
+                checkValue  : 'Y',
+                uncheckValue: 'N'
+            },
+            newline: false
+        }, {
+            display: '<@spring.message "lov.canpopup"/>',
+            type   : 'checkbox',
+            name   : 'canPopup',
+            space  : 0,
+            width  : 40,
+            options: {
+                checkValue  : 'Y',
+                uncheckValue: 'N'
+            },
+            newline: false
+        }, {
+            display: '<@spring.message "lov.editable"/>',
+            type   : 'checkbox',
+            name   : 'editable',
+            space  : 0,
+            width  : 40,
+            options: {
+                checkValue  : 'Y',
+                uncheckValue: 'N'
+            },
+            newline: false
+        }]
+    });
+
+    mainform.attr("action", "${base.contextPath}/sys/code/submit");
+    lovItemGrid = $("#lovItemGrid").ligerGrid({
+        columns    : [{
+            display: '<@spring.message "lovitem.display"/>',
+            name   : 'display',
+            width  : 240,
+            align  : 'left',
+            editor : {
+                type: 'text'
+            }
+        }, {
+            display: '<@spring.message "lovitem.name"/>',
+            name   : 'gridFieldName',
+            width  : 100,
+            align  : 'left',
+            editor : {
+                type: 'text'
+            }
+        }, {
+            display: '<@spring.message "lovitem.gridfieldwidth"/>',
+            name   : 'gridFieldWidth',
+            width  : 70,
+            editor : {
+                type: 'int'
+            }
+        }, {
+            display  : '<@spring.message "lovitem.gridcolumn"/>',
+            name     : 'gridField',
+            width    : 60,
+            textField: 'gridColumnText',
+            render : Hap.createGridCheckBoxRender()
+        }, {
+            display: '<@spring.message "lovitem.gridcolumnalign"/>',
+            name   : 'gridFieldAlign',
+            width  : 80,
+            editor : {
+                type      : 'select',
+                valueField: 'value',
+                textField : 'meaning',
+                data      : alignType
+            },
+            render : Hap.gridCodeRenderer
+        }, {
+            display: '<@spring.message "lovitem.conditionfield"/>',
+            name   : 'conditionField',
+            width  : 60,
+            render : Hap.createGridCheckBoxRender()
+        }, {
+            display: '<@spring.message "lovitem.gridfieldsequence"/>',
+            name   : 'gridFieldSequence',
+            width  : 60,
+            editor : {
+                type: 'int',
+                sign: false
+            }
+        }, {
+            display: '<@spring.message "lovitem.type"/>',
+            name   : 'type',
+            width  : 80,
+            render : function (rowdata, index, value) {
+                if (rowdata.conditionField == 'Y') {
+                    return '<a href="javascript:openEditor(' + index + ')"><@spring.message "lovitem.type"/></a>';
+                } else {
+                    return '';
+                }
+            }
+        }, {
+            display: '<@spring.message "lov.dropdown"/>',
+            name   : "isAutoComplete",
+            width  : 80,
+            render : Hap.createGridCheckBoxRender()
+        }, {
+            display: '<@spring.message "lov.autocompletefield"/>',
+            name   : "autocompleteField",
+            width  : 100,
+            render : Hap.createGridCheckBoxRender()
+        }],
+        width      : '99%',
+        height     : 290,
+        usePager   : false,
+        enabledEdit: true,
+        checkbox   : true,
+	<#if isedit == '1'>
+        url        : '${base.contextPath}/sys/lovitem/query?lovId=${RequestParameters.lovId!}',
+	</#if>
+        toolbar    : {
+            items: [{
+                text   : '<@spring.message "hap.new"/>',
+                disable: false,
+                click  : function () {
+                    lovItemGrid.addRow({})
+                },
+                icon   : 'add'
+            }, {
+                line: true
+            }, {
+                text : '<@spring.message "hap.delete"/>',
+                click: function () {
+                    Hap.gridDelete({
+                        grid: lovItemGrid,
+                        url : '${base.contextPath}/sys/lovitem/remove'
+                    })
+
+                },
+                icon : 'delete'
+            }]
+        }
+    });
+	<#if isedit == '1'>
+    Hap.loadForm({form: form, url: '${base.contextPath}/sys/lov/load', para: {lovId:${RequestParameters.lovId}}})
+	</#if>
+
+    //清除lov编辑器配置数据
+    function clearForm() {
+        $.each([].concat(comboList).concat(lovList), function (i, v) {
+            $.ligerui.get(v).setValue('');
+        })
+    }
+
+    //加载lov编辑器配置数据
+    function initForm() {
+        var data = lovItemGrid.rows[currentIndex], ct = $.ligerui.get('comboboxType');
+        ;
+        $.each(allList, function (i, t) {
+            if ($.ligerui.get('conditionFieldType').getValue() == 'select' && !ct.getValue()) {
+                if (t == 'conditionFieldSelectCode' && data[t]) {
+                    if (data[t]) {
+                        ct.setValue('code')
+                    }
+                } else if (t == 'conditionFieldSelectUrl' && data[t]) {
+                    if (data[t]) {
+                        ct.setValue('url')
+                    }
+                }
+            }
+            initField(t, data);
+        })
+    }
+
+    function initField(name, data) {
+        $.ligerui.get(name).setValue(data[name] || '');
+    }
+
+    //会写grid中数据
+    function initData(name, data) {
+        data[name] = $.ligerui.get(name).getValue();
+        data.__status = 'update';
+    }
+
+    //提交表单数据
+    function submitForm() {
+        var data = lovItemGrid.rows[currentIndex];
+        $.each(allList, function (i, t) {
+            initData(t, data);
+        })
+    }
+
+
+    var currentIndex, lovEditorWin, editorForm,
+            comboURLList = ['conditionFieldSelectUrl', 'conditionFieldSelectTf', 'conditionFieldSelectVf'],
+            comboCodeList = ['conditionFieldSelectCode'],
+            comboTypeList = ['comboboxType'],
+            comboList = [].concat(comboTypeList).concat(comboURLList).concat(comboCodeList),
+            lovList = ['conditionFieldTextfield', 'conditionFieldLovCode'],
+            allList = ['conditionFieldType', 'conditionFieldWidth', 'conditionFieldSequence', 'conditionFieldNewline', 'conditionFieldName'].concat(comboList).concat(lovList);
+    function openEditor(index) {
+        if (!lovEditorWin) {
+            editorForm = $("#queryEditor").ligerForm({
+                fields: [{
+                    display  : '<@spring.message "lovitem.field_type"/>',
+                    name     : "conditionFieldType",
+                    newline  : true,
+                    type     : 'select',
+                    textField: 'conditionFieldType',
+                    options  : {
+                        valueField: 'value',
+                        textField : 'meaning',
+                        cancelable: false,
+                        data      : lovTypes,
+                        onSelected: function (v, t) {
+                            clearForm();
+                            editorForm.setVisible([].concat(comboList).concat(lovList), false);
+                            switch (v) {
+                                case 'select':
+                                    editorForm.setVisible(comboTypeList, true);
+                                    break;
+                                case 'popup':
+                                    editorForm.setVisible(lovList, true);
+                                    break;
+                            }
+
+                        }
+                    }
+                }, {
+                    display: '<@spring.message "lovitem.newline"/>',
+                    type   : 'checkbox',
+                    name   : 'conditionFieldNewline',
+                    options: {
+                        checkValue  : 'Y',
+                        uncheckValue: 'N'
+                    },
+                    newline: false
+                }, {
+                    display: '<@spring.message "lovitem.conditionfieldwidth"/>',
+                    name   : "conditionFieldWidth",
+                    newline: true,
+                    type   : 'int',
+                    options: {
+                        sign: false
+                    }
+                }, {
+                    display: '<@spring.message "lovitem.conditionfieldsequence"/>',
+                    name   : "conditionFieldSequence",
+                    newline: true,
+                    type   : 'int',
+                    options: {
+                        sign: false
+                    }
+                }, {
+                    display: '<@spring.message "lovitem.conditionfieldname"/>',
+                    name   : "conditionFieldName",
+                    newline: true,
+                    type   : 'text'
+                }, {
+                    display: '<@spring.message "lovitem.ds_type"/>',
+                    name   : "comboboxType",
+                    style  : 'display:none',
+                    newline: true,
+                    type   : 'select',
+                    options: {
+                        valueField: 'value',
+                        textField : 'text',
+                        cancelable: false,
+                        data      : [{value: 'url', text: '<@spring.message "lovitem.ds_type.url"/>'},
+                            {value: 'code', text: '<@spring.message "lovitem.ds_type.code"/>'}],
+                        onSelected: function (v, t) {
+                            var l = [].concat(comboURLList).concat(comboCodeList)
+                            $.each(l, function (i, v) {
+                                $.ligerui.get(v).setValue('');
+                            })
+                            editorForm.setVisible(l, false);
+                            switch (v) {
+                                case 'url':
+                                    editorForm.setVisible(comboURLList, true);
+                                    break;
+                                case 'code':
+                                    editorForm.setVisible(comboCodeList, true);
+                                    break;
+                            }
+                        }
+                    }
+                }, {
+                    display: '<@spring.message "Url"/>',
+                    name   : "conditionFieldSelectUrl",
+                    style  : 'display:none',
+                    newline: true,
+                    type   : 'text'
+                }, {
+                    display: '<@spring.message "valueField"/>',
+                    name   : "conditionFieldSelectVf",
+                    style  : 'display:none',
+                    newline: true,
+                    type   : 'text'
+                }, {
+                    display: '<@spring.message "textField"/>',
+                    name   : "conditionFieldSelectTf",
+                    style  : 'display:none',
+                    newline: true,
+                    type   : 'text'
+                }, {
+                    display: '<@spring.message "lovitem.conditionfieldselectcode"/>',
+                    name   : "conditionFieldSelectCode",
+                    style  : 'display:none',
+                    newline: true,
+                    type   : 'text'
+                }, {
+                    display: '<@spring.message "textField"/>',
+                    name   : "conditionFieldTextfield",
+                    style  : 'display:none',
+                    newline: true,
+                    type   : 'text'
+                }, {
+                    display: '<@spring.message "lovitem.conditionfieldlovcode"/>',
+                    name   : "conditionFieldLovCode",
+                    style  : 'display:none',
+                    newline: true,
+                    type   : 'text'
+                }]
+            });
+            lovEditorWin = $.ligerDialog.open({
+                height    : 400,
+                allowClose: false,
+                width     : 400,
+                isHidden  : false,
+                buttons   : [{
+                    text   : '<@spring.message "hap.ok"/>',
+                    onclick: function (item, dialog) {
+                        submitForm();
+                        dialog.hide();
+                    }
+                },
+                    {
+                        text   : '<@spring.message "hap.cancel"/>',
+                        onclick: function (item, dialog) {
+                            dialog.hide();
+                        }
+                    }],
+                title     : 'sys_lov',
+                target    : $("#queryEditor")
+            });
+        }
+        currentIndex = index;
+        initForm()
+        lovEditorWin.show();
+    }
+
+
+</script>
+</body>
+</html>

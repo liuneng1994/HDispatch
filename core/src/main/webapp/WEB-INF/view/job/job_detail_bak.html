@@ -1,0 +1,255 @@
+<#include "../include/head.html">
+<body style="padding: 3px; overflow: hidden;">
+<form id="task_form"></form>
+<div id="task_grid" style="margin: 0; padding: 0"></div>
+<script type="text/javascript">
+    //任务详情
+    function openJobDetailPage(jobName, triggerType, jobGroup) {
+        //alert(jobName);
+        window.popWin = $.ligerDialog.open({
+            title : jobName + ' Detail',
+            width : 760,
+            height: 550,
+            url   : 'job_infodetail.html?jobName=' + jobName + '&triggerType=' + triggerType + '&jobGroup=' + jobGroup
+        });
+    }
+
+    $(function () {
+
+        window.stateColor = {
+            "PAUSED"  : "color:#FFCC00;",
+            "NORMAL"  : "color:#00CC00;",
+            "COMPLETE": "color:grey;",
+            "ERROR"   : "color:#FF3333;",
+            "BLOCKED" : "color:black;",
+            "NONE"    : "color:black;"
+        };
+
+        window.newCronJob = function () {
+            window.popWin = $.ligerDialog.open({
+                title : '<@spring.message "job.schedulenewjob"/>',
+                width : 720,
+                height: 550,
+                url   : 'job_cron_add.html'
+            });
+        };
+        window.newSimpleJob = function () {
+            window.popWin = $.ligerDialog.open({
+                title : '<@spring.message "job.schedulenewjob"/>',
+                width : 720,
+                height: 550,
+                url   : 'job_simple_add.html'
+            });
+        };
+
+        window.editCronJob = function () {
+            var arr = task_grid.getSelectedRows();
+            if (arr && arr.length) {
+
+            }
+        };
+
+        window.pauseChecked = function () {
+            var arr = task_grid.getSelectedRows();
+            if (arr && arr.length) {
+                joboperation_ajax(arr, '${base.contextPath}/job/pausejob', function () {
+                    $.each(arr, function (i, v) {
+                        task_grid.getRow(v.__id).runningState = "PAUSED";
+                    });
+                    task_grid.reRender();
+                });
+            }
+        };
+        window.resumeChecked = function () {
+            var arr = task_grid.getSelectedRows();
+            if (arr && arr.length) {
+                joboperation_ajax(arr, '${base.contextPath}/job/resumejob', function () {
+                    $.each(arr, function (i, v) {
+                        task_grid.getRow(v.__id).runningState = "NORMAL";
+                    });
+                    task_grid.reRender();
+                });
+            }
+        };
+        window.deleteChecked = function () {
+            var arr = task_grid.getSelectedRows();
+            if (arr && arr.length) {
+                $.ligerDialog.confirm('</@spring.message "hap.tip.delete_confirm">', function (yes) {
+                    if (yes) {
+                        joboperation_ajax(arr, '${base.contextPath}/job/deletejob', function () {
+                            for (var i in arr) {
+                                task_grid.remove(arr[i]);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+
+        function joboperation_ajax(obj, url, succesCallback) {
+            $.ajax({
+                url        : url,
+                type       : "POST",
+                dataType   : "json",
+                contentType: "application/json",
+                data       : JSON2.stringify(obj),
+                success    : function (json) {
+                    if (succesCallback) {
+                        succesCallback();
+                    }
+                    Hap.defaultSuccessHandler({json: json});
+                },
+                error      : function () {
+                    $.ligerDialog.closeWaitting();
+                }
+            });
+        }
+
+        window['task_form'] = $("#task_form").ligerForm({
+            fields    : [
+                /* {
+                    type : 'text',
+                    label: '<@spring.message "jobdetaildto.schedname"/>',
+                    name : 'schedName'
+                }, */
+                {
+                    type : 'text',
+                    label: '<@spring.message "jobdetaildto.jobname"/>',
+                    name : 'jobName'
+                },
+                {
+                    type   : 'text',
+                    label  : '<@spring.message "jobdetaildto.jobgroup"/>',
+                    name   : 'jobGroup',
+                    newline: false
+                }
+
+            ], buttons: [
+                {
+                    text: '<@spring.message "hap.query"/>', disabled: false, width: 60, click: function () {
+                    Hap.gridQuery({
+                        form: task_form,
+                        grid: task_grid
+                    })
+                }
+                }
+            ]
+        });
+
+        window['task_grid'] = $("#task_grid").ligerGrid({
+            unSetValidateAttr: false,
+            columns          : [
+                {
+                    display: '<@spring.message "jobdetaildto.jobname"/>',
+                    name   : 'jobName',
+                    align  : 'left',
+                    width  : 140,
+                    render : function (item) {
+                        var jobName = item.jobName;
+                        var triggerType = item.triggerType;
+                        var jobGroup = item.jobGroup;
+                        var html = "<a href='javascript:void(0)' " +
+                                "style='text-decoration: none;" + (stateColor[item.runningState]) + "' " +
+                                "onclick='openJobDetailPage(\"" + jobName + "\",\"" + triggerType + "\",\""
+                                + jobGroup + "\")'>" + jobName + "</a>";
+                        return html;
+                    }
+                },
+                {
+                    display: '<@spring.message "jobdetaildto.jobgroup"/>',
+                    name   : 'jobGroup',
+                    align  : 'center',
+                    width  : 80
+                },
+                {
+                    display: '<@spring.message "jobdetaildto.jobclassname"/>',
+                    name   : 'jobClassName',
+                    align  : 'left',
+                    width  : 200
+                },
+                {
+                    display: '<@spring.message "jobdetaildto.description"/>',
+                    name   : 'description',
+                    align  : 'left',
+                    width  : 200
+                },
+                /* {
+                    display: '<@spring.message "jobdetaildto.isdurable"/>',
+                    name   : 'isDurable',
+                    width  : 60
+                },
+                {
+                    display: '<@spring.message "jobdetaildto.isnonconcurrent"/>',
+                    name   : 'isNonconcurrent',
+                    width  : 100
+                }, */
+                {
+                    display: '<@spring.message "jobrunninginfodto.previousfiretime"/>',
+                    name   : 'previousFireTime',
+                    align  : 'center',
+                    width  : 140
+
+                },
+                {
+                    display: '<@spring.message "jobrunninginfodto.scheduledfiretime"/>',
+                    name   : 'scheduledFireTime',
+                    align  : 'center',
+                    width  : 140
+                },
+                {
+                    display: '<@spring.message "jobrunninginfodto.nextfiretime"/>',
+                    name   : 'nextFireTime',
+                    align  : 'center',
+                    width  : 140
+                },
+                {
+                    display: '<@spring.message "jobrunninginfodto.firetime"/>',
+                    name   : 'fireTime',
+                    align  : 'center',
+                    width  : 140
+                }
+            ],
+            url              : '${base.contextPath}/job/query',
+            toolbar          : {
+                items: [
+                    {
+                        text   : '<@spring.message "job.newcronjob"/>',
+                        disable: false,
+                        click  : newCronJob,
+                        icon   : 'add2'
+                    },
+                    {
+                        text   : '<@spring.message "job.newsimplejob"/>',
+                        disable: false,
+                        click  : newSimpleJob,
+                        icon   : 'add2'
+                    },
+                    {line: true},
+                    {
+                        text : '<@spring.message "hap.delete"/>',
+                        click: deleteChecked,
+                        icon : 'remove2'
+                    },
+                    {line: true},
+                    {
+                        text : '<@spring.message "hap.pause"/>',
+                        click: pauseChecked,
+                        icon : 'pause'
+                    }
+                    ,
+                    {line: true},
+                    {
+                        text : '<@spring.message "hap.resume"/>',
+                        click: resumeChecked,
+                        icon : 'resume'
+                    }
+                ]
+            },
+            width            : '100%',
+            height           : '99%',
+            checkbox         : true
+        });
+    });
+</script>
+</body>
+</html> 

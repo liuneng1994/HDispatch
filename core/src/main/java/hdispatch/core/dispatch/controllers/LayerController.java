@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.controllers;
 
+import com.hand.hap.system.controllers.BaseController;
 import hdispatch.core.dispatch.azkaban.entity.flow.DBFlow;
 import hdispatch.core.dispatch.azkaban.service.FlowService;
 import hdispatch.core.dispatch.azkaban.service.impl.FlowServiceImpl;
@@ -21,7 +22,7 @@ import java.util.List;
  * yazheng.yang@hand-china.com
  */
 @Controller
-public class LayerController {
+public class LayerController extends BaseController {
     private Logger logger = Logger.getLogger(LayerController.class);
     // TODO 暂时注释掉没有注入的功能
 //    @Autowired
@@ -31,44 +32,45 @@ public class LayerController {
 
     @RequestMapping("/dispatcher/layer/submit")
     public void addLayer(HttpServletRequest request, HttpServletResponse response){
-        try {
-            long layerId = 0L;
-            String name = request.getParameter("layerName");
-            String flowId = name;
-            String description = request.getParameter("layerDescription");
-            String themeIdStr = request.getParameter("themeId");
-            long themeId = Long.parseLong(themeIdStr);
-            String seqStr = request.getParameter("seq");
-            int seq = Integer.parseInt(seqStr);
-            String successEmail = request.getParameter("successEmail");
-            String failureEmail = request.getParameter("failureEmail");
-            int version = 1;
-            String type = "flow";
 
-            DBFlow dbFlow = new DBFlow();
-            dbFlow.setFlowId(flowId);
-            List<String> successEmails = new ArrayList<String>();
-            successEmails.add(successEmail);
-            dbFlow.setSuccessEmail(successEmails);
-            List<String> failureEmails = new ArrayList<String>();
-            failureEmails.add(failureEmail);
-            dbFlow.setFailureEmail(failureEmails);
-            dbFlow.setType(type);
-            dbFlow.setVersion(version);
-
-            Layer layer = new Layer();
-            layer.setName(name);
-            layer.setDescription(description);
-            layer.setFlowId(flowId);
-            layer.setSeq(seq);
-            layer.setThemeId(themeId);
-            layer.setLayerId(layerId);
-
-//            flowService.createFlow(dbFlow);
-//            layerService.create(layer);
-
-        }catch (Exception e){
-            logger.error("创建层失败",e);
-        }
+//        try {
+//            long layerId = 0L;
+//            String name = request.getParameter("layerName");
+//            String flowId = name;
+//            String description = request.getParameter("layerDescription");
+//            String themeIdStr = request.getParameter("themeId");
+//            long themeId = Long.parseLong(themeIdStr);
+//            String seqStr = request.getParameter("seq");
+//            int seq = Integer.parseInt(seqStr);
+//            String successEmail = request.getParameter("successEmail");
+//            String failureEmail = request.getParameter("failureEmail");
+//            int version = 1;
+//            String type = "flow";
+//
+//            DBFlow dbFlow = new DBFlow();
+//            dbFlow.setFlowId(flowId);
+//            List<String> successEmails = new ArrayList<String>();
+//            successEmails.add(successEmail);
+//            dbFlow.setSuccessEmail(successEmails);
+//            List<String> failureEmails = new ArrayList<String>();
+//            failureEmails.add(failureEmail);
+//            dbFlow.setFailureEmail(failureEmails);
+//            dbFlow.setType(type);
+//            dbFlow.setVersion(version);
+//
+//            Layer layer = new Layer();
+//            layer.setName(name);
+//            layer.setDescription(description);
+//            layer.setFlowId(flowId);
+//            layer.setSeq(seq);
+//            layer.setThemeId(themeId);
+//            layer.setLayerId(layerId);
+//
+////            flowService.createFlow(dbFlow);
+////            layerService.create(layer);
+//
+//        }catch (Exception e){
+//            logger.error("创建层失败",e);
+//        }
     }
 }

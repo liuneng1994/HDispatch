@@ -1,0 +1,842 @@
+<#include "./include/head.html">
+<body style="padding:0px;background:#EAEEF5; overflow: hidden;">
+<link href="${base.contextPath}/resources/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+<link href="${base.contextPath}/resources/css/font-awesome.css" rel="stylesheet" type="text/css"/>
+<style>
+    .l-topmenu {
+        margin: 0;
+        padding: 0;
+        background-color: #298fcc;
+        position: relative;
+        color: #ffffff;
+    }
+
+    .l-topmenu-logo {
+        font-size: 20px;
+        line-height: 50px;
+        height: 50px;
+        padding: 3px 3px 0 3px;
+    }
+
+    .l-topmenu-logo img, .l-topmenu-logo div {
+        float: left
+    }
+
+    .l-topmenu-welcome {
+        position: absolute;
+        height: 24px;
+        line-height: 24px;
+        right: 30px;
+        top: 20px;
+    }
+
+    .l-topmenu-btn {
+        position: absolute;
+        height: 50px;
+        right: 20px;
+        top: 0px;
+    }
+
+    .l-topmenu-logout {
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    .l-topmenu-item {
+        width: 50px;
+        line-height: 50px;
+        height: 100%;
+        display: inline;
+        float: left;
+        text-align: center;
+    }
+
+    .l-topmenu-profile {
+        width: 80px;
+        line-height: 50px;
+        height: 100%;
+        display: inline;
+        float: left;
+        text-align: left;
+        padding-left: 15px;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        -khtml-user-select: none;
+        user-select: none;
+
+    }
+
+    #nav li a {
+        color: #FFFFFF;
+        text-decoration: none;
+    }
+
+    #nav li:hover {
+        background-color: #0078d7;
+    }
+
+    #nav li i {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .badge {
+        display: -moz-inline-box;
+        display: inline-block;
+        line-height: 20px;
+        text-align: center;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        position: relative;
+        top: -10px;
+        -moz-border-radius: 15px;
+        -webkit-border-radius: 15px;
+        border-radius: 15px;
+        background-color: #CC7D02;
+    }
+
+    .profile_drawdown {
+        display: block;
+        width: 120px;
+        background-color: #298fcc;
+        border: 1px solid #000000;
+        z-index: 999999;
+        position: absolute;
+        top: 50px;
+        left: 100px;
+    }
+
+    .profile_drawdown li {
+        height: 30px;
+        line-height: 20px;
+        padding-left: 5px;
+        text-align: left;
+    }
+
+    .profile_drawdown li i {
+        font-size: 16px;
+    }
+
+    .hide {
+    }
+
+    #drawdownNav li i {
+        font-size: 14px;
+        margin-right: 5px;
+        padding: 2px;
+    }
+
+    #drawdownNav a {
+        line-height : 30px;
+	    display: block;
+    }
+
+    .lang_chooser {
+        height: 32px;
+        display: block;
+        float: right;
+        margin-right: 20px;
+    }
+
+    #loginForm input, #loginForm .l-text, #loginForm .l-label {
+        height: 32px;
+        line-height: 32px;
+    }
+
+    #loginForm li {
+        margin-bottom: 5px;
+    }
+</style>
+<script type="text/javascript">
+    // r_label();
+    // setInterval("r_label()", 5000*30);
+    function r_label() {
+        Hap.ajax({
+            url    : '${base.contextPath}/sys/mymessage/query?status=' + 'N',
+            data   : {
+                'status': 'N'
+            },
+            success: function (data) {
+                if (data && data.success) {
+                    var count = data.total;
+                    if (count > 0) {
+                        $("#messages").find(".badge").show();
+                    } else {
+                        $("#messages").find(".badge").hide();
+                    }
+                }
+            }
+        });
+
+
+    }
+</script>
+<script type="text/javascript">var _basePath = "${base.contextPath}";</script>
+<script src="${base.contextPath}/resources/js/app/main.js" type="text/javascript"></script>
+<script type="text/javascript">
+    function messageEdit() {
+        $("#messages").find(".badge").hide();
+        window.top.f_removeTab('message_edit');
+        window.top.f_addTab('message_edit', '<@spring.message "hap.message_management"/>', 'sys/my_message_query.html?status=' + 'N');
+    }
+    function drawdown() {
+        var d = $(".profile_drawdown");
+        d.animate({height: 'toggle'}, 200);
+    }
+    $(function () {
+        $("body").on("click", function () {
+            var d = $(".profile_drawdown");
+            if (d.css("display") == 'block') {
+                d.animate({height: 'toggle'}, 200);
+            }
+        });
+        $(".l-topmenu-profile").on('click', function (e) {
+            drawdown();
+            return false;
+        });
+    });
+
+    function changeLanguage() {
+        $.ligerDialog.confirm("<@spring.message "msg.info.sys.change_language"/>", function (yes) {
+            if (yes) {
+                jQuery('#langForm').submit()
+            }
+        });
+    }
+</script>
+<div id="pageloading"></div>
+<div id="topmenu" class="l-topmenu">
+    <div class="l-topmenu-logo">
+        <img height="44" src="${base.contextPath}/resources/images/logo.png"/>
+        <div style="margin-left: 10px;">汉得应用开发平台</div>
+    </div>
+    <div class="l-topmenu-btn">
+        <ul id="nav" style="display: block;height:100%;list-style:none;">
+            <li class="l-topmenu-item">
+                <a id="changeRole" onclick="switchRole();" href="#" title="<@spring.message "role.changeRole"/>">
+                    <i class="icon-group"></i>
+                </a>
+            </li>
+            <li class="l-topmenu-item">
+                <a id="messages" onclick="messageEdit()" href="#" title="<@spring.message "hap.unread_message"/>">
+                    <i class="icon-envelope"></i>
+                    <span class="badge">!</span>
+                </a>
+            </li>
+            <li class="l-topmenu-profile">
+                <a class="drawdownBtn" href="#">
+				${Session.userName!''}
+                    <i class="icon-caret-down drawdown_icon"></i>
+                </a>
+                <ul id="drawdownNav" class="profile_drawdown hide" style="display:none">
+                    <li><a href="javascript:void(0)" onclick="editUserInfo(${Session.userId})"><i
+                            class="icon-info-sign drawdown_icon"></i><@spring.message "user.info"/></a></li>
+                    <li><a href="javascript:void(0)" style="text-decoration: none;" onclick="sysPreferences();"><i
+                            class="icon-cogs drawdown_icon"></i><@spring.message "hap.preferences"/></a></li>
+                    <li><a href="javascript:void(0)" style="text-decoration: none;" onclick="logout();"><i
+                            class="icon-off drawdown_icon"></i><@spring.message "hap.logout"/></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="layout1" style="width: 100%;">
+    <div position="left" title="<@spring.message "hap.main_menu"/>" id="accordion1" style="overflow-y:auto">
+        <style>
+            li {
+                line-height: 20px;
+            }
+
+            ul.page-sidebar-menu {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                margin: 0;
+                padding: 0;
+            }
+
+            ul.page-sidebar-menu > li {
+                display: block;
+                margin: 0;
+                padding: 0;
+                border: 0px;
+            }
+
+            ul.page-sidebar-menu > li > a:hover {
+                background: #fff;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li.active > a, ul.page-sidebar-menu > li > ul.sub-menu > li > a:hover {
+                background-color: #FAFAFA;
+            }
+
+            ul.page-sidebar-menu > li > a {
+                background-color: #FAFAFA;
+            }
+
+            ul.page-sidebar-menu > li > a {
+                border-bottom: 1px solid #D0D0D0 !important;
+            }
+
+            ul.page-sidebar-menu > li.open {
+                border-bottom: 1px solid #D0D0D0 !important;
+            }
+
+            ul.page-sidebar-menu > li > a {
+                display: block;
+                position: relative;
+                margin: 0;
+                border: 0px;
+                padding: 5px 15px;
+                text-decoration: none;
+            }
+
+            ul.page-sidebar-menu > li a i {
+                margin: 0px 3px;
+                color: #585858;
+                font-size: 14px;
+            }
+
+            ul.page-sidebar-menu > li > a i {
+                margin-right: 5px;
+                text-shadow: none;
+            }
+
+            li [class^="icon-"], li [class*=" icon-"] {
+                display: inline-block;
+                width: 1.25em;
+                text-align: center;
+            }
+            li [class^="fa-"], li [class*=" fa-"] {
+                display: inline-block;
+                font: normal normal normal 14px/1 FontAwesome;
+                font-size: inherit;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                width: 1.25em;
+                text-align: center;
+            }
+
+            ul.page-sidebar-menu > li > a > .arrow.open:before {
+                color: #8a8a8a !important;
+            }
+
+            ul.page-sidebar-menu > li > a .arrow:before, ul.page-sidebar-menu > li > a .arrow.open:before {
+                color: #7d7d7d !important;
+            }
+
+            ul.page-sidebar-menu > li > a > .arrow.open:before {
+                float: right;
+                margin-top: 1px;
+                margin-right: 3px;
+                display: inline;
+                font-family: FontAwesome;
+                height: auto;
+                content: "\f107";
+                font-weight: 300;
+                text-shadow: none;
+            }
+
+            ul.page-sidebar-menu > li > a > .arrow:before {
+                float: right;
+                margin-top: 1px;
+                margin-right: 5px;
+                display: inline;
+                font-size: 16px;
+                font-family: FontAwesome;
+                height: auto;
+                content: "\f104";
+                font-weight: 300;
+                text-shadow: none;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu li > a > .arrow:before {
+                float: right;
+                margin-top: 1px;
+                margin-right: 20px;
+                display: inline;
+                font-size: 16px;
+                font-family: FontAwesome;
+                height: auto;
+                content: "\f104";
+                font-weight: 300;
+                text-shadow: none;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu {
+                display: none;
+                list-style: none;
+                clear: both;
+                margin: 4px 0px 4px 0px;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li {
+                background: none;
+                margin: 0px;
+                padding: 0px;
+                margin-top: 1px !important;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li:first-child > a {
+                border-top: 0px !important;
+            }
+
+            ul.page-sidebar-menu li > ul.sub-menu > li > a {
+                /* color: #bdbdbd; */
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li > a {
+                display: block;
+                margin: 0px 0px 0px 0px;
+                padding: 5px 0px;
+                padding-left: 24px !important;
+                text-decoration: none;
+                background: none;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li ul.sub-menu {
+                display: none;
+                list-style: none;
+                clear: both;
+                margin: 0px 0px 0px 0px;
+            }
+
+            .l-layout-header:before {
+                float: left;
+                margin-top: 1px;
+                margin-left: 10px;
+                margin-right: 5px;
+                display: inline;
+                font-family: FontAwesome;
+                height: auto;
+                font-size: 14px;
+                content: "\f03a";
+                font-weight: 300;
+                text-shadow: none;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu li > a > .arrow.open:before {
+                float: right;
+                margin-top: 1px;
+                margin-right: 18px;
+                display: inline;
+                font-family: FontAwesome;
+                height: auto;
+                font-size: 16px;
+                content: "\f107";
+                font-weight: 300;
+                text-shadow: none;
+            }
+
+            ul.page-sidebar-menu > li.active > ul.sub-menu > li.active ul.sub-menu {
+                display: block;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li ul.sub-menu li {
+                background: none;
+                margin: 0px;
+                padding: 0px;
+                margin-top: 1px !important;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu li > ul.sub-menu > li > a {
+                display: block;
+                margin: 0px 0px 0px 0px;
+                padding: 5px 0px;
+                text-decoration: none;
+                background: none;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li > ul.sub-menu > li > a {
+                padding-left: 40px;
+            }
+
+            ul.page-sidebar-menu > li > ul.sub-menu > li > ul.sub-menu > li > ul.sub-menu > li > a {
+                padding-left: 50px;
+            }
+
+            ul.page-sidebar-menu > li.active > ul.sub-menu > li.active ul.sub-menu > li.active ul.sub-menu {
+                display: block;
+            }
+
+            ul.page-sidebar-menu a.active {
+                color: #c02827;
+                background-color: #FAFAFA !important;
+            }
+        </style>
+        <ul class="page-sidebar-menu">
+
+        </ul>
+        <script type="text/javascript">
+            $('.page-sidebar-menu').on('click', 'li > a', function (e) {
+                if ($(this).next().hasClass('sub-menu') == false) {
+                    if ($('.btn-navbar').hasClass('collapsed') == false) {
+                        $('.btn-navbar').click();
+                    }
+                    return;
+                }
+
+                var parent = $(this).parent().parent();
+
+
+                parent.children('li.open').children('a').children('.arrow').removeClass('open');
+                parent.children('li.open').children('.sub-menu').slideUp(200);
+                parent.children('li.open').removeClass('open');
+
+                var sub = jQuery(this).next();
+                if (sub.is(":visible")) {
+                    $('.arrow', $(this)).removeClass("open");
+                    $(this).parent().removeClass("open");
+                    sub.slideUp(200, function () {
+                        //handleSidebarAndContentHeight();
+                    });
+                } else {
+                    $('.arrow', $(this)).addClass("open");
+                    $(this).parent().addClass("open");
+                    sub.slideDown(200, function () {
+                        //handleSidebarAndContentHeight();
+                    });
+                }
+
+                e.preventDefault();
+            });
+        </script>
+
+    </div>
+    <div position="center" id="framecenter">
+        <div tabid="home" title="<@spring.message "hap.home"/>" style="height:300px">
+            <iframe frameborder="0" name="home" id="home" src="home.html"></iframe>
+        </div>
+    </div>
+</div>
+
+<#if accessService.accessFunction("OM_QUICK_OPERATING")>
+<div id="pop_sign"
+     style="background-color: #E22628; z-index: 1000; position: absolute; width: 25px; height: 55px; font-size: 18px; line-height: 55px; color: white; text-align: center; border-radius: 5px 0 0 5px; font-weight: bold;">
+
+</div>
+<script type="text/javascript">
+
+    var popupWidth = 350;
+    var popupHeight = 800;
+
+
+    window.onresize = function () {
+        var left = $(window).width() - popupWidth;
+        var top = ($(window).height() - popupHeight) / 2;
+        $("#dialogpop").css('left', left).css('top', top);
+        $('#pop_sign').css('left', left - 25).css('top', $(window).height() / 2 - 40);
+    }
+
+    $('#pop_sign').css('marginLeft', popupWidth);
+    $(window).resize();
+
+    var popupTool = null;
+
+    function expendPopup() {
+        $("#dialogpop").stop().show();
+        $("#dialogpop").animate({
+            marginLeft: 0
+        });
+        $("#pop_sign").animate({
+            marginLeft: 0
+        }).html(">");
+        ;
+    }
+
+    function shrink() {
+        $("#dialogpop").stop();
+        $("#dialogpop").animate({
+                    marginLeft: popupWidth
+                }, 'slow',
+                function () {
+                    $("#dialogpop").hide();
+                });
+        $("#pop_sign").animate({
+                    marginLeft: popupWidth
+                },
+                'slow').html("<");
+    }
+
+    function initPopup() {
+        var options = new Object();
+
+        options = {
+            showType  : 'slide',
+            width     : popupWidth,
+            left      : $(window).width() - popupWidth,
+            modal     : false,
+            height    : popupHeight,
+            id        : 'dialogpop',
+            allowClose: false,
+            url       : "om/order/om_shortcut_operation"
+        };
+
+        var dialog = $.ligerDialog.open(options);
+	<#-- 清除dialog的标题 -->
+        $("#dialogpop .l-dialog-table tr :first").remove();
+
+        $("#dialogpop").css('marginLeft', popupWidth);
+
+        expendPopup();
+
+        return dialog;
+    }
+    ;
+    $("#pop_sign").click(function () {
+
+        if (!popupTool) {
+            popupTool = initPopup();
+        } else {
+            if (!popupTool.get('visible')) {
+                expendPopup();
+            } else {
+                shrink();
+            }
+        }
+    });
+
+</script>
+</#if>
+<div style="height:32px; line-height:32px; text-align:center;">
+    Hand China Co.,Ltd. All rights reserved
+    <div class="lang_chooser">
+        <form id="langForm" action="" style="display: inline-block" method="GET" autocomplete="off">
+            <select name="lang" onchange="changeLanguage()">
+			<#list languages as l>
+                <option value="${l.langCode}"
+				        <#if base.getLocale() == l.langCode>selected</#if>>${l.description}</option>
+			</#list>
+            </select>
+        </form>
+        <div id="changeRole_div" style="display:none">
+            <form id="changeRole_form"></form>
+        </div>
+    </div>
+</div>
+<div id="loginDialog" style="display:block">
+    <form id="loginForm"></form>
+</div>
+
+<script type="text/javascript">
+
+    function editUserInfo(userId) {
+        window.top.f_addTab("editUser_" + userId,
+                "<@spring.message "user.info"/>",
+                "${base.contextPath}/sys/um/sys_user_info.html?userId=" + userId);
+    }
+
+    //登出
+    function logout() {
+        var r = confirm("<@spring.message "hap.confirm_exit"/>");
+        if (r == true) {
+            location.href = _basePath + "/logout";
+        }
+    }
+
+    //设置首选项
+    function sysPreferences() {
+        window.top.f_addTab("editSysprefer_", "<@spring.message "hap.preferences"/>", "${base.contextPath}/sys/um/sys_preferences.html");
+    }
+
+    var roleData = [];
+    function initChangeRoleForm() {//请求角色信息
+        $.ajax({
+            type   : "POST",
+            url    : "${base.contextPath}/sys/userrole/queryUserRoles?userId=${Session.userId!0}",
+            success: function (data) {
+                if (data.success) {//设置form初始值
+                    $.each(data.rows, function (index, value) {
+                        roleData.push({
+                            meaning: value.roleName,
+                            value  : value.roleId
+                        });
+                    });
+
+                    createChangeRoleForm();
+                }
+            }
+        });
+    }
+
+
+    function createChangeRoleForm() {
+        window['changeRoleForm'] = $("#changeRole_form").ligerForm({//首选项表单初始化
+            fields: [
+                {
+                    name    : 'roleId',
+                    type    : 'combobox',
+                    newline : true,
+                    width   : 240,
+                    label   : '<@spring.message "role.rolename"/>',
+                    options : {
+                        cancelable: false,
+                        valueField: "value",
+                        textField : "meaning",
+                        data      : roleData
+                    },
+                    validate: {
+                        required: true
+                    }
+                }
+            ]
+        });
+
+        $.each(roleData, function (i, r) {
+            if (r.value ==${Session.roleId!0}) {
+                changeRoleForm.setData({roleId: r.value, roleName: r.meaning});
+            }
+        });
+    }
+    initChangeRoleForm()
+
+    //弹出切换角色页面
+    function switchRole() {
+
+        $.ligerDialog.open({
+                    title     : '<@spring.message "role.changeRole"/>',
+                    target    : $("#changeRole_div"),
+                    width     : 450,
+                    isHidden  : false,
+                    allowClose: false,
+                    buttons   : [{
+                        text   : $l("hap.ok"),
+                        onclick: function (item, dialog) {
+                            changeRoleConfirm();
+                        }
+                    }, {
+                        text   : $l("hap.cancel"),
+                        onclick: function (item, dialog) {
+                            dialog.hide();
+                        }
+                    }]
+                }
+        );
+    }
+
+    function changeRoleConfirm() {//确定切换角色
+        $.ligerDialog.confirm("<@spring.message "hap.confirm"/>", function (yes) {
+            if (yes) {
+                changeRole();
+            }
+        });
+    }
+
+    function changeRole() {//切换角色
+        if (!changeRoleForm.valid()) {
+            Hap.showInvalid(changeRoleForm);
+            return;
+        }
+        var data = changeRoleForm.getData();
+        $.ajax({
+            type    : "POST",
+            url     : "${base.contextPath}/role",
+            data    : data,
+            dataType: "json",
+            success : function (data) {
+                if (data.success) {
+                    $.ligerDialog.success('<@spring.message "hap.tip.success"/>');
+                    location.reload();
+                }
+            },
+            error   : function (args) {
+                location.reload();
+            }
+        });
+    }
+
+    function refreshVerifiCode() {
+        $("#verifyImg").attr("src", '${base.contextPath}/verifiCode?_r=' + Math.random());
+    }
+    function initLoginForm() {
+        $.ligerui.get('password').setValue('');
+        $('#verifiCode').val('')
+    }
+    var loginForm, loginDialog;
+    function sessionExpiredLogin() {
+        if (!loginDialog) {
+            loginForm = $("#loginForm").ligerForm({
+                inputWidth: 220,
+                fields    : [{
+                    name   : "userName",
+                    type   : 'hidden',
+                    options: {
+                        value: $.cookie('userName')
+                    }
+                }, {
+                    name   : "userId",
+                    type   : 'hidden',
+                    options: {
+                        value: $.cookie('userId')
+                    }
+                }, {
+                    name   : "roleId",
+                    type   : 'hidden',
+                    options: {
+                        value: $.cookie('roleId')
+                    }
+                }, {
+                    display: '<@spring.message "user.password"/>',
+                    type   : 'password',
+                    name   : 'password',
+                    newline: true
+                }, {
+                    display: "<@spring.message "user.verifycode"/>",
+                    name   : 'verifiCode',
+                    type   : "html",
+                    newline: false,
+                    render : function (v) {
+                        return '<div style="height:32px;width:120px;float:left " class="l-text"><input  autocomplete="off"  class="l-text-field" type="text" style="height:32px;width:120px" id="verifiCode"  name="verifiCode"/></div><img title="<@spring.message "user.verifycode.refresh"/>" id="verifyImg" style="border:none;float:right;cursor:pointer " onclick="refreshVerifiCode()"/>'
+                    }
+                }]
+            });
+
+            loginDialog = $.ligerDialog.open({
+                height    : 200,
+                allowClose: false,
+                width     : 450,
+                isHidden  : false,
+                buttons   : [{
+                    text   : '<@spring.message "hap.login"/>',
+                    onclick: function (item, dialog) {
+                        var data = loginForm.getData();
+                        data['verifiCode'] = $('#verifiCode').val();
+                        Hap.ajax({
+                            url        : '${base.contextPath}/sessionExpiredLogin',
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            data       : data,
+                            stringify  : false,
+                            success    : function () {
+                                var manager = $.ligerDialog.open({
+                                    cls       : 'success',
+                                    type      : 'success',
+                                    content   : '<div style="padding:4px"><@spring.message "msg.info.login.success"/></div>',
+                                    allowClose: false
+                                });
+                                setTimeout(function () {
+                                    manager.close();
+                                }, 1000);
+                                dialog.hide();
+                                tab.reload(tab.selectedTabId);
+                            },
+                            failure    : function (json) {
+                                refreshVerifiCode()
+                                $.ligerDialog.alert(json.message || 'Error', $l('hap.tip.info'), 'error');
+                            }
+                        });
+                    }
+                }],
+                title     : '<@spring.message "hap.session.timeout"/>',
+                target    : $("#loginDialog")
+            });
+        }
+        initLoginForm();
+        refreshVerifiCode();
+        loginDialog.show();
+    }
+</script>
+</body>
+</html>

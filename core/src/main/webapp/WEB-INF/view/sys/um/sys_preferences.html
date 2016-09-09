@@ -1,0 +1,180 @@
+<#--
+ * description: 系统首选项界面
+ * version: 1.0
+ * author:zhangYang
+ * Copyright LKK Health Products Group Limited.
+ * -->
+<#include "../../include/head.html">
+<style>
+    #form_title {
+        margin: 0;
+        padding: 0;
+        width: 99%;
+        height: 29px;
+        background-color: #F0F0F0;
+        border: 1px solid #D6D6D6;
+    }
+
+    #form_title p {
+        padding-left: 25px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+</style>
+<body style="padding: 10px;">
+<script
+        src="${base.contextPath}/common/code?timeZone=SYS.TIME_ZONE&weekStartDate=SYS.WEEK_START_DATE"
+        type="text/javascript"></script>
+<div id="form_title">
+    <p><@spring.message "hap.preferences"/></p>
+</div>
+<div id="form_f1">
+    <form id="preference_form" autocomplete="off"></form>
+</div>
+<script type="text/javascript">
+    function init() {
+        var SysPreferences = {};
+        SysPreferences.preferencesLevel = 10;
+        SysPreferences.userId =${Session.userId};
+        $.ajax({
+            type       : "POST",
+            url        : "${base.contextPath}/sys/preferences/queryPreferences",
+            contentType: "application/json",
+            data       : JSON2.stringify(SysPreferences),
+            dataType   : "json",
+            success    : function (data) {
+                if (data.success) {//根据当前用户和环境查询首选项信息，设置form初始值
+                    var initData = {};
+                    $.each(data.rows, function (i, r) {
+                        initData[r.preferences] = r.preferencesValue;
+                    });
+                    preference_form.setData(initData);
+                }
+            }
+        });
+    }
+
+
+    function save() {
+        if (!preference_form.valid()) {
+            Hap.showInvalid(preference_form);
+            return;
+        }
+
+        var sysLevel = 10;
+        var data = preference_form.getData();
+
+        var preferencesAry = [];//把form数据组成对象数组
+        $.each(data, function (k, v) {
+            preferencesAry.push({
+                preferences     : k,
+                preferencesValue: v,
+                preferencesLevel: sysLevel,
+                userId       :${Session.userId}
+            });
+        });
+
+        var ajaxUrl = "${base.contextPath}/sys/preferences/savePreferences";//保存首选项url
+        $.ajax({
+            type       : "POST",
+            url        : ajaxUrl,
+            contentType: "application/json",
+            data       : JSON2.stringify(preferencesAry),
+            dataType   : "json",
+            success    : function (data) {
+                	if (data.success) {
+                		$.ligerDialog.success('<@spring.message "sys.hand.preferences.save.success"/>')
+                	}else{
+                		$.ligerDialog.error('<@spring.message "sys.hand.preferences.save.failure"/>')
+                	}
+                	location.reload();
+                }
+        });
+
+    }
+
+
+    $(function () {
+        var preference_form = window['preference_form'] = $("#preference_form").ligerForm({//首选项表单初始化
+            fields : [
+                {
+                    name    : 'timeZone',
+                    type    : 'select',
+                    newline : true,
+                    width   : 240,
+                    label   : '<@spring.message "preference.timezone"/>',
+                    options : {
+                        cancelable: false,
+                        valueField: "value",
+                        textField : "meaning",
+                        data      : timeZone
+                    },
+                    validate: {
+                        required: true
+                    }
+                }
+                /* {//删除多余字段
+                    name    : 'dateFormat',
+                    type    : 'select',
+                    newline : true,
+                    width   : 240,
+                    label   : '<@spring.message "sys.hand.preferences.dateformat"/>',
+                    options : {
+                        cancelable: false,
+                        valueField: "value",
+                        textField : "meaning",
+                        data      : dateFormat
+                    },
+                    validate: {
+                        required: true
+                    }
+                },
+                {
+                    name    : 'timeFormat',
+                    type    : 'select',
+                    newline : true,
+                    width   : 240,
+                    label   : '<@spring.message "sys.hand.preferences.timeformat"/>',
+                    options : {
+                        cancelable: false,
+                        valueField: "value",
+                        textField : "meaning",
+                        data      : timeFormat
+                    },
+                    validate: {
+                        required: true
+                    }
+                },
+                {
+                    name    : 'weekStartDate',
+                    type    : 'select',
+                    newline : true,
+                    width   : 240,
+                    label   : '<@spring.message "sys.hand.preferences.weekstartson"/>',
+                    options : {
+                        cancelable: false,
+                        valueField: "value",
+                        textField : "meaning",
+                        data      : weekStartDate
+                    },
+                    validate: {
+                        required: true
+                    }
+                }*/
+
+            ],
+            buttons: [
+                {
+                    id   : 'savePrefer', text: '<@spring.message "hap.save"/>', disabled: false, width: 60,
+                    click: function () {
+                        save();
+                    }
+                }
+            ]
+        });
+        init();
+    });
+
+</script>
+</body>
+</html>

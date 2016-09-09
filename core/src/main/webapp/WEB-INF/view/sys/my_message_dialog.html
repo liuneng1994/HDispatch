@@ -1,0 +1,43 @@
+<#--
+ * description: 我的消息详细
+ * version: 1.0 
+ * author: huangjiajing
+ * Copyright LKK Health Products Group Limited.
+ * 
+-->
+
+<#include "../include/head.html">
+<body style="padding: 10px;">
+    <form id="butt"></form>
+    <div style="width:100%;text-align:center">    
+	    <h1 id="subject"></h1>
+	    <br/>
+	    <span style="font-size:15px;color:#7A7A7A;margin:10px;" id="info"></span>
+    </div>
+    <br>
+    <DIV style="BORDER-TOP: #00686b 1px dashed; OVERFLOW: hidden; HEIGHT: 1px"></DIV>
+    <br>
+    <div id="content" style="width:100%;padding:20px;"></div>
+    <script type="text/javascript">
+    $(function() {
+    	Hap.ajax({
+            url:"${base.contextPath}/sys/mycontent/query?readId=${RequestParameters.readId}",
+            success:function(json){
+            	var content = json.rows[0].content;
+            	document.getElementById("content").innerHTML=content;
+            	document.getElementById("info").innerHTML=json.rows[0].publishDate + "&nbsp;&nbsp;&nbsp;&nbsp;" + json.rows[0].userName;
+            	document.getElementById("subject").innerHTML=json.rows[0].subject;
+            }
+            
+        })
+//         Hap.loadForm({form:d_stm_001_form,url:'${base.contextPath}/sys/mycontent/query',para:{readId:${RequestParameters.readId}},callback:function(json){
+//             var content = json.content;
+//             document.getElementById("content").innerHTML=content;
+//             document.getElementById("info").innerHTML=json.publishDate + "&nbsp;&nbsp;&nbsp;&nbsp;" + json.userName;
+//             document.getElementById("subject").innerHTML=json.subject;
+//         }});
+    });
+   
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<#-- 
+ * description: 快速编码界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 15px">
+	<form id="mainform" method="post" enctype="application/json;charset=UTF-8">
+	</form>
+	<div id="codeValueGrid" style="margin-left: 2px; margin-top: 2px;"></div>
+	<script type="text/javascript">
+        function f_save() {
+            Hap.submitForm({
+                form:form,
+                grid:codeValueGrid,
+                gridName:'codeValues',
+                url:'${base.contextPath}/sys/code/submit',
+                success:function(json,opt){
+                    $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                        parent.d_sc_002_grid.reload();
+                        f_cancel();
+                    });
+                    
+                }
+            });
+        }
+        function f_cancel() {
+            var dialog = frameElement.dialog;
+            dialog.close();
+            
+            
+        }
+        <#assign isedit = (RequestParameters.isedit!'0')/>        
+        //表单底部按钮 
+        Hap.setFormDefaultBtn(f_cancel, f_save);
+    
+        var mainform = $("#mainform");
+        var form  = mainform.ligerForm({
+            inputWidth : 280,
+            fields : [{
+                name:'codeId',
+                type:'hidden'
+            },{
+                display : '<@spring.message "code.code"/>',
+                name : "code",
+                type : "text",
+                typeCase:'uppercase',
+                //width:150,
+                validate : {
+                    required : true
+                }
+            },{
+                display : '<@spring.message "code.description"/>',
+                name : 'description',
+                type : 'tl',
+                options : {
+                    idField:'codeId',
+                    dto:'com.hand.hap.system.dto.Code'
+                },
+                validate : {
+                    required : true
+                }
+            } ]
+        });
+    
+        mainform.attr("action", "${base.contextPath}/sys/code/submit");
+        
+        
+    
+        codeValueGrid = $("#codeValueGrid").ligerGrid({
+            columns : [{
+                display : '<@spring.message "codevalue.value"/>',
+                name : 'value',
+                 width : 130,
+                align : 'left',
+                typeCase:'uppercase',
+                editor : {
+                    type : 'text'
+                    
+                },
+                validate:{
+                    required:true
+                }
+            }, {
+                display : '<@spring.message "codevalue.meaning"/>',
+                name : 'meaning',
+                width: 150,
+                align: 'left',
+                editor : {
+                    type : 'tl',
+                    idField:'codeValueId',
+                    dto:'com.hand.hap.system.dto.CodeValue'
+                }
+            },{
+                display : '<@spring.message "codevalue.description"/>',
+                name : 'description',
+                width: 200,
+                align: 'left',
+                editor : {
+                    type : 'tl',
+                    idField:'codeValueId',
+                    dto:'com.hand.hap.system.dto.CodeValue'
+                }
+            }],
+            showToggleColBtn : false,
+            width : '100%',
+            height : '99%',
+            columnWidth : 100,
+            root: 'rows',
+            record: 'total',
+            usePager : false,
+            mouseoverRowCssClass : null,
+            enabledEdit : true,
+            checkbox : true,
+            <#if isedit == '1'>
+             url: '${base.contextPath}/sys/codevalue/query?codeId=${RequestParameters.codeId!}', 
+            </#if>
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        codeValueGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : codeValueGrid,
+                            url : '${base.contextPath}/sys/codevalue/remove'
+                        })
+    
+                    },
+                    icon : 'delete'
+                } ]
+            }
+        });
+        <#if isedit == '1'>
+        Hap.loadForm({form:form,url:'${base.contextPath}/sys/code/query',para:{codeId:${RequestParameters.codeId}}})
+       </#if>
+    </script>
+</body>
+</html>

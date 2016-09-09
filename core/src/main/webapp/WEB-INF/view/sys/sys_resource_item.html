@@ -1,0 +1,136 @@
+<#--
+ * description: 资源权限项
+ * version: 1.0 
+ * author: njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 5px">
+    <div id="resourceItemGrid"></div>
+    <script type="text/javascript">
+        
+    	//关闭窗口
+        function closeResourceItemDialog() {
+            var dialog = frameElement.dialog;
+            dialog.close();
+            
+            
+        }
+    	
+        function saveResourceItem(){
+            Hap.gridSave({
+                grid : resourceItemGrid,
+                url : '${base.contextPath}/sys/resourceItem/submit'
+            })
+        }
+            
+        //表单底部按钮 
+        Hap.setFormDefaultBtn(closeResourceItemDialog, saveResourceItem);
+         
+        var resourceItemGrid = $("#resourceItemGrid").ligerGrid({
+               columns: [
+                { 
+                    display: '<@spring.message "resourceitem.itemid"/>',
+                    name: 'itemId', 
+                    align: 'left', 
+                    width: 150,  
+                    typeCase:'uppercase',
+                    editor: { 
+                        type : 'text'
+                    },
+                    validate: { 
+                        required:true
+                    }
+                },
+                { 
+                    display: '<@spring.message "resourceitem.itemname"/>',
+                    name: 'itemName', 
+                    align: 'left', 
+                    width: 200,
+                    editor: { type: 'text' }
+                },
+                { 
+                    display: '<@spring.message "resourceitem.description"/>',
+                    name: 'description', 
+                    align: 'left', 
+                    width: 200,  
+                    editor: { type: 'text' }
+                },
+                {
+                    display : '<@spring.message "resourceitem.resource"/>',
+                    name : 'targetResourceId',
+                    width : 180,
+                    align : 'left',
+                    textField : 'targetResourceName',
+                    
+                    editor : {
+                        type : 'popup',
+                        valueField : 'resourceId',
+                        textField : 'name',
+                        grid : {
+                            columns : [ {
+                                display : '<@spring.message "resource.url"/>',
+                                name : "url",
+                                align : 'left',
+                                width : 300
+                            }, {
+                                display : '<@spring.message "resource.name"/>',
+                                name : "name",
+                                align : 'left',
+                                width : 200
+                            } ],
+                            url : '${base.contextPath}/sys/resource/query',
+                            height : 350
+                        },
+                        condition : {
+                            inputWidth : 150,
+                            labelWidth : 70,
+                            fields : [ {
+                                display : '<@spring.message "resource.url"/>',
+                                name : "url",
+                                newline : true,
+                                type : "text"
+                            }, {
+                                display : '<@spring.message "resource.name"/>',
+                                name : "name",
+                                newline : false,
+                                type : "text"
+                            } ]
+                        }
+                    }
+                }
+               ], 
+               url:'${base.contextPath}/sys/resourceItem/query?resourceId=${RequestParameters.resourceId!}',
+               enabledEdit: true, 
+               width: '99%', 
+               height: '98%', 
+               checkbox: true,
+               usePager:false,
+               toolbar: { 
+                   items: [{
+                       text : '<@spring.message "hap.new"/>',
+                       disable : false,
+                       click : function() {
+                           resourceItemGrid.addRow({ownerResourceId:${RequestParameters.resourceId!}})
+                       },
+                       icon : 'add'
+                   }, {
+                       line : true
+                   }, {
+                       text : '<@spring.message "hap.delete"/>',
+                       click : function() {
+                           Hap.gridDelete({
+                               grid : resourceItemGrid,
+                               url : '${base.contextPath}/sys/resourceItem/remove'
+                           })
+       
+                       },
+                       icon : 'delete'
+                   } 
+                  ]
+            }
+        }); 
+    </script>
+</body>
+</html>

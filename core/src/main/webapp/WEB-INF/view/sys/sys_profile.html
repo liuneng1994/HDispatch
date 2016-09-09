@@ -1,0 +1,126 @@
+<#include "../include/head.html">
+<body style="padding: 3px; overflow: hidden;">
+    <div id="d_um_002_form" ></div>  
+    <div id="d_um_002_grid" style="margin: 0; padding: 0"></div> 
+    <script type="text/javascript">
+  $(function ()
+      {
+		  <#--
+	      * Description:
+	      *   查询窗口
+	      -->
+         window['d_um_002_form'] = $("#d_um_002_form").ligerForm({
+              fields: [
+                  { type: 'text', label: '<@spring.message "profile.profilename"/>', name: 'profileName' },
+                  { type: 'text', label: '<@spring.message "profile.description"/>', newline:false,name: 'description' }
+              ], buttons: [
+                  { text: '<@spring.message "hap.query"/>', disabled:false, width: 60, click: function(){
+                      Hap.gridQuery({
+                          form:d_um_002_form,
+                          grid:d_um_002_grid
+                      })
+                  }}
+              ]
+          });
+         
+         <#--
+         * Description:
+         *   新建快速编码窗口
+         -->
+         window.newProfile = function(){
+             window.popWin = $.ligerDialog.open({
+                 //load : false,
+                 width : 600,
+                 height : 550,
+                 url : 'sys_profile_edit.html'
+             });
+         }
+         
+         <#--
+         * Description:
+         *   新建快速编码窗口
+         * Parameters:
+         *   id:codeId
+         -->
+         window.editProfile = function(id){
+              window.popWin = $.ligerDialog.open({
+                  load : false,
+                  width : 600,
+                  height : 550,
+                  url : 'sys_profile_edit.html?isedit=1&profileId='+ id
+              });
+         }
+      
+         <#--
+	      * Description:
+	      *   配置文件表格
+	      -->
+          window['d_um_002_grid'] = $("#d_um_002_grid").ligerGrid({
+              unSetValidateAttr:false,
+              columns: [{ 
+            	    display: '<@spring.message "profile.profilename"/>',
+                	name: 'profileName', 
+                	align: 'left', 
+                	width: 200,
+                    editor: { type: 'text' }
+                }, {   
+                	display: '<@spring.message "profile.description"/>',
+                	name: 'description', 
+                	align: 'left', 
+                	width: 300,
+                    editor: { type: 'text' }
+                }, {
+                    display : '<@spring.message "hap.action"/>',
+                    align : 'center',
+                    width : 100,
+                    render : function(rowdata) {
+                        return '<a href="#" onclick="editProfile('+rowdata.profileId+')"><@spring.message "hap.edit"/></a>'
+                    }
+                } ], 
+              url:'${base.contextPath}/sys/profile/query',
+              
+              <#--
+    	      * Description:
+    	      *   工具栏
+    	      -->
+              toolbar: { items: [
+                            { text: '<@spring.message "hap.new"/>',disable:false, click: newProfile, icon: 'add' },
+                            { line: true },
+                            { text: '<@spring.message "hap.delete"/>', click: function(){
+                                Hap.gridDelete({
+                                    grid:d_um_002_grid,
+                                    url:'${base.contextPath}/sys/profile/remove',
+                                    //confirmTip:'<@spring.message "hap.tip.delete_confirm"/>',
+                                    isNewFunc: function(data){
+                                        return !data['profileId']
+                                    }//,
+                                    //waitingTip:'<@spring.message "hap.tip.processing"/>',
+                                    //successTip:'<@spring.message "hap.tip.success"/>',
+                                    //infoTip:'<@spring.message "hap.tip.info"/>'
+                                })
+                                
+                            }, icon: 'delete'},
+                            { line: true },
+                            { text: '<@spring.message "hap.save"/>', click: function(){
+                                Hap.gridSave({
+                                    grid:d_um_002_grid,
+                                    url:'${base.contextPath}/sys/profile/submit'//,
+                                    //waitingTip:'<@spring.message "hap.tip.processing"/>',
+                                    //successTip:'<@spring.message "hap.tip.success"/>',
+                                    //infoTip:'<@spring.message "hap.tip.info"/>'
+                                })                               
+                            }, icon: 'save'}
+              ]
+              },
+              enabledEdit: true,
+              pageSize: 10, 
+              root: 'rows',
+              record: 'total',
+              width: '100%', 
+              height: '99%', 
+              checkbox: true
+          }); 
+      });
+  </script>
+</body>
+</html> 

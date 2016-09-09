@@ -1,0 +1,72 @@
+<#--
+ * description: 功能添加界面
+ * version: 1.0 
+ * author:xiawang.liu
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 5px">
+	<form id="function_resource_form"></form>
+	<div id="functionNotExitResource"></div>
+
+	<script type="text/javascript">
+		window['functionNotExitResource']=$("#functionNotExitResource").ligerGrid({
+		    unSetValidateAttr:false,
+		    columns: [
+		    	{ 
+		    		display: '<@spring.message "resource.url"/>',
+		    		name: 'url', 
+		    		align: 'left', 
+		    		width: 280,
+		          	editor: { type: 'text' }
+		      	},
+		      	{ 
+		      		display: '<@spring.message "resource.name"/>',
+		      		name: 'name', 
+		      		align: 'left', 
+		      		width: 230,
+		          	editor: { type: 'text' }
+		      	}
+		    ], 
+		    url:'${base.contextPath}/sys/function/fetchNotResource?functionId=' + ${RequestParameters.functionId},
+		    enabledEdit: false,
+		    width: '99%', 
+		    height: '99%', 
+		    checkbox: true
+		}); 
+		
+		window['function_resource_form'] = $("#function_resource_form").ligerForm({
+		    fields: [
+		    	{ 
+		    		type: 'text', 
+		    		label: '<@spring.message "resource.url"/>',
+		    		name: 'url' ,
+		    		width:220
+		    	},
+		        { 
+		    		type: 'text', 
+		    		label: '<@spring.message "resource.name"/>',
+		    		name: 'name' ,
+		    		newline: false,
+		    		width:170
+		    	}
+		    ], 
+		    buttons: [
+		    	{ 
+		    		text: '<@spring.message "hap.query"/>',
+		    		disabled:false, 
+		    		width: 60, 
+		    		click: function(){
+		            	functionNotExitResource.setParm('url',liger.get("url").getValue());
+		            	functionNotExitResource.setParm('name',liger.get("name").getValue());
+		            	functionNotExitResource.loadData(1);
+		        	}
+		    	}
+		    ],
+		    inputWidth:120,
+		    labelWidth :50
+		});
+    </script>
+</body>
+</html>

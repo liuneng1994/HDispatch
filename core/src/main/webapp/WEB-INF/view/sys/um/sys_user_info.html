@@ -1,0 +1,258 @@
+<#--
+ * description: 用户资料详情界面
+ * version: 1.0 
+ * author:guanghui.liu
+ * Copyright LKK Health Products Group Limited.
+ * 
+-->
+<#include "../../include/head.html">
+<style>
+    #form_title {
+        margin: 0;
+        padding: 0;
+        width: 99%;
+        height: 29px;
+        background-color: #F0F0F0;
+        border: 1px solid #D6D6D6;
+    }
+
+    #form_title p {
+        padding-left: 25px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    #d_um_001_form {
+        border-bottom: 1px solid #D6D6D6;
+        padding: 7px;
+    }
+</style>
+<body style="padding: 10px;">
+<script src="${base.contextPath}/common/code?userStatusData=SYS.USER_STATUS&allAdminData=SYS.ADMIN_MANAGEMENT"
+        type="text/javascript"></script>
+<div id="form_title">
+    <p><@spring.message 'user.info'/></p>
+</div>
+<form id="d_um_001_form" autocomplete="off"></form>
+<script type="text/javascript">
+    //点击提交按钮事件处理方法
+    function save() {
+        //提交前校验-------------------start
+        var form = new liger.get("d_um_001_form");
+        var data = form.getData();
+        //所有校验之前，先做一个特殊校验
+        if (!data.email) {
+            $.ligerDialog.error("<@spring.message 'error.user.email_is_empty'/>", $l("hap.tip.info"));
+            return;
+        }
+        if (!Hap.validateForm(form)) return;
+        var emailReg = /^([\s\S]*)+@([\S\s]*)+(\.([\S\s]*)+)+$/;
+        var phoneReg = /^[0-9]{1,14}$/;
+        var passwordReg = /^[0-9]{8}$/;
+        if (data.userName == "") {
+            $.ligerDialog.error("<@spring.message 'error.user.username_is_empty'/>", $l("hap.tip.info"));
+            return;
+        }
+        if (phoneReg.test(data.phone) == false) {
+            $.ligerDialog.error("<@spring.message 'error.user.phone_format_not_correct'/>", $l("hap.tip.info"));
+            return;
+        }
+        //管理员修改资料时,检测是否修改了密码
+        if (condition == 3 && $.ligerui.get("password").getValue() != "" && $.ligerui.get("password").getValue() != null) {
+            if (passwordReg.test(data.password) == false) {
+                $.ligerDialog.error("<@spring.message 'error.user.tmppassword_format_not_correct'/>", $l("hap.tip.info"));
+                return;
+            }
+        }
+        //提交前校验-------------------end
+        //特别的,会员ID字段的验证在用户类型是ipoint用户时是必输的,而在其他情况是要置为空的
+
+        var ajaxUrl = "${base.contextPath}/sys/um/updateUserInfo";
+        //防止狂点发多次请求
+        if (conn && conn.readyState != 4) return;
+        //提交ajax
+        conn = $.ajax({
+            type       : "POST",
+            url        : ajaxUrl,
+            contentType: "application/json",
+            data       : JSON2.stringify(data),
+            dataType   : "json",
+            success    : function (data) {
+                if (data.success) {
+                    if (condition == 2) {
+                        var userId = data.rows[0].userId;
+                        $.ligerDialog.success("<@spring.message 'hap.tip.save_success'/>", $l("hap.tip.info"), function () {
+                            parent.f_addTab("sys_user_" + userId, "<@spring.message 'user.userdetail'/>", "${base.contextPath}/sys/um/sys_user_info.html?userId=" + userId);
+                            window.top.f_removeTab("sys_user_create");
+                        });
+                        return;
+                    }
+                    $.ligerDialog.success("<@spring.message 'msg.infor.dm.save_success'/>", $l("hap.tip.info"), function () {
+                        location.reload();
+                    });
+                }
+            }
+        });
+    }
+
+    function editPassword() {
+        $.ligerDialog.open({
+            url   : '${base.contextPath}/sys/um/sys_update_password.html',
+            title : '<@spring.message "user.updatepassword"/>',
+            width : 400,
+            height: 250
+        });
+    }
+
+    //初始化页面-填充数据变更dom元素状态
+    function initPage() {
+        //取得url中的status参数,如果没有,方法自动将status赋值为""
+        status = "${RequestParameters.status!''}";
+        //如果页面跳转带来userId，则请求数据并页面填值
+        var userId = "${RequestParameters.userId!''}";
+        var initData = {};
+        initData.password = "";//初始值设为空，如果要修改就需要重新填
+        if (userId != "" && userId != null) {
+            $.ajax({
+                type    : "POST",
+                url     : "${base.contextPath}/sys/um/getSingleUser",
+                data    : {
+                    userId: userId
+                },
+                dataType: "json",
+                success : function (data) {
+                    initData = data.rows[0];
+                    //填充数据
+                    var form = new liger.get("d_um_001_form");
+                    initData.password = "";
+                    form.setData(initData);
+                }
+            });
+        }
+        //判断三种状态
+        if ($.inArray(roleCode, allAdmin) < 0) {//普通用户修改资料
+            condition = 1;
+        } else { //说明当前用户的roleCode是admin的一种
+            if ("create" == status) {//2.管理员创建新用户
+                condition = 2;
+                $.ligerui.get("status").setValue("ACTV");
+                $.ligerui.get("status").setText('<@spring.message "hap.new"/>');
+                $.ligerui.get("status").setDisabled(true);
+                //新建用户时,临时口令不可编辑
+                if ($.ligerui.get("password")) {
+                    $.ligerui.get("password").setDisabled(true);
+                }
+            }
+        }
+    }
+</script>
+<script type="text/javascript">
+    //全局变量==========================================================start
+    //此处应先获取当前用户的角色信息和动作,因角色信息和动作有三种不同处理,包括:
+    //--1.普通用户修改资料
+    //--2.管理员创建新用户
+    //--3.管理员修改资料
+    var roleCode = null;//当前用户的角色code
+    var status = "";//动作,包括新建和修改,页面跳转时传值
+    //标记是哪种情况
+    var condition = "0";
+    var conn = null;
+    var allAdmin = [];//所有管理员权限的code
+
+    //js初始化页面
+    $(function () {
+        window['d_um_001_form'] = $("#d_um_001_form").ligerForm({
+            fields    : [
+                {
+                    name    : 'userName',
+                    type    : 'text',
+                    label   : '<@spring.message "user.username"/>',
+                    readonly: true
+                },
+                {
+                    name   : 'userId',
+                    type   : 'html',
+                    label  : ' ',
+                    render : function (args) {
+                        return "<a href='javascript:editPassword()'><@spring.message "user.updatepassword"/></a>"
+                    },
+                    newline: false
+                },
+                {
+                    name    : 'status',
+                    type    : 'select',
+				<#if accessService.access("STATUS_EDITABLE") == false>
+                    readonly: true,
+				</#if>
+                    label   : '<@spring.message "user.status"/>',
+                    options : {
+                        autocomplete: false,
+                        cancelable  : false,
+                        valueField  : "value",
+                        textField   : "meaning",
+                        data        : userStatusData
+                    }
+                },
+                {
+                    name   : 'email',
+                    id     : 'emailInMainPage',
+                    type   : 'text',
+                    label  : '<@spring.message "user.email"/>',
+                    newline: false
+                },
+                {
+                    name        : 'phone',
+                    id          : 'phoneNoInMainPage',
+                    type        : 'text',
+                    label       : '<@spring.message "user.phone"/>',
+                    newline     : false,
+                    afterContent: '<input name="avoidAuto" autocomplete="off" style="display:none"/><input type="password" style="display:none"/>',
+                    validate    : {required: true}
+                },
+                {name: 'userId', type: 'hidden'},
+                {
+                    name        : 'password',
+				<#if accessService.access("TEMP_PASSWORD_VISIBLE")>
+                    type        : 'password',
+				<#else>
+                    type        : 'hidden',
+				</#if>
+                    newline     : false,
+                    label       : '<@spring.message "user.tmppassword"/>',
+                    afterContent: '<input name="avoidAuto" autocomplete="off" style="display:none"/><input type="password" style="display:none"/>'
+                }
+
+            ], buttons: [
+                {
+                    id   : 'saveInfo', text: '<@spring.message "hap.submit"/>', disabled: false, width: 60,
+                    click: function () {
+                        save();
+                    }
+                }
+            ]
+        });
+
+        //处理得到更合适匹配的allAdmin
+        for (var i = 0; i < allAdminData.length; i++) {
+            allAdmin.push(allAdminData[i].value.toLowerCase());
+        }
+        //使用session中的roleId获取到roleCode
+        $.ajax({
+            type    : "POST",
+            url     : "${base.contextPath}/sys/role/query",
+            data    : {
+                roleId: ${roleId}
+            },
+            dataType: "json",
+            success : function (data) {
+                if (data.success) {
+                    roleCode = data.rows[0].roleCode;
+                    //初始化页面-填充数据变更dom元素状态
+                    initPage();
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

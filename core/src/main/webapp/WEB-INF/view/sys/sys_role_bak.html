@@ -1,0 +1,115 @@
+<#--
+ * description: 角色界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+    <form id="roleForm"></form>
+    <div id="roleGrid" style="margin: 0; padding: 0"></div>
+    <script type="text/javascript">
+    $(function() {
+        window['roleForm'] = $("#roleForm").ligerForm({
+            fields : [ {
+                type : 'text',
+                label : '<@spring.message "role.rolecode"/>',
+                name : 'roleCode'
+            }, {
+                type : 'text',
+                label : '<@spring.message "role.rolename"/>',
+                name : 'roleName',
+                newline : false
+            }, {
+                type : 'text',
+                label : '<@spring.message "role.roledescription"/>',
+                name : 'roleDescription'
+            } ],
+            buttons : [ {
+                text : '<@spring.message "hap.query"/>',
+                disabled : false,
+                width : 60,
+                click : function() {
+                    Hap.gridQuery({
+                        form : roleForm,
+                        grid : roleGrid
+                    })
+                }
+            } ]
+        });
+
+        window['roleGrid'] = $("#roleGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [ {
+                display : '<@spring.message "role.rolecode"/>',
+                name : 'roleCode',
+                align : 'left',
+                width : 120,
+                editor : {
+                    type : 'text'
+                }
+            }, {
+                display : '<@spring.message "role.rolename"/>',
+                name : 'roleName',
+                align : 'left',
+                width : 150,
+                editor : {
+                    type : 'tl',
+                    idField:'roleId',
+                    dto:'com.hand.hap.account.dto.Role'
+                }
+            }, {
+                display : '<@spring.message "role.roledescription"/>',
+                name : 'roleDescription',
+                align : 'left',
+                width : 180,
+                editor : {
+                    type : 'tl',
+                    idField:'roleId',
+                    dto:'com.hand.hap.account.dto.Role'
+                }
+            }],
+            url : '${base.contextPath}/sys/role/query',
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        roleGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : roleGrid,
+                            url : '${base.contextPath}/sys/role/delete'
+                        })
+
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : roleGrid,
+                            url : '${base.contextPath}/sys/role/submit'
+                        })
+                    },
+                    icon : 'save'
+                } ]
+            },
+            enabledEdit : true,
+            width : '99%',
+            height : '98%',
+            checkbox : true
+        });
+    });
+    </script>
+</body>
+</html>

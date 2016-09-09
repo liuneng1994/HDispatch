@@ -1,0 +1,173 @@
+<#-- 
+ * description: 描述界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 3px; overflow: hidden;">
+    <script src="${base.contextPath}/common/language?var=languageData" type="text/javascript"></script>
+    <form id="d_pmt_002_form"> </form>
+    <div id="d_pmt_002_grid" style="margin: 0; padding: 0"></div>
+    <script type="text/javascript">
+    $(function() {
+        window['d_pmt_002_form'] = $("#d_pmt_002_form").ligerForm({
+            fields : [ {
+                type : 'text',
+                label : '<@spring.message "prompt.promptcode"/>',
+                name : 'promptCode',
+                typeCase:'lowercase'
+            }, {
+                type : 'select',
+                label : '<@spring.message "prompt.sourcelang"/>',
+                name : 'lang',
+                newline : false,
+                options : {
+                    valueFieldID : "customerId",
+                    valueField : "langCode",
+                    textField : "description",
+                    data : languageData
+                }
+            }, {
+                type : 'text',
+                label : '<@spring.message "prompt.description"/>',
+                name : 'description',
+                newline : false
+            } ],
+            buttons : [ {
+                text : '<@spring.message "hap.query"/>',
+                disabled : false,
+                width : 60,
+                click : function() {
+                    Hap.gridQuery({
+                        form : d_pmt_002_form,
+                        grid : d_pmt_002_grid
+                    })
+                }
+            },{
+                text : '<@spring.message "hap.reset"/>',
+                disabled : false,
+                width : 60,
+                click : function() {
+                    d_pmt_002_form.reset();
+                }
+            } ],
+	        onEnterDown : function () {
+		        this.options.buttons[0].click();
+	        }
+        });
+
+        window['d_pmt_002_grid'] = $("#d_pmt_002_grid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [ {
+                display : '<@spring.message "prompt.promptcode"/>',
+                name : 'promptCode',
+                align : 'left',
+                width : 400,
+                typeCase:'lowercase',
+                editor : {
+                    type : 'text'
+                }
+            }, {
+                display : '<@spring.message "prompt.sourcelang"/>',
+                name : 'lang',
+                align : 'left',
+                width : 100,
+                editor : {
+                    type : 'select',
+                    data : languageData,
+                    valueField : 'langCode',
+                    textField : 'description'
+                },
+                render : function(item) {
+                    for ( var i in languageData) {
+                        if (languageData[i].langCode == item.lang) {
+                            return languageData[i].description;
+                        }
+                    }
+                    return '';
+                }
+            }, {
+                display : '<@spring.message "prompt.description"/>',
+                name : 'description',
+                align : 'left',
+                width : 200,
+                editor : {
+                    type : 'text'
+                }
+            } ],
+            url : '${base.contextPath}/sys/prompt/query',
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+	                    // smart set lang for new record
+                        var arr = d_pmt_002_grid.getData();
+                        var i=0;
+                        for(;i<arr.length;i++){
+                            if(arr[i].__status=='add') {
+                                break;
+                            }
+                        }
+	                    var idx = (arr.length-i)%languageData.length;
+                        d_pmt_002_grid.addRow({lang:languageData[idx].langCode})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : d_pmt_002_grid,
+                            url : '${base.contextPath}/sys/prompt/remove'
+                        })
+
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : d_pmt_002_grid,
+                            url : '${base.contextPath}/sys/prompt/submit'
+                        })
+                    },
+                    icon : 'save'
+                } ]
+            },
+            enabledEdit : true,
+            width : '100%',
+            height : '99%',
+            checkbox : true,
+	        onAfterEdit : f_onAfterEdit
+        });
+    });
+
+    // smart fill promptCode
+    function f_onAfterEdit(rowData){
+        var gridData = d_pmt_002_grid.getData();
+        if (rowData.record.__status=='add'&&rowData.column.columnname=='promptCode') {
+            if(rowData.record.lang) {
+	            for(var i=0;i<languageData.length;i++){
+		            if(rowData.record.lang==languageData[i].langCode){
+			            for(var j=0;j<languageData.length;j++){
+				            if(i==j) continue;
+				            var r = gridData[rowData.rowindex+j-i];
+				            if(r&&r.__status=='add'&&!r.promptCode&&r.lang==languageData[j].langCode){
+                                d_pmt_002_grid.updateCell("promptCode",rowData.record.promptCode,r.__id)
+				            }
+			            }
+			            break;
+		            }
+	            }
+            }
+        }
+    }
+    </script>
+</body>
+</html> 
