@@ -1,10 +1,14 @@
 package hdispatch.core.dispatch.service.impl;
 
+import com.hand.hap.core.IRequest;
+import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.layer.Layer;
 import hdispatch.core.dispatch.mapper.LayerMapper;
 import hdispatch.core.dispatch.service.LayerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * Created by yyz on 2016/9/7.
@@ -26,5 +30,48 @@ public class LayerServiceImpl implements LayerService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList) throws Exception {
+        for (Layer layer : layerList) {
+            if (layer.get__status() != null) {
+                switch (layer.get__status()) {
+                    case DTOStatus.ADD:
+                        layerMapper.save(layer);
+                        break;
+                    case DTOStatus.UPDATE:
+
+                        break;
+                    case DTOStatus.DELETE:
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return layerList;
+    }
+
+    @Override
+    public boolean[] checkIsExist(List<Layer> layerList) {
+        boolean[] isExist = new boolean[layerList.size()];
+        int i = 0;
+        for(Layer layer : layerList){
+            Layer layerReturn = layerMapper.selectByNameAndActiveAndThemeId(layer);
+            if(null != layerReturn){
+                isExist[i] = true;
+            }
+            i ++;
+        }
+        return isExist;
+    }
+
+    @Override
+    public void deleteInLogic(Layer layer) {
+        if(null != layer){
+            layerMapper.deleteInLogic(layer);
+        }
     }
 }
