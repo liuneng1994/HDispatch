@@ -1,0 +1,850 @@
+<#--
+ * description: 消息维护界面
+ * version: 1.0 
+ * author: huangjiajing
+ * Copyright LKK Health Products Group Limited.
+ * 
+-->
+
+<#include "../include/head.html">
+<body style="padding: 10px;">
+	<script type="text/javascript" src="${base.contextPath}/lib/ckeditor/ckeditor.js"></script>
+    <script src="${base.contextPath}/common/code?messageContentType=SYS.MESSAGE_CONTENT_TYPE&
+                publishTime=SYS.PUBLISH_TIME&
+                messageStatus=SYS.MESSAGE_STATUS&
+                publishChannel=SYS.PUBLISH_CHANNEL&
+                memStauts=MM.MEMBER_STATUS&
+                userStatus=SYS.USER_STATUS" type="text/javascript"></script>
+    <script type="text/javascript" src="${base.contextPath}/sys/org/current"></script>
+    <style>
+	.panel{
+	    margin:20px;
+	}
+	.panel-title {
+	    font-size:16px;
+	    line-height:20px;
+	    padding:5px;
+	    background-color:#f4f4f4;
+	}
+    </style>
+    <form id="form_tool"></form>
+    <form id="message_form"></form>
+    <div class="panel">
+        <div class="panel-title"><@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.memberlist"/></div>
+	    <div id="message_mem_grid"  style="margin-top:10px;"></div>
+    </div>
+    <div class="panel">
+        <div class="panel-title"><@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.userlist"/></div>
+	    <div id="message_user_grid"  style="margin-top:10px;"></div>
+    </div>
+    <script type="text/javascript">
+    <#assign isedit = (RequestParameters.isedit!'0')/> 
+  //会员表分页多选数据
+    var checkedCustomerMem = [];
+    <#if RequestParameters.groupId??>
+	    function member_add(){
+	        var groupId = ${RequestParameters.groupId};
+	        Hap.ajax({
+	            url: '${base.contextPath}/sys/addmmmessage/query?groupId='+${RequestParameters.groupId},
+	            data : JSON2.stringify({
+                    'groupId' : groupId
+                }) ,
+	            success:function(data){
+	                if(data&&data.success){
+                        message_mem_grid.options.dataAction = 'server';
+	                    message_mem_grid.addRows(data.rows);
+	                }else{
+	                    $.ligerDialog.error("<@spring.message "sys.hand.tip.failure"/>");
+	                }
+	            }
+	        });
+	    }
+	    member_add();
+    </#if>
+    $(function() {
+    	window['form_tool'] = $("#form_tool").ligerForm({
+    	buttons : [
+                   {
+                	   id:'tool_save',
+                       text : '<@spring.message "sys.hand.btn.save"/>',
+                       disabled : false,
+                       width : 60,
+                       click : function() {
+                    	   if(editor.getData()==null || editor.getData()==''){
+                    		   $.ligerDialog.warn("<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.contentmessage"/>");
+                    		   return false;
+                    	   }
+                           liger.get('messageContent').setValue(editor.getData());
+                           var grids = [message_mem_grid,message_user_grid],gridNames = ['memberAssigns','userAssigns'];
+                           Hap.submitForm({
+                               form:message_form,
+                               grid:grids,
+                               gridName:gridNames,
+                               url:'${base.contextPath}/sys/msmessage/save',
+                               success:function(json,opt){
+                            	   message_form.setData({'__status':'update'});
+                                   var messageId = json.rows[0].msMessageId;
+                                   $.ligerui.get('msMessageId').setValue(messageId);
+                            	   Hap.showSuccess($l('sys.hand.tip.success'),
+                                       function() {
+                            		   window.location ='${base.contextPath}/sys/message_edit.html?isedit=1&msMessageId='+messageId;
+                                   });
+                               }   
+                           })
+                       }
+                   },{
+                	   id:'tool_public',
+                       text : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.inv.item.btn.publish"/>',
+                       disabled : false,
+                       width : 60,
+                       click: function(){  
+                    	   $.ligerDialog.confirm('<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.checkpublic"/>', function (yes) { 
+                    		   if(yes){
+                    	           var publishChannel = liger.get('publishChannel').getValue();
+                    	             var accountId = message_form.getData().senderCode;
+                    	             if(accountId != null && accountId != ""){
+                    	                 if(publishChannel == 'SMS'){
+                    	                     getaccountIdSms(accountId);
+                    	                 }else if(publishChannel == 'EMAIL'){
+                    	                     getaccountIdEmail(accountId);
+                    	                 }
+                    	             }
+		                    	   var message_mem_grid_data = liger.get('message_mem_grid').getData();
+		                           var message_user_grid_data = liger.get('message_user_grid').getData();
+		                           if(message_mem_grid_data == null || message_mem_grid_data == ""){
+		                               if(message_user_grid_data == null || message_user_grid_data ==""){
+		                                   $.ligerDialog.warn("<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.memuser"/>");
+		                                   return false;
+		                               }
+		                           }
+		                    	   var messageId = $.ligerui.get('msMessageId').getValue();
+		                    	   if(messageId == "" ||  messageId == null){
+		                    		   $.ligerDialog.warn("<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.savepublic"/>");
+		                    		   return false;
+		                    	   }
+		                    	   var senderCodeText = 1;
+		                    	   
+		                           var grids = [message_mem_grid,message_user_grid],gridNames = ['memberAssigns','userAssigns'];
+		                           Hap.submitForm({
+		                               form:message_form,
+		                               grid:grids,
+		                               gridName:gridNames,
+		                               url:'${base.contextPath}/sys/msmessage/public',
+		                               success:function(json,opt){
+		                                   $.ligerDialog.success("<@spring.message "sys.hand.tip.success"/>", '<@spring.message "sys.hand.tip.info"/>', function(){
+		                                        message_form.setData({'__status':'update'});
+		                                        liger.get('publishDate').setValue(new Date());
+		                                        $.ligerui.get('messageStatus').setValue('PUBLI');
+		                                        $.ligerui.get('messageType').setReadonly(true);
+		                                        $.ligerui.get('publishDateType').setReadonly(true);
+		                                        $.ligerui.get('publishDate').setReadonly(true);
+		                                        $.ligerui.get('publishChannel').setReadonly(true);
+		                                        $.ligerui.get('senderName').setReadonly(true);
+		                                        $.ligerui.get('accountId').setReadonly(true);
+		                                        $.ligerui.get('messageName').setReadonly(true);
+		                                        $.ligerui.get('grid_tool').setDisabled('grid_tool_add');
+		                                        $.ligerui.get('grid_tool').setDisabled('grid_tool_delete');
+		                                        $.ligerui.get('grid_tool').setDisabled('grid_tool_lead');
+		                                        $.ligerui.get('grid_user_tool').setDisabled('grid_user_add');
+		                                        $.ligerui.get('grid_user_tool').setDisabled('grid_user_delete');
+		                                        $.ligerui.get('tool_save').setDisabled(true);
+		                                        $.ligerui.get('tool_public').setDisabled(true);
+		                                        editor.readOnly=true;
+		                                   });                 
+		                               }   
+		                           })
+		                           
+                               }
+                    	   });
+                       }
+                   }
+               ]
+    	});
+        window['message_form'] = $("#message_form").ligerForm({
+            fields : [
+                {name : "__status",type : "hidden",options:{value:"<#if isedit =='1'>update<#else>add</#if>"},newline : false},
+                {name : "marketId",type : "hidden",newline : false,
+                	options:{
+                        value:_marketId
+                    }
+                },
+				{ name : 'marketName', label : '<@spring.message "type.com.lkkhpg.dsis.common.config.dto.spmmarket.name"/>', newline : false ,type:'text',readonly : true,
+                	options:{
+                		value:_marketName
+                	},
+					validate : {
+                        required : true
+                    }
+				},
+                { name : 'msMessageId', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagenumber"/>', newline : false,readonly : true
+				},
+	            { name : 'messageType', type : 'select', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagetype"/>', newline : false,
+					options: {
+                        valueField: 'value',
+                        textField: 'meaning',
+                        data: messageContentType
+                    },
+	            	validate : {
+                        required : true
+                    }
+				},
+	            { name : 'messageStatus', type : 'select', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagestat"/>', newline : true,readonly : true,
+					options: {
+                        valueField: 'value',
+                        textField: 'meaning',
+                        data: messageStatus,
+                        value:messageStatus[0].value
+                    },
+	            	validate : {
+                        required : true
+                    }
+				},
+	            { name : 'publishDateType', type : 'select', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.publicdate"/>', newline : false,
+					options: {
+                        valueField: 'value',
+                        textField: 'meaning',
+                        data: publishTime,
+                        onSelected:function(data){
+                        		if(data == "NOW"){
+                        			liger.get('publishDate').setReadonly(true);
+                        			message_form.setFieldValidate("publishDate", {required : false});
+                        			liger.get('publishDate').setValue("");
+                        			//liger.get('publishDate').setValue(new Date());
+                        		} else {
+                        			liger.get('publishDate').setReadonly(false);
+                        			message_form.setFieldValidate("publishDate", {required : true});
+                        		}
+                        }
+                    },
+	            	validate : {
+                        required : true
+                    }
+				},
+	            { name : 'publishDate', type : 'date', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.publicdatetime"/>', newline : false,
+                    options : {
+                    	format : 'yyyy-MM-dd hh:mm:ss', showTime : true
+                    }
+				},
+	            { name : 'publishChannel', type : 'select', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagechannels"/>', newline : true,
+	            	validate : {
+                        required : true
+                    },
+                    options: {
+                        valueField: 'value',
+                        textField: 'meaning',
+                        data: publishChannel,
+                        onBeforeSelect:function(data){
+                                if(data == "DSIS"){
+                                    $.ligerui.get('accountId').setValue("");
+                                    $.ligerui.get('accountId').setText("");
+                                    liger.get('accountId').setReadonly(true);
+                                    message_form.setFieldValidate("accountId", {required : false});
+                                } else if(data == 'SMS') {
+                                    liger.get('accountId').setReadonly(false);
+                                    $.ligerui.get('accountId').setValue("");
+                                    $.ligerui.get('accountId').setText("");
+                                    message_form.setFieldValidate("accountId", {required : true});
+                                } else if (data == 'EMAIL') {
+                                	liger.get('accountId').setReadonly(false);
+                                	$.ligerui.get('accountId').setValue("");
+                                    $.ligerui.get('accountId').setText("");
+                                    message_form.setFieldValidate("accountId", {required : true});
+                                }
+                        }
+                    },
+				},
+	            { name : 'sender', type : 'hidden', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagesender"/>', newline : false,readonly : true,
+					options:{value:"${Session.userId}"},
+					validate : {
+                        required : true
+                    }
+	            },
+	            { name : 'senderName', type : 'text', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagesender"/>', newline : false,readonly : true,
+                    options:{value:"${Session.userName}"},
+                    validate : {
+                        required : true
+                    }
+                },
+                { name : 'messageName', type : 'text', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagename"/>', newline : false,
+                    validate : {
+                        required : true
+                    }
+                },
+                { name : 'accountId', type : 'popup', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.sender"/>', newline : true,readonly : true,
+                	
+                	 options  : $.extend(${lovService.getLov(base.contextPath, base.locale, "lov_message_sender_code")},{
+                		 onSelected:function(datas){
+                			 message_form.setData({'senderMarketId':datas.data[0].marketId});
+                			 message_form.setData({'senderCode':datas.data[0].accountId});
+                			 message_form.setData({'senderCodeText':datas.data[0].accountCode});
+                			 
+                		 },
+                         onLoadData:function(){
+                             var publishChannelType = message_form.getData().publishChannel;
+                             var market = message_form.getData().marketId;
+                             if (publishChannelType){
+                                   this.setParm('accountType', publishChannelType);
+                                   //this.setParm('marketId',market);
+                             }
+                         }
+                    })
+                },
+                { name : 'senderMarketId', type : 'hidden', newline : false,
+                    validate : {
+                        required : true
+                    }
+                },
+                { name : 'senderCode', type : 'hidden', newline : false,
+                    validate : {
+                        required : true
+                    }
+                },
+                { name : 'senderCodeText', type : 'hidden',  newline : false,
+                    validate : {
+                        required : true
+                    }
+                },
+                { name : 'messageContent', type : 'textarea',width:495, label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.content"/>', newline : true
+                ,options:{
+                	height:'300'
+                }
+                }
+	        ]
+            
+        });
+        //初始化消息编辑器
+        var editor = CKEDITOR.replace( 'messageContent',{
+	    	removeButtons : 'Underline,Subscript,Superscript,Source,About',
+	    });
+
+         var message_mem_grid;
+         message_mem_grid = window['message_mem_grid'] = $("#message_mem_grid").ligerGrid({
+            columns : [
+                {
+   	                display : '<@spring.message "type.com.lkkhpg.dsis.common.promotion.dto.voucher.member"/>',
+   	                name : 'memberId',
+   	                textField:'memberCode',
+   	                align : 'left',
+   	                width : 200,
+	   	             type:'text'
+    	        },
+                {
+	                display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.memberdetails.membername"/>',
+	                name : 'memberName',
+	                align : 'left',
+	                width : 100
+                },
+                {
+                    display : 'accuntID',
+                    name : 'accountId',
+                    align : 'left',
+                    hide:true,
+                    width : 100
+                },
+	            {
+	                name : 'memEmail',
+	                textField:'email',
+	                valueField:'email',
+	                display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.marketchange.email"/>',
+	                align : 'left',
+	                width : 200,
+	                type:'text'
+	            },
+                {
+                    name : 'areaPhone',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.config.dto.spmcompany.phone"/>',
+                    align : 'left',
+                    width : 200,
+                    type : 'text'
+                },
+                {
+                    name : 'status',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.marketchange.memberstatus"/>',
+                    align : 'left',
+                    width : 200,
+                    render : function(item) {
+                        for (var i = 0; i < memStauts.length; i++) {
+                            if (memStauts[i]['value'] == item.status)
+                                return memStauts[i]['meaning']
+                        }
+                        return item.status;
+                    }
+                }
+            ],
+            <#if isedit == '1'>
+            url : '${base.contextPath}/sys/mmmessage/query?msMessageId=${RequestParameters.msMessageId!}',
+            </#if>
+            enabledEdit : true,
+            width : '99%',
+            height : 400,
+            checkbox:true,
+            toolbar : {
+            	id:'grid_tool',
+                items: [
+                    {
+                    	id:'grid_tool_add',
+                        text: '<@spring.message "type.com.lkkhpg.dsis.common.im.dto.poheader.add"/>',
+                        disable:false, 
+                        click: function(){
+                        	//f_import_province_member();
+                        	f_import_provincedd();
+                        }, icon: 'add'
+                    },
+                    { line: true },
+                    { 
+                    	id:'grid_tool_delete',
+                        text : '<@spring.message "sys.hand.btn.delete"/>',
+                        click : function(){
+                          Hap.gridDelete({
+                                 grid : message_mem_grid
+                             })
+                        }, 
+                        icon : 'delete'
+                    },
+                    { line: true },
+                    { 
+                        id:'grid_tool_lead',
+                        text : '<@spring.message "msg.info.event.btn.import"/>',
+                        click : function(){
+                        	f_import();
+                        }, 
+                        icon : 'add'
+                    }
+                ]
+            }
+        });
+         var message_user_grid;
+         message_user_grid = window['message_user_grid'] = $("#message_user_grid").ligerGrid({
+            columns : [
+                {
+                    display : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.username"/>',
+                    name : 'userName',
+                    align : 'left',
+                    width : 200
+                },
+                {
+                    display : 'accuntID',
+                    name : 'accountId',
+                    align : 'left',
+                    hide:true,
+                    width : 100
+                },
+                {
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.marketchange.phonenumber"/>',
+                    name : 'areaPhoneUser',
+                    align : 'left',
+                    width : 200,
+                    type : 'text'
+                },
+                {
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.marketchange.email"/>',
+                    name : 'email',
+                    align : 'left',
+                    width : 200,
+                    type : 'text'
+                },
+                {
+                    name : 'status',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.userstatus"/>',
+                    align : 'left',
+                    width : 200,
+                    render : function(item) {
+                        for (var i = 0; i < userStatus.length; i++) {
+                            if (userStatus[i]['value'] == item.status)
+                                return userStatus[i]['meaning']
+                        }
+                        return item.status;
+                    }
+                }
+            ],
+            <#if isedit == '1'>
+            url : '${base.contextPath}/sys/usermessage/query?msMessageId=${RequestParameters.msMessageId!}',
+            </#if>
+            enabledEdit : false,
+            width : '99%',
+            height : 400,
+            checkbox:true,
+            toolbar : {
+            	id:'grid_user_tool',
+                items: [
+                    {
+                    	id:'grid_user_add',
+                        text: '<@spring.message "type.com.lkkhpg.dsis.common.im.dto.poheader.add"/>',
+                        disable:false, 
+                        click: function(){
+                        	f_import_user_province();
+                        }, icon: 'add'
+                    },
+                    { line: true },
+                    { 
+                    	id:'grid_user_delete',
+                        text : '<@spring.message "sys.hand.btn.delete"/>',
+                        click : function(){
+                          Hap.gridDelete({
+                                 grid : message_user_grid
+                             })
+                        }, 
+                        icon : 'delete'
+                    }
+                ]
+            }
+        });
+         <#if isedit == '1'>
+         Hap.loadForm({form:message_form,url:'${base.contextPath}/sys/msmessage/query',para:{msMessageId:${RequestParameters.msMessageId}},callback:function(){
+        	 var messageStatusForm=$.ligerui.get('messageStatus').getValue();
+        	 var publishChannel = liger.get('publishChannel').getValue();
+        	 if(publishChannel != 'DSIS'){
+        		 message_form.setFieldValidate("accountId", {required : true});
+        	 }
+        	 var publishChannelForm = $.ligerui.get('publishChannel').getValue();
+        	 var accountId = message_form.getData().senderCode;
+        	 if(accountId != null && accountId != ""){
+	        	 if(publishChannel == 'SMS'){
+	        		 getaccountIdSms(accountId);
+	             }else if(publishChannel == 'EMAIL'){
+		        	 getaccountIdEmail(accountId);
+	             }
+        	 }
+        	 if(messageStatusForm == "PUBLI"){
+        		 $.ligerui.get('messageType').setReadonly(true);
+        		 $.ligerui.get('publishDateType').setReadonly(true);
+        		 $.ligerui.get('publishDate').setReadonly(true);
+        		 $.ligerui.get('publishChannel').setReadonly(true);
+        		 $.ligerui.get('senderName').setReadonly(true);
+        		 $.ligerui.get('accountId').setReadonly(true);
+        		 $.ligerui.get('messageName').setReadonly(true);
+        		 $.ligerui.get('grid_tool').setDisabled('grid_tool_add');
+        		 $.ligerui.get('grid_tool').setDisabled('grid_tool_delete');
+                 $.ligerui.get('grid_tool').setDisabled('grid_tool_lead');
+        		 $.ligerui.get('grid_user_tool').setDisabled('grid_user_add');
+                 $.ligerui.get('grid_user_tool').setDisabled('grid_user_delete');
+                 $.ligerui.get('tool_save').setDisabled(true);
+                 $.ligerui.get('tool_public').setDisabled(true);
+                 editor.readOnly=true;
+        	 } else if(messageStatusForm == "DRAFT" && publishChannelForm == "DSIS"){
+        		 $.ligerui.get('accountId').setReadonly(true);
+        		 $.ligerui.get('accountId').setValue("");
+        		 $.ligerui.get('accountId').setText("");
+        	 } if (messageStatusForm == "DRAFT") {
+        		 if( publishChannelForm != "DSIS"){
+        			    $.ligerui.get('accountId').setReadonly(false);
+        		 }
+        	 }
+         }});
+         </#if>
+    });
+    
+    
+    function f_import_user_province() {
+        var fn = $.ligerui.getPopupFn({
+            onSelect : function(e){
+            	f_select_user(e);
+            },
+            condition: {
+                fields: [
+                {
+                    type: "text",
+                    display: '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.username"/>',
+                    name: "userName",
+                    newline: false
+                }
+                ]
+            }, 
+            grid: {
+                columns: [
+                {
+                    display : '<@spring.message "type.com.lkkhpg.dsis.platform.dto.system.user.username"/>',
+                    name : 'userName',
+                    align : 'left',
+                    width : 120
+                },
+                {
+                    display : 'accuntID',
+                    name : 'accountId',
+                    align : 'left',
+                    hide:true,
+                    width : 100
+                },
+                {
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.marketchange.phonenumber"/>',
+                    name : 'areaPhoneUser',
+                    align : 'left',
+                    width : 120,
+                    type : 'text'
+                },
+                {
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.marketchange.email"/>',
+                    name : 'email',
+                    align : 'left',
+                    width : 200,
+                    type : 'text'
+                },
+                {
+                    name : 'status',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.userstatus"/>',
+                    align : 'left',
+                    width : 70,
+                    render : function(item) {
+                        for (var i = 0; i < userStatus.length; i++) {
+                            if (userStatus[i]['value'] == item.status)
+                                return userStatus[i]['meaning']
+                        }
+                        return item.status;
+                    }
+                }],
+                url:'${base.contextPath}/sys/um/query?status=ACTV',
+                checkbox:true
+            },
+            delayLoad : true
+        });
+        fn();
+    }
+    
+    function f_select_mem(e){
+        var selectRows = e.data;
+        if(selectRows == null || selectRows == undefined || selectRows.length < 1){
+            $.ligerDialog.error("<@spring.message "type.com.lkkhpg.dsis.common.order.no.choice.data"/>");
+        }
+        var gridRows = message_mem_grid.getData();
+        if(gridRows.length > 0){
+            for(var i = 0; i< selectRows.length; i++){
+                var memSel = selectRows[i].memberId;
+                for(var j=0;j<gridRows.length;j++){
+                    var memGrid = gridRows[j].memberId;
+                    if(memSel == memGrid){
+                        $.ligerDialog.error("<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.memcheck"/>");
+                        return;
+                    }
+                }
+            }
+        }
+        message_mem_grid.addRows(e.data);
+    }
+    
+    function f_select_user(e){
+        var selectRows = e.data;
+        if(selectRows == null || selectRows == undefined || selectRows.length < 1){
+            $.ligerDialog.error("<@spring.message "type.com.lkkhpg.dsis.common.order.no.choice.data"/>");
+        }
+        var gridRows = message_user_grid.getData();
+        if(gridRows.length > 0){
+            for(var i = 0; i< selectRows.length; i++){
+                var userIdSel = selectRows[i].userId;
+                for(var j=0;j<gridRows.length;j++){
+                    var userIdGrid = gridRows[j].userId;
+                    if(userIdSel == userIdGrid){
+                        $.ligerDialog.error("<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.usercheck"/>");
+                        return;
+                    }
+                }
+            }
+        }
+        message_user_grid.addRows(e.data);
+    }
+    //导入弹出框
+   	function f_import(){
+   	    var msMessageId = liger.get('msMessageId').getValue();
+   	    if(msMessageId == null || msMessageId == ""){
+   	    	$.ligerDialog.warn('<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.saveok"/>');
+   	    	return false;
+   	    }
+   	    $.ligerDialog.open({
+   	        height: 550,
+   	        width: 700,
+   	        allowClose: false,
+   	        title: '<@spring.message "type.com.lkkhpg.dsis.common.event.dto.title.memimport"/>',
+   	        url : '${base.contextPath}/mm/mm_member_import.html?idType=MSG&mentionId='+msMessageId+'&marketId='+_marketId+'&maxMember=null'
+   	    });
+   	}
+    
+    
+  //分配会员表多选
+    function m_onCheckAllRow(checked)
+    {
+        for (var rowid in this.records)
+        {
+            if(checked)
+                addMember(this.records[rowid]);
+            else
+                removeMember(this.records[rowid]);
+        }
+    }
+    
+    function findMember(member)
+    {
+        for(var i =0;i<checkedCustomerMem.length;i++)
+        {
+            if(checkedCustomerMem[i] == member) return i;
+        }
+        return -1;
+    }
+    function addMember(member)
+    {
+        //debugger;
+        if(findMember(member) == -1)
+            checkedCustomerMem.push(member);
+    }
+    function removeMember(member)
+    {
+        var i = findMember(member);
+        if(i==-1) return;
+        checkedCustomerMem.splice(i,1);
+    }
+    function m_isChecked(rowdata)
+    {
+        
+        if (checkedCustomerMem(rowdata) == -1)
+            return false;
+        return true;
+    }
+    function m_onCheckRow(checked, data)
+    {
+        if (checked) addMember(data);
+        else removeMember(data);
+    }
+    /*
+    该例子实现 表单分页多选
+    即利用onCheckRow将选中的行记忆下来，并利用isChecked将记忆下来的行初始化选中
+    */
+    
+    function findCheckedCustomer(itemNumber)
+    {
+        for(var i =0;i<checkedCustomer.length;i++)
+        {
+            if(checkedCustomer[i] == itemNumber) return i;
+        }
+        return -1;
+    }
+    function addCheckedCustomer(itemNumber)
+    {
+        if(findCheckedCustomer(itemNumber) == -1)
+            checkedCustomer.push(itemNumber);
+    }
+    function removeCheckedCustomer(itemNumber)
+    {
+        var i = findCheckedCustomer(itemNumber);
+        if(i==-1) return;
+        checkedCustomer.splice(i,1);
+    }
+    function f_isChecked(rowdata)
+    {
+        if (findCheckedCustomer(rowdata.itemNumber) == -1)
+            return false;
+        return true;
+    }
+    function f_onCheckRow(checked, data)
+    {
+        if (checked) addCheckedCustomer(data);
+        else removeCheckedCustomer(data);
+    }
+    
+    
+    
+    
+    
+  //分配会员表，新增是弹处的选择框
+    function f_import_provincedd() {
+        var options = ${lovService.getLov(base.contextPath,base.locale, "lov_member")};
+        options.grid.checkbox = true;
+        options.grid.isSingleCheck = false;
+        options.grid.isChecked = m_isChecked; 
+        options.grid.onCheckRow = m_onCheckRow; 
+        options.grid.onCheckAllRow = m_onCheckAllRow;
+//         options.grid.onLoadData = function(){
+//             this.options.isChecked = this.isChecked = m_isChecked;
+//         }
+        options.condition.fields.push({
+            name: 'marketId',
+            type : "text",
+            style : 'display:none',
+            options : {
+                value :_marketId
+            }
+        }/* ,{
+            name: 'status',
+            type : "text",
+            style : 'display:none',
+            options : {
+                value :'ACTV'
+            }
+        } */);
+        var fn = $.ligerui.getPopupFn({
+            onSelect : function(e){
+                f_select_market(e);
+            },
+            condition: options.condition,
+            grid: options.grid,
+            title: options.title,
+            delayLoad : true,
+        });
+        fn();
+    }
+    
+    function f_select_market(e){
+        var selectRows;
+        if(e.data.length == 1){
+            selectRows = e.data;
+        }else{
+            selectRows = checkedCustomerMem;
+        }
+        if(selectRows == null || selectRows == undefined || selectRows.length < 1){
+            Hap.showError('<@spring.message "msg.error.config.country.selectrecord" />');
+        }
+        var gridRows = message_mem_grid.getData();
+        if(gridRows.length > 0){
+            for(var i = 0; i< selectRows.length; i++){
+                var marketCodeSel = selectRows[i].memberCode;
+                for(var j=0;j<gridRows.length;j++){
+                    var marketCodeGrid = gridRows[j].memberCode;
+                    if(marketCodeSel == marketCodeGrid){
+                        Hap.showError('<@spring.message "type.com.lkkhpg.dsis.common.promotion.dto.voucher.member.error"/>');
+                        return;
+                    }
+                }
+            }
+        }
+        if(e.data.length == 1){
+            message_mem_grid.addRows(e.data);
+        }else{
+            message_mem_grid.addRows(checkedCustomerMem);
+        }
+        checkedCustomerMem = [];
+    }
+    
+    
+    function getaccountIdSms(accountId){
+        var params = [{
+            }];
+         Hap.ajax({
+                url : '${base.contextPath}/sys/messageSmsAccount/query?accountId='+accountId,
+                data : params,
+                success : function(json) {
+                	var senderText = json.rows[0].userName;
+                	liger.get('accountId').setText(senderText);
+                	liger.get('accountId').setValue(json.rows[0].accountId);
+                    message_form.setData({'senderMarketId':json.rows[0].marketId});
+                    message_form.setData({'senderCodeText':json.rows[0].accountCode});
+                	
+                }
+        });
+    }
+    
+    function getaccountIdEmail(accountId){
+        var params = [{
+            }];
+         Hap.ajax({
+                url : '${base.contextPath}/sys/messageEmailAccount/query?accountId='+accountId,
+                data : params,
+                success : function(json) {
+                	var senderText = json.rows[0].userName;
+                    liger.get('accountId').setText(senderText);
+                    liger.get('accountId').setValue(json.rows[0].accountId);
+                    message_form.setData({'senderMarketId':json.rows[0].marketId});
+                    message_form.setData({'senderCodeText':json.rows[0].accountCode});
+                }
+        });
+    }
+  
+</script>
+</body>
+</html>

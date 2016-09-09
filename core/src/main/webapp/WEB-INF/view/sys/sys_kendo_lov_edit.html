@@ -1,0 +1,38 @@
+<div>
+    <div class="panel col-sm-7" style="padding:0px;">
+        <form class="form-horizontal">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><@spring.message "lov.code"/></label>
+                            <div class="col-sm-10">
+                                <input type="text" data-bind="value:model.code" style="width:100%" class="k-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><@spring.message "lov.description"/></label>
+                            <div class="col-sm-10">
+                                <input type="text" data-bind="value:model.description" style="width:100%" class="k-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <span class="btn btn-primary" data-bind="click:query" type="submit"><@spring.message "hap.query"/></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var viewModel = kendo.observable({
+        model:{},
+        query: function(e) {
+            
+        }
+    });
+    kendo.bind($('#page-content'),viewModel);
+</script>

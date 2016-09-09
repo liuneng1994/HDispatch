@@ -1,0 +1,671 @@
+<#include "../include/head.html">
+<body style="padding: 3px; overflow: hidden;">
+	<style>
+		table.form-layout{
+			border-collapse: separate;
+			border-spacing: 10px;
+		}
+		table.form-layout>tbody>tr>td{
+			border:1px dashed #ccc;
+			margin:10px;
+			vertical-align: top;
+		}
+		
+		table.form-unit>tbody>tr>td{
+			padding:10px;
+		}
+	</style>
+	<script>
+	</script>
+	<span id="json"></span>
+    <form id="mainform" method="post" name="mainform" style="visibility:hidden">
+    	<table class="form-layout">
+    		<tr>
+    			<td>
+					<table class="form-unit">
+						<tr>
+							<td>自定义LOV</td>
+							<td><input id="roleIdPop" name="roleId1" ltype="popup" ligerui="{
+								placeholder:'输入用户角色编码',
+								valueField:'roleId',
+								textField:'roleName',
+								title:'测试通用 lov',
+								autocomplete:true,
+								grid:{
+									delayLoad:true,
+									url:'${base.contextPath}/common/lov/lov_role',
+									columns:[{
+										'display':'角色代码',
+										'name':'roleCode',
+										'isSort':false,
+										isAutoComplete:true,
+										'dropDown':'N',
+										'width':200
+									},{
+										'display':'角色名称',
+										'name':'roleName',
+										'isSort':false,
+										'dropDown':'Y',
+										'width':200
+									},{
+										'display':'描述',
+										'name':'roleDescription',
+										'isSort':false,
+										'dropDown':'N',
+										'width':200
+									}]
+								},condition:{
+									fields:[{
+										display:'角色代码',
+										name:'roleCode',
+										type:'text',
+										newline:false
+									},{
+										display:'雇员',
+										type:'select',
+										name:'employeeId',
+										textField:'emaployeeName',
+										newline : false,
+										options : {
+											readonly:false,
+											valueFieldID : 'employeeId',
+											valueField : 'id',
+											textField : 'name',
+											data : [ {
+												'id' : 1,
+												'name' : '张三'
+											}, {
+												'id' : 2,'name' : '李四'
+											}]
+										}
+									}]
+								}
+							}"></td>
+							<td>通用lov1</td>
+							<td><input name="lovId" ltype="popup" ligerui='$.extend(${lovService.getLov(base.contextPath,base.locale, "lov_member_name")},{ 
+			                    onSelect : function(datas){
+			                        var d = datas.data[0]
+			                    },
+			                    onLoadData:function(){
+			                        this.setParm("deptId",$.ligerui.get("deptId").getValue())   
+			                    }
+			                })'></td>
+						</tr>
+						<tr>
+							<td>非负整数</td>
+							<td><input id="qty_cmp" name="qty" ltype="float" ligerui="{sign:false}"></td>
+							<td>部门ID</td>
+							<td><input name="deptId" ltype="float" data-onChangeValue="function(v){
+						        alert(v)
+						    }"></td>
+						</tr>
+						<tr>
+							<td>雇员 1</td>
+							<td><select name="employeeId" ltype="select">
+								<option value=""> </option>
+								<option value="1">张三</option>
+								<option value="2">李四</option>
+							</select></td>
+							<td>DemoUser</td>
+							<td><input name="demoUserId" ltype="select" ligerui="{
+			                    textField : 'name',
+			                    valueField : 'id',
+			                    url : '${base.contextPath}/demo/user/query'
+			                }"></td>
+						</tr>
+					</table>
+    			</td>
+    			<td>
+    				<table class="form-unit">
+						<tr>
+							<td>订购日期</td>
+							<td><input id="orderDate" name="orderDate" ltype="date"></td>
+						</tr>
+						<tr>
+							<td>日期时间</td>
+							<td><input name="creationTime" ltype="date" ligerui="{
+			                    showTime : true,
+			                    format:'yyyyMM'
+			                }"></td>
+						</tr>
+						<tr>
+							<td>发货日期</td>
+							<td><input name="ShippedDate" ltype="date"></td>
+						</tr>
+						<tr>
+							<td>发货名称2</td>
+							<td><input name="ShipName" ltype="text" validate="{
+			                   required : true ,
+			                   minlength : 10,   
+			                   messages: {
+			                      required:'ccccccccc',
+			                      minlength:'至少10位'
+			                  }
+			                }"></td>
+						</tr>
+					</table>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">
+    				<table class="form-unit">
+						<tr>
+							<td>html</td>
+							<td>
+								<div name="html" ltype="html" style="width:50px;height:20px;background-color:red"></div>
+							</td>
+							<td>email</td>
+							<td><input name="zipCode" ltype="text" validate="{
+			                   email:true
+			                }"></td>
+							<td>延迟加载</td>
+							<td><input name="delayLoad" type="checkbox" ligerui="{
+			                    checkValue:'Y',
+                    			uncheckValue:'N'
+			                }"></td>
+						</tr>
+					</table>
+    			</td>
+    		</tr>
+    	</table>
+    </form>
+    <div id="demogrid" style="margin-left: 2px; margin-top: 2px;"></div>
+    <script>
+    	var DepartmentData = {
+            rows : [ {
+                "DepartmentID" : 1,
+                "DepartmentName" : "主席",
+                "DepartmentRemark" : null
+            }, {
+                "DepartmentID" : 2,
+                "DepartmentName" : "研发中心",
+                "DepartmentRemark" : null
+            }, {
+                "DepartmentID" : 3,
+                "DepartmentName" : "销售部",
+                "DepartmentRemark" : null
+            }, {
+                "DepartmentID" : 4,
+                "DepartmentName" : "市场部",
+                "DepartmentRemark" : null
+            }, {
+                "DepartmentID" : 5,
+                "DepartmentName" : "顾问组",
+                "DepartmentRemark" : null
+            } ],
+            total : 5
+        };
+    	var DepartmentList = DepartmentData.rows;
+        var sexData = [ {
+            Sex : 1,
+            text : '男'
+        }, {
+            Sex : 2,
+            text : '女'
+        } ];
+    
+        jQuery.validator.addMethod("isZipCode", function(value, element) {
+            var tel = /^[0-9]{6}$/;
+            return this.optional(element) || (tel.test(value));
+        }, "请正确填写您的邮政编码");
+        var mainform = $("#mainform");
+        mainform.css('visibility','visible').ligerForm({
+    	    inputWidth : 280,
+    	    space: 15,
+    	    fields : [ {
+                name : "OrderID",
+                type : "hidden",
+                options:{
+                    value:'1111'
+                }
+            },{
+                display:'roleDescription',
+                type:'hidden',
+                name:'roleDescription'
+            }],
+        buttons : [ {
+            text : 'validate',
+            disabled:false,
+            click : function() {
+                if(Hap.validateForm($('#mainform')) && Hap.validateGrid($('#demogrid'))){
+                    alert('ok')
+                }
+                
+                
+            }
+        }, {
+            text : 'loadJson',
+            click : function() {
+                //$.ligerui.get('ShipName').setValue('xxxx');
+                //return;
+                var d = new Date();
+                d.setMonth(5)
+                $.ligerui.get($('#mainform')).setData({
+                    creationTime:d
+                });
+                //return;
+                Hap.loadForm({
+                    form : $('#mainform'),
+                    method : 'post', 
+                    url : '${base.contextPath}/demo/form/load', 
+                    callback : function(data) {
+                        alert('ok')//$.ligerui.get("userName").setText(data.userName);
+                    }
+                })
+            }
+        }, {
+            text : 'getJson',
+            click : function() {
+                //alert($.ligerui.get("orderDate").getValue())
+                debugger 
+                var data = $('#mainform').ligerForm().getData();
+                
+                $('#json').html(JSON.stringify(data))
+            }
+        },{
+            text : 'gridData',
+            click : function() {
+                var d = demogrid.getData()
+                debugger
+            }
+        },{
+            text : '查询',
+            click : function() {
+                debugger
+                Hap.gridQuery({
+                    form:mainform,
+                    grid:demogrid
+                })
+                //demogrid.reload();
+            }
+        },{
+            text : '禁用',
+            id : 'disabled',
+            click : function() {
+                //$.ligerui.get('roleIdPop').set('readonly', true) 
+                liger.get(mainform).setEditable(false);
+                liger.get('enabled').setEnabled();
+                liger.get('grid_toolbar').setEditable(false);
+                //liger.get('grid_toolbar').setDisabled('new_btn');
+                demogrid.setEditable(false);
+            }
+        },{
+            text : '启用',
+            id : 'enabled',
+            click : function() { 
+                liger.get(mainform).setEditable(true);
+                liger.get('grid_toolbar').setEditable(true);
+                //liger.get('grid_toolbar').setEnabled('new_btn');
+                demogrid.setEditable(true);
+            }
+        },{
+            text : 'window',
+            click : function() {
+                $.ligerDialog.open({
+                    target: $("#upstream_change_apply"),
+                    width: 650,
+                    isResize: true,
+                    id: "apply_dialog",
+                    buttons: [{
+                        text: 'ok',
+                        attr:{
+                            id:'btn_ok'
+                        }, 
+                        class:'l-button-disabled',
+                        onclick: function(item, dialog) {
+                            $('#btn_ok').removeClass('l-button-disabled')
+                        }
+                    },{
+                        text: 'cancel',
+                        attr:{
+                            id:'btn_cancel'
+                        }, 
+                        onclick: function(item, dialog) {
+                             
+                        }
+                    }]
+                }        
+                )
+            }
+        } ]
+    	});
+    /////Grid///////    
+        window['demogrid'] = $("#demogrid").ligerGrid({
+            unSetValidateAttr : false,
+            //isSingleCheck :true,
+            rownumbers :true,
+            columns : [{ 
+            	display: '<@spring.message "type.com.lkkhpg.dsis.common.inventory.stockio.packingtype"/>',
+            	name: 'packingType', 
+            	align: 'left', 
+            	width: 80,
+            	isSort: false,
+            	editor: {
+            		type : 'select',
+                    textField : 'name',
+                    valueField : 'toUom',
+	                url:"${base.contextPath}/pm/uom/query",
+	                staticOptions: function(e){
+		                e.column.editor.parms = {
+                            itemId: 1001,
+                            uomCode: 'EA'
+		                }
+	                },
+	                onSelected: function(v, t){
+                    	//选择时候自动带出箱子单位数量
+                    	if(v){
+                        	var curRow = this.options.host_grid_row;
+                        	curRow.toUom = t;
+	                	}
+                    }
+            	},
+                render: function (v,t) {
+                    return v.toUom;
+                }
+            },
+{
+                display : '主键',
+                name : 'id',
+                width : 60,
+                frozen : false
+            }, {
+                display : '名字',
+                width : 100,
+                name : 'name',
+                editor : {
+                    type : 'text',
+                    onFocus :function(){
+                        
+                    }
+                },
+                validate:{
+                    required:true
+                }
+            }, {
+                display : '性别', 
+                width : 70,
+                name : 'sex',
+                editor : {
+                    type : 'select',
+                    data : sexData,
+                    valueField : 'Sex'
+                },
+                render : function(item) {
+                    if (parseInt(item.sex) == 1)
+                        return '男';
+                    if (parseInt(item.sex) == 2)
+                        return '女';
+                    return '';
+                }
+            }, {
+                display : '年龄', 
+                name : 'age',
+                width : 60,
+                editor : {
+                    type : 'int',
+                    sign:false
+                },
+                validate:{
+                    required:true
+                }
+            }, {
+                display : '生日',
+                name : 'birthday',
+                type : 'date',
+                format : 'yyyy-MM-dd',
+                width : 100,
+                editor : {
+                    type : 'date'
+                }
+            }, {
+                display : '创建时间', 
+                name : 'creationTime',
+                format : 'yyyy-MM-dd hh:mm',
+                width : 150,
+                editor : {
+                    type : 'date',
+                    showTime:true,
+                }/* ,
+                render : function(item) {
+                    var d = item.creationTime;
+                    if(!(d instanceof Date)){
+                        d =  Date.parse(item.creationTime)
+                    }
+                    return d.toString("yyyy-mm-dd HH:MM:ss")
+                } */
+            },{
+                display : '部门',
+                name : 'deptId',
+                width : 150,
+                isSort : false,
+                editor : {
+                    type : 'select',
+                    data : DepartmentList,
+                    valueField : 'DepartmentID',
+                    textField : 'DepartmentName'
+                },
+                render : function(item) {
+                    for (var i = 0; i < DepartmentList.length; i++) {
+                        if (DepartmentList[i]['DepartmentID'] == item.deptId)
+                            return DepartmentList[i]['DepartmentName']
+                    }
+                    return item.deptId;
+                }
+            }, {
+                display : '账户',
+                width : 100,
+                name : 'employeeId',
+                //textField : 'employeeName',
+                editor : {
+                    type : 'select',
+                    textField : 'name',
+                    valueField : 'id',
+                    url : '${base.contextPath}/demo/user/query',
+                   	staticOptions:function(e){
+                   		e.column.editor.parms = {
+                   		     name : e.record.name,
+                   		     age:11
+                    	}
+                    }
+
+                }
+            }, {
+                display : '动态编辑',
+                width : 100,
+                name : 'dynamicedit',
+                editor:{
+                    type:'text'
+                }
+            },  /**/ { 
+                display : 'roleId',
+                name : 'roleId', 
+                width : 100
+            },{ 
+                display : 'roleName',
+                name : 'roleName', 
+                width : 100
+            },  { 
+                display : '通用lov',  
+                name : 'roleId',
+                width : 150,
+                textField:'roleName',
+                align: 'left',
+                editor: $.extend(${lovService.getLov(base.contextPath,base.locale, "lov_role")},{
+                    staticOptions : function(e){
+                    	e.column.editor.parms = {
+                    	        deptId : e.record.deptId
+                    	}
+                	},
+                	onSelect : function(datas){
+                		var p = this.options;
+                		p.host_grid.updateCell('roleName',datas.data[0].roleDesc,p.host_grid_row);
+                	}
+                })
+            },{ 
+                display : '附件管理',
+                name : 'attachmentId',
+                width : 80,
+                align: 'left',
+                render : function(item) {
+                    return this.options.enabledEdit?"<a target='_blank' href='javascript:void(0)' onclick='$.ligerDialog.open({ width:1024,height: 768,url: \"${base.contextPath}/sys/attach/manage?sourceType=demouser&sourceKey="+item.id+"\"})'>附件管理</a>":"附件管理	";
+                }
+            },{
+                display : '常规lov',
+                name : 'roleCode',
+                width : 150,
+                textField:'roleName',
+                align: 'left',
+                editor : {
+                    type : 'popup',
+                    valueField : 'roleCode',
+                    textField : 'roleName',
+                    title:'xxxxxx',
+                    grid : {
+                        columns : [{
+                            display : '<@spring.message "role.rolecode"/>',
+                            name : "roleCode",
+                            width : 150,
+                            editor:{type:'text'}
+                        }, {
+                            display : '<@spring.message "role.rolename"/>',
+                            name : "roleName",
+                            width : 150
+                        }, {
+                            display : '<@spring.message "role.roledesc"/>',
+                            name : "roleDescription",
+                            width : 150
+                        }],
+                        url : '${base.contextPath}/sys/role/query',
+                        enabledEdit : true
+                    },
+                    condition : {
+                        fields : [ {
+                            display : '<@spring.message "role.rolecode"/>',
+                            name : "roleCode",
+                            newline : true,
+                            type : "text"
+                        }, {
+                            display : '<@spring.message "role.rolename"/>',
+                            name : "roleName",
+                            newline : false,
+                            type : "text"
+                        } ]
+                    }
+                }
+            },{
+                display : '测试',       
+                name : 'testPop',
+                width : 150,
+                textField:'name',
+                align: 'left',
+                editor : {
+                    type : 'popup',
+                    onButtonClick:function(){ 
+                        var editor = this;
+                        var p = this.options;
+                        $.ligerDialog.open({
+                            height:350,
+                            width: 400,
+                            title : '请填写地址信息',
+                            url: '${base.contextPath}/spm/spm_location_edit.html', 
+                            showMax: false,
+                            showToggle: true,
+                            showMin: false,
+                            isResize: true,
+                            slide: false,
+                            data: {},//document.activeElement.obj_location,
+                            buttons: [ 
+                        	 { text: $l("hap.ok"),
+                               onclick: function (item, dialog) {
+                                  editor.setValue('value');
+                                  editor.setText('text');
+                           		  dialog.close();
+                               }
+                             },
+                             { text: $l("hap.cancel"),
+                               onclick: function (item, dialog) {
+                                   dialog.close(); 
+                               }
+                             } 
+                             
+                           ]
+                        })
+                    }
+                },
+                
+            }],
+            url:'${base.contextPath}/demo/user/query',
+            //url : '${base.contextPath}/resources/demo_grid.json',
+            //method : 'get',
+            toolbar : {
+                id:'grid_toolbar',
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    id:'new_btn',
+                    click : function() {
+                        window.demogrid.addRow({name:'test'})
+                    },
+                    icon : 'add'
+                },{
+                    text : 'delete',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid:demogrid
+                        }) 
+                    },
+                    icon : 'delete'
+                }<#if accessService.accessMaintain()>
+                    ,{
+                    text : 'save',
+                    click : function() {
+                        Hap.gridSave({
+                            grid:demogrid,
+                            url:'${base.contextPath}/demo/user/submit'
+                        })
+                        
+                    },
+                    icon : 'save'
+                }</#if>]
+            },
+            canSelect : function(item) {
+                return item.id > 3;
+            },
+            onBeforeEdit : function(item) {
+                var name = item.column.name, data = item.record;
+                if (name == 'name') {
+                    return !(data.id > 10);
+                }
+                if (name == 'dynamicedit'){
+                    if(data.sex == 1){
+                        item.column.editor = {
+	                        type : 'select',
+	                        textField : 'name',
+	                        valueField : 'id',
+	                        url : '${base.contextPath}/demo/user/query',
+	                        parms:{
+	                            name : data.name,
+                      		    age:11
+	                        }
+	                    }
+                        item.column.textField = 'dname';
+                        item.column.render=Hap.gridSelectRenderer('dname');
+                    }else if(data.sex == 2){
+                        item.column.editor = {
+                            type : 'text' 
+                        }
+                        item.column.render=null;
+                    }else{
+                        return false;
+                    }
+                }
+                return true;
+            },
+            enabledEdit : true,
+            width : '95%',
+            height : '500',
+            checkbox : true
+        });
+    </script>
+</body>
+</html>

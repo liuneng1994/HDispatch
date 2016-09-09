@@ -1,0 +1,58 @@
+<#-- 
+ * description: 邮件发送测试
+ * version: 1.0 
+ * author:jessen
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+<form id="dataForm"></form>
+
+<script type="text/javascript">
+    $(function () {
+
+        /* dataForm表单提交 */
+        window['dataForm'] = $("#dataForm").ligerForm({
+            fields : [{
+                type : 'text',
+                label: '<@spring.message "messageemailconfig.accountcode"/>',
+                name : 'accountCode'
+            }, {
+                type : 'text',
+                label: '<@spring.message "message.subject"/>',
+                name : 'subject'
+            }, {
+                type : 'textarea',
+                label: '<@spring.message "message.content"/>',
+                name : 'content'
+            }, {
+                type : 'text',
+                label: '<@spring.message "message.receivers"/>',
+                name : 'receivers'
+            }],
+            buttons: [{
+                text    : '<@spring.message "hap.send"/>',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    $.ajax({
+                        url        : '${base.contextPath}/sys/message/sendTest',
+                        type       : "POST",
+                        dataType   : "json",
+                        contentType: "application/json",
+                        data       : JSON2.stringify(dataForm.getData()),
+                        success    : function (args) {
+                            if (args.success) {
+                                alert('send success');
+                            }
+                        }
+                    });
+                }
+            }]
+        });
+
+    })
+</script>
+</body>
+</html>

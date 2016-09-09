@@ -1,0 +1,200 @@
+<#--
+ * description: 配置编码修改界面
+ * version: 1.0
+ * author: frank.li
+ * #{copyright}#.
+ *
+-->
+<#include "../include/head.html">
+<body style="padding: 15px">
+<script src="${base.contextPath}/common/code?profileLevelData=SYS.PROFILE_LEVEL_ID" type="text/javascript"></script>
+    <form id="mainform" method="post" enctype="application/json;charset=UTF-8">
+        <input type="hidden" name="profileValues" id="profileValues" value="" />
+    </form>
+    <div id="profileValueGrid" style="margin-left: 2px; margin-top: 2px;"></div>
+    <script type="text/javascript">
+        function f_save() {
+            //验证层次和层次值不为空时才提交保存
+            var rows = profileValueGrid.rows;
+            for(var i=0; i<rows.length; i++){
+                if(!(rows[i].levelId && rows[i].levelName)){
+                    $.ligerDialog.error('<@spring.message "msg.error.grid.column.notempty"/>', $l("hap.tip.info"));
+                    return;
+                }
+            }
+            //提交保存
+            Hap.submitForm({
+                form:form,
+                grid:profileValueGrid,
+                gridName:'profileValues',
+                url:'${base.contextPath}/sys/profile/submit',
+                success:function(json,opt){
+                    $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                        parent.d_um_002_grid.reload();
+                        f_cancel();
+                    });
+                    
+                }
+            });
+        }
+        function f_cancel() {
+            var dialog = frameElement.dialog;
+            dialog.close();
+            
+            
+        }
+        <#assign isedit = (RequestParameters.isedit!'0')/>        
+        //表单底部按钮 
+        Hap.setFormDefaultBtn(f_cancel, f_save);
+    
+        var mainform = $("#mainform");
+        var form  = mainform.ligerForm({
+            inputWidth : 280,
+            fields : [{
+                name:'profileId',
+                type:'hidden'
+            },{
+                display : '<@spring.message "profile.profilename"/>',
+                name : "profileName",
+                type : "text",
+                validate : {
+                    required : true
+                }
+            }, {
+                display : '<@spring.message "profile.description"/>',
+                name : "description",
+                type : "text",
+                validate : {
+                    required : true
+            }
+            } ]
+        });
+    
+        mainform.attr("action", "${base.contextPath}/sys/profile/submit");
+        
+        
+    
+        profileValueGrid = $("#profileValueGrid").ligerGrid({
+            columns : [{
+                display : '<@spring.message "profilevalue.levelid"/>',
+                name : 'levelId',
+                width : 130,
+                align : 'left',
+                editor : {
+                    type : 'combobox',
+                    cancelable: false,
+                    data : profileLevelData,
+                    valueField : 'value',
+                    textField : 'meaning'
+                },
+                
+                render : function(item) {
+                    for (var i = 0; i < profileLevelData.length; i++) {
+                        if (profileLevelData[i]['value'] == item.levelId)
+                            return profileLevelData[i]['meaning']
+                    }
+                    return item.levelId;
+                }
+                
+                
+            },
+            
+            {
+                display : '<@spring.message "profilevalue.levelvalue"/>',
+                name : 'levelValue',
+                width : 130,
+                align : 'left',
+                textField : 'levelName',
+				valueField : 'levelValue',
+                editor : {
+					type : 'popup',
+					cancelable: false,
+					textField : 'levelName',
+					valueField : 'levelValue',
+	                onButtonClick:function(){
+	                	if (profileValueGrid.lastEditRow.levelId) {
+	                		return true;
+	                	}
+	                	return false;
+	                },
+	                grid : {
+	                	columns : [{
+		                    display : '<@spring.message "profilevalue.levelid"/>',
+		                    name : "levelName",
+		                    type : "text",
+		                    align : "left"
+		                },{
+		                    display : '<@spring.message "profilevalue.levelvalue"/>',
+		                    name : "levelValue",
+		                    type : "text",
+		                    align : "left"
+		                }],
+		                width:400,
+		                pageSize : 10,
+		                url : '${base.contextPath}/sys/profilevalue/querylevelvalues',
+		                checkbox : false,
+		                toolbar : null,
+		                onLoadData:function(){
+		                	var row = window.profileValueGrid.editor.editParm.record;
+		                	this.set('parms',null);
+		                	if(row.levelId){
+		                		this.set('parms',{levelId:row.levelId});
+		                	}		                	
+		                }
+	                }
+                
+				}  
+		    },         
+            {
+            	display : '<@spring.message "profilevalue.profilevalue"/>',
+                name : 'profileValue',
+                width : 150,
+                align : 'left',
+                editor : {
+                    type : 'text'
+                }
+            }
+            ],
+            showToggleColBtn : false,
+            width : '100%',
+            height : '99%',
+            rowHeight : 24,
+            columnWidth : 100,
+            root: 'rows',
+            record: 'total',
+            usePager : false,
+            mouseoverRowCssClass : null,
+            enabledEdit : true,
+            checkbox : true,
+            <#if isedit == '1'>
+             url: '${base.contextPath}/sys/profilevalue/query?profileId=${RequestParameters.profileId!}', 
+            </#if>
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        profileValueGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : profileValueGrid,
+                            url : '${base.contextPath}/sys/profilevalue/remove'
+                        })
+    
+                    },
+                    icon : 'delete'
+                } ]
+            }
+        });
+        <#if isedit == '1'>
+        Hap.loadForm({form:form,url:'${base.contextPath}/sys/profile/query',para:{profileId:${RequestParameters.profileId}}})
+       </#if>
+    </script>
+</body>
+</html>

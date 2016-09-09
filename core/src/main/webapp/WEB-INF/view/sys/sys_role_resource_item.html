@@ -1,0 +1,75 @@
+<#--
+ * description: 资源权限项
+ * version: 1.0 
+ * author: njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding:5px;">
+    <div id="resourceItemGrid"></div>
+    <style> 
+    #resourceItemGrid .l-grid-grouprow-cell {background:none}
+    </style>
+    <script type="text/javascript">
+        //关闭窗口
+        function closeResourceItemDialog() {
+            var dialog = frameElement.dialog;
+            dialog.close();
+        }
+        
+        function saveResourceItem(){ 
+            var checkedList = resourceItemGrid.getSelectedRows();
+            var datas = [];
+            for (var i = 0; i < checkedList.length; i++) {
+                datas.push({
+                    resourceItemId:checkedList[i].resourceItemId,
+                    roleId : '${RequestParameters.roleId!}',
+                    functionId : '${RequestParameters.functionId!}'
+                })
+            }
+            Hap.ajax({
+                url : "${base.contextPath}/sys/rolefunction/submitResourceItems?roleId=${RequestParameters.roleId!}&functionId=${RequestParameters.functionId!}",
+                data : datas
+            })
+        }
+        
+        //表单底部按钮 
+        Hap.setFormDefaultBtn(closeResourceItemDialog, saveResourceItem);
+        
+        var resourceItemGrid = $("#resourceItemGrid").ligerGrid({ 
+            columns: [
+              { 
+                  display: '<@spring.message "com.lkkhpg.dsis.platform.dto.system.resourceitem.resource"/>',
+                  name: 'itemId', 
+                  align: 'left', 
+                  width: 120 
+              },
+              { 
+                  display: '<@spring.message "com.lkkhpg.dsis.platform.dto.system.resourceitem.itemname"/>',
+                  name: 'itemName', 
+                  align: 'left', 
+                  width: 150
+              },
+              { 
+                  display: '<@spring.message "com.lkkhpg.dsis.platform.dto.system.resourceitem.description"/>',
+                  name: 'description', 
+                  align: 'left', 
+                  width: 200,  
+                  editor: { type: 'text' }
+              }
+             ], 
+        	url : '${base.contextPath}/sys/rolefunction/queryResourceItems?roleId=${RequestParameters.roleId!}&functionId=${RequestParameters.functionId!}',
+        	checkbox : true,
+        	width: '99%', 
+            height: '98%', 
+        	usePager:false,
+        	groupColumnName:'targetResourceName', 
+        	isChecked: function(data){
+        	    return (data.rsiId) ? true : false;
+        	}
+
+        });
+    </script>
+</body>
+</html>

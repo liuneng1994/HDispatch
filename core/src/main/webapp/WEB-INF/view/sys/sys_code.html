@@ -1,0 +1,136 @@
+<#--
+ * description: 快速编码界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px; overflow: hidden;">
+<form id="d_sc_002_form"></form>
+<div id="d_sc_002_grid" style="margin: 0; padding: 0"></div>
+<script type="text/javascript">
+    $(function () {
+        window['d_sc_002_form'] = $("#d_sc_002_form").ligerForm({
+            fields     : [{
+                type    : 'text',
+                label   : '<@spring.message "code.code"/>',
+                name    : 'code',
+                typeCase: 'uppercase'
+            }, {
+                type   : 'text',
+                label  : '<@spring.message "code.description"/>',
+                name   : 'description',
+                newline: false
+            }],
+            buttons    : [{
+                text    : '<@spring.message "hap.query"/>',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    Hap.gridQuery({
+                        form: d_sc_002_form,
+                        grid: d_sc_002_grid
+                    })
+                }
+            }, {
+                text    : '<@spring.message "hap.reset"/>',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    d_sc_002_form.reset();
+                }
+            }],
+            onEnterDown: function () {
+                this.options.buttons[0].click();
+            }
+        });
+
+
+        window.newCode = function () {
+            window.popWin = $.ligerDialog.open({
+                //load : false,
+                width : 600,
+                height: 550,
+                url   : 'sys_code_edit.html'
+            });
+        }
+
+
+        window.editCode = function (id) {
+            window.popWin = $.ligerDialog.open({
+                load  : false,
+                width : 600,
+                height: 550,
+                url   : 'sys_code_edit.html?isedit=1&codeId=' + id
+            });
+        }
+
+        window['d_sc_002_grid'] = $("#d_sc_002_grid").ligerGrid({
+            unSetValidateAttr: false,
+            columns          : [{
+                display : '<@spring.message "code.code"/>',
+                name    : 'code',
+                align   : 'left',
+                width   : 190,
+                typeCase: 'uppercase',
+                editor  : {
+                    type: 'text'
+                }
+            }, {
+                display: '<@spring.message "code.description"/>',
+                name   : 'description',
+                align  : 'left',
+                width  : 200,
+                editor : {
+                    type: 'text'
+                }
+            }, {
+                display: '<@spring.message "hap.action"/>',
+                width  : 100,
+                align  : 'center',
+                render : function (rowdata) {
+                    return '<a href="#" onclick="editCode(' + rowdata.codeId + ')"><@spring.message "hap.edit"/></a>'
+                }
+            }],
+            url              : '${base.contextPath}/sys/code/query',
+            toolbar          : {
+                items: [{
+                    text   : '<@spring.message "hap.new"/>',
+                    disable: false,
+                    click  : newCode,
+                    icon   : 'add'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click: function () {
+                        Hap.gridDelete({
+                            grid: d_sc_002_grid,
+                            url : '${base.contextPath}/sys/code/remove'
+                        })
+
+                    },
+                    icon : 'delete'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click: function () {
+                        Hap.gridSave({
+                            grid: d_sc_002_grid,
+                            url : '${base.contextPath}/sys/code/submit'
+                        })
+                    },
+                    icon : 'save'
+                }]
+            },
+            enabledEdit      : true,
+            width            : '99%',
+            height           : '98%',
+            checkbox         : true
+        });
+    });
+</script>
+</body>
+</html>

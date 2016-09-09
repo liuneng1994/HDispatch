@@ -1,0 +1,121 @@
+<#include "../include/head.html">
+<body style="padding: 3px; overflow: hidden;">
+<script src="${base.contextPath}/common/language?var=languageData" type="text/javascript"></script>
+<form id="d_pmt_002_form"></form>
+<div id="d_pmt_002_grid" style="margin: 0; padding: 0"></div>
+<script type="text/javascript">
+    $(function () {
+        window['d_pmt_002_form'] = $("#d_pmt_002_form")
+                .ligerForm(
+                        {
+                            fields : [
+                                {
+                                    type : 'text',
+                                    label: '<@spring.message "jobdetaildto.jobname"/>',
+                                    name : 'jobName'
+                                },
+                                {
+                                    type   : 'text',
+                                    label  : '<@spring.message "jobdetaildto.jobgroup"/>',
+                                    name   : 'jobGroup',
+                                    newline: false
+                                },
+                                {
+                                    type : 'text',
+                                    label: '<@spring.message "jobrunninginfodto.jobstatus"/>',
+                                    name : 'jobStatus'
+                                    //newline : false
+                                }],
+                            buttons: [{
+                                text    : '<@spring.message "hap.query"/>',
+                                disabled: false,
+                                width   : 60,
+                                click   : function () {
+                                    Hap.gridQuery({
+                                        form: d_pmt_002_form,
+                                        grid: d_pmt_002_grid
+                                    })
+                                }
+                            }]
+                        });
+
+        window['d_pmt_002_grid'] = $("#d_pmt_002_grid")
+                .ligerGrid(
+                        {
+                            unSetValidateAttr: false,
+                            columns          : [
+                                /* {
+									display : '<@spring.message "prompt.promptcode"/>',
+											name : 'jobRunningInfoId',
+											align : 'left',
+											width : 300
+										}, */
+                                {
+                                    display: '<@spring.message "jobdetaildto.jobname"/>',
+                                    name   : 'jobName',
+                                    align  : 'left',
+                                    width  : 150
+                                },
+                                {
+                                    display: '<@spring.message "jobdetaildto.jobgroup"/>',
+                                    name   : 'jobGroup',
+                                    align  : 'center',
+                                    width  : 100
+                                },
+                                {
+                                    display: '<@spring.message "jobrunninginfodto.jobstatus"/>',
+                                    name   : 'jobStatus',
+                                    align  : 'center',
+                                    width  : 80,
+                                    render : function (item) {
+                                        if (item.jobStatus == 'Finish') {
+                                            return "<span style='color:green;'>FINISH</span>"
+                                        }
+                                        if (item.jobStatus == 'Failed') {
+                                            return "<span style='color:red;'>FAILED</span>"
+                                        }
+                                        if (item.jobStatus == 'Vetoed') {
+                                            return "<span style='color:orange;'>VETOED</span>"
+                                        }
+                                        return item.jobStatus;
+                                    }
+                                },
+                                {
+                                    display: '<@spring.message "jobrunninginfodto.executionsummary"/>',
+                                    name   : 'executionSummary',
+                                    align  : 'center',
+                                    width  : 300
+                                },
+                                {
+                                    display: '<@spring.message "jobrunninginfodto.previousfiretime"/>',
+                                    name   : 'previousFireTime',
+                                    align  : 'center',
+                                    width  : 140
+
+                                },
+                                {
+                                    display: '<@spring.message "jobrunninginfodto.scheduledfiretime"/>',
+                                    name   : 'scheduledFireTime',
+                                    align  : 'center',
+                                    width  : 140
+                                },
+                                {
+                                    display: '<@spring.message "jobrunninginfodto.nextfiretime"/>',
+                                    name   : 'nextFireTime',
+                                    align  : 'center',
+                                    width  : 140
+                                },
+                                {
+                                    display: '<@spring.message "jobrunninginfodto.firetime"/>',
+                                    name   : 'fireTime',
+                                    align  : 'center',
+                                    width  : 140
+                                }],
+                            url              : '${base.contextPath}/job/jobinfo/query?sortname=scheduledFireTime&sortorder=desc',
+                            width            : '100%',
+                            height           : '99%'
+                        });
+    });
+</script>
+</body>
+</html>

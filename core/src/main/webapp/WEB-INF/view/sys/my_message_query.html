@@ -1,0 +1,145 @@
+<#--
+ * description: 消息管理界面
+ * version: 1.0 
+ * author: huangjiajing
+ * Copyright LKK Health Products Group Limited.
+ * 
+-->
+
+<#include "../include/head.html">
+<body style="padding: 10px;" onload="onload()">
+    <script src="${base.contextPath}/resources/js/mm/mm.js" type="text/javascript"></script>
+    <link href="/dsis/resources/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script src="${base.contextPath}/common/code?readFlag=SYS.READ_FLAG" type="text/javascript"></script>
+    <form id="d_stm_001_form"></form>
+    <div id="d_stm_001_grid" style="margin: 0; padding: 0"></div>
+    <script type="text/javascript">
+    
+    function onload(){
+    	  Hap.gridQuery({
+              form : d_stm_001_form,
+              grid : d_stm_001_grid
+          })
+    }
+    $(function() {
+        window['d_stm_001_form'] = $("#d_stm_001_form").ligerForm({
+            fields : [
+				{ name : 'userName', label : '<@spring.message "message.messagesender"/>', newline : false ,type:'text'},
+                { name : 'status', label : '<@spring.message "message.reading.state"/>', newline : false,type:'select',
+                	options: {
+                        valueField: 'value',
+                        textField: 'meaning',
+                        data: readFlag,
+                        value:readFlag[0].value
+                    }
+				},
+	            { name : 'publishDateFromTo', type : 'date', label : '<@spring.message "message.receive.date.from"/>', newline : true},
+	            { name : 'publishDateFromDo', type : 'date', label : '<@spring.message "message.receive.date.to"/>', newline : false}
+	        ],
+            buttons : [
+                {
+	                text : '<@spring.message "sys.hand.btn.query"/>',
+	                disabled : false,
+	                width : 60,
+	                click : function() {
+	                    Hap.gridQuery({
+	                        form : d_stm_001_form,
+	                        grid : d_stm_001_grid
+	                    })
+	                }
+	            },{
+                    text : '<@spring.message "sys.hand.btn.delete"/>',
+                    disabled : false,
+                    width : 60,
+                    click: function(){
+                    	Hap.gridDelete({
+                    		confirmTip:'<@spring.message "message.deleteok"/>',
+	                        grid : d_stm_001_grid,
+	                        url : '${base.contextPath}/sys/mymessage/delete'
+                        })
+                    }
+                }
+            ]
+        });
+         var d_stm_001_grid;
+         d_stm_001_grid = window['d_stm_001_grid'] = $("#d_stm_001_grid").ligerGrid({
+            columns : [
+                {
+	                display : '',
+	                name : 'status',
+	                align : 'center',
+	                width : 40,
+                    render:function(rowData){
+                    	if(rowData.status == 'Y'){
+                    	    return "<img src='${base.contextPath}/resources/images/email_n.png'></img>";
+                    	} else {
+                    	    return "<img src='${base.contextPath}/resources/images/email_y.png'></img>";
+                    	}
+                    }
+
+                },
+                {
+	                display : '<@spring.message "message.messagename"/>',
+	                name : 'subject',
+	                align : 'left',
+	                width : 200,
+                    type : 'text',
+                    render: function (row){
+                        return "<a href='javascript:void(0);' onclick='messageEdit("+row.readId+")'>" + row.subject + "</a> ";
+                    }
+	            },
+                {
+                    name : 'userName',
+                    display : '<@spring.message "message.sendername"/>',
+                    align : 'left',
+                    width : 200
+                },
+                {
+                    name : 'publishDate',
+                    display : '<@spring.message "message.receivingtime"/>',
+                    align : 'left',
+                    isSort : true,
+                    width : 200,
+                    showtime:true
+                }
+            ],
+            url : '${base.contextPath}/sys/mymessage/query',
+            delayLoad:true,
+            enabledEdit : false,
+            width : '99%',
+            height : '98%',
+            rownumbers: true,
+            checkbox:true
+        });
+    });
+         
+    function messageEdit(readId){
+        window.top.f_removeTab('MY_SYS_MESSAGE_EDIT');
+        window.top.f_addTab('MY_SYS_MESSAGE_EDIT','<@spring.message "mymessage.details"/>', 'sys/my_message_dialog.html?isedit=1&readId=' + readId);
+    }
+    
+         function salesEdit(readId){
+             $.ligerDialog.open({
+                 title: '<@spring.message "message.details"/>',
+                 width:700,
+                 height:500,
+                 slide: false,
+                 url: "my_message_dialog.html?readId="+readId,
+                 buttons: [{
+                     text: '<@spring.message "sys.hand.btn.ok" />',
+                     onclick: function(i, d) {
+                         d.hide();
+                         d_stm_001_grid.reload();
+                     }
+                 },
+                 {
+                     text: '<@spring.message "sys.hand.btn.cancel" />',
+                     onclick: function(i, d) {
+                         d.hide();
+                     }
+                 }]
+             });
+         }
+</script>
+</body>
+</html>

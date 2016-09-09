@@ -1,0 +1,229 @@
+<#-- 
+* description: 快速编码界面
+* version: 1.0 
+* 
+--> 
+<#include "../include/header.html">
+<body>
+    <script src="${base.contextPath}/common/code?resourceTypeData=SYS.RESOURCE_TYPE&codeYesNo=SYS.YES_NO" type="text/javascript"></script>
+    <div id="content-container">
+        <div id="page-content">
+            <div class="panel">
+                <form class="form-horizontal">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><@spring.message "code.code"/></label>
+                                    <div class="col-sm-9">
+                                        <input type="text" style="width:100%" data-bind="value:model.code" class="k-textbox">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><@spring.message "code.description"/></label>
+                                    <div class="col-sm-9">
+                                        <input type="text" style="width:100%" data-bind="value:model.description" class="k-textbox">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer text-right">
+                        <span class="btn btn-success" data-bind="click:queryResource" type="submit"><@spring.message "hap.query"/></span>
+                        <span class="btn btn-success" data-bind="click:resetForm" type="button"><@spring.message "hap.reset"/></span>
+                    </div>
+                </form>
+            </div>
+              <div id="grid" class="table"></div>
+        </div>
+    </div>
+    
+<div id="editWin">
+</div>
+
+        <script>
+            window.viewModel = kendo.observable({
+                    model:{},
+                    editaction:"编辑",
+                    queryResource: function(e) {
+                        $('#grid').data('kendoGrid').dataSource.read();
+                    },
+                    resetForm:function(e){
+                        var formData=viewModel.model.toJSON();
+                        for(k in formData){
+                            viewModel.model.set(k,null);
+                        }
+                    }
+                });
+                kendo.bind($('#page-content'),viewModel)
+                              
+                var crudServiceBaseUrl = "${base.contextPath}/sys/code",
+                    dataSource = new kendo.data.DataSource({
+                        transport: {
+                            read:  {
+                                url: crudServiceBaseUrl + "/query",
+                                type : "POST",
+                                dataType: "json"
+                            },
+                            destroy : { 
+                                url : crudServiceBaseUrl + "/remove",
+                                contentType: "application/json",
+                                type : "POST" 
+                            },
+                            parameterMap: function(options, type) {
+                                if (type !== "read" && options.models) {
+                                    var datas = options.models
+                                    if(type =='create' || type =='update'){
+                                        datas = options.models.map(function(data){
+                                            data['__status'] = (type =='create' ? 'add' : 'update');
+                                            return data;
+                                        })
+                                    }
+                                    return kendo.stringify(datas);
+                                } else if (type === "read") {
+                                    var map = viewModel.model.toJSON();
+                                    map.page = options.page;
+                                    map.pagesize = options.pageSize;
+                                    for(k in map){
+                                        if(map[k]===''||map[k]===null||map[k]===undefined){
+                                           delete map[k];
+                                        }
+                                    }
+                                      return map;
+                                }  
+                            }
+                        },
+                        batch: true,
+                        serverPaging : true,
+                        pageSize: 10,
+                        schema: {
+                            data:'rows',
+                            total:'total',
+                            model: {
+                                id: "code",
+                                fields: {
+                                    code: { validation: { required: true } }
+                                }
+                            },
+                            errors: function(res){
+                                if(!res.success && res.message) {
+                                    return res.message;
+                                }
+                            }
+                        },
+                        error: function(e) {
+                            alert(e.errors)
+                        }
+                    });
+
+                $("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    //width:500,
+                    resizable: true,
+                    scrollable: false,
+                    pageable: {
+                        pageSizes:[5, 10, 20, 50],
+                        refresh:true,
+                        buttonCount:5,
+                        messages: {
+                            noRecords: "未找到任何数据",
+                            display: "{0} - {1} 共 {2} 条数据",
+                            empty: "没有数据",
+                            page: "页",
+                            of: "/ {0}",
+                            itemsPerPage: "条每页",
+                            first: "第一页",
+                            previous: "前一页",
+                            next: "下一页",
+                            last: "最后一页",
+                            refresh: "刷新"
+                        }
+                    },
+                    toolbar: [{
+             				name:'newbutton',
+                        	text:'<@spring.message "hap.new"/>'
+
+                         },{
+                             name:"save",
+                             text:'<@spring.message "hap.save"/>'
+                         },{
+                             name:"cancel",
+                             text:'<@spring.message "hap.cancel"/>'
+                    }],
+                    columns: [
+                        { field: "code", title: '<@spring.message "code.code"/>', width: 120 },
+                        { field: "description", title:'<@spring.message "code.description"/>', width: 120 },
+                        {attributes: {style: "text-align:center"}, command : [{
+                            text : '<@spring.message "hap.edit"/>',
+                            	 click: function(e){
+                            
+                            var data = this.dataItem($(e.target).closest("tr"));
+                            
+                            var onClose = function () {
+                            	$("#editWin").empty();
+                            }
+
+                            $("#editWin").kendoWindow({
+                            	 actions: ["Close"],
+                            	 title: "codeEdit",
+                            	 draggable: true,
+                            	 height: "500px",
+                            	 width: "700px",
+                            	 close: onClose,
+                            	 content: "${base.contextPath}/sys/sys_code_edit_kendoui.html?codeId="+data.codeId+"&isedit=1",
+                            	 iframe: true,
+                                 modal: true
+                            });
+                            
+                            var win = $("#editWin").data("kendoWindow");
+                            win.center().open();
+
+                            e.preventDefault();
+                            } 
+                        }],  width : 70},
+                        {attributes: {style: "text-align:center"}, command : [{
+                            text : '<@spring.message "hap.delete"/>',
+                            click: function(e){
+                                e.preventDefault();
+                                var data = this.dataItem($(e.target).closest("tr"));
+                                this.dataSource.remove(data);
+                                this.dataSource.sync()
+                           
+                            }
+                        }],  width : 70} ],
+                   editable: {
+                        confirmation: function(e){
+                            return "确定要删除\""+e.code+"\"么?"
+                        }
+                    }
+                });
+                
+                //处理grid中的选择框
+                $("#grid").on("change", "input.chkbx", function(e) {
+                    var target = $(e.target), grid = $("#grid").data("kendoGrid"),
+                        dataItem = grid.dataItem(target.closest("tr"));
+                    dataItem.set(target.data('field'), this.checked ? 'Y' : 'N');
+                });
+                
+                $(".k-grid-newbutton").click(function(e){
+                    e.preventDefault();
+                    $("#editWin").kendoWindow({
+                   	 actions: ["Close"],
+                   	 title: "codeEdit",
+                   	 draggable: true,
+                   	 height: "500px",
+                   	 width: "700px",
+                   	 content: "${base.contextPath}/sys/sys_code_edit_kendoui.html?isedit=0",
+                   	 iframe: true,
+                      modal: true
+                   });
+                   
+                   var win = $("#editWin").data("kendoWindow");
+                   win.center().open();
+                });
+        </script>
+    </div>
+</body>
+</html>

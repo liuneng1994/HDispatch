@@ -1,0 +1,821 @@
+<#include "../include/head.html">
+<body style="padding: 3px;">
+
+<form id="mainform" method="post">
+    <span id="json"></span>
+    <input name="ccccccccc" type="hidden" value="xxxxxxxxxxxxxx"/>
+</form>
+<div id="demogrid" style="margin-left: 2px; margin-top: 2px;"></div>
+<form id="upstream_change_apply">ccc</form>
+<script src="${base.contextPath}/common/code?userTypeData=sys.user_type&userStatusData=sys.user_status"
+        type="text/javascript"></script>
+<!-- <script src="${base.contextPath}/resources/js/app/date.js" type="text/javascript"></script> -->
+
+<script type="text/javascript">
+
+    var DepartmentData = {
+        rows : [{
+            "DepartmentID"    : 1,
+            "DepartmentName"  : "主席",
+            "DepartmentRemark": null
+        }, {
+            "DepartmentID"    : 2,
+            "DepartmentName"  : "研发中心",
+            "DepartmentRemark": null
+        }, {
+            "DepartmentID"    : 3,
+            "DepartmentName"  : "销售部",
+            "DepartmentRemark": null
+        }, {
+            "DepartmentID"    : 4,
+            "DepartmentName"  : "市场部",
+            "DepartmentRemark": null
+        }, {
+            "DepartmentID"    : 5,
+            "DepartmentName"  : "顾问组",
+            "DepartmentRemark": null
+        }],
+        total: 5
+    };
+    var DepartmentList = DepartmentData.rows;
+    var sexData = [{
+        Sex : 1,
+        text: '男'
+    }, {
+        Sex : 2,
+        text: '女'
+    }];
+
+    jQuery.validator.addMethod("isZipCode", function (value, element) {
+        var tel = /^[0-9]{6}$/;
+        return this.optional(element) || (tel.test(value));
+    }, "请正确填写您的邮政编码");
+    //创建表单结构
+    var mainform = $("#mainform");
+    mainform.ligerForm({
+        inputWidth: 280,
+        space     : 15,
+        fields    : [{
+            name   : "OrderID",
+            type   : "hidden",
+            id     : 'OrderIDA',
+            options: {
+                value: '1111'
+            }
+        }, {
+            display: 'roleDescription',
+            type   : 'hidden',
+            name   : 'roleDescription'
+        }/*,{
+                display : '多语言字段',
+                name : 'roleName',
+                type : 'tl',
+                options : {
+                    title:'录入商品信息',
+                    idField:'roleId',
+                    dto:'Role'
+                }
+            } , {
+                display : "用户 ",
+                name : "userId",
+                newline : true,
+                type : "select",
+                comboboxName : "userNameCombo",
+                textField : 'userName',
+                options : {
+                    valueFieldID : "userId"
+                },
+                group : "基本信息"
+            } */, {
+            display  : "自定义LOV",
+            id       : 'roleIdPop',
+            name     : "roleId1",
+            type     : "popup",
+            newline  : false,
+            textField: 'roleName1',
+            group    : "基本信息",
+            readonly : false,
+            options  : {
+                /*onSelected:function(obj){
+					alert(obj.value)
+				},
+				 onChangeValue:function(v){
+					alert(v)
+				}, */
+                placeholder : '输入用户角色编码',
+                valueField  : "roleId",
+                textField   : "roleName",
+                title       : "测试通用 lov",
+                autocomplete: true,
+                grid        : {
+                    delayLoad: true,
+                    url      : "${base.contextPath}/common/lov/lov_role",
+                    columns  : [
+                        {
+                            "display"     : "角色代码",
+                            "name"        : "roleCode",
+                            "isSort"      : false,
+                            isAutoComplete: true,
+                            "dropDown"    : "N",
+                            "width"       : 200
+                        },
+                        {"display": "角色名称", "name": "roleName", "isSort": false, "dropDown": "Y", "width": 200},
+                        {"display": "描述", "name": "roleDescription", "isSort": false, "dropDown": "N", "width": 200}
+                    ]
+                },
+                condition   : {
+                    fields: [
+                        {display: "角色代码", name: "roleCode", type: "text", newline: false},
+                        {
+                            display  : '雇员',
+                            type     : 'select',
+                            name     : 'employeeId',
+                            textField: 'emaployeeName',
+                            newline  : false,
+                            options  : {
+                                readonly    : false,
+                                valueFieldID: "employeeId",
+                                valueField  : 'id',
+                                textField   : 'name',
+                                data        : [{
+                                    'id'  : 1,
+                                    'name': '张三'
+                                }, {
+                                    'id'  : 2,
+                                    'name': '李四'
+                                }]
+                            }
+                        }
+                    ]
+                }
+            }
+
+        }, {
+            display  : "通用lov1",
+            name     : "lovId",
+            type     : "popup",
+            newline  : false,
+            textField: 'LovText',
+            options  : $.extend(${lovService.getLov(base.contextPath,base.locale, "lov_inv_organization")}, {
+                onSelect  : function (datas) {
+                    var d = datas.data[0]
+                    /* var d = datas.data,roleCodes=[],roleDescs=[];
+					for(var i = 0,len = d.length; i < len;i++){
+						roleCodes.push(d[i].roleCode);
+						roleDescs.push(d[i].roleDesc);
+					}
+					liger.get('roleId1').setValue(roleCodes.join(';'));
+					liger.get('ShipName').setValue(roleDescs.join(';'));*/
+                },
+                onLoadData: function () {
+                    this.setParm('deptId', $.ligerui.get('deptId').getValue())
+                }
+            })
+
+
+        }, {
+            display: "非负整数",
+            name   : "qty",
+            id     : 'qty_cmp',
+            newline: false,
+            type   : 'int',
+            options: {
+                digits: true,
+                sign  : false
+            }
+        }, {
+            display: "部门ID",
+            name   : "deptId",
+            newline: true,
+            type   : 'text',
+            options: {
+                onChangeValue: function (v) {
+                    alert(v)
+                }
+            }
+
+        }, {
+            display : "雇员1    ",
+            name    : "employeeId",
+            //textField:'employeeName',
+            newline : false,
+            type    : "select",
+            validate: {
+                required: true
+            },
+            options : {
+                isMultiSelect: false,
+                //valueFieldID : "employeeId",
+                valueField   : 'id',
+                textField    : 'name',
+                data         : [{
+                    'id'  : 1,
+                    'name': 'a'
+                }, {
+                    'id'  : 2,
+                    'name': 'ab'
+                }, {
+                    'id'  : 3,
+                    'name': 'ac'
+                }]
+            }
+        }, {
+            display: "password",
+            name   : "password",
+            newline: false,
+            type   : 'password'
+        }, {
+            display  : "DemoUser11",
+            type     : 'select',
+            name     : 'demoUserId',
+            textField: 'demoUserName',
+            options  : {
+                triggerToLoad: true,
+                autocomplete : true,
+                textField    : 'name',
+                valueField   : 'id',
+                url          : '${base.contextPath}/demo/user/query'
+            }
+
+        }, {
+            display: "订购日期",
+            name   : "orderDate",
+            id     : 'orderDate',
+            /* validate : {
+				required : true
+			}, */
+            newline: true,
+            group  : "其他模块",
+            type   : "date"
+        }, {
+            display: "日期时间",
+            name   : "creationTime",
+            newline: false,
+            options: {
+                showTime: true,
+                format  : 'yyyyMM'
+            },
+            type   : "date"
+        }, {
+            display: "发货日期",
+            name   : "ShippedDate",
+            newline: true,
+            type   : "date"
+        }, {
+            display: "发货名称2",
+            name   : "ShipName",
+            newline: false,
+            type   : "text",
+
+
+            validate: {
+                required : true,
+                minlength: 10,
+                messages : {
+                    required : 'ccccccccc',
+                    minlength: '至少10位'
+                }
+            }
+        }, {
+            display: "html",
+            name   : "html",
+            type   : "html",
+            group  : "基本信息",
+            newline: true,
+            render : function (v) {
+                return '<div style="width:50px;height:20px;background-color:red">' + v + '</div>'
+            }
+        }, {
+            display : "email",
+            name    : "zipCode",
+            type    : "text",
+            newline : false,
+            validate: {
+                email: true
+            }
+        }, {
+            display: '延迟加载',
+            type   : 'checkbox',
+            name   : 'delayLoad',
+            options: {
+                checkValue  : 'Y',
+                uncheckValue: 'N',
+	            onBeforeClick:function(item){
+                	//alert('before click')
+	            },
+	            onChange:function(item){
+	            	//alert(item.getValue())
+	            }
+            },
+            newline: false
+        }, {
+            display: '文本域',
+            type   : 'textarea',
+            name   : 'ta',
+            group  : '基本信息',
+            newline: true
+        },
+            {
+                display: 'CheckboxList',
+                type   : 'checkboxlist',
+                name   : 'cbl',
+                options: {
+                    url      : '${base.contextPath}/demo/checkboxlist',// 可以用写死的 data 替代动态加载的 url
+                    textField: 'name',
+                    onChangeValue:function(value){
+                        alert(value)
+                    }
+                },
+                newline: false
+            }],
+        buttons   : [{
+            text    : 'validateField',
+            disabled: false,
+            width   : 100,
+            click   : function () {
+                liger.get('mainform').validField('ShipName');
+            }
+        }, {
+            text    : 'validate',
+            disabled: false,
+            click   : function () {
+                if (Hap.validateForm($('#mainform')) && Hap.validateGrid($('#demogrid'))) {
+                    alert('ok')
+                }
+
+
+            }
+        }, {
+            text : 'loadJson',
+            click: function () {
+                //$.ligerui.get('ShipName').setValue('xxxx');
+                //return;
+                var d = new Date();
+                d.setMonth(5)
+                $.ligerui.get($('#mainform')).setData({
+                    creationTime: d
+                });
+
+                Hap.loadForm({
+                    form    : $('#mainform'),
+                    method  : 'post',
+                    url     : '${base.contextPath}/demo/form/load',
+                    callback: function (data) {
+                        alert('ok')//$.ligerui.get("userName").setText(data.userName);
+                    }
+                })
+            }
+        }, {
+            text : 'getJson',
+            click: function () {
+                //alert($.ligerui.get("orderDate").getValue())
+                var data = $('#mainform').ligerForm().getData();
+
+                $('#json').html(JSON2.stringify(data))
+            }
+        }, {
+            text : 'gridData',
+            click: function () {
+                var d = demogrid.getData()
+                debugger
+            }
+        }, {
+            text : '查询',
+            click: function () {
+                var data = $('#mainform').ligerForm().getData();
+
+                $('#json').html(JSON2.stringify(data))
+                Hap.gridQuery({
+                    form: mainform,
+                    grid: demogrid
+                })
+                //demogrid.reload();
+            }
+        }, {
+            text : '禁用',
+            id   : 'disabled',
+            click: function () {
+                //$.ligerui.get('roleIdPop').set('readonly', true)
+                liger.get(mainform).setEditable(false);
+                liger.get('enabled').setEnabled();
+                liger.get('grid_toolbar').setEditable(false);
+                //liger.get('grid_toolbar').setDisabled('new_btn');
+                demogrid.setEditable(false);
+            }
+        }, {
+            text : '启用',
+            id   : 'enabled',
+            click: function () {
+                liger.get(mainform).setEditable(true);
+                liger.get('grid_toolbar').setEditable(true);
+                //liger.get('grid_toolbar').setEnabled('new_btn');
+                demogrid.setEditable(true);
+            }
+        }, {
+            text : '日期',
+            click: function () {
+                alert(liger.get('orderDate').getValue())
+            }
+        }, {
+            text : 'window',
+            click: function () {
+                $.ligerDialog.open({
+                            target  : $("#upstream_change_apply"),
+                            width   : 650,
+                            isResize: true,
+                            id      : "apply_dialog",
+                            buttons : [{
+                                text   : 'ok',
+                                attr   : {
+                                    id: 'btn_ok'
+                                },
+                                class  : 'l-button-disabled',
+                                onclick: function (item, dialog) {
+                                    $('#btn_ok').removeClass('l-button-disabled')
+                                }
+                            }, {
+                                text   : 'cancel',
+                                attr   : {
+                                    id: 'btn_cancel'
+                                },
+                                onclick: function (item, dialog) {
+
+                                }
+                            }]
+                        }
+                )
+            }
+        }]
+    });
+
+
+    /////Grid///////
+    window['demogrid'] = $("#demogrid").ligerGrid({
+        unSetValidateAttr: false,
+        //isSingleCheck :true,
+        rownumbers       : true,
+        columns          : [{
+            display: '多语言字段',
+            name   : 'roleName',
+            width  : 120,
+            align  : 'left',
+            editor : {
+                type   : 'tl',
+                idField: 'roleId',
+                dto    : 'Role'
+            }
+        }, {
+            display  : '<@spring.message "type.com.lkkhpg.dsis.common.inventory.stockio.packingtype"/>',
+            name     : 'packingType',
+            textField: 'toUom',
+            align    : 'left',
+            width    : 80,
+            isSort   : false,
+            editor   : {
+                type         : 'select',
+                textField    : 'name',
+                valueField   : 'toUom',
+                url          : "${base.contextPath}/pm/uom/query",
+                staticOptions: function (e) {
+                    e.column.editor.parms = {
+                        itemId : 1001,
+                        uomCode: 'EA'
+                    }
+                },
+                onSelected   : function (v, t) {
+                    //选择时候自动带出箱子单位数量
+                    if (v) {
+                        var curRow = this.options.host_grid_row;
+                        curRow.toUom = t;
+                    }
+                }
+            },
+            render   : function (v, t) {
+                return v.toUom;
+            }
+        },
+            {
+                display: '主键',
+                name   : 'id',
+                width  : 60,
+                frozen : false
+            }, {
+                display : '名字',
+                width   : 100,
+                name    : 'name',
+                editor  : {
+                    type   : 'text',
+                    onFocus: function () {
+
+                    }
+                },
+                validate: {
+                    required: true
+                }
+            }
+            , {
+                display: '启用',
+                width  : 60,
+                name   : 'enabled',
+                render : Hap.createGridCheckBoxRender()
+            }
+            , {
+                display: '性别',
+                width  : 70,
+                name   : 'sex',
+                editor : {
+                    type      : 'select',
+                    data      : sexData,
+                    valueField: 'Sex'
+                },
+                render : function (item) {
+                    if (parseInt(item.sex) == 1)
+                        return '男';
+                    if (parseInt(item.sex) == 2)
+                        return '女';
+                    return '';
+                }
+            }, {
+                display : '年龄',
+                name    : 'age',
+                width   : 60,
+                editor  : {
+                    type: 'int',
+                    sign: false
+                },
+                validate: {
+                    required: true
+                }
+            }, {
+                display: '生日',
+                name   : 'birthday',
+                type   : 'date',
+                format : 'yyyy-MM-dd',
+                width  : 100,
+                editor : {
+                    format: 'yyyy-MM-dd',
+                    type  : 'date'
+                }
+            }, {
+                display: '创建时间',
+                name   : 'creationTime',
+                format : 'yyyy-MM-dd hh:mm:ss',
+                width  : 150,
+                type   : 'date',
+                editor : {
+                    format  : 'yyyy-MM-dd hh:mm:ss',
+                    type    : 'date',
+                    showTime: true
+                }/* ,
+                render : function(item) {
+                    var d = item.creationTime;
+                    if(!(d instanceof Date)){
+                        d =  Date.parse(item.creationTime)
+                    }
+                    return d.toString("yyyy-mm-dd HH:MM:ss")
+                } */
+            }, {
+                display: '部门',
+                name   : 'deptId',
+                width  : 150,
+                isSort : false,
+                editor : {
+                    type      : 'select',
+                    data      : DepartmentList,
+                    valueField: 'DepartmentID',
+                    textField : 'DepartmentName'
+                },
+                render : function (item) {
+                    for (var i = 0; i < DepartmentList.length; i++) {
+                        if (DepartmentList[i]['DepartmentID'] == item.deptId)
+                            return DepartmentList[i]['DepartmentName']
+                    }
+                    return item.deptId;
+                }
+            }, {
+                display: '账户',
+                width  : 100,
+                name   : 'employeeId',
+                //textField : 'employeeName',
+                editor : {
+                    type         : 'select',
+                    textField    : 'name',
+                    valueField   : 'id',
+                    url          : '${base.contextPath}/demo/user/query',
+                    staticOptions: function (e) {
+                        e.column.editor.parms = {
+                            name: e.record.name,
+                            age : 11
+                        }
+                    }
+
+                }
+            }, {
+                display: '动态编辑',
+                width  : 100,
+                name   : 'dynamicedit',
+                editor : {
+                    type: 'text'
+                }
+            }, /**/ {
+                display: 'roleId',
+                name   : 'roleId',
+                width  : 100
+            }, {
+                display: 'roleName',
+                name   : 'roleName',
+                width  : 100
+            }, {
+                display  : '通用lov',
+                name     : 'roleId',
+                width    : 150,
+                textField: 'roleName',
+                align    : 'left',
+                editor   : $.extend(${lovService.getLov(base.contextPath,base.locale, "lov_role")}, {
+                    staticOptions: function (e) {
+                        e.column.editor.parms = {
+                            deptId: e.record.deptId
+                        }
+                    },
+                    onSelect     : function (datas) {
+                        var p = this.options;
+                        p.host_grid.updateCell('roleName', datas.data[0].roleDesc, p.host_grid_row);
+                    }
+                })
+            }, {
+                display: '附件管理',
+                name   : 'attachmentId',
+                width  : 80,
+                align  : 'left',
+                render : function (item) {
+                    return this.options.enabledEdit ? "<a target='_blank' href='javascript:void(0)' onclick='$.ligerDialog.open({ width:1024,height: 768,url: \"${base.contextPath}/sys/attach/manage?sourceType=demouser&sourceKey=" + item.id + "\"})'>附件管理</a>" : "附件管理  ";
+                }
+            }, {
+                display  : '常规lov',
+                name     : 'roleCode',
+                width    : 150,
+                textField: 'roleName',
+                align    : 'left',
+                editor   : {
+                    type      : 'popup',
+                    valueField: 'roleCode',
+                    textField : 'roleName',
+                    title     : 'xxxxxx',
+                    grid      : {
+                        columns    : [{
+                            display: '<@spring.message "role.rolecode"/>',
+                            name   : "roleCode",
+                            width  : 150,
+                            editor : {type: 'text'}
+                        }, {
+                            display: '<@spring.message "role.rolename"/>',
+                            name   : "roleName",
+                            width  : 150
+                        }, {
+                            display: '<@spring.message "role.roledescription"/>',
+                            name   : "roleDescription",
+                            width  : 150
+                        }],
+                        url        : '${base.contextPath}/sys/role/query',
+                        enabledEdit: true
+                    },
+                    condition : {
+                        fields: [{
+                            display: '<@spring.message "role.rolecode"/>',
+                            name   : "roleCode",
+                            newline: true,
+                            type   : "text"
+                        }, {
+                            display: '<@spring.message "role.rolename"/>',
+                            name   : "roleName",
+                            newline: false,
+                            type   : "text"
+                        }]
+                    }
+                }
+            }, {
+                display  : '测试',
+                name     : 'testPop',
+                width    : 150,
+                textField: 'name',
+                align    : 'left',
+                editor   : {
+                    type         : 'popup',
+                    onButtonClick: function () {
+                        var editor = this;
+                        var p = this.options;
+                        $.ligerDialog.open({
+                            height    : 350,
+                            width     : 400,
+                            title     : '请填写地址信息',
+                            url       : '${base.contextPath}/spm/spm_location_edit.html',
+                            showMax   : false,
+                            showToggle: true,
+                            showMin   : false,
+                            isResize  : true,
+                            slide     : false,
+                            data      : {},//document.activeElement.obj_location,
+                            buttons   : [
+                                {
+                                    text   : $l("hap.ok"),
+                                    onclick: function (item, dialog) {
+                                        editor.setValue('value');
+                                        editor.setText('text');
+                                        dialog.close();
+                                    }
+                                },
+                                {
+                                    text   : $l("hap.cancel"),
+                                    onclick: function (item, dialog) {
+                                        dialog.close();
+                                    }
+                                }
+
+                            ]
+                        })
+                    }
+                }
+
+            }],
+        url              : '${base.contextPath}/demo/user/query',
+        //url : '${base.contextPath}/resources/demo_grid.json',
+        //method : 'get',
+        toolbar     : {
+            id   : 'grid_toolbar',
+            items: [{
+                text   : '<@spring.message "hap.new"/>',
+                disable: false,
+                id     : 'new_btn',
+                click  : function () {
+                    window.demogrid.addRow({name: 'test'})
+                },
+                icon   : 'add'
+            }, {
+                text : 'delete',
+                click: function () {
+                    Hap.gridDelete({
+                        grid: demogrid
+                    })
+                },
+                icon : 'delete'
+            }
+			<#if accessService.access("SAVE_BTN")>
+                , {
+                text : 'save',
+                click: function () {
+                    Hap.gridSave({
+                        grid: demogrid,
+                        url : '${base.contextPath}/demo/user/submit'
+                    })
+
+                },
+                icon : 'save'
+            }</#if>]
+        }
+        ,
+        canSelect   : function (item) {
+            return item.id > 3;
+        }
+        ,
+        onBeforeEdit: function (item) {
+            var name = item.column.name, data = item.record;
+            if (name == 'name') {
+                return !(data.id > 10);
+            }
+            if (name == 'dynamicedit') {
+                if (data.sex == 1) {
+                    item.column.editor = {
+                        type      : 'select',
+                        textField : 'name',
+                        valueField: 'id',
+                        url       : '${base.contextPath}/demo/user/query',
+                        parms     : {
+                            name: data.name,
+                            age : 11
+                        }
+                    }
+                    item.column.textField = 'dname';
+                    item.column.render = Hap.gridSelectRenderer('dname');
+                } else if (data.sex == 2) {
+                    item.column.editor = {
+                        type: 'text'
+                    }
+                    item.column.render = null;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        ,
+        enabledEdit : true,
+        width       : '95%',
+        height      : '400',
+        checkbox    : true
+    })
+    ;
+
+</script>
+
+</body>
+</html>

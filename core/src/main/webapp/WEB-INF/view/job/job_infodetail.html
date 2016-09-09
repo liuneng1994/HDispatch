@@ -1,0 +1,288 @@
+<#-- 
+ * description: 显示任务详情页面
+ * version: 1.0 
+ * author:xiawang.liu
+ * #{copyright}#
+ * 
+-->
+
+<#include "../include/head.html">
+
+<style>
+    #job_form, #notification_form {
+        padding-left: 6px;
+        padding-top: 12px;
+        padding-bottom: 15px;
+        font-size: 12px;
+    }
+</style>
+
+<body style="padding: 12px 10px 0px 10px">
+<div id="job_infodetail_tabs" class="liger-tab">
+    <div tabid="job_infodetail_addtab" title="InfoDetail" lselected="true">
+        <form id="job_form" name="job_form"></form>
+        <div id="job_grid" name="job_grid"></div>
+    </div>
+    <div tabid="job_infodetail_notification" title="Notification" lselected="true">
+        <form id="notification_form" name="notification_form"></form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var tab = $('#job_infodetail_tabs').ligerTab();
+    //保存任务详情的全局变量
+    var infoDetailData = null;
+    //获取任务详情
+    getInfoDetail();
+    var notification_form = window['notification_form'] = $("#notification_form").ligerForm({
+        fields: [
+            {
+                type      : 'checkbox',
+                label     : 'Send notification after processing',
+                name      : 'job_internal_notification',
+                labelWidth: 230,
+                labelAlign: 'right',
+                readonly  : true,
+                options   : {value: "false", checkValue: "true", uncheckValue: "false"}
+            },
+            {
+                type      : 'text',
+                label     : 'Email address',
+                name      : 'job_internal_emailAddress',
+                labelWidth: 230,
+                labelAlign: 'right',
+                width     : 420,
+                readonly  : true,
+                options   : {value: ''}
+            }
+        ]
+    });
+
+    //任务详情显示
+    var job_form = window['job_form'] = $("#job_form").ligerForm({
+        fields: [
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.jobname"/>',
+                name      : 'jobName',
+                labelWidth: 140,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.jobgroup"/>',
+                name      : 'jobGroup',
+                newline   : false,
+                labelWidth: 105,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.description"/>',
+                name      : 'description',
+                labelWidth: 140,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "jobdetaildto.jobclassname"/>',
+                name      : 'jobClassName',
+                width     : 505,
+                labelWidth: 140,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "triggerdto.starttime"/>',
+                name      : 'start',
+                style     : 'height: 34px',
+                labelWidth: 140,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "triggerdto.endtime"/>',
+                name      : 'end',
+                newline   : false,
+                style     : 'height: 34px',
+                labelWidth: 105,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                display   : '<@spring.message "jobrunninginfodto.previousfiretime"/>',
+                name      : 'previousFireTime',
+                align     : 'left',
+                labelWidth: 140,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                display   : '<@spring.message "jobrunninginfodto.firetime"/>',
+                name      : 'fireTime',
+                align     : 'left',
+                labelWidth: 105,
+                newline   : false,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                display   : '<@spring.message "jobrunninginfodto.scheduledfiretime"/>',
+                name      : 'scheduledFireTime',
+                align     : 'left',
+                labelWidth: 140,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                display   : '<@spring.message "jobrunninginfodto.nextfiretime"/>',
+                name      : 'nextFireTime',
+                align     : 'left',
+                labelWidth: 105,
+                newline   : false,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "simpletriggerdto.repeatinterval"/>',
+                name      : 'repeatInterval',
+                style     : 'height: 34px',
+                labelWidth: 140,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "simpletriggerdto.repeatcount"/>',
+                name      : 'repeatCount',
+                newline   : false,
+                labelWidth: 105,
+                readonly  : true,
+                labelAlign: 'right'
+            },
+            {
+                type      : 'text',
+                label     : '<@spring.message "crontriggerdto.cronexpression"/>',
+                name      : 'cronExpression',
+                labelWidth: 140,
+                width     : 505,
+                readonly  : true,
+                labelAlign: 'right'
+            }
+        ]
+    });
+
+    //任务详情属性显示
+    var job_grid = window['job_grid'] = $("#job_grid").ligerGrid({
+        unSetValidateAttr: false,
+        columns          : [
+            {
+                display: 'NAME',
+                name   : 'name',
+                align  : 'left',
+                width  : 359,
+                editor : {type: 'text'}
+            },
+            {
+                display: 'VALUE',
+                name   : 'value',
+                align  : 'left',
+                width  : 359,
+                editor : {type: 'text'}
+            }
+        ],
+        data             : {rows: getGridData().jobDatas},
+        width            : '99%',
+        height           : '98%',
+        usePager         : false
+    });
+
+    //拆分job_grid、notification_form数据
+    function getGridData() {
+        var gridData = {};
+        var requestData = [];
+        var notifyData = notification_form.getData();
+        for (var i = 0; i < infoDetailData.jobDatas.length; i++) {
+            if (notifyData.hasOwnProperty(infoDetailData.jobDatas[i].name)) {
+                notifyData[infoDetailData.jobDatas[i].name] = infoDetailData.jobDatas[i].value;
+            } else {
+                var gridD = $.extend({}, infoDetailData.jobDatas[i]);
+                requestData.push(gridD);
+            }
+        }
+        var form = liger.get("notification_form");
+        form.setData(notifyData);
+        gridData.jobDatas = requestData;
+        return gridData;
+    }
+
+    //为form设置显示属性
+    setJobFormData();
+
+    //根据triggerType显示任务相应类型属性
+    $(function () {
+        if (infoDetailData.triggerType == "SIMPLE") {
+            $(".l-form-container ul :eq(19)").css("display", "none");
+        } else if (infoDetailData.triggerType == "CRON") {
+            $(".l-form-container ul :eq(16)").css("display", "none");
+        }
+    });
+
+    //获取任务详情
+    function getInfoDetail() {
+        var jobData = {
+            jobName    : "${RequestParameters.jobName}",
+            triggerType: "${RequestParameters.triggerType}",
+            jobGroup   : "${RequestParameters.jobGroup}"
+        };
+        $.ajax({
+            url        : '${base.contextPath}/job/queryInfo',
+            async      : false,
+            type       : "POST",
+            dataType   : "json",
+            contentType: "application/json",
+            data       : JSON2.stringify(jobData),
+            success    : function (json) {
+                if (json.success) {
+                    infoDetailData = json.rows[0];
+                }
+            },
+            error      : function () {
+                $.ligerDialog.closeWaitting();
+            }
+        });
+    }
+
+    //为form设置显示属性
+    function setJobFormData() {
+        var obj = {
+            jobName          : infoDetailData.jobName,
+            jobGroup         : infoDetailData.jobGroup,
+            description      : infoDetailData.description,
+            jobClassName     : infoDetailData.jobClassName,
+            start            : infoDetailData.startTime,
+            end              : infoDetailData.endTime,
+            previousFireTime : infoDetailData.previousFireTime,
+            fireTime         : infoDetailData.fireTime,
+            scheduledFireTime: infoDetailData.scheduledFireTime,
+            nextFireTime     : infoDetailData.nextFireTime,
+            repeatInterval   : infoDetailData.repeatInterval / 1000,
+            repeatCount      : infoDetailData.repeatCount == -1 ? null : infoDetailData.repeatCount,
+            cronExpression   : infoDetailData.cronExpression
+        };
+        var form = liger.get("job_form");
+        form.setData(obj);
+    }
+</script>
+</body>
+</html>

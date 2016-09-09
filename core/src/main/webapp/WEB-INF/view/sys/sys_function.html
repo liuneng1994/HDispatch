@@ -1,0 +1,298 @@
+<#-- 
+ * description: 功能界面
+ * version: 1.0 
+ * author:njq.niu@hand-china.com
+ * #{copyright}#.
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+<form id="function_form"></form>
+<div id="function_grid" style="margin: 0; padding: 0"></div>
+<script type="text/javascript">
+    $(function () {
+        window['function_form'] = $("#function_form").ligerForm({
+            fields : [{
+                type    : 'text',
+                label   : '<@spring.message "function.modulecode"/>',
+                name    : 'moduleCode',
+                typeCase: 'uppercase'
+
+            }, {
+                type    : 'text',
+                label   : '<@spring.message "function.functioncode"/>',
+                name    : 'functionCode',
+                newline : false,
+                typeCase: 'uppercase'
+            }, {
+                type : 'text',
+                label: '<@spring.message "function.functionname"/>',
+                name : 'functionName'
+            }, {
+                display  : '<@spring.message "function.parentfunctionid"/>',
+                name     : 'parentFunctionId',
+                textField: 'parentFunctionName',
+                type     : "popup",
+                newline  : false,
+                options  : {
+                    type      : 'popup',
+                    valueField: 'functionId',
+                    textField : 'functionName',
+                    grid      : {
+                        columns: [{
+                            display: '<@spring.message "function.functioncode"/>',
+                            name   : "functionCode",
+                            align  : 'left',
+                            width  : 200
+                        }, {
+                            display: '<@spring.message "function.functionname"/>',
+                            name   : "functionName",
+                            align  : 'left',
+                            width  : 200
+                        }],
+                        url    : '${base.contextPath}/sys/function/query',
+	                    height : 350
+                    },
+                    condition : {
+                        inputWidth: 150,
+                        labelWidth: 70,
+                        fields    : [{
+                            display: '<@spring.message "function.functioncode"/>',
+                            name   : "functionCode",
+                            newline: true,
+                            type   : "text"
+                        }, {
+                            display: '<@spring.message "function.functionname"/>',
+                            name   : "functionName",
+                            newline: false,
+                            type   : "text"
+                        }]
+                    }
+                }
+            }],
+            buttons: [{
+                text    : '<@spring.message "hap.query"/>',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    Hap.gridQuery({
+                        form: function_form,
+                        grid: function_grid
+                    })
+                }
+            }],
+            onEnterDown: function () {
+                this.options.buttons[0].click();
+            }
+        });
+
+        editFunctionResources = function (id) {
+            window.popWin = $.ligerDialog.open({
+                load      : false,
+                width     : 850,
+                height    : 600,
+                title     : '<@spring.message "function.resourceallocation"/>',
+                url       : 'sys_function_resource.html?functionId=' + id,
+                showMax   : false,
+                showToggle: true,
+                showMin   : false,
+                isResize  : true,
+                slide     : false
+            });
+        };
+
+        window['function_grid'] = $("#function_grid").ligerGrid({
+            unSetValidateAttr: false,
+            columns          : [{
+                display: '<@spring.message "function.modulecode"/>',
+                name   : 'moduleCode',
+                align  : 'left',
+                isSort : true,
+                width  : 80,
+                editor : {
+                    type: 'text'
+                }
+            }, {
+                display: '<@spring.message "function.functioncode"/>',
+                name   : 'functionCode',
+                align  : 'left',
+                isSort : true,
+                width  : 200,
+                editor : {
+                    type: 'text'
+                }
+            }, {
+                display: '<@spring.message "function.functionname"/>',
+                name   : 'functionName',
+                width  : 180,
+                align  : 'left',
+                editor : {
+                    type   : 'tl',
+                    idField: 'functionId',
+                    dto    : 'com.hand.hap.function.dto.Function'
+                }
+            }, {
+                display: '<@spring.message "function.functionicon"/>',
+                name   : 'functionIcon',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                }
+            }, {
+                display: '<@spring.message "function.functionsequence"/>',
+                name   : 'functionSequence',
+                align  : 'right',
+                width  : 80,
+                editor : {
+                    type: 'int'
+                }
+            }, {
+                display: '<@spring.message "function.functiondescription"/>',
+                name   : 'functionDescription',
+                width  : 180,
+                align  : 'left',
+                editor : {
+                    type   : 'tl',
+                    idField: 'functionId',
+                    dto    : 'com.hand.hap.function.dto.Function'
+                }
+            }, {
+                display  : '<@spring.message "function.parentfunctionid"/>',
+                name     : 'parentFunctionId',
+                align    : 'left',
+                width    : 120,
+                textField: 'parentFunctionName',
+                editor   : {
+                    type      : 'popup',
+                    valueField: 'functionId',
+                    textField : 'functionName',
+                    grid      : {
+                        columns: [{
+                            display: '<@spring.message "function.functioncode"/>',
+                            name   : "functionCode",
+                            align  : 'left',
+                            width  : 200
+                        }, {
+                            display: '<@spring.message "function.functionname"/>',
+                            name   : "functionName",
+                            align  : 'left',
+                            width  : 200
+                        }],
+                        url    : '${base.contextPath}/sys/function/query',
+                        height : 350
+                    },
+                    condition : {
+                        inputWidth: 150,
+                        labelWidth: 70,
+                        fields    : [{
+                            display: '<@spring.message "function.functioncode"/>',
+                            name   : "functionCode",
+                            newline: true,
+                            type   : "text"
+                        }, {
+                            display: '<@spring.message "function.functionname"/>',
+                            name   : "functionName",
+                            newline: false,
+                            type   : "text"
+                        }]
+                    }
+                }
+            },
+
+                {
+                    display  : '<@spring.message "function.mainpage"/>',
+                    name     : 'resourceId',
+                    align    : 'left',
+                    width    : 120,
+                    isSort   : false,
+                    textField: 'resourceName',
+                    editor   : {
+                        type      : 'popup',
+                        valueField: 'resourceId',
+                        textField : 'name',
+                        grid      : {
+                            columns: [{
+                                display: '<@spring.message "resource.url"/>',
+                                name   : "url",
+                                align  : 'left',
+                                width  : 300
+                            }, {
+                                display: '<@spring.message "resource.name"/>',
+                                name   : "name",
+                                align  : 'left',
+                                width  : 200
+                            }],
+                            url    : '${base.contextPath}/sys/resource/query',
+                            height : 350
+                        },
+                        condition : {
+                            inputWidth: 150,
+                            labelWidth: 70,
+                            fields    : [{
+                                display: '<@spring.message "resource.url"/>',
+                                name   : "url",
+                                newline: true,
+                                type   : "text"
+                            }, {
+                                display: '<@spring.message "resource.name"/>',
+                                name   : "name",
+                                newline: false,
+                                type   : "text"
+                            }]
+                        }
+                    }
+                }, {
+                    display: '<@spring.message "function.functionresource"/>',
+                    width  : 100,
+                    align  : 'center',
+                    isSort : false,
+                    render : function (rowdata) {
+                        if (!!rowdata.functionId) {
+                            return '<a href="#" onclick="editFunctionResources(' + rowdata.functionId + ')"><@spring.message "hap.edit"/></a>'
+                        }
+                    }
+                }],
+            url              : '${base.contextPath}/sys/function/query',
+            toolbar          : {
+                items: [{
+                    text   : '<@spring.message "hap.new"/>',
+                    disable: false,
+                    click  : function () {
+                        function_grid.addRow({})
+                    },
+                    icon   : 'add'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click: function () {
+                        Hap.gridDelete({
+                            grid: function_grid,
+                            url : '${base.contextPath}/sys/function/remove'
+                        })
+
+                    },
+                    icon : 'delete'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click: function () {
+                        Hap.gridSave({
+                            grid: function_grid,
+                            url : '${base.contextPath}/sys/function/submit'
+                        })
+                    },
+                    icon : 'save'
+                }]
+            },
+            enabledEdit      : true,
+            width            : '99%',
+            height           : '98%',
+            checkbox         : true
+        });
+    });
+</script>
+</body>
+</html>

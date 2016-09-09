@@ -1,0 +1,153 @@
+<#--
+ * description: 消息管理界面
+ * version: 1.0 
+ * author: huangjiajing
+ * Copyright LKK Health Products Group Limited.
+ * 
+-->
+
+<#include "../include/head.html">
+<body style="padding: 10px;">
+    <script src="${base.contextPath}/common/code?
+                 messageContentType=SYS.MESSAGE_CONTENT_TYPE&
+                messageStatus=SYS.MESSAGE_STATUS&
+                publishChannel=SYS.PUBLISH_CHANNEL" type="text/javascript"></script>
+    <form id="message_form"></form>
+    <div id="message_grid" style="margin: 0; padding: 0"></div>
+    <script type="text/javascript">
+    $(function() {
+        window['message_form'] = $("#message_form").ligerForm({
+            fields : [
+				{ name : 'messageName', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagename"/>', newline : false ,type:'text'},
+                { name : 'messageStatus', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagestat"/>', newline : false,type:'select',
+					options: {
+                        valueField: 'value',
+                        textField: 'meaning',
+                        data: messageStatus
+                    }
+                },
+	            { name : 'publishChannel', type : 'select', label : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagechannels"/>', newline : false,
+                	options: {
+                        valueField: 'value',
+                        textField: 'meaning',
+                        data: publishChannel
+                    }
+                }
+	        ],
+            buttons : [
+                {
+	                text : '<@spring.message "sys.hand.btn.query"/>',
+	                disabled : false,
+	                width : 60,
+	                click : function() {
+	                    Hap.gridQuery({
+	                        form : message_form,
+	                        grid : message_grid
+	                    })
+	                }
+	            },{
+                    text : '<@spring.message "sys.hand.btn.create"/>',
+                    disabled : false,
+                    width : 60,
+                    click : function() {
+                    	window.top.f_removeTab('SYS_MESSAGE_MSS_ADD');
+                        window.top.f_addTab('SYS_MESSAGE_MSS_ADD', '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.edit.messageadd"/>', 'sys/message_edit.html');
+
+                    }
+                }
+            ]
+        });
+         var message_grid;
+         message_grid = window['message_grid'] = $("#message_grid").ligerGrid({
+            columns : [
+                {
+	                display : '<@spring.message "type.com.lkkhpg.dsis.common.member.dto.memberdetails.belongmarket"/>',
+	                name : 'marketId',
+	                textField:'marketName',
+	                align : 'left',
+	                width : 100
+                },
+                {
+	                display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagenumber"/>',
+	                name : 'msMessageId',
+	                align : 'left',
+	                isSort : true,
+	                width : 200,
+                    type : 'text',
+                    render: function (row){
+                    	return "<a href='javascript:void(0);' onclick='messageEdit(\""+row.msMessageId+"\")'>" + row.msMessageId + "</a> ";
+                    }
+	            },
+	            {
+	                name : 'messageName',
+	                display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagename"/>',
+	                align : 'left',
+	                width : 200
+	            },
+                {
+                    name : 'sender',
+                    textField:'userName',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagesender"/>',
+                    align : 'left',
+                    width : 200
+                },
+                {
+                    name : 'publishChannel',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagechannels"/>',
+                    align : 'left',
+                    width : 200,
+                    render : function(item) {
+                        for (var i = 0; i < publishChannel.length; i++) {
+                            if (publishChannel[i]['value'] == item.publishChannel)
+                                return publishChannel[i]['meaning']
+                        }
+                        return item.publishChannel;
+                    }
+                },
+                {
+                    name : 'messageType',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagetype"/>',
+                    align : 'left',
+                    width : 100,
+                    render : function(item) {
+                        for (var i = 0; i < messageContentType.length; i++) {
+                            if (messageContentType[i]['value'] == item.messageType)
+                                return messageContentType[i]['meaning']
+                        }
+                        return item.messageType;
+                    }
+                },
+                {
+                    name : 'messageStatus',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.messagestat"/>',
+                    align : 'left',
+                    width : 100,
+                    render : function(item) {
+                        for (var i = 0; i < messageStatus.length; i++) {
+                            if (messageStatus[i]['value'] == item.messageStatus)
+                                return messageStatus[i]['meaning']
+                        }
+                        return item.messageStatus;
+                    }
+                },
+                {
+                    name : 'publishDate',
+                    display : '<@spring.message "type.com.lkkhpg.dsis.common.system.dto.message.publicdatetime"/>',
+                    align : 'left',
+                    width : 200
+                }
+            ],
+            url : '${base.contextPath}/sys/msmessage/query',
+            enabledEdit : false,
+            width : '99%',
+            height : '98%',
+            rownumbers: true
+        });
+    });
+    function messageEdit(msMessageId){
+        window.top.f_removeTab('SYS_MESSAGE_EDIT');
+        window.top.f_addTab('SYS_MESSAGE_EDIT','<@spring.message "type.com.lkkhpg.dsis.common.system.dto.edit.message"/>', 'sys/message_edit.html?isedit=1&msMessageId=' + msMessageId);
+    }
+</script>
+</body>
+</html>

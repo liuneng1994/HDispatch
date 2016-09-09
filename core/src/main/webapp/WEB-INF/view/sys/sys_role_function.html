@@ -1,0 +1,213 @@
+<#--
+ * description: 功能分配界面
+ * version: 1.0 
+ * author:xiawang.liu
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px; overflow: hidden;">
+<form id="rolefunction_form"></form>
+<ul id="rolefunction_treegrid"></ul>
+<script type="text/javascript">
+    function assignResourceItem(id) {
+        var fd = rolefunction_form.getData();
+        if (!fd.roleId) {
+            $.ligerDialog.alert('<@spring.message "msg.info.rolefunction.select_role"/>', $l('hap.tip.info'), 'info');
+            return;
+        }
+        $.ligerDialog.open({
+            width : 600,
+            height: 500,
+            title : '<@spring.message "msg.info.rolefunction.resourceitem"/>',
+            url   : 'sys_role_resource_item.html?functionId=' + id + '&roleId=' + fd.roleId
+        });
+    }
+    window['rolefunction_form'] = $("#rolefunction_form").ligerForm({
+        fields : [{
+            display  : '<@spring.message "role.rolecode"/>',
+            name     : "roleId",
+            type     : "popup",
+            textField: 'roleName',
+            options  : {
+                valueField: 'roleId',
+                textField : 'roleName',
+                grid      : {
+                    columns: [{
+                        display: '<@spring.message "role.rolecode"/>',
+                        name   : "roleCode",
+                        width  : 200,
+                        type   : "text",
+                        align  : "left"
+                    }, {
+                        display: '<@spring.message "role.rolename"/>',
+                        name   : "roleName",
+                        width  : 200,
+                        type   : "text",
+                        align  : "left"
+                    }, {
+                        display: '<@spring.message "role.roledescription"/>',
+                        name   : "roleDescription",
+                        width  : 215,
+                        type   : "text",
+                        align  : "left"
+                    }],
+                    url    : '${base.contextPath}/sys/role/query',
+                    height : 350
+                },
+                condition : {
+                    inputWidth: 150,
+                    labelWidth: 70,
+                    fields    : [{
+                        display: '<@spring.message "role.rolecode"/>',
+                        name   : "roleCode",
+                        newline: false,
+                        type   : "text"
+                    }, {
+                        display: '<@spring.message "role.rolename"/>',
+                        name   : "roleName",
+                        newline: false,
+                        type   : "text"
+                    }]
+                }
+            }
+        }],
+        buttons: [{
+            text    : '<@spring.message "hap.query"/>',
+            disabled: false,
+            width   : 60,
+            click   : function () {
+                var g = rolefunction_treegrid, f = rolefunction_form;
+                var data = f.getData();
+                g.set("parms", data);
+                g.loadData(1);
+            }
+        }, {
+            text    : '<@spring.message "hap.save"/>',
+            disabled: false,
+            width   : 60,
+            click   : f_click
+        }]
+    });
+
+    var roleId = "${Session.roleId}";
+
+    if (roleId) {
+        $.ajax({
+            url    : '${base.contextPath}/sys/role/query',
+            data   : {
+                roleId: roleId
+            },
+            success: function (json) {
+                if (json.success) {
+                    var row = json.rows[0] || {};
+                    rolefunction_form.setData(row);
+                    rolefunction_treegrid.set("parms", row);
+                    rolefunction_treegrid.loadData();
+                }
+            }
+        });
+    }
+
+    window['rolefunction_treegrid'] = $("#rolefunction_treegrid").ligerGrid({
+        toolbar            : {
+            items: [{
+                text   : '<@spring.message "hap.expand"/>',
+                disable: false,
+                click  : function () {
+                    rolefunction_treegrid.expandAll();
+                },
+                icon   : "expand-v"
+            }, {
+                line: true
+            }, {
+                text : '<@spring.message "hap.collapse"/>',
+                click: function () {
+                    rolefunction_treegrid.collapseAll();
+                },
+                icon : "collapse-v"
+            }]
+        },
+        unSetValidateAttr  : false,
+        checkbox           : true,
+        usePager           : false,
+        columns            : [{
+            display: '<@spring.message "function.functionname"/>',
+            name   : 'text',
+            id     : 'id1',
+            width  : 250,
+            align  : 'left'
+        }, {
+            display: '<@spring.message "resource.resourceitem"/>',
+            width  : 100,
+            align  : 'center',
+            render : function (item) {
+                if (!item.children)
+                    return '<a href="#" onclick="assignResourceItem(' + item.id + ')"><@spring.message "hap.edit"/></a>'
+            }
+        }, {
+            display: '<@spring.message "hap.comment"/>',
+            name   : 'url',
+            width  : 270,
+            align  : 'left',
+            render : function (item) {
+                if (item.children) {
+                    var c = 0;
+                    for (var i = 0; i < item.children.length; i++) {
+                        if (item.children[i].ischecked)
+                            c++;
+                    }
+                    return "" + c + " / " + item.children.length
+                } else {
+                    return item.url;
+                }
+            }
+        }],
+        tree               : {
+            columnId: 'id1',
+            isParent: function (data) {
+                return !!data.children;
+            }
+        },
+        canSelect          : function (item) {
+            return item.children == null;
+        },
+        selectRowButtonOnly: true,
+        url                : '${base.contextPath}/sys/rolefunction/query',
+        delayLoad          : true,
+        width              : '99%',
+        alternatingRow     : false,
+        height             : '100%',
+        isChecked          : function (item) {
+            return item.ischecked;
+        }
+    });
+
+    function f_click() {
+        var fd = rolefunction_form.getData();
+        if (!fd.roleId) {
+            $.ligerDialog.alert('<@spring.message "msg.info.rolefunction.select_role"/>', $l('hap.tip.info'), 'info');
+            return;
+        }
+
+        var checkedList = rolefunction_treegrid.getSelectedRows();
+        var datas = [];
+        if (checkedList.length > 0) {
+            for (var i = 0; i < checkedList.length; i++) {
+                if (checkedList[i].children) {
+                    continue;
+                }
+                datas.push({
+                    roleId    : fd.roleId,
+                    functionId: checkedList[i].id
+                })
+            }
+            Hap.ajax({
+                url : "${base.contextPath}/sys/rolefunction/submit",
+                data: datas
+            })
+        }
+    }
+</script>
+</body>
+</html>
