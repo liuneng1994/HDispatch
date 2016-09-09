@@ -16,10 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by yyz on 2016/9/5.
- * yazheng.yang@hand-china.com
- */
 @Service
 @Transactional
 public class HdispatchGroupServiceImpl implements HdispatchGroupService {
