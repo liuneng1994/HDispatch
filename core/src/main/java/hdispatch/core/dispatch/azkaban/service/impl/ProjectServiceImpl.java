@@ -6,7 +6,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hdispatch.core.dispatch.azkaban.entity.project.SimpleProject;
-import hdispatch.core.dispatch.azkaban.mapper.ProjectMapper;
+import hdispatch.core.dispatch.azkaban.mappers.ProjectMapper;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;

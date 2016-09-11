@@ -13,7 +13,7 @@
     </resultMap>
 
     <insert id="save" parameterType="hdispatch.core.dispatch.dto.layer.Layer">
-        INSERT INTO hdispatch_layer(`name`,description,display_sequence,theme_id)
+        INSERT INTO hdispatch_layer(name,description,display_sequence,theme_id)
         VALUES (#{layerName},#{layerDescription},#{layerSequence},#{themeId})
     </insert>
     <select id="selectByNameAndActiveAndThemeId" resultMap="baseMap">

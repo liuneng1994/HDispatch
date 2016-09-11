@@ -1,4 +1,4 @@
-package hdispatch.core.dispatch.controllers;
+﻿package hdispatch.core.dispatch.controllers;
 
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;

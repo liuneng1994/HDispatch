@@ -4,7 +4,7 @@ package hdispatch.core.dispatch.azkaban.service.impl;
 import hdispatch.core.dispatch.azkaban.dto.Job;
 import hdispatch.core.dispatch.azkaban.entity.job.DBJob;
 import hdispatch.core.dispatch.azkaban.entity.job.JobDetail;
-import hdispatch.core.dispatch.azkaban.mapper.JobMapper;
+import hdispatch.core.dispatch.azkaban.mappers.JobMapper;
 import hdispatch.core.dispatch.azkaban.service.JobService;
 import org.json.JSONObject;
 

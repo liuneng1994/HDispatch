@@ -1,4 +1,4 @@
-package hdispatch.core.dispatch.azkaban.mapper;
+package hdispatch.core.dispatch.azkaban.mappers;
 
 import hdispatch.core.dispatch.azkaban.entity.record.DBExecutionFlow;
 import org.apache.ibatis.annotations.Param;
