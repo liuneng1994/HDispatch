@@ -8,11 +8,11 @@ import com.hand.hap.system.dto.BaseDTO;
  */
 public class Layer extends BaseDTO{
     private long layerId;
-    private String name;
-    private String description;
+    private String layerName;
+    private String layerDescription;
+    private int layerActive;
+    private int layerSequence;
     private long themeId;
-    private int seq;
-    private String flowId;
 
     public long getLayerId() {
         return layerId;
@@ -22,20 +22,36 @@ public class Layer extends BaseDTO{
         this.layerId = layerId;
     }
 
-    public String getName() {
-        return name;
+    public String getLayerName() {
+        return layerName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLayerName(String layerName) {
+        this.layerName = layerName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getLayerDescription() {
+        return layerDescription;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setLayerDescription(String layerDescription) {
+        this.layerDescription = layerDescription;
+    }
+
+    public int getLayerActive() {
+        return layerActive;
+    }
+
+    public void setLayerActive(int layerActive) {
+        this.layerActive = layerActive;
+    }
+
+    public int getLayerSequence() {
+        return layerSequence;
+    }
+
+    public void setLayerSequence(int layerSequence) {
+        this.layerSequence = layerSequence;
     }
 
     public long getThemeId() {
@@ -44,21 +60,5 @@ public class Layer extends BaseDTO{
 
     public void setThemeId(long themeId) {
         this.themeId = themeId;
-    }
-
-    public int getSeq() {
-        return seq;
-    }
-
-    public void setSeq(int seq) {
-        this.seq = seq;
-    }
-
-    public String getFlowId() {
-        return flowId;
-    }
-
-    public void setFlowId(String flowId) {
-        this.flowId = flowId;
     }
 }

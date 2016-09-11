@@ -15,4 +15,7 @@ public interface ThemeMapper {
     List<Theme> selectByTheme(Theme theme);
     Theme selectByNameAndActive(Theme theme);
     void deleteInLogic(Theme theme);
+
+    Theme selectById(Theme theme);
+
 }
