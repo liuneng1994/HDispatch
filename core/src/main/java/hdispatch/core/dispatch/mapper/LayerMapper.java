@@ -15,4 +15,5 @@ public interface LayerMapper {
     void deleteInLogic(Layer layer);
     //获取主题下活跃的层
     List<Layer> selectActiveLayersUnderTheme(Layer layer);
+    List<Layer> selectAllActiveLayers();
 }

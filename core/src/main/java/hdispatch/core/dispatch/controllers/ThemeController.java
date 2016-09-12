@@ -29,8 +29,8 @@ public class ThemeController extends BaseController {
     public ResponseData getThemes(HttpServletRequest request,
                                   @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                   @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam String themeName,
-                                  @RequestParam String themeDescription) {
+                                  @RequestParam(defaultValue = "") String themeName,
+                                  @RequestParam(defaultValue = "") String themeDescription) {
         IRequest requestContext = createRequestContext(request);
         Theme theme = new Theme();
         themeName = themeName.trim();
@@ -44,6 +44,16 @@ public class ThemeController extends BaseController {
         theme.setThemeName(themeName);
         theme.setThemeDescription(themeDescription);
         List<Theme> themeList = themeService.selectByTheme(requestContext, theme, page, pageSize);
+        ResponseData responseData = new ResponseData(themeList);
+        return responseData;
+    }
+
+    @RequestMapping(value = "/dispatcher/theme/queryAll", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getAllThemes(HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+
+        List<Theme> themeList = themeService.selectAllWithoutPaging(requestContext);
         ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }

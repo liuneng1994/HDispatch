@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,6 @@ import java.util.List;
 @Controller
 public class LayerController extends BaseController {
     private Logger logger = Logger.getLogger(LayerController.class);
-    // TODO 暂时注释掉没有注入的功能
     @Autowired
     private LayerService layerService;
     @Autowired
@@ -33,8 +33,10 @@ public class LayerController extends BaseController {
      * 获取当前主题下处于active的所有layer
      */
     @RequestMapping(path = "/dispatcher/layer/query",method = RequestMethod.GET)
-    public ResponseData getLayersByThemeId(HttpServletRequest request, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                           @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, @RequestParam(defaultValue = "-100") int themeId){
+    public ResponseData getLayersByThemeId(HttpServletRequest request,
+                                           @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                           @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                           @RequestParam(defaultValue = "-100") int themeId){
         IRequest requestContext = createRequestContext(request);
         //        查询theme是否存在并且处于active状态
         ResponseData rd = null;
@@ -63,6 +65,47 @@ public class LayerController extends BaseController {
         return rd;
 
     }
+
+    @RequestMapping(path = "/dispatcher/layer/queryAll",method = RequestMethod.GET)
+    public ResponseData getLayersByThemeIdWithoutPaging(HttpServletRequest request,
+                                           @RequestParam(defaultValue = "-100") int themeId){
+        IRequest requestContext = createRequestContext(request);
+        //        查询theme是否存在并且处于active状态
+        ResponseData rd = null;
+        List<Layer> layerList = new ArrayList<Layer>();
+        //如果没有设置themeId，那么查询所有的层
+        if(themeId < 0){
+//            不允许在没有设置themeId的前提下，访问层，为了在页面中新增加job方便
+//            layerList = layerService.selectAllActiveLayersWithoutPaging(requestContext);
+//            rd = new ResponseData(layerList);
+//            rd = new ResponseData(false);
+//            rd.setMessage("非法的主题");
+//            logger.error("非法的主题，可能是非法访问");
+//            return rd;
+            rd = new ResponseData(true);
+            return rd;
+        }
+
+        //检查主题是否被删除
+        Theme themeTemp = new Theme();
+        themeTemp.setThemeId(themeId);
+        Theme themeReturn = themeService.selectActiveThemeById(themeTemp);
+        if(null == themeReturn){
+            rd = new ResponseData(false);
+            rd.setMessage("主题已删除");
+            logger.info("尝试访问数据：theme已删除");
+            return rd;
+        }
+        //读取主题下面没有被删除的层
+        Layer layer = new Layer();
+        layer.setThemeId(themeId);
+        layerList = layerService.selectActiveLayersByThemeIdWithoutPaging(requestContext,layer);
+
+        rd = new ResponseData(layerList);
+        return rd;
+
+    }
+
     @RequestMapping(path = "/dispatcher/layer/submit",method = RequestMethod.POST)
     @ResponseBody
     public ResponseData addLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request){

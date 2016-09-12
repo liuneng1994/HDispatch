@@ -85,4 +85,16 @@ public class LayerServiceImpl implements LayerService {
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
         return layerList;
     }
+
+    @Override
+    public List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext, Layer layer) {
+        List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
+        return layerList;
+    }
+
+    @Override
+    public List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext) {
+        List<Layer> layerList = layerMapper.selectAllActiveLayers();
+        return layerList;
+    }
 }

@@ -52,6 +52,19 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
+    public List<Theme> selectAllWithoutPaging(IRequest requestContext) {
+        List<Theme> list;
+        if(null == themeMapper){
+            list = new ArrayList<>();
+            logger.info("themeMapper没有注入");
+        }
+        else {
+            list = themeMapper.selectAll();
+        }
+        return list;
+    }
+
+    @Override
     public List<Theme> batchUpdate(IRequest requestContext, List<Theme> themeList) throws Exception {
         for (Theme theme : themeList) {
             if (theme.get__status() != null) {

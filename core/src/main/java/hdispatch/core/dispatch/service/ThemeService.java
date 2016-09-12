@@ -13,6 +13,7 @@ import java.util.List;
 public interface ThemeService extends ProxySelf<ThemeService> {
     List<Theme> selectByTheme(IRequest requestContext, Theme theme, int page, int pageSize);
     List<Theme> selectAll(IRequest requestContext, int page, int pageSize);
+    List<Theme> selectAllWithoutPaging(IRequest requestContext);
     List<Theme> batchUpdate(IRequest requestContext,List<Theme> themeList) throws Exception;
     boolean[] checkIsExist(List<Theme> themeList);
 

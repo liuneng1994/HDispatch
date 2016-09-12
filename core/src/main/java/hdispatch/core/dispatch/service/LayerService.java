@@ -16,4 +16,6 @@ public interface LayerService {
     boolean[] checkIsExist(List<Layer> layerList);
     void deleteInLogic(Layer layer);
     List<Layer> selectActiveLayersByThemeId(IRequest requestContext,int page, int pageSize,Layer layer);
+    List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext,Layer layer);
+    List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext);
 }
