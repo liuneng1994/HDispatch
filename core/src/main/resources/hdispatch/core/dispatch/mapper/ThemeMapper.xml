@@ -3,21 +3,23 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hdispatch.core.dispatch.mapper.ThemeMapper">
-    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.theme.Theme">
+    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.theme.Theme" extends="com.hand.hap.mapper.StdMapper.STD">
         <id column="theme_id" property="themeId"/>
         <result column="name" property="themeName"/>
-        <result column="description" property="description"/>
-        <result column="project_name" property="projectName"/>
-        <result column="project_version" property="projectVersion"/>
-        <result column="project_id" property="projectId"/>
-        <result column="project_description" property="projectDescription"/>
+        <result column="description" property="themeDescription"/>
+        <result column="active" property="themeActive"/>
+        <result column="display_sequence" property="themeSequence"/>
     </resultMap>
 
+    <insert id="save" parameterType="hdispatch.core.dispatch.dto.theme.Theme">
+        INSERT INTO hdispatch_theme(name,description,display_sequence)
+        VALUES (#{themeName},#{themeDescription},#{themeSequence})
+    </insert>
     <select id="selectAll" resultMap="baseMap">
-        SELECT * FROM HDISPATCH_THEME
+        SELECT * FROM hdispatch_theme WHERE active=1
     </select>
     <select id="selectByTheme" resultMap="baseMap">
-        SELECT * FROM HDISPATCH_THEME
+        SELECT * FROM hdispatch_theme
         <where>
             <if test="themeId != null and themeId>0">
                 and theme_id = #{themeId,jdbcType=DECIMAL}
@@ -25,19 +27,24 @@
             <if test="themeName != null">
                 AND name = #{themeName,jdbcType=VARCHAR}
             </if>
-            <if test="description != null">
-                <bind name="pattern" value="'%' + _parameter.description + '%'" />
+            <if test="themeDescription != null">
+                <bind name="pattern" value="'%' + _parameter.themeDescription + '%'" />
                 AND description like #{pattern}
             </if>
-            <if test="projectName != null">
-                AND project_name like #{projectName,jdbcType=VARCHAR}
-            </if>
-            <if test="projectVersion != null and projectVersion>0">
-                and project_version = #{projectVersion,jdbcType=DECIMAL}
-            </if>
-            <if test="projectId != null and projectId>0">
-                and project_id = #{projectId,jdbcType=DECIMAL}
-            </if>
+            AND active=1
         </where>
+    </select>
+    <select id="selectByNameAndActive" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE name=#{themeName,jdbcType=VARCHAR} AND active=1
+    </select>
+
+    <update id="deleteInLogic">
+        UPDATE hdispatch_theme SET active=0
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+    </update>
+    <select id="selectById" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
     </select>
 </mapper>

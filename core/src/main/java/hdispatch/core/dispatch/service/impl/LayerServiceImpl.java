@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.layer.Layer;
@@ -7,6 +8,7 @@ import hdispatch.core.dispatch.mapper.LayerMapper;
 import hdispatch.core.dispatch.service.LayerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ import java.util.List;
  * Created by yyz on 2016/9/7.
  * yazheng.yang@hand-china.com
  */
+@Service
 public class LayerServiceImpl implements LayerService {
     private Logger logger = Logger.getLogger(LayerServiceImpl.class);
     @Autowired
@@ -39,6 +42,7 @@ public class LayerServiceImpl implements LayerService {
                 switch (layer.get__status()) {
                     case DTOStatus.ADD:
                         layerMapper.save(layer);
+                        layer.setLayerActive(1);
                         break;
                     case DTOStatus.UPDATE:
 
@@ -73,5 +77,24 @@ public class LayerServiceImpl implements LayerService {
         if(null != layer){
             layerMapper.deleteInLogic(layer);
         }
+    }
+
+    @Override
+    public List<Layer> selectActiveLayersByThemeId(IRequest requestContext, int page, int pageSize, Layer layer) {
+        PageHelper.startPage(page, pageSize);
+        List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
+        return layerList;
+    }
+
+    @Override
+    public List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext, Layer layer) {
+        List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
+        return layerList;
+    }
+
+    @Override
+    public List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext) {
+        List<Layer> layerList = layerMapper.selectAllActiveLayers();
+        return layerList;
     }
 }

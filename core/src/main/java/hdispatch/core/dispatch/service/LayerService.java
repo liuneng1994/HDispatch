@@ -15,4 +15,7 @@ public interface LayerService {
     //检查在当前主题下是否已经存在同名的层
     boolean[] checkIsExist(List<Layer> layerList);
     void deleteInLogic(Layer layer);
+    List<Layer> selectActiveLayersByThemeId(IRequest requestContext,int page, int pageSize,Layer layer);
+    List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext,Layer layer);
+    List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext);
 }

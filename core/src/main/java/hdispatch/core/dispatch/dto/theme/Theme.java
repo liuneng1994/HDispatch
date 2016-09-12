@@ -9,11 +9,9 @@ import com.hand.hap.system.dto.BaseDTO;
 public class Theme extends BaseDTO{
     private int themeId;
     private String themeName;
-    private String description;
-    private String projectName;
-    private int projectVersion;
-    private int projectId;
-    private String projectDescription;
+    private String themeDescription;
+    private int themeActive;
+    private int themeSequence;
 
 
     public int getThemeId() {
@@ -32,43 +30,27 @@ public class Theme extends BaseDTO{
         this.themeName = themeName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getThemeDescription() {
+        return themeDescription;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setThemeDescription(String themeDescription) {
+        this.themeDescription = themeDescription;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public int getThemeActive() {
+        return themeActive;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setThemeActive(int themeActive) {
+        this.themeActive = themeActive;
     }
 
-    public int getProjectVersion() {
-        return projectVersion;
+    public int getThemeSequence() {
+        return themeSequence;
     }
 
-    public void setProjectVersion(int projectVersion) {
-        this.projectVersion = projectVersion;
-    }
-
-    public int getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getProjectDescription() {
-        return projectDescription;
-    }
-
-    public void setProjectDescription(String projectDescription) {
-        this.projectDescription = projectDescription;
+    public void setThemeSequence(int themeSequence) {
+        this.themeSequence = themeSequence;
     }
 }

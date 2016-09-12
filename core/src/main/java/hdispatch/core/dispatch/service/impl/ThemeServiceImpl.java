@@ -2,12 +2,8 @@ package hdispatch.core.dispatch.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
-import com.hand.hap.core.annotation.StdWho;
 import com.hand.hap.system.dto.DTOStatus;
-import com.hand.hap.system.service.impl.BaseServiceImpl;
 import hdispatch.core.dispatch.dto.theme.Theme;
-import hdispatch.core.dispatch.azkaban.service.ProjectService;
-import hdispatch.core.dispatch.azkaban.service.impl.ProjectServiceImpl;
 import hdispatch.core.dispatch.mapper.ThemeMapper;
 import hdispatch.core.dispatch.service.ThemeService;
 import org.apache.log4j.Logger;
@@ -56,24 +52,16 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
-    public boolean create(String themeName, String description, String projectName, String projectDescription) {
-
-        //插入projects表判断是否成功
-        ProjectService projectService = new ProjectServiceImpl();
-        boolean isSuccess = projectService.createProject(projectName, description);
-        if (!isSuccess) {
-            logger.info("插入theme过程中，project信息录入失败");
-            return false;
+    public List<Theme> selectAllWithoutPaging(IRequest requestContext) {
+        List<Theme> list;
+        if(null == themeMapper){
+            list = new ArrayList<>();
+            logger.info("themeMapper没有注入");
         }
-        //插入theme基本表
-        try {
-            this.insertTheme(themeName, description, projectName);
-        } catch (Exception e) {
-            isSuccess = false;
-            logger.error("插入theme失败", e);
-            return false;
+        else {
+            list = themeMapper.selectAll();
         }
-        return isSuccess;
+        return list;
     }
 
     @Override
@@ -83,6 +71,7 @@ public class ThemeServiceImpl implements ThemeService {
                 switch (theme.get__status()) {
                     case DTOStatus.ADD:
                         themeMapper.save(theme);
+                        theme.setThemeActive(1);
                         break;
                     case DTOStatus.UPDATE:
 
@@ -123,15 +112,21 @@ public class ThemeServiceImpl implements ThemeService {
         }
     }
 
-    private boolean insertTheme(String themeName, String description, String projectName) throws Exception {
-        boolean isSuccess = true;
-        Theme theme = new Theme();
-        theme.setDescription(description);
-        theme.setThemeName(themeName);
-        theme.setProjectName(projectName);
-        theme.setProjectVersion(1);
-        themeMapper.save(theme);
-        return isSuccess;
+    @Override
+    public Theme selectActiveThemeById(Theme theme) {
+        Theme themeReturn = themeMapper.selectById(theme);
+        return themeReturn;
     }
+
+//    private boolean insertTheme(String themeName, String description, String projectName) throws Exception {
+//        boolean isSuccess = true;
+//        Theme theme = new Theme();
+//        theme.setThemeDescription(description);
+//        theme.setThemeName(themeName);
+//        theme.setProjectName(projectName);
+//        theme.setProjectVersion(1);
+//        themeMapper.save(theme);
+//        return isSuccess;
+//    }
 
 }

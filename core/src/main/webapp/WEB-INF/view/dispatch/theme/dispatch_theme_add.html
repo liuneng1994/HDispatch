@@ -19,7 +19,7 @@
                             <div class="form-group">
                                 <label style="width: 20%">主题描述</label>
                                 <!--<div class="col-sm-4">-->
-                                    <input type="text" style="width:70%" data-bind="value:model.description" class="k-textbox">
+                                    <input type="text" style="width:70%" data-bind="value:model.themeDescription" class="k-textbox">
                                 <!--</div>-->
                             </div>
                         </div>
@@ -70,12 +70,14 @@
             transport: {
                 read:  {
                     url: baseUrl+"query",
+                    type : 'GET',
                     dataType: "json"
                 },
                 create: {
                     url: baseUrl+'submit',
                     type : 'POST',
-                    dataType: "json"
+                    dataType: "json",
+                    contentType:"application/json"
                 },
                 parameterMap: function(options, operation) {
                     //封装请求参数
@@ -89,20 +91,22 @@
                             });
                         }
                         var data_str = kendo.stringify(datas);
+                        themes_data = data_str;
                         console.log(data_str);
-                        var map = {
-                            themes_data_array:data_str
-                        };
-                        return map;
+//                        var map = {
+//                            themes_data_array:data_str
+//                        };
+//                        return map;
+                        return data_str;
                     } else if (operation === "read") {
                         var model = viewModel.model;
                         if(!model.themeName){
                             model.themeName=' ';
                         }
-                        if(!model.description){
-                            model.description=' ';
+                        if(!model.themeDescription){
+                            model.themeDescription=' ';
                         }
-                        var map = {themeName: model.themeName,description: model.description};
+                        var map = {themeName: model.themeName,themeDescription: model.themeDescription};
                         if (options.page)
                             map.page = options.page;
                         if (options.pageSize)
@@ -110,7 +114,7 @@
                         for(var k in map){
                             if(map[k]==='')delete map[k]
                         }
-                        console.log(map);
+                        console.log("theme查询请求参数:"+map);
                         return map;
                     }
                 }
@@ -125,9 +129,8 @@
                     id: 'themeId',
                     fields: {
                         themeName: { type: 'string',validation: { required: true } },
-                        description: { type: 'string',validation: { required: true } },
-                        projectName: { type: 'string',validation: { required: true } },
-                        projectDescription: { type: 'string',validation: { required: true } }
+                        themeSequence: { type: 'number',validation: { required: true } },
+                        themeDescription: { type: 'string',validation: { required: true } }
                     }
                 },
                 errors: function(res){
@@ -177,8 +180,10 @@
             ],
             columns:
                     [
-                        { 'field': 'themeName','title':'主题名称', 'width': "200px" },
-                        { 'field': 'description','title':'主题描述', 'width': "200px" },
+                        { 'field': 'themeId','hidden':true },
+                        { 'field': 'themeName','title':'主题名称', 'width': "150px" },
+                        { 'field': 'themeSequence','title':'排序编号', 'width': "100px" },
+                        { 'field': 'themeDescription','title':'主题描述', 'width': "200px" },
                         { command: { text: "编辑层", click: showDetails }, title: "层操作", width: "100px" },
                     ],
             editable: true
@@ -218,7 +223,8 @@
                 create: {
                     url: baseUrl+'submit',
                     type : 'POST',
-                    dataType: "json"
+                    dataType: "json",
+                    contentType:"application/json"
                 },
                 parameterMap: function(options, operation) {
                     //封装请求参数
@@ -231,12 +237,19 @@
                                 return data;
                             });
                         }
+                        console.log("循环输出表格中的数据,开始");
+                        for(var k in layer_datas){
+                            layer_datas[k].themeId=layerHeaderData.themeId;
+                            console.log(layer_datas[k]);
+                        }
+                        console.log("循环输出表格中的数据,结束");
                         var layer_data_str = kendo.stringify(layer_datas);
                         console.log(layer_data_str);
-                        var map = {
-                            layers_data_array:layer_data_str
-                        };
-                        return map;
+//                        var map = {
+//                            layers_data_array:layer_data_str
+//                        };
+//                        return map;
+                        return layer_data_str;
                     } else if (operation === "read") {
                         var layerModel = layerViewModel.model;
                         console.log("层里面的model:"+layerModel);
@@ -269,9 +282,10 @@
                 model: {
                     id: 'layerId',
                     fields: {
-                        themeId: { type: 'int',validation: { required: true } },
+                        themeId: { type: 'number' },
                         layerName: { type: 'string',validation: { required: true } },
-                        layerDescription: { type: 'string',validation: { required: true } }
+                        layerDescription: { type: 'string',validation: { required: true } },
+                        layerSequence: { type: 'number',validation: { required: true } }
                     }
                 },
                 errors: function(res){
@@ -321,9 +335,9 @@
             ],
             columns:
                     [
-                        { 'field': 'themeId','title':'主题名称','hidden':true, 'width': 70,'height':100 },
-                        { 'field': 'layerName','title':'层名称', 'width': 70,'height':100  },
-                        { 'field': 'layerDescription','title':'层描述', 'width': 70,'height':100  }
+                        { 'field': 'layerName','title':'层名称', 'width': 70 },
+                        { 'field': 'layerDescription','title':'层描述', 'width': 70 },
+                        { 'field': 'layerSequence','title':'层描述', 'width': 70 }
                     ],
             editable: true
         });
