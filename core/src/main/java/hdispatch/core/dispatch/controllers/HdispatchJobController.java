@@ -8,10 +8,8 @@ import hdispatch.core.dispatch.service.JobService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -51,4 +49,68 @@ public class HdispatchJobController extends BaseController {
         return responseData;
     }
 
+    @RequestMapping(value = "/dispatcher/job/submit", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData addJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        //后台验证
+        getValidator().validate(jobList, result);
+        if (result.hasErrors()) {
+            rd = new ResponseData(false);
+            rd.setMessage(getErrorMessage(result, request));
+            return rd;
+        }
+
+        //从后台判断是否存在
+        boolean[] isExist = jobService.checkIsExist(jobList);
+        StringBuilder sb = new StringBuilder();
+        boolean flag = false;
+        for (int i = 0; i < jobList.size(); i++) {
+            if (isExist[i]) {
+                if (!flag) {
+                    sb.append(jobList.get(i).getJobName());
+                } else {
+                    sb.append("," + jobList.get(i).getJobName());
+                }
+                flag = true;
+            }
+        }
+        if (flag) {
+            rd = new ResponseData(false);
+            rd.setMessage("以下任务已经存在:" + sb.toString());
+            return rd;
+        }
+        IRequest requestContext = createRequestContext(request);
+
+        try {
+            rd = new ResponseData(jobService.batchUpdate(requestContext, jobList));
+        } catch (Exception e) {
+            logger.error("保存任务中途失败", e);
+        }
+        return rd;
+    }
+
+    @RequestMapping(value = "/dispatcher/job/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData deleteJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        //后台验证
+        getValidator().validate(jobList, result);
+        if (result.hasErrors()) {
+            rd = new ResponseData(false);
+            rd.setMessage(getErrorMessage(result, request));
+            return rd;
+        }
+
+        IRequest requestContext = createRequestContext(request);
+
+        try {
+            rd = new ResponseData(jobService.batchUpdate(requestContext, jobList));
+        } catch (Exception e) {
+            logger.error("删除任务中途失败", e);
+        }
+        return rd;
+    }
 }

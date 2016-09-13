@@ -40,4 +40,15 @@
         WHERE job_id=#{jobId}
     </update>
 
+    <select id="selectByNameAndActiveAndLayer" resultMap="baseMap">
+        SELECT job.* FROM  hdispatch_job job JOIN hdispatch_theme theme JOIN hdispatch_layer layer
+        ON job.theme_id=theme.theme_id AND job.layer_id=layer.layer_id
+        WHERE job.active=1 AND theme.active=1 AND layer.active=1
+        AND job.name=#{jobName} AND job.layer_id=#{layerId} AND job.theme_id=#{themeId}
+    </select>
+
+    <insert id="create">
+        INSERT INTO hdispatch_job(theme_id,layer_id,name,svn)
+        VALUES (#{themeId},#{layerId},#{jobName},#{jobSvn})
+    </insert>
 </mapper>

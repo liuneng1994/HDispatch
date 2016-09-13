@@ -62,6 +62,8 @@
                         $('#jobListGrid').data('kendoGrid').dataSource.read();
                     }
                 });
+                //用于存储themeName、layerName，这种情况只适用于当前单行编辑
+                var themeName_grid_line,layerName_grid_line;
                 var jobs_data = new kendo.data.DataSource({
                     transport: {
                         read:  {
@@ -83,20 +85,23 @@
                                 if(operation =='create' || operation =='update'){
                                     datas = options.models.map(function(data){
                                         data['__status'] = (operation =='create' ? 'add' : 'update');
+                                        //这种情况只适用于当前单行情况
+                                        if(operation =='create'){
+                                            data['themeName'] = themeName_grid_line;
+                                            data['layerName'] = layerName_grid_line;
+
+                                            console.log("发送请求过程中对值进行设置:"+datas.themeName);
+                                        }
                                         return data;
                                     });
                                 }
+
                                 var data_str = kendo.stringify(datas);
                                 jobs_data = data_str;
                                 console.log(data_str);
-//                        var map = {
-//                            jobs_data_array:data_str
-//                        };
-//                        return map;
                                 return data_str;
                             } else if (operation === "read") {
                                 var model = viewModel.model;
-                                console.log("向服务器发送读取job请求中，themeId,layerId:("+viewModel.model.themeId+","+viewModel.model.layerId+")");
                                 if(!model.themeId){
                                     model.themeId='-100';
                                 }
@@ -115,7 +120,6 @@
                                 for(var k in map){
                                     if(map[k]==='')delete map[k]
                                 }
-                                console.log("job查询请求参数:"+map);
                                 return map;
                             }
                         }
@@ -123,6 +127,7 @@
                     batch: true,
                     serverPaging : true,
                     pageSize: 5,
+                    selectable: "multiple",
                     schema: {
                         data:'rows',
                         total:'total',
@@ -148,7 +153,7 @@
                         alert(e.errors)
                     }
                 });
-                $("#jobListGrid").kendoGrid({
+                var jobListGrid_kendo = $("#jobListGrid").kendoGrid({
                     dataSource: jobs_data,
                     resizable: true,
                     selectable: "multiple",
@@ -171,29 +176,179 @@
                             refresh: "刷新"
                         }
                     },
-                    toolbar: [{
-                        name:"create",
-                        text:'创建'
-                    },{
-                        name:"save",
-                        text:'保存'
-                    },{
-                        name:"cancel",
-                        text:'取消'
-                    }
+                    toolbar: [
+                        {
+                            name:"create",
+                            text:'创建'
+                        },{
+                            name:"save",
+                            text:'保存'
+                        },{
+                            name:"cancel",
+                            text:'取消'
+                        },
+                        {
+                            name:"batchCreateJob",
+                            text:"批量新建",
+                        }
                     ],
                     columns:
-                            [
-                                { 'field': 'themeId','hidden':true },
-                                { 'field': 'layerId','hidden':true },
-                                { 'field': 'jobId','hidden':true },
-                                { 'field': 'themeName','title':'主题名称', 'width': "100px",'editable':false },
-                                { 'field': 'layerName','title':'层次名称', 'width': "100px",'editable':false },
-                                { 'field': 'jobName','title':'任务名称', 'width': "100px" },
-                                { 'field': 'jobSvn','title':'SVN文件', 'width': "200px" }
-                            ],
-                    editable: true
+                        [
+                            { 'field': 'jobId','hidden':true },
+                            { 'field': 'themeId','title':'主题名称', 'width': "100px", editor: themeDropDownEditor, template: "#=themeName#" },
+                            { 'field': 'layerId','title':'层次名称', 'width': "100px", editor: layerDropDownEditor, template: "#=layerName#" },
+                            { 'field': 'jobName','title':'任务名称', 'width': "100px" },
+                            { 'field': 'jobSvn','title':'SVN文件', 'width': "200px" },
+                            { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
+                        ],
+//                    editable: true
+                    editable: "inline"
                 });
+                //自定义toolbar中的按钮
+                $(".k-grid-batchCreateJob").click(function(){
+                    console.log("自定义按钮事件");
+                });
+
+                //声明grid中的下拉框
+                //存储grid中行内编辑的下拉框值
+                var grid_dropdown_themeId;
+                var grid_dropdown_layerId;
+                var grid_themeDropDown_dataSource=new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: themeBaseUrl+"queryAll",
+                            type : 'GET',
+                            dataType: "json"
+                        },
+                        parameterMap: function(options, operation) {
+                            if (operation === "read") {
+                                var map = {};
+
+                                for(var k in map){
+                                    if(map[k]==='')delete map[k]
+                                }
+                                return map;
+                            }
+                        }
+                    },
+                    schema: {
+                        data:'rows',
+                        model: {
+                            id: 'themeId',
+                            fields: {
+                                themeId: { type: 'number',validation: { required: true } },
+                                themeName: { type: 'string',validation: { required: true } }
+                            }
+                        },
+                        errors: function(res){
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
+                    }
+                });
+                var grid_themeDropDownList;
+                function themeDropDownEditor(container, options) {
+                    grid_themeDropDownList = $('<input id="grid_dropdown_theme_input" required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            optionLabel: "选择主题",
+                            autoBind: true,
+                            dataTextField: "themeName",
+                            dataValueField: "themeId",
+                            dataBound:onGridThemeDataBound,
+                            change: onGridThemeChange,
+                            dataSource:grid_themeDropDown_dataSource
+                        });
+
+                };
+
+                var grid_layerDropDown_dataSource =  new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: layerBaseUrl+"queryAll",
+                            type : 'GET',
+                            dataType: "json"
+                        },
+                        parameterMap: function(options, operation) {
+                            if (operation === "read") {
+                                var map = {};
+                                if(!grid_dropdown_themeId){
+                                    grid_dropdown_themeId='-100';
+                                }
+                                map.themeId=grid_dropdown_themeId;
+                                for(var k in map){
+                                    if(map[k]==='')delete map[k]
+                                }
+                                return map;
+                            }else{
+                                console.log("layerId:没有进入加载读取数据");
+                            }
+                        }
+                    },
+                    schema: {
+                        data:'rows',
+                        model: {
+                            id: 'layerId',
+                            fields: {
+                                layerId: { type: 'number',validation: { required: true } },
+                                layerName: { type: 'string',validation: { required: true } }
+                            }
+                        },
+                        errors: function(res){
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
+                    }
+                });
+                var grid_layerDropDownList;
+                function layerDropDownEditor(container, options) {
+                    grid_layerDropDownList = $('<input id="grid_dropdown_layer_input" required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            optionLabel: "选择层",
+                            autoBind: true,
+                            dataTextField: "layerName",
+                            dataValueField: "layerId",
+                            dataBound:onGridLayerDataBound,
+                            open:onGridLayerChange,
+                            dataSource:grid_layerDropDown_dataSource
+                    });
+                };
+
+                function onGridThemeDataBound(e) {
+                    grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
+                    console.log("刚加载themeId："+grid_dropdown_themeId);
+                    grid_layerDropDown_dataSource.read();
+                };
+                function onGridThemeChange(e) {
+                    grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
+                    console.log("改变themeId："+grid_dropdown_themeId);
+                    //获取对应的themeName值
+                    var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
+                    console.log("获取对应的themeName值"+color.text());
+                    themeName_grid_line = color.text();
+                    grid_layerDropDown_dataSource.read();
+                };
+                function onGridLayerDataBound(e) {
+                    //获取对应的layerName值
+                    var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
+//                    console.log("获取对应的layerName值:"+color.text());
+//                    layerName_grid_line = color.text();
+                };
+                function onGridLayerChange(e) {
+                    //获取对应的layerName值
+                    var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
+                    console.log("获取对应的layerName值:"+color.text());
+                    layerName_grid_line = color.text();
+                };
 
                 //声明两个查询用的下拉框
                 var input_themeId_dataSource = new kendo.data.DataSource({
@@ -234,111 +389,78 @@
                     }
                 });
                 $("#input_themeId").kendoDropDownList({
+                    optionLabel: "选择主题",
+                    autoBind:true,
                     dataTextField: "themeName",
                     dataValueField: "themeId",
                     dataSource: input_themeId_dataSource,
-                    filter: "startswith",
-                    select: onSelect,
                     change: onChange,
-                    close: onClose,
-                    open: onOpen,
-                    filtering: onFiltering,
                     dataBound:onDataBound
                 });
-                var input_layerId_dataSource =  new kendo.data.DataSource(
-                        {
-                            transport: {
-                                read: {
-                                    url: layerBaseUrl+"queryAll",
-                                    type : 'GET',
-                                    dataType: "json"
-                                },
-                                parameterMap: function(options, operation) {
-                                    console.log("进入第二个下拉框数据加载");
-                                    if (operation === "read") {
-                                        var map = {};
-                                        console.log("第二个下拉框读取到的themeId:"+viewModel.model.themeId);
-                                        if(!viewModel.model.themeId){
-                                            viewModel.model.themeId='-100';
-                                        }
-                                        map.themeId=viewModel.model.themeId;
-                                        for(var k in map){
-                                            if(map[k]==='')delete map[k]
-                                        }
-                                        return map;
-                                    }else{
-                                        console.log("layerId:没有进入加载读取数据");
-                                    }
-                                }
+                var input_layerId_dataSource =  new kendo.data.DataSource({
+                        transport: {
+                            read: {
+                                url: layerBaseUrl+"queryAll",
+                                type : 'GET',
+                                dataType: "json"
                             },
-                            schema: {
-                                data:'rows',
-                                model: {
-                                    id: 'layerId',
-                                    fields: {
-                                        layerId: { type: 'number',validation: { required: true } },
-                                        layerName: { type: 'string',validation: { required: true } }
+                            parameterMap: function(options, operation) {
+                                if (operation === "read") {
+                                    var map = {};
+                                    if(!viewModel.model.themeId){
+                                        viewModel.model.themeId='-100';
                                     }
-                                },
-                                errors: function(res){
-                                    if(!res.success && res.message) {
-                                        return res.message;
+                                    map.themeId=viewModel.model.themeId;
+                                    for(var k in map){
+                                        if(map[k]==='')delete map[k]
                                     }
+                                    return map;
+                                }else{
+                                    console.log("layerId:没有进入加载读取数据");
                                 }
-                            },
-                            error: function(e) {
-                                alert(e.errors)
                             }
+                        },
+                        schema: {
+                            data:'rows',
+                            model: {
+                                id: 'layerId',
+                                fields: {
+                                    layerId: { type: 'number',validation: { required: true } },
+                                    layerName: { type: 'string',validation: { required: true } }
+                                }
+                            },
+                            errors: function(res){
+                                if(!res.success && res.message) {
+                                    return res.message;
+                                }
+                            }
+                        },
+                        error: function(e) {
+                            alert(e.errors)
                         }
-                );
+                    });
                 $("#input_layerId").kendoDropDownList({
+                    optionLabel: "选择层",
+                    autoBind:true,
                     dataTextField: "layerName",
                     dataValueField: "layerId",
                     dataSource: input_layerId_dataSource,
                     dataBound:onDataBound_2
                 });
-
                 //绑定主页面的数据和视图
                 kendo.bind($('#theme-content'),viewModel);
 
-                //初始化加载的时候themeId和layerId都默认不设置，
-                //并且将在初始化页面之后，点击下拉框加载数据
-                console.log("重新设置下拉框的值2");
-                input_themeId_dataSource.read();
-//                input_layerId_dataSource.read();
-
-
-
-
-                function onOpen() {
-                    console.log("event: open");
-                };
-
-                function onClose() {
-                    console.log("event: close");
-                };
-
                 function onChange() {
-                    console.log("event: change");
                     viewModel.model.themeId=$("#input_themeId").val();
 
                     input_layerId_dataSource.read();
-                };
-
-                function onSelect(e) {
-                    console.log("event: select");
                 };
 
                 function onDataBound(e) {
-                    console.log("event: DataBound");
                     viewModel.model.themeId=$("#input_themeId").val();
-                    console.log("layerId请求url："+input_layerId_dataSource.transport.read.url);
                     input_layerId_dataSource.read();
                 };
 
-                function onFiltering(e) {
-                    console.log("event: onFiltering");
-                }
                 function onDataBound_2(e) {
                     viewModel.model.layerId=$("#input_layerId").val();
                 }
@@ -496,6 +618,12 @@
                 });
                 kendo.bind($('#layer-content'),layerViewModel);
             }
+
+        </script>
+        <script type="text/x-kendo-template" id="grid_themeDropDownList_template">
+
+        </script>
+        <script type="text/x-kendo-template" id="grid_layerDropDownList_template">
 
         </script>
         <script type="text/x-kendo-template" id="template">

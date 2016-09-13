@@ -2,6 +2,7 @@ package hdispatch.core.dispatch.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
+import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.mapper.JobMapper;
 import hdispatch.core.dispatch.service.JobService;
@@ -33,5 +34,44 @@ public class JobServiceImpl implements JobService {
             list = jobMapper.selectByJob(job);
         }
         return list;
+    }
+
+    @Override
+    public boolean[] checkIsExist(List<Job> jobList) {
+        boolean[] isExist = new boolean[jobList.size()];
+        int i = 0;
+        for(Job job : jobList){
+            Job jobReturn = jobMapper.selectByNameAndActiveAndLayer(job);
+            if(null != jobReturn){
+                isExist[i] = true;
+            }
+            i ++;
+        }
+
+        return isExist;
+    }
+
+    @Override
+    public List<Job> batchUpdate(IRequest requestContext, List<Job> jobList) {
+        for (Job job : jobList) {
+            if (job.get__status() != null) {
+                switch (job.get__status()) {
+                    case DTOStatus.ADD:
+                        jobMapper.create(job);
+                        job.setJobActive(1);
+                        break;
+                    case DTOStatus.UPDATE:
+
+                        break;
+                    case DTOStatus.DELETE:
+                        jobMapper.deleteInLogic(job);
+                        jobList.remove(job);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return jobList;
     }
 }
