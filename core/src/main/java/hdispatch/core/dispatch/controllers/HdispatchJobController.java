@@ -107,9 +107,12 @@ public class HdispatchJobController extends BaseController {
         IRequest requestContext = createRequestContext(request);
 
         try {
-            rd = new ResponseData(jobService.batchUpdate(requestContext, jobList));
+            List<Job> jobListReturn = jobService.batchUpdate(requestContext, jobList);
+            rd = new ResponseData(jobListReturn);
         } catch (Exception e) {
             logger.error("删除任务中途失败", e);
+            rd = new ResponseData(false);
+            return rd;
         }
         return rd;
     }
