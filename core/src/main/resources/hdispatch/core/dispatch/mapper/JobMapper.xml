@@ -47,7 +47,7 @@
         AND job.name=#{jobName} AND job.layer_id=#{layerId} AND job.theme_id=#{themeId}
     </select>
 
-    <insert id="create">
+    <insert id="create" useGeneratedKeys="true" keyProperty="jobId">
         INSERT INTO hdispatch_job(theme_id,layer_id,name,svn)
         VALUES (#{themeId},#{layerId},#{jobName},#{jobSvn})
     </insert>

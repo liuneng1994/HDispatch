@@ -65,7 +65,7 @@ public class JobServiceImpl implements JobService {
                         break;
                     case DTOStatus.DELETE:
                         jobMapper.deleteInLogic(job);
-                        jobList.remove(job);
+                        job.setJobActive(0);
                         break;
                     default:
                         break;
