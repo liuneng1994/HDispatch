@@ -36,7 +36,7 @@ public class LayerController extends BaseController {
     public ResponseData getLayersByThemeId(HttpServletRequest request,
                                            @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                           @RequestParam(defaultValue = "-100") int themeId){
+                                           @RequestParam(defaultValue = "-100") Long themeId){
         IRequest requestContext = createRequestContext(request);
         //        查询theme是否存在并且处于active状态
         ResponseData rd = null;
@@ -68,7 +68,7 @@ public class LayerController extends BaseController {
 
     @RequestMapping(path = "/dispatcher/layer/queryAll",method = RequestMethod.GET)
     public ResponseData getLayersByThemeIdWithoutPaging(HttpServletRequest request,
-                                           @RequestParam(defaultValue = "-100") int themeId){
+                                           @RequestParam(defaultValue = "-100") Long themeId){
         IRequest requestContext = createRequestContext(request);
         //        查询theme是否存在并且处于active状态
         ResponseData rd = null;

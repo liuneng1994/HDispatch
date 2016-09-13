@@ -42,7 +42,7 @@ public class LayerServiceImpl implements LayerService {
                 switch (layer.get__status()) {
                     case DTOStatus.ADD:
                         layerMapper.save(layer);
-                        layer.setLayerActive(1);
+                        layer.setLayerActive(1L);
                         break;
                     case DTOStatus.UPDATE:
 

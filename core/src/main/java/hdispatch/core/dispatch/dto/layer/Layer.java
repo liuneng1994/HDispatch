@@ -7,18 +7,18 @@ import com.hand.hap.system.dto.BaseDTO;
  * yazheng.yang@hand-china.com
  */
 public class Layer extends BaseDTO{
-    private long layerId;
+    private Long layerId;
     private String layerName;
     private String layerDescription;
-    private int layerActive;
-    private int layerSequence;
-    private long themeId;
+    private Long layerActive;
+    private Long layerSequence;
+    private Long themeId;
 
-    public long getLayerId() {
+    public Long getLayerId() {
         return layerId;
     }
 
-    public void setLayerId(long layerId) {
+    public void setLayerId(Long layerId) {
         this.layerId = layerId;
     }
 
@@ -38,27 +38,27 @@ public class Layer extends BaseDTO{
         this.layerDescription = layerDescription;
     }
 
-    public int getLayerActive() {
+    public Long getLayerActive() {
         return layerActive;
     }
 
-    public void setLayerActive(int layerActive) {
+    public void setLayerActive(Long layerActive) {
         this.layerActive = layerActive;
     }
 
-    public int getLayerSequence() {
+    public Long getLayerSequence() {
         return layerSequence;
     }
 
-    public void setLayerSequence(int layerSequence) {
+    public void setLayerSequence(Long layerSequence) {
         this.layerSequence = layerSequence;
     }
 
-    public long getThemeId() {
+    public Long getThemeId() {
         return themeId;
     }
 
-    public void setThemeId(long themeId) {
+    public void setThemeId(Long themeId) {
         this.themeId = themeId;
     }
 }
