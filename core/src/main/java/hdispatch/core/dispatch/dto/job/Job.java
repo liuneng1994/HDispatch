@@ -1,4 +1,4 @@
-﻿package hdispatch.core.dispatch.dto.job;
+package hdispatch.core.dispatch.dto.job;
 
 import com.hand.hap.system.dto.BaseDTO;
 
