@@ -12,4 +12,7 @@ import java.util.List;
 public interface JobService {
     List<Job> selectByJob(IRequest requestContext, Job job, int page, int pageSize);
 
+    boolean[] checkIsExist(List<Job> jobList);
+
+    List<Job> batchUpdate(IRequest requestContext, List<Job> jobList);
 }

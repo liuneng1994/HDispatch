@@ -10,4 +10,12 @@ import java.util.List;
  */
 public interface JobMapper {
     List<Job> selectByJob(Job job);
+    /**
+     * 检测是否已经在当前层中存在,确保theme、layer存在
+     */
+    Job selectByNameAndActiveAndLayer(Job job);
+
+    void create(Job job);
+
+    void deleteInLogic(Job job);
 }
