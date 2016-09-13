@@ -7,23 +7,23 @@ import com.hand.hap.system.dto.BaseDTO;
  * yazheng.yang@hand-china.com
  */
 public class Job extends BaseDTO {
-    private int jobId;
+    private Long jobId;
     private String jobName;
     private String jobSvn;
-    private int jobActive;
-    private int themeId;
-    private int layerId;
+    private Long jobActive;
+    private Long themeId;
+    private Long layerId;
 
     //冗余属性
     private String themeName;
     private String layerName;
 
 
-    public int getJobId() {
+    public Long getJobId() {
         return jobId;
     }
 
-    public void setJobId(int jobId) {
+    public void setJobId(Long jobId) {
         this.jobId = jobId;
     }
 
@@ -43,27 +43,27 @@ public class Job extends BaseDTO {
         this.jobSvn = jobSvn;
     }
 
-    public int getJobActive() {
+    public Long getJobActive() {
         return jobActive;
     }
 
-    public void setJobActive(int jobActive) {
+    public void setJobActive(Long jobActive) {
         this.jobActive = jobActive;
     }
 
-    public int getThemeId() {
+    public Long getThemeId() {
         return themeId;
     }
 
-    public void setThemeId(int themeId) {
+    public void setThemeId(Long themeId) {
         this.themeId = themeId;
     }
 
-    public int getLayerId() {
+    public Long getLayerId() {
         return layerId;
     }
 
-    public void setLayerId(int layerId) {
+    public void setLayerId(Long layerId) {
         this.layerId = layerId;
     }
 

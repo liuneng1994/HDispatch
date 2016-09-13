@@ -12,6 +12,7 @@ import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -67,5 +68,17 @@ public class ProjectServiceImpl implements ProjectService {
             throw new IllegalStateException("刪除工程失败", e);
         }
         return true;
+    }
+
+    @Override
+    public void uploadProjectFile(File projectFile) {
+        //TODO 需要实现文件上传接口
+        try {
+            RequestUtils.post("/manager?ajax=upload").header("Content-Type", "multipart/mixed")
+                    .field(projectFile.getName(), projectFile, "application/zip").asString();
+        } catch (UnirestException e) {
+            logger.error("上传工程失败", e);
+            throw new IllegalStateException("上传工程失败", e);
+        }
     }
 }
