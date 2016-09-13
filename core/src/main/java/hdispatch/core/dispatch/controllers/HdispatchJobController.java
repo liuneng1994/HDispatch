@@ -31,8 +31,8 @@ public class HdispatchJobController extends BaseController {
     public ResponseData getJobs(HttpServletRequest request,
                                   @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                   @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(defaultValue = "-100") int themeId,
-                                  @RequestParam(defaultValue = "-100") int layerId,
+                                  @RequestParam(defaultValue = "-100") Long themeId,
+                                  @RequestParam(defaultValue = "-100") Long layerId,
                                   @RequestParam(defaultValue = "") String jobName) {
         IRequest requestContext = createRequestContext(request);
         Job job = new Job();
@@ -41,7 +41,7 @@ public class HdispatchJobController extends BaseController {
         }
         job.setThemeId(themeId);
         job.setLayerId(layerId);
-        job.setJobId(-100);
+        job.setJobId(-100L);
         List<Job> jobList = jobService.selectByJob(requestContext, job, page, pageSize);
 
         ResponseData responseData = new ResponseData(jobList);
@@ -107,9 +107,12 @@ public class HdispatchJobController extends BaseController {
         IRequest requestContext = createRequestContext(request);
 
         try {
-            rd = new ResponseData(jobService.batchUpdate(requestContext, jobList));
+            List<Job> jobListReturn = jobService.batchUpdate(requestContext, jobList);
+            rd = new ResponseData(jobListReturn);
         } catch (Exception e) {
             logger.error("删除任务中途失败", e);
+            rd = new ResponseData(false);
+            return rd;
         }
         return rd;
     }

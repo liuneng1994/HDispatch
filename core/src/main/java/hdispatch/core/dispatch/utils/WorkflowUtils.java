@@ -1,4 +1,4 @@
-package hdispatch.core.dispatch.utils;
+﻿package hdispatch.core.dispatch.utils;
 
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.Workflow;

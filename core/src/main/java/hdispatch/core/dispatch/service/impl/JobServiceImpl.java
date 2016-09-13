@@ -58,14 +58,14 @@ public class JobServiceImpl implements JobService {
                 switch (job.get__status()) {
                     case DTOStatus.ADD:
                         jobMapper.create(job);
-                        job.setJobActive(1);
+                        job.setJobActive(1L);
                         break;
                     case DTOStatus.UPDATE:
 
                         break;
                     case DTOStatus.DELETE:
                         jobMapper.deleteInLogic(job);
-                        jobList.remove(job);
+                        job.setJobActive(0L);
                         break;
                     default:
                         break;

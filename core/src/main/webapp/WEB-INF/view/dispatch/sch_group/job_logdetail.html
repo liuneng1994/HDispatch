@@ -1,0 +1,34 @@
+<#-- * description: 角色界面 * version: 1.0 *author:hailin.xu@hand-china.com
+* #{copyright}# * --> 
+<#include "../../include/header.html">
+<body>
+	<script src="${base.contextPath}/common/language?var=languageData"
+		type="text/javascript"></script>
+	<div id="tipDelete"></div>
+	<div id="dialog"></div>
+	<div id="content-container">
+		<div class="form-group">
+    <label for="name">Job日志</label>
+    <textarea class="form-control" id="text" readonly="readonly" rows="15"></textarea>
+  </div>
+	</div>
+	<script type="text/javascript">
+	var exec_id ="${RequestParameters.exec_id}";
+	var job_id ="${RequestParameters.job_id}";
+	getlog();
+	 function getlog()
+	 {$.ajax({  
+		      type:'get',  
+		       url:'${base.contextPath}/flows/getjoblog',  
+		       data:{exec_id:exec_id,job_id:job_id},  
+		       dataType:'json',  
+		       success:function(data){  
+		    	   document.getElementById("text").value=data.message;
+		    	   
+		       },  
+		        error:function(){}  
+		  }); 
+	 }
+	</script>
+</body>
+</html>

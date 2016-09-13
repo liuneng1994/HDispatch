@@ -89,7 +89,20 @@ public class FlowController {
     @ResponseBody
     public Object ExecuteFlow() {
         FlowObj obj = new FlowObj();
-        return service.ExecuteFlow(obj).toString();
+        /**
+         * .queryString("project", obj.getProjectName())
+                    .queryString("flow", obj.getFlowName())
+                    .queryString("disabled", obj.getDisabled())
+                    .queryString("successEmails", obj.getSuccessEmails())
+                    .queryString("failureEmails", obj.getFailureEmails())
+                    .queryString("successEmailsOverride", obj.isSuccessOverride())
+                    .queryString("failureEmailsOverride", obj.isFailOverride())
+                    .queryString("notifyFailUreFirst", obj.isNotifyFailFirst())
+                    .queryString("notifyFailureLast", obj.isNotifyFailLast())
+                    .queryString("failureAction", obj.getFailAction())
+                    .queryString("concurrentOption", obj.getConcurrentOption())
+         */
+        return null;
     }
 
     /**
@@ -118,7 +131,7 @@ public class FlowController {
         //@RequestParam String projectName, @RequestParam Long flowId, @RequestParam  Integer start, @RequestParam  Integer length
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("execid", execid);
-        ExeFlow f = service.CancelFlow(map);
+        ExeFlow f = service.PauseFlow(map);
         if (f.isError()) {
             return f.getError();
         } else {

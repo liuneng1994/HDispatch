@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -44,7 +45,12 @@ public class HdispatchGroupController {
     @ResponseBody
     public ResponseData query(HttpServletRequest request,
                               @RequestParam int page,
-                              @RequestParam int pagesize) {
+                              @RequestParam int pagesize,
+                              @RequestParam String flowName,
+                              @RequestParam String groupName,
+                              @RequestParam String projectName,
+                              @RequestParam Date date) {
+    	System.out.println(flowName+"--"+groupName+"--"+projectName+"--"+date);
         PageHelper.startPage(page,pagesize);
         List<HdispatchGroup> list=service.selectAll();
         return new ResponseData(list);
