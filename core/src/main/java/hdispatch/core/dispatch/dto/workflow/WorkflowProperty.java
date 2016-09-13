@@ -34,4 +34,13 @@ public class WorkflowProperty {
         this.workflowValue = workflowValue;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "WorkflowProperty{" +
+                "workflowId=" + workflowId +
+                ", workflowName='" + workflowName + '\'' +
+                ", workflowValue='" + workflowValue + '\'' +
+                '}';
+    }
 }

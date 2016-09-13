@@ -22,15 +22,15 @@ public class JobServiceImpl implements JobService {
     private Logger logger = Logger.getLogger(JobServiceImpl.class);
     @Autowired
     private JobMapper jobMapper;
+
     @Override
     public List<Job> selectByJob(IRequest requestContext, Job job, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         List<Job> list;
-        if(null == jobMapper){
+        if (null == jobMapper) {
             list = new ArrayList<Job>();
             logger.error("jobMapper没有注入");
-        }
-        else {
+        } else {
             list = jobMapper.selectByJob(job);
         }
         return list;
@@ -40,12 +40,12 @@ public class JobServiceImpl implements JobService {
     public boolean[] checkIsExist(List<Job> jobList) {
         boolean[] isExist = new boolean[jobList.size()];
         int i = 0;
-        for(Job job : jobList){
+        for (Job job : jobList) {
             Job jobReturn = jobMapper.selectByNameAndActiveAndLayer(job);
-            if(null != jobReturn){
+            if (null != jobReturn) {
                 isExist[i] = true;
             }
-            i ++;
+            i++;
         }
 
         return isExist;

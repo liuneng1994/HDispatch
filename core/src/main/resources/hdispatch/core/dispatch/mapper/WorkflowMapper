@@ -4,7 +4,99 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hdispatch.core.dispatch.mapper.WorkflowMapper">
   <resultMap id="workflow" type="hdispatch.core.dispatch.dto.workflow.Workflow">
-    <id column="" property=""></id>
+    <id property="workflowId" column="workflow_id"></id>
+    <result property="themeId" column="theme_id"></result>
+    <result property="layerId" column="layer_id"></result>
+    <result property="name" column="name"></result>
+    <result property="projectName" column="project_name"></result>
+    <result property="flowId" column="flow_id"></result>
+    <result property="description" column="description"></result>
+    <collection property="properties" column="workflow_id" select="getProperties" javaType="java.util.List"
+                ofType="hdispatch.core.dispatch.dto.workflow.WorkflowProperty">
+    </collection>
+    <collection property="jobs" column="workflow_id" select="getJobs" javaType="java.util.List"
+                ofType="hdispatch.core.dispatch.dto.workflow.WorkflowJob">
+
+    </collection>
   </resultMap>
+
+  <resultMap id="property" type="hdispatch.core.dispatch.dto.workflow.WorkflowProperty">
+    <id property="workflowId" column="workflow_id"></id>
+    <result property="workflowPropertyName" column="workflow_property_name"></result>
+    <result property="workflowPropertyValue" column="workflow_property_value"></result>
+  </resultMap>
+
+  <resultMap id="job" type="hdispatch.core.dispatch.dto.workflow.WorkflowJob">
+    <id property="workflowJobId" column="workflow_job_id"></id>
+    <result property="workflowId" column="workflow_id"></result>
+    <result property="jobSource" column="job_source_id"></result>
+    <result property="jobType" column="job_type"></result>
+    <result property="parentsJobId" column="parents_job_id"></result>
+  </resultMap>
+
+  <select id="getByName" parameterType="string" resultMap="workflow">
+    SELECT
+        *
+    FROM
+        hdispatch_workflow
+    WHERE
+        `name` = #{name}
+  </select>
+
+  <select id="getById" parameterType="long" resultMap="workflow">
+    SELECT
+    *
+    FROM
+    hdispatch_workflow
+    WHERE
+    `workflow_id` = #{workflowId}
+  </select>
+
+  <select id="getJobs" parameterType="long" resultMap="job">
+    SELECT
+        *
+    FROM
+        hdispatch_workflow_job
+    WHERE
+        workflow_id = #{id}
+  </select>
+
+  <select id="getProperties" parameterType="long" resultMap="property">
+    SELECT
+        *
+    FROM
+        hdispatch_workflow_property
+    WHERE
+        workflow_id = #{id}
+  </select>
+
+  <insert id="create" useGeneratedKeys="true" keyProperty="workflowId"
+          parameterType="hdispatch.core.dispatch.dto.workflow.Workflow">
+    INSERT INTO
+        hdispatch_workflow
+        (
+            `name`,
+            `description`,
+            `theme_id`,
+            `layer_id`
+        )
+    VALUES
+        (
+          #{name},
+          #{decription},
+          #{themeId},
+          #{layerId}
+        )
+  </insert>
+
+  <update id="updateProjectNameAndFlowIdById">
+    UPDATE
+        hdispatch_workflow
+    SET
+        project_name=#{projectName},
+        flow_id=#{flowId}
+    WHERE
+        workflow_id=#{workflowId}
+  </update>
 
 </mapper>

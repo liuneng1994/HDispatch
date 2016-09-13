@@ -98,4 +98,19 @@ public class Workflow extends BaseDTO {
         this.jobs = jobs;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Workflow{" +
+                "themeId=" + themeId +
+                ", layerId=" + layerId +
+                ", workflowId=" + workflowId +
+                ", name='" + name + '\'' +
+                ", projectName='" + projectName + '\'' +
+                ", flowId='" + flowId + '\'' +
+                ", description='" + description + '\'' +
+                ", properties=" + properties +
+                ", jobs=" + jobs +
+                '}';
+    }
 }

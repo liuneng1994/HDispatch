@@ -3,52 +3,62 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hdispatch.core.dispatch.mapper.JobMapper">
-    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.job.Job" extends="com.hand.hap.mapper.StdMapper.STD">
-        <id column="job_id" property="jobId"/>
-        <result column="theme_id" property="themeId"/>
-        <result column="layer_id" property="layerId"/>
-        <result column="name" property="jobName"/>
-        <result column="svn" property="jobSvn"/>
-        <result column="active" property="jobActive"/>
-        <result column="theme_name" property="themeName"/>
-        <result column="layer_name" property="layerName"/>
-    </resultMap>
+  <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.job.Job" extends="com.hand.hap.mapper.StdMapper.STD">
+    <id column="job_id" property="jobId"/>
+    <result column="theme_id" property="themeId"/>
+    <result column="layer_id" property="layerId"/>
+    <result column="name" property="jobName"/>
+    <result column="svn" property="jobSvn"/>
+    <result column="active" property="jobActive"/>
+    <result column="theme_name" property="themeName"/>
+    <result column="layer_name" property="layerName"/>
+  </resultMap>
 
-    <select id="selectByJob" resultMap="baseMap">
-        SELECT job_id,job.theme_id,job.layer_id,job.name,svn,job.active AS active,theme.name AS theme_name,layer.name AS layer_name
-        FROM hdispatch_job job JOIN hdispatch_theme theme JOIN hdispatch_layer layer
-        ON job.theme_id=theme.theme_id AND job.layer_id=layer.layer_id
-        <where>
-            <if test="jobId != null and jobId>0">
-                and job.job_id = #{jobId,jdbcType=DECIMAL}
-            </if>
-            <if test="themeId != null and themeId>0">
-                and job.theme_id = #{themeId,jdbcType=DECIMAL}
-            </if>
-            <if test="layerId != null and layerId>0">
-                and job.layer_id = #{layerId,jdbcType=DECIMAL}
-            </if>
-            <if test="jobName != null">
-                <bind name="pattern" value="'%' + _parameter.jobName + '%'" />
-                AND job.name like #{pattern}
-            </if>
-            AND job.active=1
-        </where>
-    </select>
-    <update id="deleteInLogic">
+  <select id="selectByJob" resultMap="baseMap">
+    SELECT job_id,job.theme_id,job.layer_id,job.name,svn,job.active AS active,theme.name AS theme_name,layer.name AS
+    layer_name
+    FROM hdispatch_job job JOIN hdispatch_theme theme JOIN hdispatch_layer layer
+    ON job.theme_id=theme.theme_id AND job.layer_id=layer.layer_id
+    <where>
+      <if test="jobId != null and jobId>0">
+        and job.job_id = #{jobId,jdbcType=DECIMAL}
+      </if>
+      <if test="themeId != null and themeId>0">
+        and job.theme_id = #{themeId,jdbcType=DECIMAL}
+      </if>
+      <if test="layerId != null and layerId>0">
+        and job.layer_id = #{layerId,jdbcType=DECIMAL}
+      </if>
+      <if test="jobName != null">
+        <bind name="pattern" value="'%' + _parameter.jobName + '%'"/>
+        AND job.name like #{pattern}
+      </if>
+      AND job.active=1
+    </where>
+  </select>
+  <update id="deleteInLogic">
         UPDATE hdispatch_job SET active=0
         WHERE job_id=#{jobId}
     </update>
 
-    <select id="selectByNameAndActiveAndLayer" resultMap="baseMap">
+  <select id="selectByNameAndActiveAndLayer" resultMap="baseMap">
         SELECT job.* FROM  hdispatch_job job JOIN hdispatch_theme theme JOIN hdispatch_layer layer
         ON job.theme_id=theme.theme_id AND job.layer_id=layer.layer_id
         WHERE job.active=1 AND theme.active=1 AND layer.active=1
         AND job.name=#{jobName} AND job.layer_id=#{layerId} AND job.theme_id=#{themeId}
     </select>
 
-    <insert id="create">
+  <insert id="create">
         INSERT INTO hdispatch_job(theme_id,layer_id,name,svn)
         VALUES (#{themeId},#{layerId},#{jobName},#{jobSvn})
     </insert>
+
+  <select id="getByIds" parameterType="list" resultMap="baseMap">
+    SELECT *
+    FROM hdispatch_job
+    WHERE job_id IN
+    <foreach collection="list" open="(" separator="," close=")" item="id">
+      #{id}
+    </foreach>
+  </select>
 </mapper>
