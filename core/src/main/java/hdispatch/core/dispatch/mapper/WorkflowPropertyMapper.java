@@ -1,0 +1,16 @@
+package hdispatch.core.dispatch.mapper;
+
+import hdispatch.core.dispatch.dto.workflow.WorkflowProperty;
+
+import java.util.List;
+
+/**
+ * Created by 刘能 on 2016/9/12.
+ */
+public interface WorkflowPropertyMapper {
+    int update(WorkflowProperty property);
+
+    int batchInsert(List<WorkflowProperty> properties);
+
+    int deleteByWorkflowId(Long workflowId);
+}

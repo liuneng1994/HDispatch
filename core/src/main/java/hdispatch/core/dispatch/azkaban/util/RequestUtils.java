@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequest;
-import com.mashape.unirest.request.body.MultipartBody;
+import com.mashape.unirest.request.HttpRequestWithBody;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
@@ -38,11 +38,11 @@ public class RequestUtils {
     }
 
     public static HttpRequest get(String uri) {
-        return Unirest.get(host + URL_SEPERATOR + uri).queryString(SESSION_ID, getter.getSessionId());
+        return Unirest.get(host + URL_SEPERATOR + uri);
     }
 
-    public static MultipartBody post(String uri) {
-        return Unirest.post(host + URL_SEPERATOR + uri).field(SESSION_ID, getter.getSessionId());
+    public static HttpRequestWithBody post(String uri) {
+        return Unirest.post(host + URL_SEPERATOR + uri);
     }
 
     private static class SessionIdGetter {

@@ -1,22 +1,68 @@
-<#include "../../include/head.html">
-    <link rel="stylesheet" href="../../../../lib/kendoui/styles/kendo.common.min.css" />
-    <link rel="stylesheet" href="../../../../lib/kendoui/styles/kendo.default.min.css" />
-    <link rel="stylesheet" href="../../../../lib/kendoui/styles/kendo.default.mobile.min.css" />
-
-    <script src="../../../../lib/kendoui/js/jquery.min.js"></script>
-    <script src="../../../../lib/kendoui/js/kendo.all.min.js"></script>
+<#include "../../include/header.html">
 <body>
 <div>
     <!--曾经出错原因：头部引用相对地址错误-->
-<div id="content-container">
-    <div id="page-content">
-        <div id="reportListGrid" style="clear:both"></div>
+    <div id="content-container">
+        <div id="theme-content">
+            <div class="panel">
+                <form class="form-horizontal">
+                    <div class="panel-body col-sm-offset-0">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label style="width: 20%">主题名称</label>
+                                <!--<div class="col-sm-4">-->
+                                    <input id="input1" type="text" style="width: 70%" data-bind="value:model.themeName" class="k-textbox">
+                                <!--</div>-->
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label style="width: 20%">主题描述</label>
+                                <!--<div class="col-sm-4">-->
+                                    <input type="text" style="width:70%" data-bind="value:model.themeDescription" class="k-textbox">
+                                <!--</div>-->
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <span class="btn btn-success" data-bind="click:queryResource" type="submit">查询</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="panel-footer">-->
+
+                        <!--<div class="col-sm-offset-6">-->
+                            <!--<span class="btn btn-success" data-bind="click:queryResource" type="submit">查询</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </form>
+            </div>
+            <div id="themeListGrid" style="clear:both"></div>
+        </div>
+        <div id="details"></div>
     </div>
-</div>
 <script type="text/javascript">
+    var wnd, detailsTemplate;
     $(document).ready(function () {
+        //声明详情窗口
+        wnd = $("#details")
+                .kendoWindow({
+                    title: "层次管理",
+                    modal: true,
+                    visible: false,
+                    resizable: false,
+                    width: 800,
+                    height:450
+                }).data("kendoWindow");
+        detailsTemplate = kendo.template($("#template").html());
+
+
+        //声明主窗口
         var viewModel = kendo.observable({
-            model:{}
+            model:{},
+            queryResource: function(e) {
+                $('#themeListGrid').data('kendoGrid').dataSource.read();
+            }
         });
         var baseUrl = "${base.contextPath}/dispatcher/theme/";
         console.info(baseUrl);
@@ -24,12 +70,14 @@
             transport: {
                 read:  {
                     url: baseUrl+"query",
+                    type : 'GET',
                     dataType: "json"
                 },
                 create: {
                     url: baseUrl+'submit',
                     type : 'POST',
-                    dataType: "json"
+                    dataType: "json",
+                    contentType:"application/json"
                 },
                 parameterMap: function(options, operation) {
                     //封装请求参数
@@ -43,28 +91,46 @@
                             });
                         }
                         var data_str = kendo.stringify(datas);
+                        themes_data = data_str;
                         console.log(data_str);
-                        var map = {
-                            themes_data_array:data_str
-                        };
-                        return map;
+//                        var map = {
+//                            themes_data_array:data_str
+//                        };
+//                        return map;
+                        return data_str;
                     } else if (operation === "read") {
-                        var map={};
+                        var model = viewModel.model;
+                        if(!model.themeName){
+                            model.themeName=' ';
+                        }
+                        if(!model.themeDescription){
+                            model.themeDescription=' ';
+                        }
+                        var map = {themeName: model.themeName,themeDescription: model.themeDescription};
+                        if (options.page)
+                            map.page = options.page;
+                        if (options.pageSize)
+                            map.pageSize = options.pageSize;
+                        for(var k in map){
+                            if(map[k]==='')delete map[k]
+                        }
+                        console.log("theme查询请求参数:"+map);
                         return map;
                     }
                 }
             },
             batch: true,
             serverPaging : true,
-            pageSize: 10,
+            pageSize: 5,
             schema: {
+                data:'rows',
+                total:'total',
                 model: {
                     id: 'themeId',
                     fields: {
                         themeName: { type: 'string',validation: { required: true } },
-                        description: { type: 'string',validation: { required: true } },
-                        projectName: { type: 'string',validation: { required: true } },
-                        projectDescription: { type: 'string',validation: { required: true } }
+                        themeSequence: { type: 'number',validation: { required: true } },
+                        themeDescription: { type: 'string',validation: { required: true } }
                     }
                 },
                 errors: function(res){
@@ -78,7 +144,7 @@
             }
         });
 
-        $("#reportListGrid").kendoGrid({
+        $("#themeListGrid").kendoGrid({
             dataSource: themes_data,
             resizable: true,
             selectable: "multiple",
@@ -114,16 +180,190 @@
             ],
             columns:
                     [
-                        { 'field': 'themeName','title':'主题名称', 'width': 70,'height':100 },
-                        { 'field': 'description','title':'主题描述', 'width': 70,'height':100  },
-                        { 'field': 'projectName','title':'项目名称', 'width': 70,'height':100  },
-                        { 'field': 'projectDescription','title':'项目描述', 'width': 70,'height':100  }
+                        { 'field': 'themeId','hidden':true },
+                        { 'field': 'themeName','title':'主题名称', 'width': "150px" },
+                        { 'field': 'themeSequence','title':'排序编号', 'width': "100px" },
+                        { 'field': 'themeDescription','title':'主题描述', 'width': "200px" },
+                        { command: { text: "编辑层", click: showDetails }, title: "层操作", width: "100px" },
                     ],
             editable: true
         });
-        kendo.bind($('#page-content'),viewModel);
+        kendo.bind($('#theme-content'),viewModel);
     });
 
+    //显示层详情页面
+    function showDetails(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        console.log(dataItem);
+        if(!dataItem.themeId || !dataItem.themeName){
+            alert("非法访问");
+            return;
+        }
+        wnd.content(detailsTemplate(dataItem));
+        wnd.center().open();
+
+        loadLayerGrid(dataItem);
+    }
+
+    function loadLayerGrid(layerHeaderData) {
+        var baseUrl = "${base.contextPath}/dispatcher/layer/";
+        console.info(baseUrl);
+        var layerViewModel = kendo.observable({
+            model:{
+                themeId:layerHeaderData.themeId
+            }
+        });
+        var layers_data = new kendo.data.DataSource({
+            transport: {
+                read:  {
+                    url: baseUrl+"query",
+                    dataType: "json"
+                },
+                create: {
+                    url: baseUrl+'submit',
+                    type : 'POST',
+                    dataType: "json",
+                    contentType:"application/json"
+                },
+                parameterMap: function(options, operation) {
+                    //封装请求参数
+                    if (operation !== "read" && options.models) {
+                        var layer_datas = options.models;
+                        console.log(layer_datas);
+                        if(operation =='create' || operation =='update'){
+                            layer_datas = options.models.map(function(data){
+                                data['__status'] = (operation =='create' ? 'add' : 'update');
+                                return data;
+                            });
+                        }
+                        console.log("循环输出表格中的数据,开始");
+                        for(var k in layer_datas){
+                            layer_datas[k].themeId=layerHeaderData.themeId;
+                            console.log(layer_datas[k]);
+                        }
+                        console.log("循环输出表格中的数据,结束");
+                        var layer_data_str = kendo.stringify(layer_datas);
+                        console.log(layer_data_str);
+//                        var map = {
+//                            layers_data_array:layer_data_str
+//                        };
+//                        return map;
+                        return layer_data_str;
+                    } else if (operation === "read") {
+                        var layerModel = layerViewModel.model;
+                        console.log("层里面的model:"+layerModel);
+                        console.log("层里面的themeId:"+layerModel.themeId);
+                        if(!layerModel.themeId){
+                            console.log("themeId值没有设置，非法访问");
+                            alert("themeId值没有设置，非法访问");
+                            return;
+                        }
+
+                        var map = {themeId: layerModel.themeId};
+                        if (options.page)
+                            map.page = options.page;
+                        if (options.pageSize)
+                            map.pageSize = options.pageSize;
+                        for(var k in map){
+                            if(map[k]==='')delete map[k]
+                        }
+                        console.log(map);
+                        return map;
+                    }
+                }
+            },
+            batch: true,
+            serverPaging : true,
+            pageSize: 5,
+            schema: {
+                data:'rows',
+                total:'total',
+                model: {
+                    id: 'layerId',
+                    fields: {
+                        themeId: { type: 'number' },
+                        layerName: { type: 'string',validation: { required: true } },
+                        layerDescription: { type: 'string',validation: { required: true } },
+                        layerSequence: { type: 'number',validation: { required: true } }
+                    }
+                },
+                errors: function(res){
+                    if(!res.success && res.message) {
+                        return res.message;
+                    }
+                }
+            },
+            error: function(e) {
+                alert(e.errors)
+            }
+        });
+
+        $("#layerListGrid").kendoGrid({
+            dataSource: layers_data,
+            resizable: true,
+            selectable: "multiple",
+            scrollable: false,
+            pageable: {
+                pageSizes:[5, 10, 20, 50],
+                refresh:true,
+                buttonCount:5,
+                messages: {
+                    noRecords: "未找到任何数据",
+                    display: "{0} - {1} 共 {2} 条数据",
+                    empty: "没有数据",
+                    page: "页",
+                    of: "/ {0}",
+                    itemsPerPage: "条每页",
+                    first: "第一页",
+                    previous: "前一页",
+                    next: "下一页",
+                    last: "最后一页",
+                    refresh: "刷新"
+                }
+            },
+            toolbar: [{
+                name:"create",
+                text:'创建'
+            },{
+                name:"save",
+                text:'保存'
+            },{
+                name:"cancel",
+                text:'取消'
+            }
+            ],
+            columns:
+                    [
+                        { 'field': 'layerName','title':'层名称', 'width': 70 },
+                        { 'field': 'layerDescription','title':'层描述', 'width': 70 },
+                        { 'field': 'layerSequence','title':'排序编号', 'width': 70 }
+                    ],
+            editable: true
+        });
+        kendo.bind($('#layer-content'),layerViewModel);
+    }
+</script>
+<script type="text/x-kendo-template" id="template">
+    <div id="details-container">
+        <div id="layer-content">
+            <div class="panel panel-primary">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12 col-md-offset-0">
+                                <label class="col-md-5 control-label col-md-offset-0">
+                                    主题名称：#= themeName #
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="layerListGrid" style="clear:both">
+            </div>
+        </div>
+    </div>
 </script>
 </div>
 </body>

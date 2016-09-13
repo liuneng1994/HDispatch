@@ -3,6 +3,7 @@ package hdispatch.core.dispatch.azkaban.service;
 
 import hdispatch.core.dispatch.azkaban.entity.project.SimpleProject;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -14,4 +15,6 @@ public interface ProjectService {
     List<SimpleProject> getAllProjects();
 
     boolean deleteProject(String projectName);
+
+    void uploadProjectFile(File projectFile);
 }

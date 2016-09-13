@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="hdispatch.core.dispatch.azkaban.mapper.ExecutionLogMapper">
+<mapper namespace="hdispatch.core.dispatch.azkaban.mappers.ExecutionLogMapper">
 <!--  <resultMap id="baseMap" type="hdispatch.core.dispatch.azkaban.entity.record.DBExecutionLog">
     <result column="exec_id" property="execId"/>
     <result column="name" property="name"/>
