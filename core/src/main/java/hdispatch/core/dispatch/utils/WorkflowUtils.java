@@ -1,4 +1,4 @@
-package hdispatch.core.dispatch.utils;
+﻿package hdispatch.core.dispatch.utils;
 
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
@@ -7,9 +7,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by 刘能 on 2016/9/12.
@@ -54,6 +52,20 @@ public class WorkflowUtils {
     }
 
     public static void createEndJobFile(File parentFile, Workflow workflow) {
-//        File file = new File(parentFile, workflow.getWorkflowN() + JOB_SUFFIX);
+        File file = new File(parentFile, workflow.getName() + JOB_SUFFIX);
+        Set<String> wholeJobs = new HashSet<>();
+        Set<String> jobsWithDept = new HashSet<>();
+        workflow.getJobs().forEach(job -> wholeJobs.add(job.getWorkflowJobId()));
+        workflow.getJobs().forEach(job -> {
+            Arrays.asList(job.getParentsJobId().split(",")).forEach(JobName -> {
+                jobsWithDept.add(JobName);
+            });
+        });
+        wholeJobs.removeAll(jobsWithDept);
+        try {
+            FileUtils.writeLines(file, Arrays.asList("type=command", "command=echo \"flow run success\""));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -5,6 +5,7 @@ import hdispatch.core.dispatch.azkaban.entity.project.SimpleProject;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 刘能 on 2016/8/31.
@@ -16,5 +17,5 @@ public interface ProjectService {
 
     boolean deleteProject(String projectName);
 
-    void uploadProjectFile(File projectFile);
+    Map<String, String> uploadProjectFile(String projectName, File projectFile);
 }
