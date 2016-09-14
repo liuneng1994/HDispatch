@@ -37,23 +37,32 @@
                                 </div>
                             </div>
                         </div>
-                        <!--<div class="panel-footer">-->
-
-                        <!--<div class="col-sm-offset-6">-->
-                        <!--<span class="btn btn-success" data-bind="click:queryResource" type="submit">查询</span>-->
-                        <!--</div>-->
-                        <!--</div>-->
                     </form>
                 </div>
                 <div id="jobListGrid" style="clear:both"></div>
             </div>
-            <div id="details"></div>
+            <div id="batchCreateJobWindow_div"></div>
         </div>
         <script type="text/javascript">
+            var wnd, batchCreateJobWindowTemplate;
+
+            var themeBaseUrl = "${base.contextPath}/dispatcher/theme/";
+            var layerBaseUrl = "${base.contextPath}/dispatcher/layer/";
+            var jobBaseUrl = "${base.contextPath}/dispatcher/job/";
+
             $(document).ready(function () {
-                var themeBaseUrl = "${base.contextPath}/dispatcher/theme/";
-                var layerBaseUrl = "${base.contextPath}/dispatcher/layer/";
-                var jobBaseUrl = "${base.contextPath}/dispatcher/job/";
+                //声明批量创建job窗口
+                wnd = $("#batchCreateJobWindow_div")
+                        .kendoWindow({
+                            title: "任务批量创建",
+                            modal: true,
+                            visible: false,
+                            resizable: false,
+                            width: 800,
+                            height:450
+                        }).data("kendoWindow");
+                batchCreateJobWindowTemplate = kendo.template($("#batchCreateJobWindow_template").html());
+
 
                 //声明主窗口
                 var viewModel = kendo.observable({
@@ -226,8 +235,9 @@
                     editable: "inline"
                 });
                 //自定义toolbar中的按钮
-                $(".k-grid-batchCreateJob").click(function(){
+                $(".k-grid-batchCreateJob").click(function(e){
                     console.log("自定义按钮事件");
+                    showBatchCreateJobWindow(e);
                 });
 
                 //声明grid中的下拉框
@@ -500,172 +510,221 @@
                 }
             });
 
-            //显示层详情页面
-            function showDetails(e) {
-                e.preventDefault();
-                var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-                console.log(dataItem);
-                if(!dataItem.themeId || !dataItem.themeName){
-                    alert("非法访问");
-                    return;
+            //显示批量创建job页面
+            //声明批量创建job页面中的数据源
+            var batchCreateJob_themeId_dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: themeBaseUrl+"queryAll",
+                        type : 'GET',
+                        dataType: "json"
+                    },
+                    parameterMap: function(options, operation) {
+                        if (operation === "read") {
+                            var map = {};
+
+                            for(var k in map){
+                                if(map[k]==='')delete map[k]
+                            }
+                            return map;
+                        }
+                    }
+                },
+                schema: {
+                    data:'rows',
+                    model: {
+                        id: 'themeId',
+                        fields: {
+                            themeId: { type: 'number',validation: { required: true } },
+                            themeName: { type: 'string',validation: { required: true } }
+                        }
+                    },
+                    errors: function(res){
+                        if(!res.success && res.message) {
+                            return res.message;
+                        }
+                    }
                 }
-                wnd.content(detailsTemplate(dataItem));
+            });
+            var batchCreateJob_layerId_dataSource =  new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: layerBaseUrl+"queryAll",
+                        type : 'GET',
+                        dataType: "json"
+                    },
+                    parameterMap: function(options, operation) {
+                        if (operation === "read") {
+                            var map = {};
+                            if(!batchCreateJobViewModel.model.themeId){
+                                batchCreateJobViewModel.model.themeId='-100';
+                            }
+                            map.themeId=batchCreateJobViewModel.model.themeId;
+                            for(var k in map){
+                                if(map[k]==='')delete map[k]
+                            }
+                            return map;
+                        }else{
+                            console.log("layerId:没有进入加载读取数据");
+                        }
+                    }
+                },
+                schema: {
+                    data:'rows',
+                    model: {
+                        id: 'layerId',
+                        fields: {
+                            layerId: { type: 'number',validation: { required: true } },
+                            layerName: { type: 'string',validation: { required: true } }
+                        }
+                    },
+                    errors: function(res){
+                        if(!res.success && res.message) {
+                            return res.message;
+                        }
+                    }
+                }
+            });
+//            var batchCreateJob_themeId;
+//            var batchCreateJob_layerId;
+            function showBatchCreateJobWindow(e) {
+                e.preventDefault();
+
+                wnd.content(batchCreateJobWindowTemplate);
                 wnd.center().open();
 
-                loadLayerGrid(dataItem);
+                loadBatchCreateData();
             }
 
-            function loadLayerGrid(layerHeaderData) {
-                var baseUrl = "${base.contextPath}/dispatcher/layer/";
-                console.info(baseUrl);
-                var layerViewModel = kendo.observable({
+            var batchCreateJobViewModel;
+            function loadBatchCreateData() {
+                batchCreateJobViewModel = kendo.observable({
                     model:{
-                        themeId:layerHeaderData.themeId
+                        themeId:'',
+                        layerId:'',
+                        jobSvn:''
                     }
                 });
-                var layers_data = new kendo.data.DataSource({
-                    transport: {
-                        read:  {
-                            url: baseUrl+"query",
-                            dataType: "json"
-                        },
-                        create: {
-                            url: baseUrl+'submit',
-                            type : 'POST',
-                            dataType: "json",
-                            contentType:"application/json"
-                        },
-                        parameterMap: function(options, operation) {
-                            //封装请求参数
-                            if (operation !== "read" && options.models) {
-                                var layer_datas = options.models;
-                                if(operation =='create' || operation =='update'){
-                                    layer_datas = options.models.map(function(data){
-                                        data['__status'] = (operation =='create' ? 'add' : 'update');
-                                        return data;
-                                    });
-                                }
-                                for(var k in layer_datas){
-                                    layer_datas[k].themeId=layerHeaderData.themeId;
-                                }
-                                var layer_data_str = kendo.stringify(layer_datas);
-                                return layer_data_str;
-                            } else if (operation === "read") {
-                                var layerModel = layerViewModel.model;
-                                if(!layerModel.themeId){
-                                    console.log("themeId值没有设置，非法访问");
-                                    alert("themeId值没有设置，非法访问");
-                                    return;
-                                }
+                $("#batchCreateForm_input_themeId").kendoDropDownList({
+                    autoBind:true,
+                    dataTextField: "themeName",
+                    dataValueField: "themeId",
+                    dataSource: batchCreateJob_themeId_dataSource,
+                    change: onThemeIdChange_batchCreateForm,
+                    dataBound:onThemeIdDataBound_batchCreateForm,
+                    close:onThemeIdClose_batchCreateForm
+                });
+                $("#batchCreateForm_input_layerId").kendoDropDownList({
+                    autoBind:true,
+                    dataTextField: "layerName",
+                    dataValueField: "layerId",
+                    dataSource: batchCreateJob_layerId_dataSource,
+                    dataBound:onLayerIdDataBound_batchCreateForm,
+                    close:onLayerIdClose_batchCreateForm
+                });
+                var data = [
+                    { text: "/HHHHH/JJJJJ/jobName1", value:"1" },
+                    { text: "/HHHHH/JJJJJ/jobName2", value:"2" },
+                    { text: "/HHHHH/JJJJJ/jobName3", value:"3" },
+                    { text: "/DHHD/LK/jobName4", value:"4" },
+                    { text: "/DHHD/LK/jobName5", value:"5" },
+                    { text: "/DHHD/LK/jobName6", value:"6" },
+                    { text: "/DHHD/LK/jobName7", value:"7" }
+                ];
 
-                                var map = {themeId: layerModel.themeId};
-                                if (options.page)
-                                    map.page = options.page;
-                                if (options.pageSize)
-                                    map.pageSize = options.pageSize;
-                                for(var k in map){
-                                    if(map[k]==='')delete map[k]
-                                }
-                                return map;
-                            }
-                        }
-                    },
-                    batch: true,
-                    serverPaging : true,
-                    pageSize: 5,
-                    schema: {
-                        data:'rows',
-                        total:'total',
-                        model: {
-                            id: 'layerId',
-                            fields: {
-                                themeId: { type: 'number' },
-                                layerName: { type: 'string',validation: { required: true } },
-                                layerDescription: { type: 'string',validation: { required: true } },
-                                layerSequence: { type: 'number',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
-                            }
-                        }
-                    }
+                $("#batchCreateForm_svn_input").kendoMultiSelect({
+                    dataTextField: "text",
+                    dataValueField: "text",
+                    dataSource: data
                 });
 
-                $("#layerListGrid").kendoGrid({
-                    dataSource: layers_data,
-                    resizable: true,
-                    selectable: "multiple",
-                    scrollable: false,
-                    pageable: {
-                        pageSizes:[5, 10, 20, 50],
-                        refresh:true,
-                        buttonCount:5,
-                        messages: {
-                            noRecords: "未找到任何数据",
-                            display: "{0} - {1} 共 {2} 条数据",
-                            empty: "没有数据",
-                            page: "页",
-                            of: "/ {0}",
-                            itemsPerPage: "条每页",
-                            first: "第一页",
-                            previous: "前一页",
-                            next: "下一页",
-                            last: "最后一页",
-                            refresh: "刷新"
-                        }
-                    },
-                    toolbar: [{
-                        name:"create",
-                        text:'创建'
-                    },{
-                        name:"save",
-                        text:'保存'
-                    },{
-                        name:"cancel",
-                        text:'取消'
-                    }
-                    ],
-                    columns:
-                            [
-                                { 'field': 'layerName','title':'层名称', 'width': 70 },
-                                { 'field': 'layerDescription','title':'层描述', 'width': 70 },
-                                { 'field': 'layerSequence','title':'层描述', 'width': 70 }
-                            ],
-                    editable: true
-                });
-                kendo.bind($('#layer-content'),layerViewModel);
+                kendo.bind($('#batchCreateJob-content'),batchCreateJobViewModel);
             }
 
-        </script>
-        <script type="text/x-kendo-template" id="grid_themeDropDownList_template">
 
-        </script>
-        <script type="text/x-kendo-template" id="grid_layerDropDownList_template">
+            function onThemeIdChange_batchCreateForm(e) {
+                batchCreateJobViewModel.model.themeId=$("#batchCreateForm_input_themeId").val();
+                batchCreateJob_layerId_dataSource.read();
+            }
+            function onThemeIdDataBound_batchCreateForm(e) {
+                batchCreateJobViewModel.model.themeId=$("#batchCreateForm_input_themeId").val();
+                batchCreateJob_layerId_dataSource.read();
+            }
+            function onThemeIdClose_batchCreateForm(e) {
+                batchCreateJobViewModel.model.themeId=$("#batchCreateForm_input_themeId").val();
+                batchCreateJob_layerId_dataSource.read();
+            }
 
+            function onLayerIdDataBound_batchCreateForm(e) {
+                batchCreateJobViewModel.model.layerId=$("#batchCreateForm_input_layerId").val();
+            }
+            function onLayerIdClose_batchCreateForm(e) {
+                batchCreateJobViewModel.model.layerId=$("#batchCreateForm_input_layerId").val();
+            }
         </script>
-        <script type="text/x-kendo-template" id="template">
+
+
+        <script type="text/x-kendo-template" id="batchCreateJobWindow_template">
             <div id="details-container">
-                <div id="layer-content">
-                    <div class="panel panel-primary">
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="col-md-12 col-md-offset-0">
-                                        <label class="col-md-5 control-label col-md-offset-0">
-                                            主题名称：#= themeName #
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                <div id="batchCreateJob-content">
+                    <div id="batchCreateJobForm" style="clear:both">
+                        <div>
+                            <ul class="fieldList">
+                                <li>
+                                    <label for="batchCreateForm_input_themeId">主题</label>
+                                    <input id="batchCreateForm_input_themeId"
+                                           data-placeholder="选择主题"
+                                           style="width: 100%;"
+                                           data-bind="value:model.themeId"/>
+                                </li>
+                                <li>
+                                    <label for="batchCreateForm_input_layerId">层次</label>
+                                    <input id="batchCreateForm_input_layerId"
+                                           class="k-selectbox"
+                                           style="width: 100%;"
+                                           data-placeholder="选择层次"
+                                           data-bind="value:model.layerId"/>
+                                </li>
+                                <li>
+                                    <label for="batchCreateForm_svn_input">SVN文件</label>
+                                    <input id="batchCreateForm_svn_input"
+                                           class="k-textbox"
+                                           style="width: 100%;"
+                                           data-bind="value:model.jobSvn"/>
+                                </li>
+
+                                <li>
+                                    <button class="k-button k-primary k-submit">创建</button>
+                                    &nbsp;
+                                    <button class="k-button k-reset">重置</button>
+                                </li>
+                            </ul>
                         </div>
-                    </div>
-                    <div id="layerListGrid" style="clear:both">
                     </div>
                 </div>
             </div>
         </script>
     </div>
 </body>
+    <style>
+        .fieldList {
+            margin: 0 0 -2em;
+            padding: 0;
+        }
+
+        .fieldList li {
+            list-style: none;
+            padding-bottom: 2em;
+        }
+
+        .fieldList label {
+            display: block;
+            padding-bottom: 1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+            color: #444;
+        }
+
+    </style>
 </html>
