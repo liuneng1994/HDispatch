@@ -27,7 +27,7 @@ import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
 /**
  * Created by 刘能 on 2016/9/12.
  */
-@Service
+@Service("workflowService")
 public class WorkflowServiceImpl implements WorkflowService {
     private Logger logger = Logger.getLogger(WorkflowServiceImpl.class);
     @Autowired
@@ -56,13 +56,14 @@ public class WorkflowServiceImpl implements WorkflowService {
         if (workflowMapper.getByName(workflow.getName()) != null) {
             ret.put(RET_ERROR, String.format("Workflow %s exists", workflow.getName()));
         } else {
-            Long id = workflowMapper.create(workflow);
+            workflowMapper.create(workflow);
+            Long id = workflow.getWorkflowId();
             workflow.getProperties().forEach(workflowProperty -> workflowProperty.setWorkflowId(id));
             workflow.getJobs().forEach(workflowJob -> workflowJob.setWorkflowId(id));
-            if (workflow.getProperties() != null) {
+            if (workflow.getProperties() != null && !workflow.getProperties().isEmpty()) {
                 workflowPropertyMapper.batchInsert(workflow.getProperties());
             }
-            if (workflow.getJobs() != null) {
+            if (workflow.getJobs() != null && !workflow.getJobs().isEmpty()) {
                 workflowJobMapper.batchInsert(workflow.getJobs());
             }
             ret.put(RET_SUCCESS, String.valueOf(id));
@@ -100,7 +101,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Override
     @Transactional
-    public void generateWorkflow(long workflowId) {
+    public boolean generateWorkflow(long workflowId) {
         Workflow workflow = workflowMapper.getById(workflowId);
         logger.info("generate workflow " + workflow);
         Set<Long> ids = new HashSet<>();
@@ -109,8 +110,9 @@ public class WorkflowServiceImpl implements WorkflowService {
         logger.info("job source " + jobStore);
         File projectFile = generateWorkflowFile(workflow, jobStore);
         projectService.createProject(workflow.getName(), "");
-        projectService.uploadProjectFile(workflow.getName(), projectFile);
+        Map<String, String> result = projectService.uploadProjectFile(workflow.getName(), projectFile);
         workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), workflow.getName());
+        return !result.containsKey("error");
     }
 
     /**
