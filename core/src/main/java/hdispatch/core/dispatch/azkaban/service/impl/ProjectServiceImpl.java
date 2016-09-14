@@ -9,11 +9,14 @@ import hdispatch.core.dispatch.azkaban.entity.project.SimpleProject;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
+import org.apache.http.entity.ContentType;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +33,9 @@ public class ProjectServiceImpl implements ProjectService {
     public boolean createProject(String projectName, String description) {
         HttpResponse<JsonNode> response;
         try {
-            response = RequestUtils.get(RequestUrl.PROJECT_MANAGER).queryString("action", "create")
-                    .queryString("name", projectName)
-                    .queryString("description", description).asJson();
+            response = RequestUtils.post(RequestUrl.PROJECT_MANAGER).field("action", "create")
+                    .field("name", projectName)
+                    .field("description", description).asJson();
         } catch (UnirestException e) {
             logger.error("创建工程失败", e);
             throw new IllegalStateException("创建工程失败", e);
@@ -75,16 +78,22 @@ public class ProjectServiceImpl implements ProjectService {
     public Map<String, String> uploadProjectFile(String projectName, File projectFile) {
         HttpResponse<JsonNode> response;
         try {
-            response = RequestUtils.post("/manager?ajax=upload").header("Content-Type", "multipart/mixed")
+            response = RequestUtils.post("/manager")
+                    .field("ajax", "upload")
                     .field("project", projectName)
-                    .field(projectFile.getName(), projectFile, "application/zip").asJson();
+                    .field("file", new FileInputStream(projectFile), ContentType.APPLICATION_OCTET_STREAM, projectFile.getName()).asJson();
         } catch (UnirestException e) {
             logger.error("上传工程失败", e);
             throw new IllegalStateException("上传工程失败", e);
+        } catch (FileNotFoundException e) {
+            logger.error("工程文件找不到", e);
+            throw new IllegalStateException("工程文件找不到", e);
         }
         JSONObject object = response.getBody().getObject();
         Map<String, String> ret = new HashMap<>();
-        ret.put("error", object.getString("error"));
+        if (object.has("error")) {
+            ret.put("error", object.getString("error"));
+        }
         ret.put("projectId", object.getString("projectId"));
         ret.put("version", object.getString("version"));
         return ret;

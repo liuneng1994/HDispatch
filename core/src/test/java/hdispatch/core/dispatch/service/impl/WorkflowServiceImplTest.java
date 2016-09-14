@@ -37,7 +37,7 @@ public class WorkflowServiceImplTest extends AbstractTransactionalJUnit4SpringCo
                         new WorkflowProperty().setWorkflowPropertyName("test1").setWorkflowPropertyValue("test1")))
                 .setJobs(Arrays.asList(
                         new WorkflowJob().setJobSource(1L).setJobType("job").setWorkflowJobId("job1"),
-                        new WorkflowJob().setJobSource(2L).setJobType("job").setWorkflowJobId("job2"),
+                        new WorkflowJob().setJobSource(2L).setJobType("job").setWorkflowJobId("job2").setParentsJobId("job1"),
                         new WorkflowJob().setJobSource(3L).setJobType("job").setWorkflowJobId("job3")
                 ));
     }
@@ -66,10 +66,11 @@ public class WorkflowServiceImplTest extends AbstractTransactionalJUnit4SpringCo
     /**
      * Method: generateWorkflow(long workflowId)
      */
-    @Ignore
+    @Test
     public void testGenerateWorkflow() throws Exception {
         Map<String, Object> result1 = workflowService.createWorkflow(workflow);
-
+        boolean result = workflowService.generateWorkflow(Long.parseLong((String) result1.get("success")));
+        Assert.assertTrue(result);
     }
 
 

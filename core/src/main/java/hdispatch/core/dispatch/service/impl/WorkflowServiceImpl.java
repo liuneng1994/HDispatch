@@ -109,9 +109,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         List<Job> jobStore = jobMapper.getByIds(ids);
         logger.info("job source " + jobStore);
         File projectFile = generateWorkflowFile(workflow, jobStore);
-        projectService.createProject(workflow.getName(), "");
+        projectService.createProject(workflow.getName(), workflow.getDescription());
         Map<String, String> result = projectService.uploadProjectFile(workflow.getName(), projectFile);
-        workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), workflow.getName());
+        if (!result.containsKey("error")) {
+            workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), workflow.getName());
+        }
         return !result.containsKey("error");
     }
 
@@ -127,6 +129,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         File projectDir = new File(tempDir, workflow.getName());
         File projectZipFile = new File(tempDir, workflow.getName() + ".zip");
         FileUtils.deleteQuietly(projectDir);
+        FileUtils.deleteQuietly(projectZipFile);
         projectDir.mkdir();
         workflow.getJobs().forEach(job -> WorkflowUtils.createJobFile(projectDir, job, jobStore));
         WorkflowUtils.createEndJobFile(projectDir, workflow);
