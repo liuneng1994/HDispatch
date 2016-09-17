@@ -57,7 +57,13 @@
                             title: "任务批量创建",
                             modal: true,
                             visible: false,
-                            resizable: false,
+                            resizable: true,
+                            actions: [
+                                "Pin",
+                                "Minimize",
+                                "Maximize",
+                                "Close"
+                            ],
                             width: 800,
                             height:450
                         }).data("kendoWindow");
@@ -622,23 +628,71 @@
                     dataBound:onLayerIdDataBound_batchCreateForm,
                     close:onLayerIdClose_batchCreateForm
                 });
-                var data = [
-                    { text: "/HHHHH/JJJJJ/jobName1", value:"1" },
-                    { text: "/HHHHH/JJJJJ/jobName2", value:"2" },
-                    { text: "/HHHHH/JJJJJ/jobName3", value:"3" },
-                    { text: "/DHHD/LK/jobName4", value:"4" },
-                    { text: "/DHHD/LK/jobName5", value:"5" },
-                    { text: "/DHHD/LK/jobName6", value:"6" },
-                    { text: "/DHHD/LK/jobName7", value:"7" }
-                ];
+                var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
+                //存放选中的SVN文件路径
+                var checkedNodes = [];
+                homogeneous = new kendo.data.HierarchicalDataSource({
+                    transport: {
+                        read: {
+                            url: serviceRoot,
+                            type:"GET",
+                            dataType: "json"
+                        }
+                    },
+                    schema: {
+                        data:'rows',
+                        model: {
+                            id: "nodeId",
+                            hasChildren: "hasChild",
+                            fields: {
+                                nodeId: { type: 'string',validation: { required: true } },
+                                nodeName: { type: 'string',validation: { required: true } },
+                                hasChild: { type: 'boolean',validation: { required: true } },
+                                expanded: { type: 'boolean',validation: { required: true } },
+                                spriteCssClass: { type: 'string',validation: { required: true } },
 
-                $("#batchCreateForm_svn_input").kendoMultiSelect({
-                    dataTextField: "text",
-                    dataValueField: "text",
-                    dataSource: data
+                            }
+                        }
+                    }
                 });
 
-                kendo.bind($('#batchCreateJob-content'),batchCreateJobViewModel);
+                $("#batchCreateForm_input_svn").kendoTreeView({
+                    checkboxes: {
+                        checkChildren: true
+                    },
+                    dataSource: homogeneous,
+                    dataTextField: "nodeName",
+                    check: onCheck
+                });
+                // function that gathers IDs of checked nodes
+                function checkedNodeIds(nodes, checkedNodes) {
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].checked && !nodes[i].hasChildren) {
+                            checkedNodes.push(nodes[i].id);
+                        }
+
+                        if (nodes[i].hasChildren) {
+                            checkedNodeIds(nodes[i].children.view(), checkedNodes);
+                        }
+                    }
+                }
+
+                // show checked node IDs on datasource change
+                function onCheck(e) {
+                    checkedNodes = [];
+                    var treeView = $("#batchCreateForm_input_svn").data("kendoTreeView"),
+                            message;
+                    checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+                    if (checkedNodes.length > 0) {
+                        message = "选中了以下文件: " + checkedNodes.join(",");
+                    } else {
+                        message = "没有选中任何文件";
+                    }
+
+                    $("#result").html(message);
+                }
+
+                kendo.bind($('#batchCreateJobForm'),batchCreateJobViewModel);
             }
 
 
@@ -665,45 +719,53 @@
 
 
         <script type="text/x-kendo-template" id="batchCreateJobWindow_template">
-            <div id="details-container">
-                <div id="batchCreateJob-content">
-                    <div id="batchCreateJobForm" style="clear:both">
-                        <div>
-                            <ul class="fieldList">
-                                <li>
-                                    <label for="batchCreateForm_input_themeId">主题</label>
-                                    <input id="batchCreateForm_input_themeId"
-                                           data-placeholder="选择主题"
-                                           style="width: 100%;"
-                                           data-bind="value:model.themeId"/>
-                                </li>
-                                <li>
-                                    <label for="batchCreateForm_input_layerId">层次</label>
-                                    <input id="batchCreateForm_input_layerId"
-                                           class="k-selectbox"
-                                           style="width: 100%;"
-                                           data-placeholder="选择层次"
-                                           data-bind="value:model.layerId"/>
-                                </li>
-                                <li>
-                                    <label for="batchCreateForm_svn_input">SVN文件</label>
-                                    <input id="batchCreateForm_svn_input"
-                                           class="k-textbox"
-                                           style="width: 100%;"
-                                           data-bind="value:model.jobSvn"/>
-                                </li>
+            <div id="batchCreateJobForm" class="k-content">
+                <ul class="fieldList">
+                    <li>
+                        <label for="batchCreateForm_input_themeId">主题</label>
+                        <input id="batchCreateForm_input_themeId"
+                               data-placeholder="选择主题"
+                               style="width: 100%;"
+                               data-bind="value:model.themeId"/>
+                    </li>
+                    <li>
+                        <label for="batchCreateForm_input_layerId">层次</label>
+                        <input id="batchCreateForm_input_layerId"
+                               class="k-selectbox"
+                               style="width: 100%;"
+                               data-placeholder="选择层次"
+                               data-bind="value:model.layerId"/>
+                    </li>
+                    <li id="svn_li">
+                        <label for="batchCreateForm_input_svn">SVN文件</label>
+                        <div id="batchCreateForm_input_svn" style="width: 600px"></div>
+                    </li>
+                    <li>
+                        <label for="result">选中的SVN文件如下：</label>
+                        <div id="result" style="width: 100%"></div>
+                    </li>
 
-                                <li>
-                                    <button class="k-button k-primary k-submit">创建</button>
-                                    &nbsp;
-                                    <button class="k-button k-reset">重置</button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                    <li>
+                        <button class="k-button k-primary k-submit">创建</button>
+                        &nbsp;
+                        <button class="k-button k-reset">重置</button>
+                    </li>
+                </ul>
             </div>
         </script>
+        <style>
+            #batchCreateForm_input_svn .k-sprite {
+                background-image: url("../../../../lib/images/coloricons-sprite.png");
+            }
+
+            .rootfolder { background-position: 0 0; }
+            .folder     { background-position: 0 -16px; }
+            .pdf        { background-position: 0 -32px; }
+            .html       { background-position: 0 -48px; }
+            .image      { background-position: 0 -64px; }
+            #svn_li .k-checkbox-label {width: 16px; display: inline-block}
+            #batchCreateForm_input_svn .k-checkbox-wrapper {width: 16px; display: inline-block}
+        </style>
     </div>
 </body>
     <style>
@@ -715,6 +777,7 @@
         .fieldList li {
             list-style: none;
             padding-bottom: 2em;
+            width: 100%;
         }
 
         .fieldList label {
