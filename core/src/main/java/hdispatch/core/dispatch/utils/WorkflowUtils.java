@@ -13,7 +13,7 @@ import java.util.*;
  * Created by 刘能 on 2016/9/12.
  */
 public class WorkflowUtils {
-    private static String COMMAND_TEMPLATE = "";
+    private static String COMMAND_TEMPLATE = "%s";
     private static final String JOB_SUFFIX = ".job";
 
     /**
@@ -47,7 +47,9 @@ public class WorkflowUtils {
         List<String> contents = new ArrayList<>();
         contents.add("type=command");
         contents.add("command=" + String.format(COMMAND_TEMPLATE, job.getJobSvn()));
-        contents.add("dependencies=" + dependencies);
+        if (!StringUtils.isEmpty(dependencies)) {
+            contents.add("dependencies=" + dependencies);
+        }
         return contents;
     }
 
@@ -57,13 +59,21 @@ public class WorkflowUtils {
         Set<String> jobsWithDept = new HashSet<>();
         workflow.getJobs().forEach(job -> wholeJobs.add(job.getWorkflowJobId()));
         workflow.getJobs().forEach(job -> {
-            Arrays.asList(job.getParentsJobId().split(",")).forEach(JobName -> {
-                jobsWithDept.add(JobName);
-            });
+            if (job.getParentsJobId() != null) {
+                Arrays.asList(job.getParentsJobId().split(",")).forEach(JobName -> {
+                    jobsWithDept.add(JobName);
+                });
+            }
         });
         wholeJobs.removeAll(jobsWithDept);
+        List<String> content = new ArrayList<>();
+        content.add("type=command");
+        content.add("command=echo \"flow run success\"");
+        if (!wholeJobs.isEmpty()) {
+            content.add("dependencies=" + String.join(",", wholeJobs));
+        }
         try {
-            FileUtils.writeLines(file, Arrays.asList("type=command", "command=echo \"flow run success\""));
+            FileUtils.writeLines(file, content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

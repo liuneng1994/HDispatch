@@ -83,7 +83,7 @@
     VALUES
         (
           #{name},
-          #{decription},
+          #{description},
           #{themeId},
           #{layerId}
         )
