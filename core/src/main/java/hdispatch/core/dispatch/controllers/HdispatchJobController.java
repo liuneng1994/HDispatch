@@ -4,7 +4,9 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.job.Job;
+import hdispatch.core.dispatch.dto.job.TreeNode;
 import hdispatch.core.dispatch.service.JobService;
+import hdispatch.core.dispatch.service.SvnFileSysService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,8 @@ public class HdispatchJobController extends BaseController {
     private Logger logger = Logger.getLogger(HdispatchJobController.class);
     @Autowired
     private JobService jobService;
+    @Autowired
+    private SvnFileSysService svnFileSysService;
 
     @RequestMapping(value = "/dispatcher/job/query", method = RequestMethod.GET)
     @ResponseBody
@@ -115,5 +119,35 @@ public class HdispatchJobController extends BaseController {
             return rd;
         }
         return rd;
+    }
+
+
+    @RequestMapping(value = "/dispatcher/job/svnTree/query", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getSvnTreeNodes(HttpServletRequest request,
+                                @RequestParam(defaultValue = "") String nodeId) {
+        IRequest requestContext = createRequestContext(request);
+        ResponseData responseData = null;
+//        if(!nodeId.trim().equals("")){
+//            responseData = new ResponseData(false);
+//            responseData.setMessage("非法访问");
+//            return responseData;
+//        }
+        nodeId = nodeId.trim();
+        TreeNode treeNode = new TreeNode();
+//        //访问根目录
+//        if(nodeId.equals("rootNode")){
+//            treeNode.setNodeId("");
+//        }else {
+//            treeNode.setNodeId(nodeId.trim());
+//        }
+        treeNode.setNodeId(nodeId.trim());
+        try {
+            List<TreeNode> treeNodeList = svnFileSysService.fetchSubNodes(treeNode);
+            responseData = new ResponseData(treeNodeList);
+        } catch (Exception e) {
+            logger.error("访问SVN服务器出错",e);
+        }
+        return responseData;
     }
 }
