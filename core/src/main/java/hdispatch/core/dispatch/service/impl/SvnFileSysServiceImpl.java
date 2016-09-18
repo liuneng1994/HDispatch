@@ -53,11 +53,11 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
             sshSession.setConfig(sshConfig);
             sshSession.connect();
 
-            System.out.println("Session connected!");
+            logger.info("Session connected!");
 
             channel = sshSession.openChannel("sftp");
             channel.connect();
-            System.out.println("Channel connected!");
+            logger.info("Channel connected!");
             sftp = (ChannelSftp) channel;
             String path = svnConfig.getRootPath();
             if (!treeNode.getNodeId().equals("")) {
