@@ -42,14 +42,19 @@
                 <div id="jobListGrid" style="clear:both"></div>
             </div>
             <div id="batchCreateJobWindow_div"></div>
+            <div id="grid_svn_div"></div>
         </div>
         <script type="text/javascript">
             var wnd, batchCreateJobWindowTemplate;
+            var grid_svn_wnd, grid_svn_template;
 
             var themeBaseUrl = "${base.contextPath}/dispatcher/theme/";
             var layerBaseUrl = "${base.contextPath}/dispatcher/layer/";
             var jobBaseUrl = "${base.contextPath}/dispatcher/job/";
-
+            function grid_button_click(e) {
+                //触发TreeView窗口
+                showGridSvnTreeViewWindow(e);
+            };
             $(document).ready(function () {
                 //声明批量创建job窗口
                 wnd = $("#batchCreateJobWindow_div")
@@ -69,11 +74,29 @@
                         }).data("kendoWindow");
                 batchCreateJobWindowTemplate = kendo.template($("#batchCreateJobWindow_template").html());
 
+                //声明grid中treeView窗口
+                grid_svn_wnd = $("#grid_svn_div")
+                        .kendoWindow({
+                            title: "选择SVN",
+                            modal: true,
+                            visible: false,
+                            resizable: true,
+                            actions: [
+                                "Pin",
+                                "Minimize",
+                                "Maximize",
+                                "Close"
+                            ],
+                            width: 500,
+                            height:350
+                        }).data("kendoWindow");
+                grid_svn_template = kendo.template($("#grid_svn_treeView_template").html());
 
                 //声明主窗口
                 var viewModel = kendo.observable({
-                    model:{themeId:'',layerId:'',jobName:''},
+                    model:{themeId:'',layerId:'',jobName:'',page:''},
                     queryResource: function(e) {
+                        viewModel.model.page=1;
                         $('#jobListGrid').data('kendoGrid').dataSource.read();
                     }
                 });
@@ -148,8 +171,13 @@
                                 }
 
                                 var map = {themeId: model.themeId,layerId: model.layerId,jobName:model.jobName};
+
                                 if (options.page)
                                     map.page = options.page;
+                                if(model.page){
+                                    map.page = 1;
+                                    model.page = '';
+                                }
                                 if (options.pageSize)
                                     map.pageSize = options.pageSize;
                                 for(var k in map){
@@ -183,6 +211,9 @@
                                 return res.message;
                             }
                         }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
                     }
                 });
                 var jobListGrid_kendo = $("#jobListGrid").kendoGrid({
@@ -232,17 +263,14 @@
                             { 'field': 'themeId','title':'主题名称', 'width': "100px", editor: themeDropDownEditor, template: "#=themeName#" },
                             { 'field': 'layerId','title':'层次名称', 'width': "100px", editor: layerDropDownEditor, template: "#=layerName#" },
                             { 'field': 'jobName','title':'任务名称', 'width': "100px" },
-                            { 'field': 'jobSvn','title':'SVN文件', 'width': "200px" },
-//                            { command: ["edit"], text:"编辑", title: "&nbsp;", width: "200px" },
+                            { 'field': 'jobSvn','title':'SVN文件', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
                             { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
-//                            { command: ["destroy"], text:"删除", title: "&nbsp;", width: "80px" }
                             { command: "destroy", text:{destroy:"删除"}, title: "&nbsp;", width: "80px" }
                         ],
                     editable: "inline"
                 });
                 //自定义toolbar中的按钮
                 $(".k-grid-batchCreateJob").click(function(e){
-                    console.log("自定义按钮事件");
                     showBatchCreateJobWindow(e);
                 });
 
@@ -279,6 +307,9 @@
                                 return res.message;
                             }
                         }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
                     }
                 });
                 var grid_themeDropDownList;
@@ -295,9 +326,7 @@
                             close:onGridThemeClose,
                             dataSource:grid_themeDropDown_dataSource
                         });
-
                 };
-
                 var grid_layerDropDown_dataSource =  new kendo.data.DataSource({
                     transport: {
                         read: {
@@ -335,6 +364,9 @@
                                 return res.message;
                             }
                         }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
                     }
                 });
                 var grid_layerDropDownList;
@@ -352,7 +384,6 @@
                             dataSource:grid_layerDropDown_dataSource
                     });
                 };
-
                 function onGridThemeDataBound(e) {
                     grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
                     //获取对应的themeName值
@@ -381,7 +412,6 @@
                     themeName_grid_line = color.text();
                     grid_layerDropDown_dataSource.read();
                 };
-
                 function onGridLayerDataBound(e) {
                     grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
                     //获取对应的layerName值
@@ -405,6 +435,60 @@
                     //获取对应的layerName值
                     var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
                     layerName_grid_line = color.text();
+                };
+
+                //声明grid中显示TreeView的控件
+                var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
+                homogeneous = new kendo.data.HierarchicalDataSource({
+                    transport: {
+                        read: {
+                            url: serviceRoot,
+                            type:"GET",
+                            dataType: "json"
+                        }
+                    },
+                    schema: {
+                        data:'rows',
+                        model: {
+                            id: "nodeId",
+                            hasChildren: "hasChild",
+                            fields: {
+                                nodeId: { type: 'string',validation: { required: true } },
+                                nodeName: { type: 'string',validation: { required: true } },
+                                hasChild: { type: 'boolean',validation: { required: true } }
+                            }
+                        },
+                        errors: function(res){
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
+                    }
+                });
+
+                function svnTreeEditor(container, options) {
+//                    $('<div required name="' + options.field + '"/>')
+//                            .appendTo(container)
+//                            .kendoTreeView({
+//                                checkboxes: {
+//                                    checkChildren: true
+//                                },
+//                                dataSource: homogeneous,
+//                                dataTextField: "nodeName",
+//                                check: onCheck
+//                    });
+//                    $('<button onclick="grid_button_click()">选择</button>')
+//                            .appendTo(container);
+//                    $('<div style="display:inline-block;margin:0%;padding:0px"><input id="grid_jobSvn_input" readonly="readonly" style="width:60%;"/><button onclick="grid_button_click()" style="width:30%;">选择</button></div>')
+//                            .appendTo(container);
+$('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-button k-button-icontext k-primary k-grid-update">选择</button>')
+                            .appendTo(container);
+
+
+
                 };
 
                 //声明两个查询用的下拉框
@@ -440,10 +524,13 @@
                                 return res.message;
                             }
                         }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
                     }
                 });
                 $("#input_themeId").kendoDropDownList({
-                    optionLabel: "选择主题",
+//                    optionLabel: "选择主题",
                     autoBind:true,
                     dataTextField: "themeName",
                     dataValueField: "themeId",
@@ -488,7 +575,10 @@
                                     return res.message;
                                 }
                             }
-                        }
+                        },
+                    error: function(e) {
+                        alert(e.errors)
+                    }
                     });
                 $("#input_layerId").kendoDropDownList({
                     optionLabel: "选择层",
@@ -502,6 +592,7 @@
                 //绑定主页面的数据和视图
                 kendo.bind($('#theme-content'),viewModel);
 
+                //查询级联事件处理
                 function onChange() {
                     viewModel.model.themeId=$("#input_themeId").val();
 
@@ -515,6 +606,7 @@
                     viewModel.model.layerId=$("#input_layerId").val();
                 }
             });
+
 
             //显示批量创建job页面
             //声明批量创建job页面中的数据源
@@ -550,6 +642,9 @@
                             return res.message;
                         }
                     }
+                },
+                error: function(e) {
+                    alert(e.errors)
                 }
             });
             var batchCreateJob_layerId_dataSource =  new kendo.data.DataSource({
@@ -582,6 +677,11 @@
                         fields: {
                             layerId: { type: 'number',validation: { required: true } },
                             layerName: { type: 'string',validation: { required: true } }
+                        },
+                        errors: function(res){
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
                         }
                     },
                     errors: function(res){
@@ -591,8 +691,7 @@
                     }
                 }
             });
-//            var batchCreateJob_themeId;
-//            var batchCreateJob_layerId;
+
             function showBatchCreateJobWindow(e) {
                 e.preventDefault();
 
@@ -652,7 +751,15 @@
                                 spriteCssClass: { type: 'string',validation: { required: true } },
 
                             }
+                        },
+                        errors: function(res){
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
                         }
+                    },
+                    error: function(e) {
+                        alert(e.errors)
                     }
                 });
 
@@ -684,12 +791,13 @@
                             message;
                     checkedNodeIds(treeView.dataSource.view(), checkedNodes);
                     if (checkedNodes.length > 0) {
-                        message = "选中了以下文件: " + checkedNodes.join(",");
+                        message = checkedNodes.join(",");
                     } else {
-                        message = "没有选中任何文件";
+                        message = "";
                     }
 
-                    $("#result").html(message);
+//                    $("#result").html(message);
+                    $("#result").val(message);
                 }
 
                 kendo.bind($('#batchCreateJobForm'),batchCreateJobViewModel);
@@ -715,9 +823,171 @@
             function onLayerIdClose_batchCreateForm(e) {
                 batchCreateJobViewModel.model.layerId=$("#batchCreateForm_input_layerId").val();
             }
+
+            //显示grid中TreeView窗口
+            var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
+            var grid_treeView_dataSource = new kendo.data.HierarchicalDataSource({
+                transport: {
+                    read: {
+                        url: serviceRoot,
+                        type:"GET",
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    data:'rows',
+                    model: {
+                        id: "nodeId",
+                        hasChildren: "hasChild",
+                        fields: {
+                            nodeId: { type: 'string',validation: { required: true } },
+                            nodeName: { type: 'string',validation: { required: true } },
+                            hasChild: { type: 'boolean',validation: { required: true } },
+                            expanded: { type: 'boolean',validation: { required: true } },
+                            spriteCssClass: { type: 'string',validation: { required: true } },
+
+                        }
+                    },
+                    errors: function(res){
+                        if(!res.success && res.message) {
+                            return res.message;
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e.errors)
+                }
+            });
+            function showGridSvnTreeViewWindow(e) {
+                grid_svn_wnd.content(grid_svn_template);
+                grid_svn_wnd.center().open();
+                var grid_treeView_module= kendo.observable({
+                    model:{}
+                });
+
+                $("#grid_svn_treeView_div").kendoTreeView({
+                    dataSource: grid_treeView_dataSource,
+                    dataTextField: "nodeName",
+                    select:onGridSvnSelect
+                });
+
+                function onGridSvnSelect(e) {
+                    $("#grid_svn_treeView_jobSvn").val(this.text(e.node));
+                }
+                kendo.bind($('#grid_treeView_div'),grid_treeView_module);
+            };
+            //grid中treeView选择结果处理
+            var jobSvn_node_checked = '';
+            function getSelectedNodeId(nodes) {
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].selected) {
+                        if(!nodes[i]._childrenOptions.data.hasChild){
+                            //不得不采用这种方式：因为nodes中下标是可以重复的，并且node节点的id在kendoUI中也是可以重复的
+                            jobSvn_node_checked = nodes[i]._childrenOptions.data.nodeId;
+                            break;
+                        }else {
+                            alert("没有选中任何KJB文件");
+                        }
+                    }
+                    if (nodes[i].hasChildren) {
+                        getSelectedNodeId(nodes[i].children.view());
+                    }
+                }
+            };
+            function getSelectedSvn() {
+                // 获取当前选择行数据
+                var row = $('#jobListGrid').data("kendoGrid").select();
+                var data = $('#jobListGrid').data("kendoGrid").dataItem(row);
+                data.set("jobSvn","哈哈");
+                console.log(data);
+
+                var nodes = grid_treeView_dataSource.view();
+                getSelectedNodeId(nodes);
+
+                if(jobSvn_node_checked && jobSvn_node_checked.length>0){
+//                    $("#grid_jobSvn_input").val(jobSvn_node_checked);
+                    var rowData1 = $('#jobListGrid').data('kendoGrid').dataSource.at(0);
+                    //设置某列的新值
+                    rowData1.set("jobSvn",jobSvn_node_checked);
+
+
+
+                    //关闭窗口
+                    grid_svn_wnd.close();
+                }
+            };
+
+            //提交批量创建job
+            function submitBatchCreateJobForm(e) {
+                var themeId_temp_batchCreateJob = $("#batchCreateForm_input_themeId").val();
+                var layerId_temp_batchCreateJob = $("#batchCreateForm_input_layerId").val();
+                var jobSvn_temp_batchCreateJob = $("#result").val();
+                var batchCreateUrl = "${base.contextPath}/dispatcher/job/batchSubmit";
+                console.log(themeId_temp_batchCreateJob);
+                console.log(layerId_temp_batchCreateJob);
+                console.log($("#result").val());
+
+                if(!themeId_temp_batchCreateJob || themeId_temp_batchCreateJob < 0){
+                    console.log("没有填写theeId");
+                    alert("请填写主题名称");
+                    return;
+                }
+                if(!layerId_temp_batchCreateJob || layerId_temp_batchCreateJob < 0){
+                    console.log("没有填写layerId");
+                    alert("请填写层次名称");
+                    return;
+                }
+                if(!jobSvn_temp_batchCreateJob || jobSvn_temp_batchCreateJob.length <= 0){
+                    console.log("没有选择SVN文件");
+                    alert("请选择SVN文件");
+                    return;
+                }
+
+                //构建请求参数
+                map = {
+                    themeId:themeId_temp_batchCreateJob,
+                    layerId:layerId_temp_batchCreateJob,
+                    jobSvn:jobSvn_temp_batchCreateJob
+                };
+                var batchCreateJob_data = kendo.stringify(map);
+                console.log("请求参数：");
+                console.log(batchCreateJob_data);
+                $.ajax({
+                    type: 'POST',
+                    url: batchCreateUrl,
+                    data: JSON.stringify(batchCreateJob_data),
+                    contentType:"application/json",
+                    success: function (data) {
+                        if(!data.success){
+                            alert("创建失败："+data.message);
+                        }else{
+                            alert("创建成功");
+                        }
+                    },
+                    dataType: "json"
+                });
+            }
         </script>
-
-
+        <script type="text/x-kendo-template" id="grid_svn_treeView_template">
+            <div id="grid_treeView_div">
+                <ul class="fieldList">
+                    <li>
+                        <div>
+                            <div id="grid_svn_treeView_div"></div>
+                        </div>
+                    </li>
+                    <li id="grid_svn_li">
+                        <div id="grid_svn_result">
+                            <label for="grid_svn_treeView_jobSvn">选中的SVN文件如下：</label>
+                            <input id="grid_svn_treeView_jobSvn" style="width: 100%;" readonly="readonly"/>
+                        </div>
+                    </li>
+                    <li>
+                        <button class="k-button k-primary k-submit" onclick="getSelectedSvn()">选择</button>
+                    </li>
+                </ul>
+            </div>
+        </script>
         <script type="text/x-kendo-template" id="batchCreateJobWindow_template">
             <div id="batchCreateJobForm" class="k-content">
                 <ul class="fieldList">
@@ -738,33 +1008,37 @@
                     </li>
                     <li id="svn_li">
                         <label for="batchCreateForm_input_svn">SVN文件</label>
-                        <div id="batchCreateForm_input_svn" style="width: 600px"></div>
+                        <div id="batchCreateForm_input_svn" style="width: 100%"></div>
                     </li>
                     <li>
                         <label for="result">选中的SVN文件如下：</label>
-                        <div id="result" style="width: 100%"></div>
+                        <!--<div id="result" style="width: 100%"></div>-->
+                        <textarea readonly="readonly" id="result" style="width: 100%"
+                               data-bind="value:model.jobSvn"/>
                     </li>
 
                     <li>
-                        <button class="k-button k-primary k-submit">创建</button>
-                        &nbsp;
-                        <button class="k-button k-reset">重置</button>
+                        <button class="k-button k-primary k-submit" onclick="submitBatchCreateJobForm()">创建</button>
                     </li>
                 </ul>
             </div>
         </script>
+
         <style>
             #batchCreateForm_input_svn .k-sprite {
                 background-image: url("../../../../lib/images/coloricons-sprite.png");
             }
-
+            #grid_treeView_div .k-sprite {
+                background-image: url("../../../../lib/images/coloricons-sprite.png");
+            }
             .rootfolder { background-position: 0 0; }
             .folder     { background-position: 0 -16px; }
             .pdf        { background-position: 0 -32px; }
             .html       { background-position: 0 -48px; }
             .image      { background-position: 0 -64px; }
-            #svn_li .k-checkbox-label {width: 16px; display: inline-block}
-            #batchCreateForm_input_svn .k-checkbox-wrapper {width: 16px; display: inline-block}
+            #svn_li .k-checkbox-label {display: inline-block}
+            #grid_svn_li .k-checkbox-label {display: inline-block}
+            #batchCreateForm_input_svn .k-checkbox-wrapper {display: inline-block}
         </style>
     </div>
 </body>
