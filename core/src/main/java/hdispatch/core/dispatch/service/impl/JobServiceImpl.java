@@ -2,6 +2,7 @@ package hdispatch.core.dispatch.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
+import com.hand.hap.system.dto.BaseDTO;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.mapper.JobMapper;
@@ -59,6 +60,7 @@ public class JobServiceImpl implements JobService {
                     case DTOStatus.ADD:
                         jobMapper.create(job);
                         job.setJobActive(1L);
+                        job.set__status("");
                         break;
                     case DTOStatus.UPDATE:
 
