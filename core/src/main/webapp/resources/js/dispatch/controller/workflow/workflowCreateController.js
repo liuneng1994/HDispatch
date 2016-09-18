@@ -3,66 +3,95 @@
     angular.module('dispatch').controller('workflowCreateController', ['$window', '$scope', 'workflowService', workflowCreateController]);
     function workflowCreateController($window, $scope, workflowService) {
         var vm = this;
-        vm.workflow = {}
+        vm.workflow = {};
+        vm.newJob = new Job();
         vm.themes = {};
         vm.layers = {};
+        vm.jobLayers = [];
+        vm.jobSources = [{jobName: 'job1', jobId: 1}, {jobName: 'job2', jobId: 2}, {jobName: 'job3', jobId: 3}];
         vm.graph = new joint.dia.Graph;
         vm.paper = initWorkflowPaper(1111, 500, vm.graph, '#graph');
-
-        vm.paper.on('cell:pointerclick', function (cellView, event) {
-                var cell = cellView.model;
-                vm.graphTool.toggleNode(cellView);
-                vm.graphTool.mark(cellView);
-            }
-        );
-
         refreshThemes();
-        $scope.$watch('vm.workflow.themeId', refreshLayers);
+        $scope.$watch('vm.workflow.themeId', function () {
+            refreshLayers('layers', vm.workflow.themeId);
+        });
+        $scope.$watch('vm.newJob.themeId', function () {
+            refreshLayers('jobLayers', vm.newJob.themeId);
+        });
+
+        vm.createJob = function (job) {
+            vm.graphTool.createJobNode(job);
+            console.log(vm.jobWindow);
+            vm.jobWindow.close();
+        };
+
+        vm.resetWindow = function () {
+            vm.newJob = {};
+            vm.jobLayers = [];
+            vm.jobWindow.close();
+        }
+
+        function Job() {
+            this.name = '';
+            this.jobSource = new Number();
+            this.dept = [];
+        }
+
+        vm.jobStore = {
+            // 以name，value的形式存储， job含有name，jobSource和dept（依赖job的数组）
+            jobs: {},
+            get: function (name) {
+                return vm.jobStore.jobs[name];
+            },
+            add: function (job) {
+                vm.jobStore.jobs[job.name] = job;
+            },
+            remove: function (name) {
+                delete vm.jobStore.jobs[name];
+            },
+            contains: function (name) {
+                return vm.jobStore.get(name) != undefined;
+            },
+            addJobDept: function (name, deptName) {
+                if (!vm.jobStore.hasJobDept(name, deptName)) {
+                    vm.jobStore.get(name).dept.push(deptName);
+                    return true;
+                }
+                return false;
+            },
+            removeJobDept: function (name, deptName) {
+                if (!vm.jobStore.hasJobDept(name, deptName)) {
+                    vm.jobStore.get(name).dept = _.without(vm.jobStore.get(name).dept, deptName);
+                }
+            },
+            hasJobDept: function (name, deptName) {
+                var has = false;
+                _.each(vm.jobStore.get(name).dept, function (name) {
+                    if (name == deptName) has = true;
+                });
+                return has;
+            }
+        }
+
         vm.graphTool = (function () {
-            var source = null;
-            var target = null;
-            var current = null;
-
-            function setSource(s) {
-                source = s;
-            }
-
-            function setTarget(t) {
-                target = t;
-            }
-
-            function select(cell) {
-                current = cell;
-            }
-
+            var selected = null;
             return {
-                toggleNode: function (cell) {
-                    if (cell.attr('rect/stroke') == 'black') {
-                        cell.attr('rect/stroke', 'red');
-                        select(cell);
-                    }
-                    else
-                        cell.attr('rect/stroke', 'black');
-                },
-                mark: function (cell) {
-                    if (source == null && target == null) {
-                        setSource(source);
-                    } else if (source != null && source.id == cell.id) {
-                        setSource(null);
-                    } else if (source != null && target == null) {
-                        setTarget(cell);
-                        if (!vm.graphTool.isConnected(source, target))
-                            vm.graphTool.connect(source, target);
-                        vm.graphTool.toggleNode(source);
-                        vm.graphTool.toggleNode(target);
-                        setSource(null);
-                        setTarget(null);
+                select: function (cellView) {
+                    _.each(vm.graph.getElements(), function (element) {
+                        var elementView = vm.paper.findViewByModel(element);
+                        if (elementView instanceof joint.dia.ElementView) {
+                            elementView.unhighlight();
+                        }
+                    });
+                    if (cellView instanceof joint.dia.ElementView) {
+                        cellView.highlight();
+                        selected = cellView.model;
                     }
                 },
-                createJobNode: function (name) {
+                createJobNode: function (job) {
                     var node = new joint.shapes.basic.Rect({
                         position: {x: 100, y: 30},
-                        size: {width: 100, height: 30},
+                        size: {width: job.name.length * 7 + 20, height: 45},
                         attrs: {
                             rect: {
                                 'stroke-width': '2',
@@ -73,17 +102,37 @@
                                 fill: 'lightgray',
                                 'fill-opacity': .5
                             },
-                            text: {text: name, fill: 'black'}
+                            text: {text: job.name, fill: 'black', cursor: 'crosshair'}
                         }
                     });
+                    node.prop('job', job);
                     vm.graph.addCell(node);
                 },
                 connect: function (source, target) {
                     if (source && target)
-                        console.log(source, target);
-                    vm.graph.addCell(new joint.dia.Link({
-                            source: source,
-                            target: target,
+                        vm.graph.addCell(new joint.dia.Link({
+                                source: source,
+                                target: target,
+                                attrs: {
+                                    '.connection': {
+                                        stroke: '#333333',
+                                        'stroke-width': 3
+                                    },
+                                    '.marker-target': {
+                                        fill: '#333333',
+                                        d: 'M 10 0 L 0 5 L 10 10 z'
+                                    }
+                                }
+                            }
+                        ));
+                },
+                linkNode: (function () {
+                    var draw = false;
+                    var source = null;
+                    var target = null;
+                    var tempLink = new joint.dia.Link({
+                            source: {x: 0, y: 0},
+                            target: {x: 0, y: 0},
                             attrs: {
                                 '.connection': {
                                     stroke: '#333333',
@@ -95,13 +144,69 @@
                                 }
                             }
                         }
-                    ));
-                },
+                    );
+                    return {
+                        pointerdown: function (cellView, event, x, y) {
+                            if (event.target.nodeName == 'tspan') {
+                                draw = true;
+                                tempLink.set('source', cellView.model);
+                                source = cellView.model;
+                                tempLink.set('target', {x: x, y: y});
+                                tempLink.addTo(vm.graph);
+                            }
+                        },
+                        pointermove: function (cellView, event, x, y) {
+                            if (draw) {
+                                tempLink.set('target', {x: x, y: y});
+                            }
+                        },
+                        pointerup: function (cellView, event) {
+                            if (draw) {
+                                var targetPoint = tempLink.get('target');
+                                var elements = vm.paper.findViewsFromPoint(targetPoint);
+                                if (elements.length && elements[0] instanceof joint.dia.ElementView) {
+                                    if (elements[0].model.id != source.id) {
+                                        if (!vm.graphTool.isConnected(source, elements[0].model)) {
+                                            target = elements[0].model;
+                                            vm.graphTool.connect(source, target);
+                                        }
+                                    }
+                                    target = elements[0].model
+                                }
+                                tempLink.remove();
+                                tempLink = new joint.dia.Link({
+                                        source: {x: 0, y: 0},
+                                        target: {x: 0, y: 0},
+                                        attrs: {
+                                            '.connection': {
+                                                stroke: '#333333',
+                                                'stroke-width': 3
+                                            },
+                                            '.marker-target': {
+                                                fill: '#333333',
+                                                d: 'M 10 0 L 0 5 L 10 10 z'
+                                            }
+                                        }
+                                    }
+                                );
+                                draw = false;
+                                source = null;
+                                target = null;
+                            }
+                        },
+                        changePosition: function (cell) {
+                            if (draw) {
+                                cell.set('position', cell.previous('position'));
+                            }
+                        }
+                    }
+                })(),
                 isConnected: function (source, target) {
+                    if (!source || !target) return false;
                     var links = vm.graph.getConnectedLinks(source);
                     if (links.length) {
                         for (var i = 0; i < links.length; i++) {
-                            if (links[i].getTargetElement().id == target.id)
+                            if ((links[i].getTargetElement() && links[i].getTargetElement().id == target.id) || (links[i].getTargetElement() && links[i].getSourceElement().id == target.id))
                                 return true;
                         }
                     }
@@ -109,6 +214,46 @@
                 }
             }
         })();
+
+        vm.paper.on('cell:pointerclick', function (cellView, event) {
+            vm.graphTool.select(cellView);
+        });
+
+        vm.paper.on('cell:pointerdown', vm.graphTool.linkNode.pointerdown);
+        vm.paper.on('cell:pointermove', vm.graphTool.linkNode.pointermove);
+        vm.paper.on('cell:pointerup', vm.graphTool.linkNode.pointerup);
+
+        vm.graph.on('change:position', vm.graphTool.linkNode.changePosition);
+        vm.graph.on('add', function (cell) {
+            if (cell instanceof joint.dia.Element) {
+                var job = cell.prop('job');
+                if (job) {
+                    vm.jobStore.add(job);
+                }
+            }
+            if (cell instanceof joint.dia.Link) {
+                var sourceName = cell.getSourceElement().prop('job/name');
+                var targetName = cell.getTargetElement().prop('job/name');
+                if (sourceName instanceof String && targetName instanceof String) {
+                    vm.jobStore.addJobDept(targetName, sourceName);
+                }
+            }
+        });
+        vm.graph.on('remove', function (cell) {
+            if (cell instanceof joint.dia.Element) {
+                var job = cell.prop('job');
+                if (job) {
+                    vm.jobStore.remove(job);
+                }
+            }
+            if (cell instanceof joint.dia.Link) {
+                var sourceName = cell.getSourceElement().prop('job/name');
+                var targetName = cell.getTargetElement().prop('job/name');
+                if (sourceName instanceof String && targetName instanceof String) {
+                    vm.jobStore.removeJobDept(targetName, sourceName);
+                }
+            }
+        });
         return vm;
 
         function refreshThemes() {
@@ -117,9 +262,9 @@
             });
         }
 
-        function refreshLayers() {
-            workflowService.layers(vm.workflow.themeId).then(function (data) {
-                vm.layers = data;
+        function refreshLayers(layers, themeId) {
+            workflowService.layers(themeId).then(function (data) {
+                vm[layers] = data;
             });
         }
 
