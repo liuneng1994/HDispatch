@@ -29,13 +29,13 @@
     ON job.theme_id=theme.theme_id AND job.layer_id=layer.layer_id
     <where>
       <if test="jobId != null and jobId>0">
-        and job.job_id = #{jobId,jdbcType=DECIMAL}
+        and job.job_id = #{jobId}
       </if>
       <if test="themeId != null and themeId>0">
-        and job.theme_id = #{themeId,jdbcType=DECIMAL}
+        and job.theme_id = #{themeId}
       </if>
       <if test="layerId != null and layerId>0">
-        and job.layer_id = #{layerId,jdbcType=DECIMAL}
+        and job.layer_id = #{layerId}
       </if>
       <if test="jobName != null">
         <bind name="pattern" value="'%' + _parameter.jobName + '%'"/>
