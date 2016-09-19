@@ -8,7 +8,7 @@
         vm.themes = {};
         vm.layers = {};
         vm.jobLayers = [];
-        vm.jobSources = [{jobName: 'job1', jobId: 1}, {jobName: 'job2', jobId: 2}, {jobName: 'job3', jobId: 3}];
+        vm.jobSources = [];
         vm.graph = new joint.dia.Graph;
         vm.paper = initWorkflowPaper(1111, 500, vm.graph, '#graph');
         refreshThemes();
@@ -18,12 +18,24 @@
         $scope.$watch('vm.newJob.themeId', function () {
             refreshLayers('jobLayers', vm.newJob.themeId);
         });
+        $scope.$watch('vm.newJob.layerId', function () {
+            refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
+        });
 
-        vm.createJob = function (job) {
-            vm.graphTool.createJobNode(job);
-            console.log(vm.jobWindow);
+
+        vm.createJob = function () {
+            vm.graphTool.createJobNode(vm.newJob);
+            vm.newJob = new Job();
             vm.jobWindow.close();
         };
+
+        vm.deleteJob = function () {
+            vm.graphTool.deleteJobNode();
+        }
+
+        vm.save = function () {
+            console.log(vm.jobStore.jobs);
+        }
 
         vm.resetWindow = function () {
             vm.newJob = {};
@@ -32,6 +44,8 @@
         }
 
         function Job() {
+            this.themeId = new Number();
+            this.layerId = 0;
             this.name = '';
             this.jobSource = new Number();
             this.dept = [];
@@ -60,7 +74,7 @@
                 return false;
             },
             removeJobDept: function (name, deptName) {
-                if (!vm.jobStore.hasJobDept(name, deptName)) {
+                if (vm.jobStore.hasJobDept(name, deptName)) {
                     vm.jobStore.get(name).dept = _.without(vm.jobStore.get(name).dept, deptName);
                 }
             },
@@ -107,6 +121,10 @@
                     });
                     node.prop('job', job);
                     vm.graph.addCell(node);
+                },
+                deleteJobNode: function () {
+                    vm.graph.removeLinks(selected);
+                    selected.remove();
                 },
                 connect: function (source, target) {
                     if (source && target)
@@ -231,10 +249,10 @@
                     vm.jobStore.add(job);
                 }
             }
-            if (cell instanceof joint.dia.Link) {
+            if (cell instanceof joint.dia.Link && cell.getSourceElement() && cell.getTargetElement()) {
                 var sourceName = cell.getSourceElement().prop('job/name');
                 var targetName = cell.getTargetElement().prop('job/name');
-                if (sourceName instanceof String && targetName instanceof String) {
+                if (sourceName && targetName) {
                     vm.jobStore.addJobDept(targetName, sourceName);
                 }
             }
@@ -246,10 +264,10 @@
                     vm.jobStore.remove(job);
                 }
             }
-            if (cell instanceof joint.dia.Link) {
-                var sourceName = cell.getSourceElement().prop('job/name');
-                var targetName = cell.getTargetElement().prop('job/name');
-                if (sourceName instanceof String && targetName instanceof String) {
+            if (cell instanceof joint.dia.Link && cell.get('source') instanceof joint.dia.Element && cell.get('target') instanceof joint.dia.Element) {
+                var sourceName = cell.get('source').prop('job/name');
+                var targetName = cell.get('target').prop('job/name');
+                if (sourceName && targetName) {
                     vm.jobStore.removeJobDept(targetName, sourceName);
                 }
             }
@@ -266,6 +284,12 @@
             workflowService.layers(themeId).then(function (data) {
                 vm[layers] = data;
             });
+        }
+
+        function refreshJobs(jobs, themeId, layerId) {
+            workflowService.jobs(themeId, layerId).then(function (data) {
+                vm[jobs] = data;
+            })
         }
 
         function initWorkflowPaper(width, height, model, elemeneId) {

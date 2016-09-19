@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_theme` (
   ATTRIBUTE12           VARCHAR(240),
   ATTRIBUTE13           VARCHAR(240),
   ATTRIBUTE14           VARCHAR(240),
-  ATTRIBUTE15           VARCHAR(240)
+  ATTRIBUTE15           VARCHAR(240),
   PRIMARY KEY (`theme_id`))
 ENGINE = InnoDB;
 
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_layer` (
   ATTRIBUTE12           VARCHAR(240),
   ATTRIBUTE13           VARCHAR(240),
   ATTRIBUTE14           VARCHAR(240),
-  ATTRIBUTE15           VARCHAR(240)
+  ATTRIBUTE15           VARCHAR(240),
   PRIMARY KEY (`layer_id`))
 ENGINE = InnoDB;
 
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_job` (
   ATTRIBUTE12           VARCHAR(240),
   ATTRIBUTE13           VARCHAR(240),
   ATTRIBUTE14           VARCHAR(240),
-  ATTRIBUTE15           VARCHAR(240)
+  ATTRIBUTE15           VARCHAR(240),
   PRIMARY KEY (`job_id`))
 ENGINE = InnoDB;
 
@@ -151,7 +151,8 @@ CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_workflow` (
   `name` VARCHAR(64) NULL,
   `project_name` VARCHAR(64) NULL,
   `flow_id` VARCHAR(128) NULL,
-  `description` VARCHAR(256) NULL,
+  `description` VARCHAR(2048) NULL,
+  `active` TINYINT NULL DEFAULT 1,
   `theme_id` BIGINT NULL,
   `layer_id` BIGINT NULL,
   OBJECT_VERSION_NUMBER DECIMAL(20, 0) DEFAULT 1,
@@ -177,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_workflow` (
   ATTRIBUTE12           VARCHAR(240),
   ATTRIBUTE13           VARCHAR(240),
   ATTRIBUTE14           VARCHAR(240),
-  ATTRIBUTE15           VARCHAR(240)
+  ATTRIBUTE15           VARCHAR(240),
   PRIMARY KEY (`workflow_id`))
 ENGINE = InnoDB;
 
@@ -190,7 +191,8 @@ DROP TABLE IF EXISTS `hap_dev`.`hdispatch_workflow_property` ;
 CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_workflow_property` (
   `workflow_id` BIGINT NULL,
   `workflow_property_name` VARCHAR(128) NULL,
-  `workflow_property_value` VARCHAR(256) NULL)
+  `workflow_property_value` VARCHAR(256) NULL
+  )
 ENGINE = InnoDB;
 
 
@@ -200,10 +202,12 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `hap_dev`.`hdispatch_workflow_job` ;
 
 CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_workflow_job` (
-  `workflow_id` VARCHAR(45) NULL,
+  `workflow_job_id` VARCHAR(255) NOT NULL,
+  `workflow_id` BIGINT NOT NULL,
   `job_source_id` BIGINT NULL,
   `job_type` VARCHAR(32) NULL DEFAULT 'job',
-  `parent_id` BIGINT NULL)
+  `parents_job_id` BLOB NULL,
+  PRIMARY KEY (`workflow_job_id`, `workflow_id`))
 ENGINE = InnoDB;
 
 
