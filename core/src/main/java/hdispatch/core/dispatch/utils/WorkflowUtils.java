@@ -54,6 +54,6 @@ public class WorkflowUtils {
     }
 
     public static void createEndJobFile(File parentFile, Workflow workflow) {
-        File file = new File(parentFile, workflow.getWorkflowN() + JOB_SUFFIX);
+       // File file = new File(parentFile, workflow.getWorkflowN() + JOB_SUFFIX);
     }
 }

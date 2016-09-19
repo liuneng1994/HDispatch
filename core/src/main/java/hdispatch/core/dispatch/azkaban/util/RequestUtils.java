@@ -38,11 +38,11 @@ public class RequestUtils {
     }
 
     public static HttpRequest get(String uri) {
-        return Unirest.get(host + URL_SEPERATOR + uri);
+        return Unirest.get(host + URL_SEPERATOR + uri).queryString(SESSION_ID, getter.getSessionId());
     }
 
     public static HttpRequestWithBody post(String uri) {
-        return Unirest.post(host + URL_SEPERATOR + uri);
+        return Unirest.post(host + URL_SEPERATOR + uri+"?session.id="+getter.getSessionId());
     }
 
     private static class SessionIdGetter {

@@ -142,8 +142,25 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("无法找到log！");
 			throw new IllegalArgumentException("无法找到log！", e);
 		}
-		System.out.println(response.getBody().getObject());
 		obj.setMessage((String)response.getBody().getObject().get("data"));
+		return obj;
+	}
+
+	/**
+	 * 重跑失败流
+	 */
+	@Override
+	public ResultObj retryFlow(Map<String, Object> map) {
+		ResultObj obj=new ResultObj();
+		try {
+			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "retryFailedJobs").queryString(map)
+					.asJson();
+
+		} catch (UnirestException e) {
+			logger.error("当前流已经运行完，无法重跑！");
+			throw new IllegalArgumentException("当前流已经运行完，无法重跑！", e);
+		}
+		obj.setMessage((String)response.getBody().getObject().get("error"));
 		return obj;
 	}
 

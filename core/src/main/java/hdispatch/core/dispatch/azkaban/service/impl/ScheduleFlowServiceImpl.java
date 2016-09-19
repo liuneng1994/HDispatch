@@ -3,12 +3,18 @@ package hdispatch.core.dispatch.azkaban.service.impl;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import hdispatch.core.dispatch.azkaban.entity.schedule.Schedule;
 import hdispatch.core.dispatch.azkaban.flow.FlowObj;
 import hdispatch.core.dispatch.azkaban.service.ScheduleFlowService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
+
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,5 +100,60 @@ public class ScheduleFlowServiceImpl implements ScheduleFlowService {
         }
         return result;
     }
+/**
+ * 获取所有schedule
+ */
+	@Override
+	public Schedule fetchschedule(Map<String, Object> map) {
+		try {
+			response = RequestUtils.get(RequestUrl.SCHEDULE).queryString("ajax", "fetchSchedule")
+					.queryString(map).asJson();
+
+		} catch (UnirestException e) {
+			logger.error("schedule不存在！");
+			throw new IllegalArgumentException("schedule不存在！", e);
+		}
+		return new Schedule(response.getBody().getObject());
+	}
+/**
+ * 是否设置了sla
+ */
+@Override
+public boolean hasSla(Integer id) {
+	try {
+		response = RequestUtils.get(RequestUrl.SCHEDULE).queryString("ajax", "slaInfo")
+				.queryString("scheduleId",id).asJson();
+
+	} catch (UnirestException e) {
+		logger.error("schedule不存在！");
+		throw new IllegalArgumentException("schedule不存在！", e);
+	}
+	if(response.getBody().getObject().has("settings"))
+		return true;
+	else
+		return false;
+}
+/**
+ * 为schedule设置sla
+ */
+@Override
+public ResultObj setsla(Map<String, Object> map) {
+	ResultObj obj=new ResultObj();
+	
+	try {
+		
+		response = RequestUtils.post(RequestUrl.SCHEDULE).queryString("ajax", "setSla")
+				.queryString(map).asJson();
+
+	} catch (UnirestException e) {
+		logger.error("schedule不存在！");
+		throw new IllegalArgumentException("schedule不存在！", e);
+	}
+	if(response.getBody().getObject().length()==0)
+		obj.setMessage("success!");
+	else
+		obj.setMessage("Failed!");
+	return obj;
+}
 }
 

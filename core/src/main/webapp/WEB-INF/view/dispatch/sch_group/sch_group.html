@@ -267,11 +267,11 @@
 									type : "button",
 									id : "stop",
 									text : '<@spring.message "hap.stop"/>'
-								}, {
+								}/* , {
 									type : "button",
 									id : "fresh",
 									text : '<@spring.message "hap.fresh"/>'
-								}
+								} */
 
 								]
 							});
@@ -402,7 +402,7 @@
 																		+ (stateColor[status])
 																		+ "' "
 																		+ ">"
-																		+ status
+																		+ item.meaning
 																		+ "</button>";
 																return html;
 															}

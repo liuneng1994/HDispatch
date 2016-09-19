@@ -10,6 +10,7 @@
 		<div id="page-content">
 			<div class="panel">
 				<div class="panel-body">
+				<div id="toolbar"></div>
 					<div id="flowGrid" class="table"></div>
 				</div>
 			</div>
@@ -17,6 +18,24 @@
 	</div>
 	<script src="../../lib/dateformat.js"></script>
 	<script type="text/javascript">
+	function flowoperation_ajax(id, url, succesCallback) {
+		console.log(id);
+		$.ajax({
+			url : url,
+			type : "get",
+			dataType : "json",
+			contentType : "application/json",
+			data : {exec_id:id},
+			success : function(json) {
+				if (succesCallback) {
+					succesCallback(json);
+				}
+			},
+			error : function() {
+				grid.refresh();
+			}
+		});
+	}
 	function openLogDetailPage(job_id,exec_id) {
 		 var dialog =  $("#dialog").kendoWindow({
 		    actions: [ "Maximize", "Minimize", "Close"],
@@ -130,8 +149,14 @@
 
 										}
 									});
-
-					
+							$("#toolbar").kendoToolBar({
+								items : [ {
+									type : "button",
+									id : "retryflow",
+									text : '<@spring.message "hap.retry"/>'
+								}
+								]
+							});
 							var grid = $("#flowGrid")
 									.kendoGrid(
 											{
@@ -196,8 +221,8 @@
 																	
 																	r3=0;
 																	color1="#310EBE";
-																	color2="#FFFFFF";
-																	color3="#FFFFFF";
+																	color2="#E6E6E6";
+																	color3="#E6E6E6";
 																	}
 																else if(end==length)
 																	{
@@ -206,8 +231,8 @@
 																		r2=0;
 																		r3=Math.round((length-start)/length*100);
 																		
-																		color1="#FFFFFF";
-																		color2="#FFFFFF";
+																		color1="#E6E6E6";
+																		color2="#E6E6E6";
 																		color3="#310EBE";
 																	}
 																else
@@ -218,9 +243,9 @@
 																	
 																	r3=Math.round((length-end)/length*100);
 																	
-																	color1="#FFFFFF";
+																	color1="#E6E6E6";
 																	color2="#310EBE";
-																	color3="#FFFFFF";	
+																	color3="#E6E6E6";	
 																	}
 																		
 																
@@ -304,7 +329,7 @@
 																		+ (stateColor[status])
 																		+ "' "
 																		+ ">"
-																		+ status
+																		+ item.meaning
 																		+ "</button>";
 																return html;
 															}
@@ -325,6 +350,20 @@
 															}
 														} ]
 											}).data("kendoGrid");
+							var start = $("#retryflow")
+							.kendoButton(
+									{
+										click : function(e) {
+											flowoperation_ajax(
+													exec_id,
+													'${base.contextPath}/flows/retryfailflow',
+													function(json) {
+														if(json.message!=null)
+															alert("所选流已经运行完毕，无法重跑！");
+														grid.refresh();
+													});
+										}
+									}).data("kendoButton");
 
 						});
 	</script>

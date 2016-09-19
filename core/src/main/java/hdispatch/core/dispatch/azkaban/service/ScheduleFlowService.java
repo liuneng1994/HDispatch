@@ -1,5 +1,8 @@
 package hdispatch.core.dispatch.azkaban.service;
 
+import java.util.Map;
+
+import hdispatch.core.dispatch.azkaban.entity.schedule.Schedule;
 import hdispatch.core.dispatch.azkaban.flow.FlowObj;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
 
@@ -10,4 +13,11 @@ public interface ScheduleFlowService {
     ResultObj scheduleFlow(FlowObj flow);
 
     ResultObj unscheduleFlow(Long id);
+    
+    Schedule fetchschedule(Map<String,Object> map);
+    
+    boolean hasSla(Integer id);
+    
+    ResultObj setsla(Map<String,Object> map);
+
 }
