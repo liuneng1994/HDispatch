@@ -1,4 +1,5 @@
 <#include "../../include/header.html">
+<#include "../../include/confirmDialog.html">
     <body>
     <div>
         <!--曾经出错原因：头部引用相对地址错误-->
@@ -207,19 +208,23 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 var jobListGrid_kendo = $("#jobListGrid").kendoGrid({
                     dataSource: jobs_data,
                     resizable: true,
-                    selectable: "single",
+//                    selectable: "single",
+                    selectable: "multiple",
                     scrollable: false,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
@@ -254,7 +259,6 @@
 //                        },
                         {
                             name:"batchCreateJob",
-                            text:"批量新建",
                             text:"批量新建"
                         },
                         {
@@ -950,8 +954,14 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly
                         }
                     },
                     errors: function(res){
-                        if(!res.success && res.message) {
-                            return res.message;
+                        if(!res.success) {
+                            if(res.message){
+                                return res.message;
+                            }
+                        }else{
+                            if(res.message){
+                                return res.message;
+                            }
                         }
                     }
                 },
