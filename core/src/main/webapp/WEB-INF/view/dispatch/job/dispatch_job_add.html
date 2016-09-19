@@ -255,10 +255,20 @@
                         {
                             name:"batchCreateJob",
                             text:"批量新建",
+                            text:"批量新建"
+                        },
+                        {
+                            name:"batchDeleteJob",
+                            text:"批量删除"
                         }
                     ],
                     columns:
                         [
+                            {
+                                title: '',
+                                template: '<input class="checkbox" type="checkbox"/>',
+                                width: '16px'
+                            },
                             { 'field': 'jobId','hidden':true },
                             { 'field': 'themeId','title':'主题名称', 'width': "100px", editor: themeDropDownEditor, template: "#=themeName#" },
                             { 'field': 'layerId','title':'层次名称', 'width': "100px", editor: layerDropDownEditor, template: "#=layerName#" },
@@ -272,6 +282,30 @@
                 //自定义toolbar中的按钮
                 $(".k-grid-batchCreateJob").click(function(e){
                     showBatchCreateJobWindow(e);
+                });
+                $(".k-grid-batchDeleteJob").click(function(e){
+                    /*
+                     确认是否批量删除
+                     进行删除
+                        1.从grid中移除数据
+                        2.发送删除请求
+                     */
+                    var confirmResult = confirm("确定删除?");
+//                    console.log(confirmResult);
+                    if(confirmResult){
+                        console.log(checkedIds);
+                        $.each(checkedIds,function(key,value){
+                            if(checkedIds[key])
+                            {
+                                jobs_data.remove(jobs_data.get(key));
+                                checkedIds[key]=false;
+                            }
+                        });
+//                        jobListGrid_kendo.dataSource.sync();
+                        jobs_data.sync();
+//                        jobListGrid_kendo.refresh();
+//                        jobs_data.delete();
+                    }
                 });
 
                 //声明grid中的下拉框
@@ -303,13 +337,16 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 var grid_themeDropDownList;
@@ -360,13 +397,16 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 var grid_layerDropDownList;
@@ -469,13 +509,16 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
 
@@ -530,13 +573,16 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 $("#input_themeId").kendoDropDownList({
@@ -581,14 +627,17 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly
                                 }
                             },
                             errors: function(res){
-                                if(!res.success && res.message) {
-                                    return res.message;
+                                if(!res.success) {
+                                    if(res.message){
+                                        return res.message;
+                                    }
+                                }else{
+                                    if(res.message){
+                                        return res.message;
+                                    }
                                 }
                             }
-                        },
-                    error: function(e) {
-                        alert(e.errors)
-                    }
+                        }
                     });
                 $("#input_layerId").kendoDropDownList({
                     optionLabel: "选择层",
@@ -648,8 +697,14 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly
                         }
                     },
                     errors: function(res){
-                        if(!res.success && res.message) {
-                            return res.message;
+                        if(!res.success) {
+                            if(res.message){
+                                return res.message;
+                            }
+                        }else{
+                            if(res.message){
+                                return res.message;
+                            }
                         }
                     }
                 },
@@ -689,14 +744,26 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly
                             layerName: { type: 'string',validation: { required: true } }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
                     },
                     errors: function(res){
-                        if(!res.success && res.message) {
-                            return res.message;
+                        if(!res.success) {
+                            if(res.message){
+                                return res.message;
+                            }
+                        }else{
+                            if(res.message){
+                                return res.message;
+                            }
                         }
                     }
                 }
@@ -763,13 +830,16 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
 
@@ -840,6 +910,22 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly
             $("#jobListGrid").on("click", "tr", function (e) {
                 rowIndex_grid_edicting = $(this).index();
             });
+            //为grid中的checkBox绑定选中事件
+            $("#jobListGrid").on("click", ".checkbox" , selectRow);
+            var checkedIds = {};
+            function selectRow() {
+                var checked = this.checked,
+                        row = $(this).closest("tr"),
+                        grid = $("#jobListGrid").data("kendoGrid"),
+                        dataItem = grid.dataItem(row);
+
+                checkedIds[dataItem.jobId] = checked;
+                if (checked) {
+                    row.addClass("k-state-selected");
+                } else {
+                    row.removeClass("k-state-selected");
+                }
+            }
             var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
             var grid_treeView_dataSource = new kendo.data.HierarchicalDataSource({
                 transport: {
