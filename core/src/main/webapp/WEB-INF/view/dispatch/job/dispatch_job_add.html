@@ -389,6 +389,8 @@
                     //获取对应的themeName值
                     var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
                     themeName_grid_line = color.text();
+//                    //设置当前行的themeName
+//                    setEditingRowThemeName(rowIndex_grid_edicting,themeName_grid_line);
                     grid_layerDropDown_dataSource.read();
                 };
                 function onGridThemeChange(e) {
@@ -410,6 +412,8 @@
                     //获取对应的themeName值
                     var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
                     themeName_grid_line = color.text();
+                    //设置当前行的themeName
+                    setEditingRowThemeName(rowIndex_grid_edicting,themeName_grid_line);
                     grid_layerDropDown_dataSource.read();
                 };
                 function onGridLayerDataBound(e) {
@@ -417,6 +421,9 @@
                     //获取对应的layerName值
                     var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
                     layerName_grid_line = color.text();
+
+//                    //设置当前行的layerName
+//                    setEditingRowLayerName(rowIndex_grid_edicting,layerName_grid_line);
                 };
                 function onGridLayerChange(e) {
                     grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
@@ -435,6 +442,9 @@
                     //获取对应的layerName值
                     var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
                     layerName_grid_line = color.text();
+
+                    //设置当前行的layerName
+                    setEditingRowLayerName(rowIndex_grid_edicting,layerName_grid_line);
                 };
 
                 //声明grid中显示TreeView的控件
@@ -484,7 +494,7 @@
 //                            .appendTo(container);
 //                    $('<div style="display:inline-block;margin:0%;padding:0px"><input id="grid_jobSvn_input" readonly="readonly" style="width:60%;"/><button onclick="grid_button_click()" style="width:30%;">选择</button></div>')
 //                            .appendTo(container);
-$('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-button k-button-icontext k-primary k-grid-update">选择</button>')
+$('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-button k-button-icontext k-primary k-grid-update">选择</button>')
                             .appendTo(container);
 
 
@@ -825,6 +835,11 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
             }
 
             //显示grid中TreeView窗口
+            var rowIndex_grid_edicting;
+            //为grid中的每一行绑定点击事件
+            $("#jobListGrid").on("click", "tr", function (e) {
+                rowIndex_grid_edicting = $(this).index();
+            });
             var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
             var grid_treeView_dataSource = new kendo.data.HierarchicalDataSource({
                 transport: {
@@ -861,6 +876,7 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
             function showGridSvnTreeViewWindow(e) {
                 grid_svn_wnd.content(grid_svn_template);
                 grid_svn_wnd.center().open();
+
                 var grid_treeView_module= kendo.observable({
                     model:{}
                 });
@@ -895,22 +911,18 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                 }
             };
             function getSelectedSvn() {
-                // 获取当前选择行数据
-                var row = $('#jobListGrid').data("kendoGrid").select();
-                var data = $('#jobListGrid').data("kendoGrid").dataItem(row);
-                data.set("jobSvn","哈哈");
-                console.log(data);
-
                 var nodes = grid_treeView_dataSource.view();
                 getSelectedNodeId(nodes);
 
                 if(jobSvn_node_checked && jobSvn_node_checked.length>0){
-//                    $("#grid_jobSvn_input").val(jobSvn_node_checked);
-                    var rowData1 = $('#jobListGrid').data('kendoGrid').dataSource.at(0);
+                    //获取当前选择行数据
+//                    console.log($('#jobListGrid').data("kendoGrid")._data);
+//                    console.log($('#jobListGrid').data("kendoGrid")._data[rowIndex_grid_edicting]);
+//                    var data = $('#jobListGrid').data("kendoGrid")._data[rowIndex_grid_edicting];
+                    var data = getEdictingRowData(rowIndex_grid_edicting);
                     //设置某列的新值
-                    rowData1.set("jobSvn",jobSvn_node_checked);
-
-
+                    data.set("jobSvn",jobSvn_node_checked);
+                    console.log(data);
 
                     //关闭窗口
                     grid_svn_wnd.close();
@@ -966,6 +978,24 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                     },
                     dataType: "json"
                 });
+            };
+
+            //获取当前行的数据
+            function getEdictingRowData(index)
+            {
+                return $('#jobListGrid').data("kendoGrid")._data[index];
+            }
+            //设置当前行中的themeName
+            function setEditingRowThemeName(index,themeName)
+            {
+                var data_temp = getEdictingRowData(index);
+                data_temp.set("themeName",themeName);
+            }
+            //设置当前行中的layerName
+            function setEditingRowLayerName(index,layerName)
+            {
+                var data_temp = getEdictingRowData(index);
+                data_temp.set("layerName",layerName);
             }
         </script>
         <script type="text/x-kendo-template" id="grid_svn_treeView_template">
