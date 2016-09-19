@@ -10,15 +10,18 @@
         vm.jobLayers = [];
         vm.jobSources = [];
         vm.graph = new joint.dia.Graph;
-        vm.paper = initWorkflowPaper(1111, 500, vm.graph, '#graph');
+        vm.paper = initWorkflowPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
         refreshThemes();
         $scope.$watch('vm.workflow.themeId', function () {
+            vm.workflow.layerId = null;
             refreshLayers('layers', vm.workflow.themeId);
         });
         $scope.$watch('vm.newJob.themeId', function () {
+            vm.newJob.layerId = null;
             refreshLayers('jobLayers', vm.newJob.themeId);
         });
         $scope.$watch('vm.newJob.layerId', function () {
+            vm.newJob.jobSource = null;
             refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
         });
 
@@ -34,12 +37,19 @@
         }
 
         vm.save = function () {
+            var workflow = {};
+            workflow.themeId = vm.workflow.themeId;
+            workflow.layerId = vm.workflow.layerId;
+            workflow.name = vm.workflow.name;
+            workflow.description = vm.workflow.description;
+            console.log(vm.workflow);
             console.log(vm.jobStore.jobs);
         }
 
         vm.resetWindow = function () {
             vm.newJob = {};
             vm.jobLayers = [];
+            vm.jobSources = [];
             vm.jobWindow.close();
         }
 
@@ -90,6 +100,7 @@
         vm.graphTool = (function () {
             var selected = null;
             return {
+                selected: new Boolean(selected),
                 select: function (cellView) {
                     _.each(vm.graph.getElements(), function (element) {
                         var elementView = vm.paper.findViewByModel(element);
