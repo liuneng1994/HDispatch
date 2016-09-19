@@ -2,16 +2,22 @@ package hdispatch.core.dispatch.controllers;
 
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
+import com.hand.hap.system.dto.DTOStatus;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.job.Job;
+import hdispatch.core.dispatch.dto.job.TreeNode;
 import hdispatch.core.dispatch.service.JobService;
+import hdispatch.core.dispatch.service.SvnFileSysService;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.quartz.JobListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +31,8 @@ public class HdispatchJobController extends BaseController {
     private Logger logger = Logger.getLogger(HdispatchJobController.class);
     @Autowired
     private JobService jobService;
+    @Autowired
+    private SvnFileSysService svnFileSysService;
 
     @RequestMapping(value = "/dispatcher/job/query", method = RequestMethod.GET)
     @ResponseBody
@@ -62,6 +70,12 @@ public class HdispatchJobController extends BaseController {
             return rd;
         }
 
+        rd = doCreateJob(jobList,request);
+        return rd;
+    }
+    private ResponseData doCreateJob(List<Job> jobList,HttpServletRequest request){
+        ResponseData rd = null;
+
         //从后台判断是否存在
         boolean[] isExist = jobService.checkIsExist(jobList);
         StringBuilder sb = new StringBuilder();
@@ -88,6 +102,7 @@ public class HdispatchJobController extends BaseController {
         } catch (Exception e) {
             logger.error("保存任务中途失败", e);
         }
+
         return rd;
     }
 
@@ -115,5 +130,66 @@ public class HdispatchJobController extends BaseController {
             return rd;
         }
         return rd;
+    }
+
+
+    @RequestMapping(value = "/dispatcher/job/svnTree/query", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getSvnTreeNodes(HttpServletRequest request,
+                                @RequestParam(defaultValue = "") String nodeId) {
+        IRequest requestContext = createRequestContext(request);
+        ResponseData responseData = null;
+        nodeId = nodeId.trim();
+        TreeNode treeNode = new TreeNode();
+        treeNode.setNodeId(nodeId.trim());
+        try {
+            List<TreeNode> treeNodeList = svnFileSysService.fetchSubNodes(treeNode);
+            responseData = new ResponseData(treeNodeList);
+        } catch (Exception e) {
+            logger.error("访问SVN服务器出错",e);
+            responseData = new ResponseData(false);
+            responseData.setMessage("访问SVN服务器出错");
+            return responseData;
+        }
+        return responseData;
+    }
+
+
+    /**
+     * 根据SVN文件列表批量创建job
+     */
+    @RequestMapping(value = "/dispatcher/job/batchSubmit", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData batchCreateJobs(HttpServletRequest request,
+                                        @RequestBody JSONObject batchCreateJob_data) {
+        Long themeId = batchCreateJob_data.getLong("themeId");
+        Long layerId = batchCreateJob_data.getLong("layerId");
+        String jobSvn = batchCreateJob_data.getString("jobSvn");
+        //后台验证
+        String[] jobSvns = jobSvn.split(",");
+        if(themeId < 0 || layerId < 0 || jobSvn.trim().equals("") || jobSvns.length < 1){
+            ResponseData responseData = new ResponseData(false);
+            responseData.setMessage("illegal parameters");
+            return responseData;
+        }
+
+        List<Job> jobList = new ArrayList<Job>();
+        for(String s : jobSvns){
+            Job jobTemp = new Job();
+            jobTemp.setThemeId(themeId);
+            jobTemp.setLayerId(layerId);
+            jobTemp.setJobSvn(s);
+            jobTemp.set__status(DTOStatus.ADD);
+
+            int startIndex = s.lastIndexOf("/");
+            int endIndex = s.lastIndexOf(".");
+            String jobName_temp = s.substring(startIndex+1,endIndex);
+
+            jobTemp.setJobName(jobName_temp);
+
+            jobList.add(jobTemp);
+        }
+
+        return this.doCreateJob(jobList,request);
     }
 }

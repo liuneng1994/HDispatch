@@ -1,9 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-                  http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-                  http://www.springframework.org/schema/beans
-                  http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 
+
+
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <!--  <context:property-placeholder location="classpath:azkabanConfig.properties"></context:property-placeholder>
+
+    <bean id="azkabanDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+      <property name="driverClass" value="${azkaban.db.driverClass}"></property>
+      <property name="jdbcUrl" value="${azkaban.db.jdbcUrl}"></property>
+      <property name="user" value="${azkaban.db.username}"></property>
+      <property name="password" value="${azkaban.db.password}"></property>
+    </bean>
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+      <property name="basePackage" value="hdispatch.azkaban.mappers"></property>
+      <property name="sqlSessionTemplateBeanName" value="azkabanSqlSession"></property>
+    </bean>
+
+    <bean id="azkabanSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="dataSource" ref="azkabanDataSource"/>
+      <property name="mapperLocations" value="classpath*:hdispatch/azkaban/mappers/*Mapper.xml"/>
+    </bean>
+
+
+    <bean id="azkabanSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+      <constructor-arg index="0" name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>-->
+
+  <!--配置SVN服务器-->
+  <!--<context:property-placeholder location="classpath:svnFileSys.properties"/>-->
+  <!--<bean id="svnConfig" class="hdispatch.core.dispatch.dto.job.SvnConfig" scope="singleton">-->
+    <!--<property name="ip" value="${svn_server_ip}"/>-->
+    <!--<property name="port" value="${svn_server_port}"/>-->
+    <!--<property name="userName" value="${svn_server_userName}"/>-->
+    <!--<property name="password" value="${svn_server_pwd}"/>-->
+    <!--<property name="rootPath" value="${svn_server_rootPath}"/>-->
+  <!--</bean>-->
 </beans>

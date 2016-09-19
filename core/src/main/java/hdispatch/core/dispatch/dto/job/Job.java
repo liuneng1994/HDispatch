@@ -14,7 +14,7 @@ public class Job extends BaseDTO {
     private Long themeId;
     private Long layerId;
 
-    //????????
+    //冗余信息
     private String themeName;
     private String layerName;
 
