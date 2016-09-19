@@ -11,6 +11,8 @@ import hdispatch.core.dispatch.service.WorkflowService;
 import hdispatch.core.dispatch.utils.WorkflowUtils;
 import hdispatch.core.dispatch.utils.ZipUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -25,12 +27,18 @@ import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
 /**
  * Created by 刘能 on 2016/9/12.
  */
-@Service
+@Service("workflowService")
 public class WorkflowServiceImpl implements WorkflowService {
+    private Logger logger = Logger.getLogger(WorkflowServiceImpl.class);
+    @Autowired
     private WorkflowMapper workflowMapper;
+    @Autowired
     private WorkflowPropertyMapper workflowPropertyMapper;
+    @Autowired
     private WorkflowJobMapper workflowJobMapper;
+    @Autowired
     private JobMapper jobMapper;
+    @Autowired
     private ProjectService projectService;
 
     /**
@@ -42,18 +50,20 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Override
     @Transactional
     public Map<String, Object> createWorkflow(Workflow workflow) {
+        logger.info("Creates workflow " + workflow);
         Assert.notNull(workflow, "Workflow can not be null");
         Map<String, Object> ret = new HashMap<>();
         if (workflowMapper.getByName(workflow.getName()) != null) {
             ret.put(RET_ERROR, String.format("Workflow %s exists", workflow.getName()));
         } else {
-            Long id = workflowMapper.create(workflow);
+            workflowMapper.create(workflow);
+            Long id = workflow.getWorkflowId();
             workflow.getProperties().forEach(workflowProperty -> workflowProperty.setWorkflowId(id));
             workflow.getJobs().forEach(workflowJob -> workflowJob.setWorkflowId(id));
-            if (workflow.getProperties() != null) {
+            if (workflow.getProperties() != null && !workflow.getProperties().isEmpty()) {
                 workflowPropertyMapper.batchInsert(workflow.getProperties());
             }
-            if (workflow.getJobs() != null) {
+            if (workflow.getJobs() != null && !workflow.getJobs().isEmpty()) {
                 workflowJobMapper.batchInsert(workflow.getJobs());
             }
             ret.put(RET_SUCCESS, String.valueOf(id));
@@ -68,7 +78,9 @@ public class WorkflowServiceImpl implements WorkflowService {
      * @return 结果信息
      */
     @Override
+    @Transactional
     public Map<String, Object> updateWorkFlow(Workflow workflow) {
+        logger.info("update workflow " + workflow);
         Assert.notNull(workflow, "Workflow can not be null");
         Map<String, Object> ret = new HashMap<>();
         if (workflowMapper.getById(workflow.getWorkflowId()) == null) {
@@ -88,13 +100,21 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    public void generateWorkflow(long workflowId) {
+    @Transactional
+    public boolean generateWorkflow(long workflowId) {
         Workflow workflow = workflowMapper.getById(workflowId);
+        logger.info("generate workflow " + workflow);
         Set<Long> ids = new HashSet<>();
         workflow.getJobs().forEach(job -> ids.add(job.getJobSource()));
         List<Job> jobStore = jobMapper.getByIds(ids);
-        File projectFile = generateWorkflow(workflow, jobStore);
-        projectService.uploadProjectFile(projectFile);
+        logger.info("job source " + jobStore);
+        File projectFile = generateWorkflowFile(workflow, jobStore);
+        projectService.createProject(workflow.getName(), workflow.getDescription());
+        Map<String, String> result = projectService.uploadProjectFile(workflow.getName(), projectFile);
+        if (!result.containsKey("error")) {
+            workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), workflow.getName());
+        }
+        return !result.containsKey("error");
     }
 
     /**
@@ -104,13 +124,15 @@ public class WorkflowServiceImpl implements WorkflowService {
      * @param jobStore Job源列表
      * @return 压缩文件对象
      */
-    private File generateWorkflow(Workflow workflow, Collection<Job> jobStore) {
+    private File generateWorkflowFile(Workflow workflow, Collection<Job> jobStore) {
         File tempDir = FileUtils.getTempDirectory();
         File projectDir = new File(tempDir, workflow.getName());
         File projectZipFile = new File(tempDir, workflow.getName() + ".zip");
         FileUtils.deleteQuietly(projectDir);
+        FileUtils.deleteQuietly(projectZipFile);
         projectDir.mkdir();
         workflow.getJobs().forEach(job -> WorkflowUtils.createJobFile(projectDir, job, jobStore));
+        WorkflowUtils.createEndJobFile(projectDir, workflow);
         try {
             ZipUtils.zip(projectDir, projectZipFile);
         } catch (IOException e) {

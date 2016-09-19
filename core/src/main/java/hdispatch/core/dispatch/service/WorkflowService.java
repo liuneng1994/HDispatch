@@ -12,5 +12,5 @@ public interface WorkflowService {
 
     Map<String, Object> updateWorkFlow(Workflow workflow);
 
-    void generateWorkflow(long workflowId);
+    boolean generateWorkflow(long workflowId);
 }

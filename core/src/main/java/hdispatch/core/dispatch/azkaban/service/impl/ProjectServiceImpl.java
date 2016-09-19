@@ -6,37 +6,41 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hdispatch.core.dispatch.azkaban.entity.project.SimpleProject;
-import hdispatch.core.dispatch.azkaban.mappers.ProjectMapper;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
+import org.apache.http.entity.ContentType;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Created by 刘能 on 2016/8/31.
  */
+@Component
 public class ProjectServiceImpl implements ProjectService {
     private Logger logger = Logger.getLogger(ProjectServiceImpl.class);
     private Gson gson = new Gson();
-    private ProjectMapper projectMapper;
 
     @Override
     public boolean createProject(String projectName, String description) {
         HttpResponse<JsonNode> response;
         try {
-            response = RequestUtils.get(RequestUrl.PROJECT_MANAGER).queryString("action", "create")
-                    .queryString("name", projectName)
-                    .queryString("description", description).asJson();
+            response = RequestUtils.post(RequestUrl.PROJECT_MANAGER).field("action", "create")
+                    .field("name", projectName)
+                    .field("description", description).asJson();
         } catch (UnirestException e) {
             logger.error("创建工程失败", e);
             throw new IllegalStateException("创建工程失败", e);
         }
         String status = response.getBody().getObject().getString("status");
-        projectMapper.updateActiveProjectVersion(projectName, 1);
         return "success".equals(status);
     }
 
@@ -71,14 +75,27 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void uploadProjectFile(File projectFile) {
-        //TODO 需要实现文件上传接口
+    public Map<String, String> uploadProjectFile(String projectName, File projectFile) {
+        HttpResponse<JsonNode> response;
         try {
-            RequestUtils.post("/manager?ajax=upload").header("Content-Type", "multipart/mixed")
-                    .field(projectFile.getName(), projectFile, "application/zip").asString();
+            response = RequestUtils.post("/manager")
+                    .field("ajax", "upload")
+                    .field("project", projectName)
+                    .field("file", new FileInputStream(projectFile), ContentType.APPLICATION_OCTET_STREAM, projectFile.getName()).asJson();
         } catch (UnirestException e) {
             logger.error("上传工程失败", e);
             throw new IllegalStateException("上传工程失败", e);
+        } catch (FileNotFoundException e) {
+            logger.error("工程文件找不到", e);
+            throw new IllegalStateException("工程文件找不到", e);
         }
+        JSONObject object = response.getBody().getObject();
+        Map<String, String> ret = new HashMap<>();
+        if (object.has("error")) {
+            ret.put("error", object.getString("error"));
+        }
+        ret.put("projectId", object.getString("projectId"));
+        ret.put("version", object.getString("version"));
+        return ret;
     }
 }

@@ -71,7 +71,7 @@ public class ThemeServiceImpl implements ThemeService {
                 switch (theme.get__status()) {
                     case DTOStatus.ADD:
                         themeMapper.save(theme);
-                        theme.setThemeActive(1);
+                        theme.setThemeActive(1L);
                         break;
                     case DTOStatus.UPDATE:
 

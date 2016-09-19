@@ -1,4 +1,4 @@
-﻿package hdispatch.core.dispatch.dto.job;
+package hdispatch.core.dispatch.dto.job;
 
 import com.hand.hap.system.dto.BaseDTO;
 
@@ -14,7 +14,7 @@ public class Job extends BaseDTO {
     private Long themeId;
     private Long layerId;
 
-    //冗余属性
+    //冗余信息
     private String themeName;
     private String layerName;
 

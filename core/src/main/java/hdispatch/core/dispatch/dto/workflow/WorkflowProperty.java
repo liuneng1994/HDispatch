@@ -5,8 +5,8 @@ package hdispatch.core.dispatch.dto.workflow;
  */
 public class WorkflowProperty {
     private Long workflowId;
-    private String workflowName;
-    private String workflowValue;
+    private String workflowPropertyName;
+    private String workflowPropertyValue;
 
     public Long getWorkflowId() {
         return workflowId;
@@ -17,21 +17,30 @@ public class WorkflowProperty {
         return this;
     }
 
-    public String getWorkflowName() {
-        return workflowName;
+    public String getWorkflowPropertyName() {
+        return workflowPropertyName;
     }
 
-    public WorkflowProperty setWorkflowName(String workflowName) {
-        this.workflowName = workflowName;
+    public WorkflowProperty setWorkflowPropertyName(String workflowPropertyName) {
+        this.workflowPropertyName = workflowPropertyName;
         return this;
     }
 
-    public String getWorkflowValue() {
-        return workflowValue;
+    public String getWorkflowPropertyValue() {
+        return workflowPropertyValue;
     }
 
-    public WorkflowProperty setWorkflowValue(String workflowValue) {
-        this.workflowValue = workflowValue;
+    public WorkflowProperty setWorkflowPropertyValue(String workflowPropertyValue) {
+        this.workflowPropertyValue = workflowPropertyValue;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "WorkflowProperty{" +
+                "workflowId=" + workflowId +
+                ", workflowPropertyName='" + workflowPropertyName + '\'' +
+                ", workflowPropertyValue='" + workflowPropertyValue + '\'' +
+                '}';
     }
 }

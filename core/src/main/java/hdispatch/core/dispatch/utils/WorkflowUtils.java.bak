@@ -54,6 +54,9 @@ public class WorkflowUtils {
     }
 
     public static void createEndJobFile(File parentFile, Workflow workflow) {
+<<<<<<< HEAD
+       // File file = new File(parentFile, workflow.getWorkflowN() + JOB_SUFFIX);
+=======
         File file = new File(parentFile, workflow.getName() + JOB_SUFFIX);
         Set<String> wholeJobs = new HashSet<>();
         Set<String> jobsWithDept = new HashSet<>();
@@ -77,5 +80,6 @@ public class WorkflowUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+>>>>>>> origin/master
     }
 }

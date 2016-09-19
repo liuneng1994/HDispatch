@@ -7,18 +7,18 @@ import com.hand.hap.system.dto.BaseDTO;
  * yazheng.yang@hand-china.com
  */
 public class Theme extends BaseDTO{
-    private int themeId;
+    private Long themeId;
     private String themeName;
     private String themeDescription;
-    private int themeActive;
-    private int themeSequence;
+    private Long themeActive;
+    private Long themeSequence;
 
 
-    public int getThemeId() {
+    public Long getThemeId() {
         return themeId;
     }
 
-    public void setThemeId(int themeId) {
+    public void setThemeId(Long themeId) {
         this.themeId = themeId;
     }
 
@@ -38,19 +38,19 @@ public class Theme extends BaseDTO{
         this.themeDescription = themeDescription;
     }
 
-    public int getThemeActive() {
+    public Long getThemeActive() {
         return themeActive;
     }
 
-    public void setThemeActive(int themeActive) {
+    public void setThemeActive(Long themeActive) {
         this.themeActive = themeActive;
     }
 
-    public int getThemeSequence() {
+    public Long getThemeSequence() {
         return themeSequence;
     }
 
-    public void setThemeSequence(int themeSequence) {
+    public void setThemeSequence(Long themeSequence) {
         this.themeSequence = themeSequence;
     }
 }

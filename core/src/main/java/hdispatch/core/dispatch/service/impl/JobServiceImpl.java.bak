@@ -60,7 +60,10 @@ public class JobServiceImpl implements JobService {
                     case DTOStatus.ADD:
                         jobMapper.create(job);
                         job.setJobActive(1L);
+<<<<<<< HEAD
+=======
                         job.set__status("");
+>>>>>>> origin/master
                         break;
                     case DTOStatus.UPDATE:
 

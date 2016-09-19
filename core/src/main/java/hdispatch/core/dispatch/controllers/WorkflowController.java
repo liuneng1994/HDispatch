@@ -5,6 +5,7 @@ import hdispatch.core.dispatch.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +15,7 @@ import java.util.Map;
  * Created by 刘能 on 2016/9/12.
  */
 @RestController
+@RequestMapping("/workflow")
 public class WorkflowController {
     @Autowired
     private WorkflowService workflowService;

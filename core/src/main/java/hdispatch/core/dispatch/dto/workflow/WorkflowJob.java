@@ -54,4 +54,15 @@ public class WorkflowJob {
         this.parentsJobId = parentsJobId;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "WorkflowJob{" +
+                "workflowJobId='" + workflowJobId + '\'' +
+                ", workflowId=" + workflowId +
+                ", jobSource=" + jobSource +
+                ", jobType='" + jobType + '\'' +
+                ", parentsJobId='" + parentsJobId + '\'' +
+                '}';
+    }
 }
