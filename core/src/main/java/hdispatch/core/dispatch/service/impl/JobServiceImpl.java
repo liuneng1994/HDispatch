@@ -84,7 +84,7 @@ public class JobServiceImpl implements JobService {
                         job.set__status("");
                         break;
                     case DTOStatus.UPDATE:
-
+                        jobMapper.updateById(job);
                         break;
                     case DTOStatus.DELETE:
                         jobMapper.deleteInLogic(job);
