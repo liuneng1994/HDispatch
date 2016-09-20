@@ -85,6 +85,8 @@ public class JobServiceImpl implements JobService {
                         break;
                     case DTOStatus.UPDATE:
                         jobMapper.updateById(job);
+                        //防止反复提交
+                        job.set__status("");
                         break;
                     case DTOStatus.DELETE:
                         jobMapper.deleteInLogic(job);
