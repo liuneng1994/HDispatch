@@ -218,4 +218,21 @@ public class HdispatchJobController extends BaseController {
 
         return this.doCreateJob(jobList,request);
     }
+
+    @RequestMapping(value = "/dispatcher/job/update", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData updateJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        //后台验证
+        getValidator().validate(jobList, result);
+        if (result.hasErrors()) {
+            rd = new ResponseData(false);
+            rd.setMessage(getErrorMessage(result, request));
+            return rd;
+        }
+        IRequest requestContext = createRequestContext(request);
+        rd = new ResponseData(jobService.batchUpdate(requestContext,jobList));
+        return rd;
+    }
 }
