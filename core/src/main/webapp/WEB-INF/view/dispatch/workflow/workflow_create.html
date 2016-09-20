@@ -28,7 +28,7 @@
                                     k-data-text-field="'themeName'"
                                     k-data-value-field="'themeId'"
                                     k-data-source="vm.themes" style="padding-left:0;padding-right:0"></select>
-                            <span style="color:red;" ng-show="!vm.newJob.themeId">请选择主题</span>
+                            <span style="color:red;" ng-show="!(vm.newJob.themeId>0)">请选择主题</span>
                         </div>
                     </div>
                     <div class="form-group">

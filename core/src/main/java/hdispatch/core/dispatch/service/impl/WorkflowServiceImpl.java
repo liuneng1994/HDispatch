@@ -118,6 +118,17 @@ public class WorkflowServiceImpl implements WorkflowService {
         return !result.containsKey("error");
     }
 
+    @Override
+    @Transactional
+    public Workflow getWorkflowById(long workflowId) {
+        return workflowMapper.getById(workflowId);
+    }
+
+    @Override
+    public Workflow getWorkflowByName(String name) {
+        return workflowMapper.getByName(name);
+    }
+
     /**
      * 创建工作流的zip压缩文件
      *

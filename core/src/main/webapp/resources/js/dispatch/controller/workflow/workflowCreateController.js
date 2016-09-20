@@ -28,8 +28,8 @@
 
         vm.createJob = function () {
             vm.graphTool.createJobNode(vm.newJob);
-            vm.newJob = new Job();
-            vm.jobWindow.close();
+            vm.newJob = angular.copy(vm.newJob);
+            vm.resetWindow();
         };
 
         vm.deleteJob = function () {
@@ -42,15 +42,22 @@
             workflow.layerId = vm.workflow.layerId;
             workflow.name = vm.workflow.name;
             workflow.description = vm.workflow.description;
-            console.log(vm.workflow);
-            console.log(vm.jobStore.jobs);
+            workflow.jobs = [];
+            for (var jobName in vm.jobStore.jobs) {
+                var job = vm.jobStore.jobs[jobName];
+                var newJob = {};
+                newJob.workflowJobId = job.name;
+                newJob.jobSource = job.jobSource;
+                newJob.parentsJobId = job.dept.join(',');
+                workflow.jobs.push(newJob);
+            }
+            console.log(workflow);
+            console.log(vm.graph.toJSON());
         }
 
         vm.resetWindow = function () {
-            vm.newJob = {};
-            vm.jobLayers = [];
-            vm.jobSources = [];
             vm.jobWindow.close();
+            vm.newJob.name = null;
         }
 
         function Job() {
