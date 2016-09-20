@@ -40,4 +40,10 @@ public interface JobMapper {
      * @param job
      */
     void deleteInLogic(Job job);
+
+    /**
+     * 根据id对job进行更新
+     * @param job
+     */
+    void updateById(Job job);
 }
