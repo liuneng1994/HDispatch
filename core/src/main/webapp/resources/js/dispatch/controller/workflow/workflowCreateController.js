@@ -11,6 +11,8 @@
         vm.jobSources = [];
         vm.graph = new joint.dia.Graph;
         vm.paper = initWorkflowPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
+
+
         refreshThemes();
         $scope.$watch('vm.workflow.themeId', function () {
             vm.workflow.layerId = null;
@@ -27,6 +29,11 @@
 
 
         vm.createJob = function () {
+            if (vm.jobStore.contains(vm.newJob.name)) {
+                $window.alert("job名称已存在");
+                return;
+            }
+            console.log();
             vm.graphTool.createJobNode(vm.newJob);
             vm.newJob = angular.copy(vm.newJob);
             vm.resetWindow();
@@ -34,13 +41,13 @@
 
         vm.deleteJob = function () {
             vm.graphTool.deleteJobNode();
-        }
+        };
 
         vm.save = function () {
             var workflow = {};
             workflow.themeId = vm.workflow.themeId;
             workflow.layerId = vm.workflow.layerId;
-            workflow.name = vm.workflow.name;
+            workflow.name = vm.workflow.workflowName;
             workflow.description = vm.workflow.description;
             workflow.jobs = [];
             for (var jobName in vm.jobStore.jobs) {
@@ -51,14 +58,39 @@
                 newJob.parentsJobId = job.dept.join(',');
                 workflow.jobs.push(newJob);
             }
-            console.log(workflow);
-            console.log(vm.graph.toJSON());
+
+            var graphJson = vm.graph.toJSON();
+            graphJson = graphJson.cells.filter(function(cell) {
+                if (cell.type == 'link') {
+                    return false;
+                } else {
+                    return true;
+                }
+            })
+            workflowService.createWorkflow(workflow).then(function (data) {
+                vm.workflow.workflowId = parseInt(data);
+                workflowService.saveGraph(parseInt(data), graphJson).then(function (data) {
+                    $window.alert('创建成功');
+                }, function (data) {
+                    $window.alert('创建失败');
+                });
+            }, function (data) {
+                $window.alert(data);
+            });
+        };
+
+        vm.generateWorkflow = function() {
+            workflowService.generateWorkflow(vm.workflow.workflowId).then(function(data){
+                $window.alert(data);
+            },function(data){
+                $window.alert(data);
+            });
         }
 
         vm.resetWindow = function () {
             vm.jobWindow.close();
             vm.newJob.name = null;
-        }
+        };
 
         function Job() {
             this.themeId = new Number();
@@ -101,21 +133,38 @@
                     if (name == deptName) has = true;
                 });
                 return has;
+            },
+            layer: function() {
+                var layer = {};
+                function computeLayer(name) {
+                    if (!vm.jobStore.jobs[name].length) {
+                        return 1;
+                    }else{
+                        var deptLayers = [];
+                        vm.jobStore.jobs[name].dept.forEach(function(dept) {
+                            deptLayers.push(computeLayer(dept));
+                        })
+                        return _.max(deptLayers)+1;
+                    }
+                }
+                for (var job in vm.jobStore.jobs) {
+                    layer[job] = computeLayer(job);
+                }
+                return layer;
             }
         }
 
         vm.graphTool = (function () {
             var selected = null;
             return {
-                selected: new Boolean(selected),
                 select: function (cellView) {
-                    _.each(vm.graph.getElements(), function (element) {
-                        var elementView = vm.paper.findViewByModel(element);
-                        if (elementView instanceof joint.dia.ElementView) {
-                            elementView.unhighlight();
-                        }
-                    });
                     if (cellView instanceof joint.dia.ElementView) {
+                        _.each(vm.graph.getElements(), function (element) {
+                            var elementView = vm.paper.findViewByModel(element);
+                            if (elementView instanceof joint.dia.ElementView) {
+                                elementView.unhighlight();
+                            }
+                        });
                         cellView.highlight();
                         selected = cellView.model;
                     }
@@ -141,8 +190,10 @@
                     vm.graph.addCell(node);
                 },
                 deleteJobNode: function () {
-                    vm.graph.removeLinks(selected);
-                    selected.remove();
+                    if (selected) {
+                        vm.graph.removeLinks(selected);
+                        selected.remove();
+                    }
                 },
                 connect: function (source, target) {
                     if (source && target)
@@ -247,6 +298,12 @@
                         }
                     }
                     return false;
+                },
+                autoFormat: function() {
+                    var distance = 50;
+                    var elements = vm.graph.getElements();
+                    var links = vm.graph.getLinks();
+                    return vm.jobStore.layer();
                 }
             }
         })();

@@ -7,8 +7,6 @@
             $http.get('/dispatcher/theme/queryAll').success(function (data) {
                 if (data.success) {
                     defered.resolve(data.rows);
-                } else {
-
                 }
             })
 
@@ -24,7 +22,9 @@
                 if (data.success) {
                     defered.resolve(data.rows);
                 }
-            })
+            }).error(function(data) {
+                defered.promise('网络异常');
+            });
             return defered.promise;
         };
         var jobs = function (themeId, layerId) {
@@ -41,13 +41,85 @@
                 if (data.success) {
                     defered.resolve(data.rows);
                 }
-            })
+            }).error(function(data) {
+                defered.promise('网络异常');
+            });
             return defered.promise;
-        }
+        };
+        var createWorkflow = function(workflow) {
+            var defered = $q.defer();
+            $http({
+                url: '/dispatcher/workflow/create',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(workflow)
+            }).success(function (data) {
+                if (data.success) {
+                    defered.resolve(data.message);
+                } else {
+                    defered.reject(data.message)
+                }
+            }).error(function(data) {
+                defered.promise('网络异常');
+            });
+            return defered.promise;
+        };
+
+        var saveGraph = function(workflowId, graph) {
+            var defered = $q.defer();
+            $http({
+                url: '/dispatcher/workflow/saveGraph',
+                method: 'POST',
+                data: {workflowId:workflowId,graph:graph},
+                headers:{'Content-Type': 'application/x-www-form-urlencoded'},
+                transformRequest: function(obj) {
+                    var str = [];
+                    for(var p in obj){
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(JSON.stringify(obj[p])));
+                    }
+                    return str.join("&");
+                }
+            }).success(function (data) {
+                if (data.success) {
+                    defered.resolve(data.message);
+                } else {
+                    defered.reject(data.message)
+                }
+            }).error(function(data) {
+                defered.promise('网络异常');
+            });
+            return defered.promise;
+        };
+
+        var generateWorkflow = function(workflowId) {
+            var defered = $q.defer();
+            $http({
+                url: '/dispatcher/workflow/generateWorkflow',
+                method: 'GET',
+                params: {
+                    workflowId : workflowId
+                }
+            }).success(function (data) {
+                if (data.success) {
+                    defered.resolve(data.message);
+                } else {
+                    defered.reject(data.message)
+                }
+            }).error(function(data) {
+                defered.promise('网络异常');
+            });
+            return defered.promise;
+        };
+
         return {
             themes: themes,
             layers: layers,
-            jobs: jobs
+            jobs: jobs,
+            createWorkflow : createWorkflow,
+            saveGraph: saveGraph,
+            generateWorkflow: generateWorkflow
         };
     }
 })();

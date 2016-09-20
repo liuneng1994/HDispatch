@@ -23,7 +23,7 @@ import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
  * @author neng.liu@hand-china.com
  */
 @RestController
-@RequestMapping("/workflow")
+@RequestMapping("/dispatcher/workflow")
 public class WorkflowController extends BaseController{
     @Autowired
     private WorkflowService workflowService;
@@ -65,8 +65,22 @@ public class WorkflowController extends BaseController{
         return workflowService.updateWorkFlow(workflow);
     }
 
-    public ResponseData saveWorkflowGraph() {
-        return null;
+    /**
+     * 保存工作流图
+     * @param workflowId 工作流id
+     * @param graph 图形数据
+     * @return 保存结果
+     */
+    @RequestMapping(path = "/saveGraph" ,method = RequestMethod.POST)
+    public ResponseData saveWorkflowGraph(@RequestParam("workflowId") long workflowId,
+                                          @RequestParam("graph") String graph) {
+        ResponseData responseData;
+        if (workflowService.saveGraph(workflowId, graph)) {
+            responseData = new ResponseData(true);
+        } else {
+            responseData = new ResponseData(false);
+        }
+        return responseData;
     }
 
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
@@ -83,7 +97,7 @@ public class WorkflowController extends BaseController{
     }
 
     @RequestMapping(path = "/hasWorkflow", method = RequestMethod.GET)
-    public ResponseData existWorflow(@RequestParam(name="") String name) {
+    public ResponseData existWorflow(@RequestParam(name="name") String name) {
         ResponseData responseData;
         Workflow workflow = workflowService.getWorkflowByName(name);
         if (workflow == null) {

@@ -17,4 +17,6 @@ public interface WorkflowService {
     Workflow getWorkflowById(long workflowId);
 
     Workflow getWorkflowByName(String name);
+
+    boolean saveGraph(long workflowId, String graph);
 }

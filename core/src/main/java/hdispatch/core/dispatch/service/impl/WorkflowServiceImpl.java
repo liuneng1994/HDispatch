@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.*;
 
 import static hdispatch.core.dispatch.utils.Constants.RET_ERROR;
 import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.name;
 
 /**
  * Created by 刘能 on 2016/9/12.
@@ -58,8 +60,12 @@ public class WorkflowServiceImpl implements WorkflowService {
         } else {
             workflowMapper.create(workflow);
             Long id = workflow.getWorkflowId();
-            workflow.getProperties().forEach(workflowProperty -> workflowProperty.setWorkflowId(id));
-            workflow.getJobs().forEach(workflowJob -> workflowJob.setWorkflowId(id));
+            if (workflow.getProperties() != null) {
+                workflow.getProperties().forEach(workflowProperty -> workflowProperty.setWorkflowId(id));
+            }
+            if (workflow.getJobs()!=null) {
+                workflow.getJobs().forEach(workflowJob -> workflowJob.setWorkflowId(id));
+            }
             if (workflow.getProperties() != null && !workflow.getProperties().isEmpty()) {
                 workflowPropertyMapper.batchInsert(workflow.getProperties());
             }
@@ -103,7 +109,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Transactional
     public boolean generateWorkflow(long workflowId) {
         Workflow workflow = workflowMapper.getById(workflowId);
-        if (workflow == null) return false;
+        if (workflow == null || workflow.getJobs() == null) return false;
         logger.info("generate workflow " + workflow);
         Set<Long> ids = new HashSet<>();
         workflow.getJobs().forEach(job -> ids.add(job.getJobSource()));
@@ -127,6 +133,15 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Override
     public Workflow getWorkflowByName(String name) {
         return workflowMapper.getByName(name);
+    }
+
+    @Override
+    public boolean saveGraph(long workflowId, String graph) {
+        if (StringUtils.isEmpty(graph)) {
+            return false;
+        }
+        int result= workflowMapper.saveGraph(workflowId,graph);
+        return result >0;
     }
 
     /**
