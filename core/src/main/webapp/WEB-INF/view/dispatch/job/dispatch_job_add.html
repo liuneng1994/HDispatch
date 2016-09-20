@@ -1,5 +1,5 @@
 <#include "../../include/header.html">
-    <body>
+<body>
     <div>
         <!--曾经出错原因：头部引用相对地址错误-->
         <div id="content-container">
@@ -207,19 +207,23 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 var jobListGrid_kendo = $("#jobListGrid").kendoGrid({
                     dataSource: jobs_data,
                     resizable: true,
-                    selectable: "single",
+//                    selectable: "single",
+                    selectable: "multiple",
                     scrollable: false,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
@@ -244,34 +248,68 @@
                             name:"create",
                             text:'创建'
                         },
-//                        {
-//                            name:"save",
-//                            text:'保存'
-//                        },
-//                        {
-//                            name:"cancel",
-//                            text:'取消'
-//                        },
+                        {
+                            name:"save",
+                            text:'保存'
+                        },
+                        {
+                            name:"cancel",
+                            text:'取消'
+                        },
                         {
                             name:"batchCreateJob",
-                            text:"批量新建",
+                            text:"批量新建"
+                        },
+                        {
+                            name:"batchDeleteJob",
+                            text:"批量删除"
                         }
                     ],
                     columns:
                         [
+                            {
+                                title: '',
+                                template: '<input class="checkbox" type="checkbox"/>',
+                                width: '16px'
+                            },
                             { 'field': 'jobId','hidden':true },
                             { 'field': 'themeId','title':'主题名称', 'width': "100px", editor: themeDropDownEditor, template: "#=themeName#" },
                             { 'field': 'layerId','title':'层次名称', 'width': "100px", editor: layerDropDownEditor, template: "#=layerName#" },
                             { 'field': 'jobName','title':'任务名称', 'width': "100px" },
                             { 'field': 'jobSvn','title':'SVN文件', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
-                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
+//                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
                             { command: "destroy", text:{destroy:"删除"}, title: "&nbsp;", width: "80px" }
                         ],
-                    editable: "inline"
+//                    editable: "inline"
+                    editable: true
                 });
                 //自定义toolbar中的按钮
                 $(".k-grid-batchCreateJob").click(function(e){
                     showBatchCreateJobWindow(e);
+                });
+                $(".k-grid-batchDeleteJob").click(function(e){
+                    /*
+                     确认是否批量删除
+                     进行删除
+                        1.从grid中移除数据
+                        2.发送删除请求
+                     */
+                    var confirmResult = confirm("确定删除?");
+//                    console.log(confirmResult);
+                    if(confirmResult){
+                        console.log(checkedIds);
+                        $.each(checkedIds,function(key,value){
+                            if(checkedIds[key])
+                            {
+                                jobs_data.remove(jobs_data.get(key));
+                                checkedIds[key]=false;
+                            }
+                        });
+//                        jobListGrid_kendo.dataSource.sync();
+                        jobs_data.sync();
+//                        jobListGrid_kendo.refresh();
+//                        jobs_data.delete();
+                    }
                 });
 
                 //声明grid中的下拉框
@@ -303,13 +341,16 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 var grid_themeDropDownList;
@@ -360,13 +401,16 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 var grid_layerDropDownList;
@@ -389,6 +433,8 @@
                     //获取对应的themeName值
                     var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
                     themeName_grid_line = color.text();
+//                    //设置当前行的themeName
+//                    setEditingRowThemeName(rowIndex_grid_edicting,themeName_grid_line);
                     grid_layerDropDown_dataSource.read();
                 };
                 function onGridThemeChange(e) {
@@ -410,6 +456,8 @@
                     //获取对应的themeName值
                     var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
                     themeName_grid_line = color.text();
+                    //设置当前行的themeName
+                    setEditingRowThemeName(rowIndex_grid_edicting,themeName_grid_line);
                     grid_layerDropDown_dataSource.read();
                 };
                 function onGridLayerDataBound(e) {
@@ -417,6 +465,9 @@
                     //获取对应的layerName值
                     var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
                     layerName_grid_line = color.text();
+
+//                    //设置当前行的layerName
+//                    setEditingRowLayerName(rowIndex_grid_edicting,layerName_grid_line);
                 };
                 function onGridLayerChange(e) {
                     grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
@@ -435,6 +486,9 @@
                     //获取对应的layerName值
                     var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
                     layerName_grid_line = color.text();
+
+                    //设置当前行的layerName
+                    setEditingRowLayerName(rowIndex_grid_edicting,layerName_grid_line);
                 };
 
                 //声明grid中显示TreeView的控件
@@ -459,13 +513,16 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
 
@@ -484,7 +541,10 @@
 //                            .appendTo(container);
 //                    $('<div style="display:inline-block;margin:0%;padding:0px"><input id="grid_jobSvn_input" readonly="readonly" style="width:60%;"/><button onclick="grid_button_click()" style="width:30%;">选择</button></div>')
 //                            .appendTo(container);
-$('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-button k-button-icontext k-primary k-grid-update">选择</button>')
+//$('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-i-insert-n">...</button>')
+//                            .appendTo(container);
+
+$('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" readonly="readonly" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
                             .appendTo(container);
 
 
@@ -520,13 +580,16 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
                 $("#input_themeId").kendoDropDownList({
@@ -571,14 +634,17 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                                 }
                             },
                             errors: function(res){
-                                if(!res.success && res.message) {
-                                    return res.message;
+                                if(!res.success) {
+                                    if(res.message){
+                                        return res.message;
+                                    }
+                                }else{
+                                    if(res.message){
+                                        return res.message;
+                                    }
                                 }
                             }
-                        },
-                    error: function(e) {
-                        alert(e.errors)
-                    }
+                        }
                     });
                 $("#input_layerId").kendoDropDownList({
                     optionLabel: "选择层",
@@ -638,8 +704,14 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                         }
                     },
                     errors: function(res){
-                        if(!res.success && res.message) {
-                            return res.message;
+                        if(!res.success) {
+                            if(res.message){
+                                return res.message;
+                            }
+                        }else{
+                            if(res.message){
+                                return res.message;
+                            }
                         }
                     }
                 },
@@ -679,14 +751,26 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                             layerName: { type: 'string',validation: { required: true } }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
                     },
                     errors: function(res){
-                        if(!res.success && res.message) {
-                            return res.message;
+                        if(!res.success) {
+                            if(res.message){
+                                return res.message;
+                            }
+                        }else{
+                            if(res.message){
+                                return res.message;
+                            }
                         }
                     }
                 }
@@ -753,13 +837,16 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                             }
                         },
                         errors: function(res){
-                            if(!res.success && res.message) {
-                                return res.message;
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
                             }
                         }
-                    },
-                    error: function(e) {
-                        alert(e.errors)
                     }
                 });
 
@@ -825,6 +912,34 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
             }
 
             //显示grid中TreeView窗口
+            var rowIndex_grid_edicting;
+            //为grid中的每一行绑定点击事件
+            $("#jobListGrid").on("click", "tr", function (e) {
+                rowIndex_grid_edicting = $(this).index();
+            });
+            //为grid中的checkBox绑定选中事件
+            $("#jobListGrid").on("click", ".checkbox" , selectRow);
+            //为grid中的TreeView中的每个k-item类型绑定双击事件
+            //移动到下面每次初始化之后进行设置
+//            $('#grid_svn_treeView_div.k-widget.k-treeview').unbind("dblclick");
+//            $("#grid_svn_treeView_div.k-widget.k-treeview").dblclick(function(e){
+//                e.stopPropagation();
+//                getSelectedSvn();
+//            });
+            var checkedIds = {};
+            function selectRow() {
+                var checked = this.checked,
+                        row = $(this).closest("tr"),
+                        grid = $("#jobListGrid").data("kendoGrid"),
+                        dataItem = grid.dataItem(row);
+
+                checkedIds[dataItem.jobId] = checked;
+                if (checked) {
+                    row.addClass("k-state-selected");
+                } else {
+                    row.removeClass("k-state-selected");
+                }
+            }
             var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
             var grid_treeView_dataSource = new kendo.data.HierarchicalDataSource({
                 transport: {
@@ -849,8 +964,14 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                         }
                     },
                     errors: function(res){
-                        if(!res.success && res.message) {
-                            return res.message;
+                        if(!res.success) {
+                            if(res.message){
+                                return res.message;
+                            }
+                        }else{
+                            if(res.message){
+                                return res.message;
+                            }
                         }
                     }
                 },
@@ -861,6 +982,7 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
             function showGridSvnTreeViewWindow(e) {
                 grid_svn_wnd.content(grid_svn_template);
                 grid_svn_wnd.center().open();
+
                 var grid_treeView_module= kendo.observable({
                     model:{}
                 });
@@ -874,6 +996,14 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                 function onGridSvnSelect(e) {
                     $("#grid_svn_treeView_jobSvn").val(this.text(e.node));
                 }
+
+                //为grid中的TreeView中的每个k-item类型绑定双击事件
+                $('#grid_svn_treeView_div.k-widget.k-treeview').unbind("dblclick");
+                $("#grid_svn_treeView_div.k-widget.k-treeview").dblclick(function(e){
+                    e.stopPropagation();
+                    getSelectedSvn_doubleClick();
+                });
+
                 kendo.bind($('#grid_treeView_div'),grid_treeView_module);
             };
             //grid中treeView选择结果处理
@@ -895,23 +1025,45 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                 }
             };
             function getSelectedSvn() {
-                // 获取当前选择行数据
-                var row = $('#jobListGrid').data("kendoGrid").select();
-                var data = $('#jobListGrid').data("kendoGrid").dataItem(row);
-                data.set("jobSvn","哈哈");
-                console.log(data);
-
                 var nodes = grid_treeView_dataSource.view();
                 getSelectedNodeId(nodes);
 
                 if(jobSvn_node_checked && jobSvn_node_checked.length>0){
-//                    $("#grid_jobSvn_input").val(jobSvn_node_checked);
-                    var rowData1 = $('#jobListGrid').data('kendoGrid').dataSource.at(0);
+                    //获取当前选择行数据
+//                    console.log($('#jobListGrid').data("kendoGrid")._data);
+//                    console.log($('#jobListGrid').data("kendoGrid")._data[rowIndex_grid_edicting]);
+//                    var data = $('#jobListGrid').data("kendoGrid")._data[rowIndex_grid_edicting];
+                    var data = getEdictingRowData(rowIndex_grid_edicting);
                     //设置某列的新值
-                    rowData1.set("jobSvn",jobSvn_node_checked);
+                    data.set("jobSvn",jobSvn_node_checked);
+                    console.log(data);
+                    //关闭窗口
+                    grid_svn_wnd.close();
+                }
+            };
+            function getSelectedNodeId_doubleClick(nodes) {
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].selected) {
+                        if(!nodes[i]._childrenOptions.data.hasChild){
+                            //不得不采用这种方式：因为nodes中下标是可以重复的，并且node节点的id在kendoUI中也是可以重复的
+                            jobSvn_node_checked = nodes[i]._childrenOptions.data.nodeId;
+                            break;
+                        }
+                    }
+                    if (nodes[i].hasChildren) {
+                        getSelectedNodeId_doubleClick(nodes[i].children.view());
+                    }
+                }
+            };
+            function getSelectedSvn_doubleClick() {
+                var nodes = grid_treeView_dataSource.view();
+                getSelectedNodeId_doubleClick(nodes);
 
-
-
+                if(jobSvn_node_checked && jobSvn_node_checked.length>0){
+                    var data = getEdictingRowData(rowIndex_grid_edicting);
+                    //设置某列的新值
+                    data.set("jobSvn",jobSvn_node_checked);
+                    console.log(data);
                     //关闭窗口
                     grid_svn_wnd.close();
                 }
@@ -966,6 +1118,24 @@ $('<input id="grid_jobSvn_input" name="' + options.field + '" class="k-input k-t
                     },
                     dataType: "json"
                 });
+            };
+
+            //获取当前行的数据
+            function getEdictingRowData(index)
+            {
+                return $('#jobListGrid').data("kendoGrid")._data[index];
+            }
+            //设置当前行中的themeName
+            function setEditingRowThemeName(index,themeName)
+            {
+                var data_temp = getEdictingRowData(index);
+                data_temp.set("themeName",themeName);
+            }
+            //设置当前行中的layerName
+            function setEditingRowLayerName(index,layerName)
+            {
+                var data_temp = getEdictingRowData(index);
+                data_temp.set("layerName",layerName);
             }
         </script>
         <script type="text/x-kendo-template" id="grid_svn_treeView_template">

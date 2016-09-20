@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+        <!--
+        Created by yyz on 2016/9/11.
+        yazheng.yang@hand-china.com
+        -->
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -60,7 +64,25 @@
         INSERT INTO hdispatch_job(theme_id,layer_id,name,svn)
         VALUES (#{themeId},#{layerId},#{jobName},#{jobSvn})
     </insert>
-
+  <update id="updateById">
+      UPDATE hdispatch_job
+      <set >
+          <if test="themeId != null" >
+              theme_id = #{themeId,jdbcType=BIGINT},
+          </if>
+          <if test="layerId != null" >
+              layer_id = #{layerId,jdbcType=BIGINT},
+          </if>
+          <if test="jobSvn != null" >
+              svn = #{jobSvn,jdbcType=VARCHAR},
+          </if>
+          <if test="jobName != null" >
+              jobName = #{jobName,jdbcType=VARCHAR},
+          </if>
+      </set>
+      WHERE job_id=#{jobId,jdbcType=BIGINT}
+  </update>
+  <!--刘能新增-->
   <select id="getByIds" parameterType="java.util.Collection" resultMap="job">
     SELECT *
     FROM hdispatch_job

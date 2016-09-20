@@ -2,7 +2,7 @@ package hdispatch.core.dispatch.dto.job;
 
 /**
  * Created by yyz on 2016/9/14.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
  *
  * 用于存放页面树状结构的节点数据
  */

@@ -42,8 +42,11 @@ public class RequestUtils {
     }
 
     public static HttpRequestWithBody post(String uri) {
-
+<<<<<<< HEAD
+        return Unirest.post(host + URL_SEPERATOR + uri+"?session.id="+getter.getSessionId());
+=======
         return Unirest.post(host + URL_SEPERATOR + uri + "?session.id=" + getter.getSessionId());
+>>>>>>> origin/master
     }
 
     private static class SessionIdGetter {

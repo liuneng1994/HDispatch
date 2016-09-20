@@ -2,13 +2,16 @@ package hdispatch.core.dispatch.dto.job;
 
 /**
  * Created by yyz on 2016/9/14.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
+ *
+ * 存储SVN服务器信息的类
  */
 public class SvnConfig {
     private String ip;
     private int port;
     private String userName;
     private String password;
+    //SVN文件根目录
     private String rootPath;
 
     public String getIp() {

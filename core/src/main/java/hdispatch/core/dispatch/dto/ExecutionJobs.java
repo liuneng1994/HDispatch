@@ -16,7 +16,28 @@ public class ExecutionJobs extends ExecutionJobsKey {
     private String running;
     
     
-    public String getRunning() {
+    private String lang;
+    
+    private String meaning;
+    
+    
+    public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
+	public String getMeaning() {
+		return meaning;
+	}
+
+	public void setMeaning(String meaning) {
+		this.meaning = meaning;
+	}
+
+	public String getRunning() {
 		return running;
 	}
 

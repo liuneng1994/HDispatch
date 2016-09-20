@@ -4,7 +4,9 @@ import com.hand.hap.system.dto.BaseDTO;
 
 /**
  * Created by yyz on 2016/9/5.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
+ *
+ * 主题类
  */
 public class Theme extends BaseDTO{
     private Long themeId;

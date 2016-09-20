@@ -55,6 +55,7 @@ public class ExecutionFlowsController extends BaseController {
 	@RequestMapping("/query")
 	@ResponseBody
 	public ResponseData query(HttpServletRequest request, @RequestParam int page, @RequestParam int pagesize) {
+        IRequest irequest = createRequestContext(request);
 		String flowName = request.getParameter("flowName");
 		String groupName = request.getParameter("groupName");
 		String projectName = request.getParameter("projectName");
@@ -63,6 +64,7 @@ public class ExecutionFlowsController extends BaseController {
 		exe.setFlow_id(flowName);
 		exe.setProject_name(projectName);
 		exe.setGroup_name(groupName);
+		exe.setLang(irequest.getLocale());
 		if (date != null)
 			exe.setStart_time(Long.parseLong(date));
 		PageHelper.startPage(page, pagesize);
@@ -102,11 +104,13 @@ public class ExecutionFlowsController extends BaseController {
 	@ResponseBody
 	public ResponseData queryjobs(HttpServletRequest request,@RequestParam int page, @RequestParam int pagesize)
 	{
+		 IRequest irequest = createRequestContext(request);
 		String flow_id = request.getParameter("flow_id");
 		String exec_id = request.getParameter("exec_id");
 		ExecutionJobs exe=new ExecutionJobs();
 		exe.setExec_id(Integer.valueOf(exec_id));
 		exe.setFlow_id(flow_id);
+		exe.setLang(irequest.getLocale());
 		PageHelper.startPage(page, pagesize);
 		List<ExecutionJobs> list = exeJobsService.selectJobsByFlow(exe);
 		/**
@@ -153,6 +157,21 @@ public class ExecutionFlowsController extends BaseController {
 		map.put("offset", 0);
 		map.put("length", 10000000);
 		return exeFlowservice.fetchJobLogs(map);
+	}
+	/**
+	 * 重跑失败流
+	 * @param request
+	 * @param exec_id
+	 * @return
+	 */
+	@RequestMapping("/retryfailflow")
+	@ResponseBody
+	public ResultObj retryfailflow(HttpServletRequest request,@RequestParam int exec_id)
+	{
+		Map<String,Object>map=new HashMap<>();
+		System.out.println(exec_id);
+		map.put("execid", exec_id);
+		return exeFlowservice.retryFlow(map);
 	}
 	/**
 	 * 执行

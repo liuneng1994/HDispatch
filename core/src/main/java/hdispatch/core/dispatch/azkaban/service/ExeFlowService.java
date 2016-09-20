@@ -27,5 +27,6 @@ public interface ExeFlowService {
 	ExeFlow ResumeFlow(Map<String, Object> map);
 
 	ResultObj fetchJobLogs(Map<String, Object> map);
-
+	
+	ResultObj retryFlow(Map<String, Object> map);
 }

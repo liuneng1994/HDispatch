@@ -10,6 +10,8 @@
     <result column="submit_user" property="submit_user" jdbcType="VARCHAR" />
     <result column="project_name" property="project_name" jdbcType="VARCHAR" />
      <result column="group_name" property="group_name" jdbcType="VARCHAR" />
+      <result column="lang" property="lang" jdbcType="VARCHAR" />
+       <result column="meaning" property="meaning" jdbcType="VARCHAR" />
     <result column="submit_time" property="submit_time" jdbcType="BIGINT" />
     <result column="update_time" property="update_time" jdbcType="BIGINT" />
     <result column="start_time" property="start_time" jdbcType="BIGINT" />
@@ -38,14 +40,19 @@
   
    <select id="selectAllExes" resultMap="ResultMapWithBLOBs" parameterType="hdispatch.core.dispatch.dto.ExecutionFlows" >
     select 
-    exec_id, project_id, execution_flows.version, flow_id, status, submit_user, submit_time, update_time, 
+    scvb.meaning as meaning,exec_id, project_id, execution_flows.version, flow_id, status, submit_user, submit_time, update_time, 
     start_time, end_time, execution_flows.enc_type, executor_id
     ,projects.name as project_name,
     <include refid="Blob_Column_List" />
-    from execution_flows,projects
+    from execution_flows,projects,sys_code_b scb,sys_code_value_b scvb,sys_code_value_tl scv
     where execution_flows.project_id=projects.id
+    and scb.CODE_ID = scvb.CODE_ID
+	and execution_flows.status=scvb.value
+	and scvb.CODE_VALUE_ID = scv.CODE_VALUE_ID
+	and scb.CODE = 'HDISPATCH.JOB_STATUS'
+	and SCV.LANG = #{lang,jdbcType=VARCHAR}
     <if test="start_time != null" >
-        and start_time > #{start_time,jdbcType=BIGINT},
+        and start_time > #{start_time,jdbcType=BIGINT}
       </if>
       <if test="project_name != null" >
         and project_name like CONCAT('%',#{project_name},'%')

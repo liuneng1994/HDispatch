@@ -4,7 +4,9 @@ import com.hand.hap.system.dto.BaseDTO;
 
 /**
  * Created by yyz on 2016/9/11.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
+ *
+ * 任务类
  */
 public class Job extends BaseDTO {
     private Long jobId;
