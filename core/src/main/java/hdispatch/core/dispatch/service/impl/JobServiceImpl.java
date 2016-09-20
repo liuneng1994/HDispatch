@@ -16,7 +16,9 @@ import java.util.List;
 
 /**
  * Created by yyz on 2016/9/11.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
+ *
+ * 任务服务实现类
  */
 @Service
 public class JobServiceImpl implements JobService {
@@ -24,6 +26,14 @@ public class JobServiceImpl implements JobService {
     @Autowired
     private JobMapper jobMapper;
 
+    /**
+     * 根据job对象进行查询
+     * @param requestContext
+     * @param job
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @Override
     public List<Job> selectByJob(IRequest requestContext, Job job, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
@@ -37,6 +47,11 @@ public class JobServiceImpl implements JobService {
         return list;
     }
 
+    /**
+     * 检查是否已经在数据库中存在
+     * @param jobList
+     * @return
+     */
     @Override
     public boolean[] checkIsExist(List<Job> jobList) {
         boolean[] isExist = new boolean[jobList.size()];
@@ -52,6 +67,12 @@ public class JobServiceImpl implements JobService {
         return isExist;
     }
 
+    /**
+     * 批量操作：插入、删除、更新
+     * @param requestContext
+     * @param jobList
+     * @return
+     */
     @Override
     public List<Job> batchUpdate(IRequest requestContext, List<Job> jobList) {
         for (Job job : jobList) {

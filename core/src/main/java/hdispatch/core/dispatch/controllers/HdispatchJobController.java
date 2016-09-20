@@ -22,9 +22,11 @@ import java.util.List;
 
 /**
  * Created by yyz on 2016/9/11.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
  *
  * note:重新命名，因为在HAP原先的系统中存在JobController这个类，冲突了，改名为HdispatchJobController
+ *
+ * 任务控制器类
  */
 @Controller
 public class HdispatchJobController extends BaseController {
@@ -34,6 +36,9 @@ public class HdispatchJobController extends BaseController {
     @Autowired
     private SvnFileSysService svnFileSysService;
 
+    /**
+     * 根据主题id，层次id以及job名称模糊查询job
+     */
     @RequestMapping(value = "/dispatcher/job/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getJobs(HttpServletRequest request,
@@ -57,6 +62,13 @@ public class HdispatchJobController extends BaseController {
         return responseData;
     }
 
+    /**
+     * 新增job
+     * @param jobList 新建的job list
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/job/submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData addJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {
@@ -73,6 +85,11 @@ public class HdispatchJobController extends BaseController {
         rd = doCreateJob(jobList,request);
         return rd;
     }
+
+    /**
+     * 供addJobs和batchCreateJobs复用
+     * description:检查待插入的job是否已经存在；若存在，给出提示信息；若不存在，执行插入
+     */
     private ResponseData doCreateJob(List<Job> jobList,HttpServletRequest request){
         ResponseData rd = null;
 
@@ -106,6 +123,9 @@ public class HdispatchJobController extends BaseController {
         return rd;
     }
 
+    /**
+     * 批量删除job
+     */
     @RequestMapping(value = "/dispatcher/job/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData deleteJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {
@@ -133,6 +153,12 @@ public class HdispatchJobController extends BaseController {
     }
 
 
+    /**
+     * 根据节点ID获取SVN文件结构
+     * @param request
+     * @param nodeId 当前节点相对于设定的根目录的完整路径
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/job/svnTree/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getSvnTreeNodes(HttpServletRequest request,
