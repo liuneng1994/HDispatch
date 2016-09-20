@@ -14,4 +14,6 @@ public interface WorkflowMapper {
     Workflow getById(Long workflowId);
 
     int updateProjectNameAndFlowIdById(@Param("workflowId") long workflowId,@Param("projectName") String projectName,@Param("flowId") String flowId);
+
+    int saveGraph(Long workflowId, String graph);
 }

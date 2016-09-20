@@ -13,4 +13,8 @@ public interface WorkflowService {
     Map<String, Object> updateWorkFlow(Workflow workflow);
 
     boolean generateWorkflow(long workflowId);
+
+    Workflow getWorkflowById(long workflowId);
+
+    Workflow getWorkflowByName(String name);
 }
