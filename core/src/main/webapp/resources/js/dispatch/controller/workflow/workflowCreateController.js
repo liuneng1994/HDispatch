@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    angular.module('dispatch').controller('workflowCreateController', ['$window', '$scope', 'workflowService', workflowCreateController]);
-    function workflowCreateController($window, $scope, workflowService) {
+    angular.module('dispatch').controller('workflowCreateController', ['$window', '$scope', 'workflowService', 'workflowDiagramService', workflowCreateController]);
+    function workflowCreateController($window, $scope, workflowService, wfDiaService) {
         var vm = this;
         vm.workflow = {};
         vm.newJob = new Job();
@@ -9,8 +9,11 @@
         vm.layers = {};
         vm.jobLayers = [];
         vm.jobSources = [];
+        vm.paperName = 'create'
         vm.graph = new joint.dia.Graph;
-        vm.paper = initWorkflowPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
+        vm.paper = wfDiaService.newPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
+        vm.jobStore = wfDiaService.newJobStore();
+        vm.graphTool = wfDiaService.newGraphTool(vm.paper,vm.graph);
 
 
         refreshThemes();
@@ -93,7 +96,7 @@
         };
 
         vm.format = function() {
-            var result = vm.graphTool.autoFormat();
+            var result = vm.graphTool.autoFormat(vm.jobStore);
             console.log(result);
         }
 
@@ -104,211 +107,6 @@
             this.jobSource = new Number();
             this.dept = [];
         }
-
-        vm.jobStore = {
-            // 以name，value的形式存储， job含有name，jobSource和dept（依赖job的数组）
-            jobs: {},
-            get: function (name) {
-                return vm.jobStore.jobs[name];
-            },
-            add: function (job) {
-                vm.jobStore.jobs[job.name] = job;
-            },
-            remove: function (name) {
-                delete vm.jobStore.jobs[name];
-            },
-            contains: function (name) {
-                return vm.jobStore.get(name) != undefined;
-            },
-            addJobDept: function (name, deptName) {
-                if (!vm.jobStore.hasJobDept(name, deptName)) {
-                    vm.jobStore.get(name).dept.push(deptName);
-                    return true;
-                }
-                return false;
-            },
-            removeJobDept: function (name, deptName) {
-                if (vm.jobStore.hasJobDept(name, deptName)) {
-                    vm.jobStore.get(name).dept = _.without(vm.jobStore.get(name).dept, deptName);
-                }
-            },
-            hasJobDept: function (name, deptName) {
-                var has = false;
-                _.each(vm.jobStore.get(name).dept, function (name) {
-                    if (name == deptName) has = true;
-                });
-                return has;
-            },
-            layer: function() {
-                var layer = {};
-                function computeLayer(name) {
-                    if (!vm.jobStore.jobs[name].dept.length) {
-                        return 1;
-                    }else{
-                        var deptLayers = [];
-                        vm.jobStore.jobs[name].dept.forEach(function(dept) {
-                            deptLayers.push(computeLayer(dept));
-                        })
-                        return _.max(deptLayers)+1;
-                    }
-                }
-                for (var job in vm.jobStore.jobs) {
-                    layer[job] = computeLayer(job);
-                }
-                return layer;
-            }
-        }
-
-        vm.graphTool = (function () {
-            var selected = null;
-            return {
-                select: function (cellView) {
-                    if (cellView instanceof joint.dia.ElementView) {
-                        _.each(vm.graph.getElements(), function (element) {
-                            var elementView = vm.paper.findViewByModel(element);
-                            if (elementView instanceof joint.dia.ElementView) {
-                                elementView.unhighlight();
-                            }
-                        });
-                        cellView.highlight();
-                        selected = cellView.model;
-                    }
-                },
-                createJobNode: function (job) {
-                    var node = new joint.shapes.basic.Rect({
-                        position: {x: 100, y: 30},
-                        size: {width: job.name.length * 7 + 20, height: 45},
-                        attrs: {
-                            rect: {
-                                'stroke-width': '2',
-                                'stroke-opacity': .7,
-                                stroke: 'black',
-                                rx: 3,
-                                ry: 3,
-                                fill: 'lightgray',
-                                'fill-opacity': .5
-                            },
-                            text: {text: job.name, fill: 'black', cursor: 'crosshair'}
-                        }
-                    });
-                    node.prop('job', job);
-                    vm.graph.addCell(node);
-                },
-                deleteJobNode: function () {
-                    if (selected) {
-                        vm.graph.removeLinks(selected);
-                        selected.remove();
-                    }
-                },
-                connect: function (source, target) {
-                    if (source && target)
-                        vm.graph.addCell(new joint.dia.Link({
-                                source: source,
-                                target: target,
-                                attrs: {
-                                    '.connection': {
-                                        stroke: '#333333',
-                                        'stroke-width': 3
-                                    },
-                                    '.marker-target': {
-                                        fill: '#333333',
-                                        d: 'M 10 0 L 0 5 L 10 10 z'
-                                    }
-                                }
-                            }
-                        ));
-                },
-                linkNode: (function () {
-                    var draw = false;
-                    var source = null;
-                    var target = null;
-                    var tempLink = new joint.dia.Link({
-                            source: {x: 0, y: 0},
-                            target: {x: 0, y: 0},
-                            attrs: {
-                                '.connection': {
-                                    stroke: '#333333',
-                                    'stroke-width': 3
-                                },
-                                '.marker-target': {
-                                    fill: '#333333',
-                                    d: 'M 10 0 L 0 5 L 10 10 z'
-                                }
-                            }
-                        }
-                    );
-                    return {
-                        pointerdown: function (cellView, event, x, y) {
-                            if (event.target.nodeName == 'tspan') {
-                                draw = true;
-                                tempLink.set('source', cellView.model);
-                                source = cellView.model;
-                                tempLink.set('target', {x: x, y: y});
-                                tempLink.addTo(vm.graph);
-                            }
-                        },
-                        pointermove: function (cellView, event, x, y) {
-                            if (draw) {
-                                tempLink.set('target', {x: x, y: y});
-                            }
-                        },
-                        pointerup: function (cellView, event) {
-                            if (draw) {
-                                var targetPoint = tempLink.get('target');
-                                var elements = vm.paper.findViewsFromPoint(targetPoint);
-                                if (elements.length && elements[0] instanceof joint.dia.ElementView) {
-                                    if (elements[0].model.id != source.id) {
-                                        if (!vm.graphTool.isConnected(source, elements[0].model)) {
-                                            target = elements[0].model;
-                                            vm.graphTool.connect(source, target);
-                                        }
-                                    }
-                                    target = elements[0].model;
-                                }
-                                tempLink.remove();
-                                tempLink = new joint.dia.Link({
-                                        source: {x: 0, y: 0},
-                                        target: {x: 0, y: 0},
-                                        attrs: {
-                                            '.connection': {
-                                                stroke: '#333333',
-                                                'stroke-width': 3
-                                            },
-                                            '.marker-target': {
-                                                fill: '#333333',
-                                                d: 'M 10 0 L 0 5 L 10 10 z'
-                                            }
-                                        }
-                                    }
-                                );
-                                draw = false;
-                                source = null;
-                                target = null;
-                            }
-                        },
-                        changePosition: function (cell) {
-                            if (draw) {
-                                cell.set('position', cell.previous('position'));
-                            }
-                        }
-                    }
-                })(),
-                isConnected: function (source, target) {
-                    if (!source || !target) return false;
-                    var links = vm.graph.getConnectedLinks(source);
-                    if (links.length) {
-                        for (var i = 0; i < links.length; i++) {
-                            if ((links[i].getTargetElement() && links[i].getTargetElement().id == target.id) || (links[i].getTargetElement() && links[i].getSourceElement().id == target.id))
-                                return true;
-                        }
-                    }
-                    return false;
-                },
-                autoFormat: function() {
-                    return vm.jobStore.layer();
-                }
-            }
-        })();
 
         vm.paper.on('cell:pointerclick', function (cellView, event) {
             vm.graphTool.select(cellView);
@@ -367,16 +165,6 @@
             workflowService.jobs(themeId, layerId).then(function (data) {
                 vm[jobs] = data;
             })
-        }
-
-        function initWorkflowPaper(width, height, model, elemeneId) {
-            return new joint.dia.Paper({
-                el: $(elemeneId),
-                width: width,
-                height: height,
-                model: model,
-                gridSize: 1
-            });
         }
     }
 })()
