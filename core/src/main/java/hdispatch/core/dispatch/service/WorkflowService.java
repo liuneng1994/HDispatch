@@ -1,7 +1,9 @@
 package hdispatch.core.dispatch.service;
 
+import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,4 +21,6 @@ public interface WorkflowService {
     Workflow getWorkflowByName(String name);
 
     boolean saveGraph(long workflowId, String graph);
+
+    List<SimpleWorkflow> queryWorkflow(Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
 }

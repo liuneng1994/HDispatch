@@ -1,7 +1,10 @@
 package hdispatch.core.dispatch.mapper;
 
+import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * Created by 刘能 on 2016/9/12.
@@ -16,4 +19,6 @@ public interface WorkflowMapper {
     int updateProjectNameAndFlowIdById(@Param("workflowId") long workflowId,@Param("projectName") String projectName,@Param("flowId") String flowId);
 
     int saveGraph(@Param("workflowId") Long workflowId,@Param("graph") String graph);
+
+    List<SimpleWorkflow> query(@Param("themeId") Long themeId, @Param("layerId") Long layerId, @Param("workflowName") String workflowName, @Param("description") String decription);
 }

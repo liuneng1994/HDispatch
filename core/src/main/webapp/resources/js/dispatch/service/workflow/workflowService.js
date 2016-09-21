@@ -1,125 +1,91 @@
 (function () {
-    'use strict';
-    angular.module('dispatch').factory('workflowService', ['$q', '$http', workflowService]);
-    function workflowService($q, $http) {
+    'use strict;';
+    angular.module('dispatch').factory('workflowService', ['httpService', workflowService]);
+    function workflowService(httpService) {
         var themes = function () {
-            var defered = $q.defer();
-            $http.get('/dispatcher/theme/queryAll').success(function (data) {
-                if (data.success) {
-                    defered.resolve(data.rows);
-                }
-            })
-
-            return defered.promise;
+            return httpService.get('/dispatcher/theme/queryAll', {},
+                function (data, defered) {
+                    if (data.success) {
+                        defered.resolve(data.rows);
+                    }
+                });
         };
         var layers = function (themeId) {
-            var defered = $q.defer();
-            $http({
-                url: '/dispatcher/layer/queryAll',
-                method: 'GET',
-                params: {themeId: themeId}
-            }).success(function (data) {
-                if (data.success) {
-                    defered.resolve(data.rows);
-                }
-            }).error(function(data) {
-                defered.promise('网络异常');
-            });
-            return defered.promise;
+            return httpService.get('/dispatcher/layer/queryAll',
+                {themeId: themeId},
+                function (data, defered) {
+                    if (data.success) {
+                        defered.resolve(data.rows);
+                    }
+                });
         };
         var jobs = function (themeId, layerId) {
-            var defered = $q.defer();
-            $http({
-                url: '/dispatcher/job/query',
-                method: 'GET',
-                params: {
+            return httpService.get('/dispatcher/job/query',
+                {
                     themeId: themeId,
                     layerId: layerId,
                     pageSize: 2147483647
-                }
-            }).success(function (data) {
-                if (data.success) {
-                    defered.resolve(data.rows);
-                }
-            }).error(function(data) {
-                defered.promise('网络异常');
-            });
-            return defered.promise;
-        };
-        var createWorkflow = function(workflow) {
-            var defered = $q.defer();
-            $http({
-                url: '/dispatcher/workflow/create',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: JSON.stringify(workflow)
-            }).success(function (data) {
-                if (data.success) {
-                    defered.resolve(data.message);
-                } else {
-                    defered.reject(data.message)
-                }
-            }).error(function(data) {
-                defered.promise('网络异常');
-            });
-            return defered.promise;
-        };
-
-        var saveGraph = function(workflowId, graph) {
-            var defered = $q.defer();
-            $http({
-                url: '/dispatcher/workflow/saveGraph',
-                method: 'POST',
-                data: {workflowId:workflowId,graph:graph},
-                headers:{'Content-Type': 'application/x-www-form-urlencoded'},
-                transformRequest: function(obj) {
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(JSON.stringify(obj[p])));
+                }, function (data, defered) {
+                    if (data.success) {
+                        defered.resolve(data.rows);
                     }
-                    return str.join("&");
                 }
-            }).success(function (data) {
+            );
+        };
+        var createWorkflow = function (workflow) {
+            return httpService.postJSON('/dispatcher/workflow/create', workflow, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data.message);
                 } else {
                     defered.reject(data.message)
                 }
-            }).error(function(data) {
-                defered.promise('网络异常');
             });
-            return defered.promise;
         };
 
-        var generateWorkflow = function(workflowId) {
-            var defered = $q.defer();
-            $http({
-                url: '/dispatcher/workflow/generateWorkflow',
-                method: 'GET',
-                params: {
-                    workflowId : workflowId
-                }
-            }).success(function (data) {
+        var saveGraph = function (workflowId, graph) {
+            return httpService.postForm('/dispatcher/workflow/saveGraph',
+                {workflowId: workflowId, graph: graph},
+                function (data, defered) {
+                    if (data.success) {
+                        defered.resolve(data.message);
+                    } else {
+                        defered.reject(data.message)
+                    }
+                });
+        };
+
+        var generateWorkflow = function (workflowId) {
+            return httpService.get('/dispatcher/workflow/generateWorkflow',
+                {
+                    workflowId: workflowId
+                }, function (data, defered) {
+                    if (data.success) {
+                        defered.resolve(data.message);
+                    } else {
+                        defered.reject(data.message)
+                    }
+                });
+        };
+        var query = function (queryInfo) {
+            var params = {};
+            for (var name in queryInfo) {
+                if (queryInfo.hasOwnProperty(name) && queryInfo[name] != undefined) params[name] = queryInfo[name];
+            }
+            return httpService.get('/dispatcher/workflow/query',params,function(data, defered) {
                 if (data.success) {
-                    defered.resolve(data.message);
-                } else {
-                    defered.reject(data.message)
+                    defered.resolve(data);
                 }
-            }).error(function(data) {
-                defered.promise('网络异常');
             });
-            return defered.promise;
         };
 
         return {
             themes: themes,
             layers: layers,
             jobs: jobs,
-            createWorkflow : createWorkflow,
+            createWorkflow: createWorkflow,
             saveGraph: saveGraph,
-            generateWorkflow: generateWorkflow
+            generateWorkflow: generateWorkflow,
+            query: query
         };
     }
 })();

@@ -1,7 +1,9 @@
 package hdispatch.core.dispatch.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.dto.job.Job;
+import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.mapper.JobMapper;
 import hdispatch.core.dispatch.mapper.WorkflowJobMapper;
@@ -24,7 +26,6 @@ import java.util.*;
 
 import static hdispatch.core.dispatch.utils.Constants.RET_ERROR;
 import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.name;
 
 /**
  * Created by 刘能 on 2016/9/12.
@@ -131,17 +132,26 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
+    @Transactional
     public Workflow getWorkflowByName(String name) {
         return workflowMapper.getByName(name);
     }
 
     @Override
+    @Transactional
     public boolean saveGraph(long workflowId, String graph) {
         if (StringUtils.isEmpty(graph)) {
             return false;
         }
         int result= workflowMapper.saveGraph(workflowId,graph);
         return result >0;
+    }
+
+    @Override
+    @Transactional
+    public List<SimpleWorkflow> queryWorkflow(Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
+        PageHelper.startPage(page, pageSize);
+        return workflowMapper.query(themeId, layerId, workflowName, decription);
     }
 
     /**

@@ -3,6 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hdispatch.core.dispatch.mapper.WorkflowMapper">
+
+    <resultMap id="simpleWorkflow" type="hdispatch.core.dispatch.dto.workflow.SimpleWorkflow">
+        <id property="workflowId" column="workflow_id"></id>
+        <result property="theme" column="theme"></result>
+        <result property="layer" column="layer"></result>
+        <result property="name" column="workflow_name"></result>
+        <result property="description" column="workflow_description"></result>
+    </resultMap>
+
     <resultMap id="workflow" type="hdispatch.core.dispatch.dto.workflow.Workflow">
         <id property="workflowId" column="workflow_id"></id>
         <result property="themeId" column="theme_id"></result>
@@ -35,59 +44,59 @@
     </resultMap>
 
     <select id="getByName" parameterType="string" resultMap="workflow">
-    SELECT
-        *
-    FROM
-        hdispatch_workflow
-    WHERE
-        `name` = #{name}
-  </select>
+        SELECT
+            *
+        FROM
+            hdispatch_workflow
+        WHERE
+            `name` = #{name}
+    </select>
 
     <select id="getById" parameterType="long" resultMap="workflow">
-    SELECT
-    *
-    FROM
-    hdispatch_workflow
-    WHERE
-    `workflow_id` = #{workflowId}
-  </select>
+        SELECT
+        *
+        FROM
+        hdispatch_workflow
+        WHERE
+        `workflow_id` = #{workflowId}
+    </select>
 
     <select id="getJobs" parameterType="long" resultMap="job">
-    SELECT
-        *
-    FROM
-        hdispatch_workflow_job
-    WHERE
-        workflow_id = #{id}
-  </select>
+        SELECT
+            *
+        FROM
+            hdispatch_workflow_job
+        WHERE
+            workflow_id = #{id}
+    </select>
 
     <select id="getProperties" parameterType="long" resultMap="property">
-    SELECT
-        *
-    FROM
-        hdispatch_workflow_property
-    WHERE
-        workflow_id = #{id}
-  </select>
+        SELECT
+            *
+        FROM
+            hdispatch_workflow_property
+        WHERE
+            workflow_id = #{id}
+    </select>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="workflowId"
             parameterType="hdispatch.core.dispatch.dto.workflow.Workflow">
-    INSERT INTO
-        hdispatch_workflow
-        (
-            `name`,
-            `description`,
-            `theme_id`,
-            `layer_id`
-        )
-    VALUES
-        (
-          #{name},
-          #{description},
-          #{themeId},
-          #{layerId}
-        )
-  </insert>
+        INSERT INTO
+            hdispatch_workflow
+            (
+                `name`,
+                `description`,
+                `theme_id`,
+                `layer_id`
+            )
+        VALUES
+            (
+              #{name},
+              #{description},
+              #{themeId},
+              #{layerId}
+            )
+    </insert>
     <update id="updateProjectNameAndFlowIdById">
         UPDATE
             hdispatch_workflow
@@ -106,5 +115,30 @@
       WHERE
             workflow_id=#{workflowId}
     </update>
+
+    <select id="query" resultMap="simpleWorkflow">
+        SELECT
+            hw.workflow_id,
+            ht.`name` AS theme,
+            hl.`name` AS layer,
+            hw.`name` AS workflow_name,
+            hw.`description` AS workflow_description
+        FROM
+            hdispatch_workflow hw
+        LEFT JOIN
+            hdispatch_theme ht
+        ON
+            hw.theme_id = ht.theme_id
+        LEFT JOIN
+            hdispatch_layer hl
+        ON
+            hw.layer_id = hl.layer_id
+        WHERE
+            1 = 1
+        <if test="themeId!=null">AND hw.theme_id = #{themeId}</if>
+        <if test="layerId!=null">AND hw.layer_id = #{layerId}</if>
+        AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
+        AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')
+    </select>
 
 </mapper>

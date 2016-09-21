@@ -92,6 +92,11 @@
             vm.newJob.name = null;
         };
 
+        vm.format = function() {
+            var result = vm.graphTool.autoFormat();
+            console.log(result);
+        }
+
         function Job() {
             this.themeId = new Number();
             this.layerId = 0;
@@ -137,7 +142,7 @@
             layer: function() {
                 var layer = {};
                 function computeLayer(name) {
-                    if (!vm.jobStore.jobs[name].length) {
+                    if (!vm.jobStore.jobs[name].dept.length) {
                         return 1;
                     }else{
                         var deptLayers = [];
@@ -258,7 +263,7 @@
                                             vm.graphTool.connect(source, target);
                                         }
                                     }
-                                    target = elements[0].model
+                                    target = elements[0].model;
                                 }
                                 tempLink.remove();
                                 tempLink = new joint.dia.Link({
@@ -300,9 +305,6 @@
                     return false;
                 },
                 autoFormat: function() {
-                    var distance = 50;
-                    var elements = vm.graph.getElements();
-                    var links = vm.graph.getLinks();
                     return vm.jobStore.layer();
                 }
             }

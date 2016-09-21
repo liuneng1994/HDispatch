@@ -83,6 +83,11 @@ public class WorkflowController extends BaseController{
         return responseData;
     }
 
+    /**
+     * 在azkaban生成工作流
+     * @param workflowId 工作流id
+     * @return 创建是否成功
+     */
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
     public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId) {
         ResponseData responseData;
@@ -105,6 +110,28 @@ public class WorkflowController extends BaseController{
         } else {
             responseData = new ResponseData(true);
         }
+        return responseData;
+    }
+
+    /**
+     * 工作流查询
+     * @param themeId 主题编号
+     * @param layerId 层级编号
+     * @param workflowName 工作流名称
+     * @param description 描述
+     * @param page 页数
+     * @param pageSize 每页个数
+     * @return
+     */
+    @RequestMapping(path = "/query", method = RequestMethod.GET)
+    public ResponseData queryWorkflow(@RequestParam(name = "themeId", required = false) Long themeId,
+                                      @RequestParam(name = "layerId",required = false) Long layerId,
+                                      @RequestParam(name = "workflowName", required = false) String workflowName,
+                                      @RequestParam(name = "description", required = false) String description,
+                                      @RequestParam(name="page", required = false, defaultValue = "1") int page,
+                                      @RequestParam(name="pageSize", required = false, defaultValue = "10") int pageSize) {
+        ResponseData responseData = null;
+        responseData = new ResponseData(workflowService.queryWorkflow(themeId, layerId, workflowName, description, page, pageSize));
         return responseData;
     }
 }

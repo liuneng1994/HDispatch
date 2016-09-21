@@ -1,16 +1,13 @@
 package hdispatch.core.dispatch.dto.workflow;
 
 import com.hand.hap.system.dto.BaseDTO;
-import hdispatch.core.dispatch.utils.group.Create;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * Created by 刘能 on 2016/9/12.
  */
 public class Workflow extends BaseDTO {
-    @NotNull(groups = {Create.class})
     private Long themeId;
     private Long layerId;
     private Long workflowId;
