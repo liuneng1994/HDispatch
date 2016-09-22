@@ -1,6 +1,12 @@
 package hdispatch.core.dispatch.dto.job;
 
 import com.hand.hap.system.dto.BaseDTO;
+import hdispatch.core.dispatch.utils.group.Create;
+import hdispatch.core.dispatch.utils.group.Delete;
+import hdispatch.core.dispatch.utils.group.Update;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by yyz on 2016/9/11.
@@ -9,11 +15,17 @@ import com.hand.hap.system.dto.BaseDTO;
  * 任务类
  */
 public class Job extends BaseDTO {
+    @NotNull(groups = {Delete.class, Update.class})
     private Long jobId;
+    @NotNull(groups = {Create.class,Update.class})
+    @NotEmpty(groups = {Create.class,Update.class})
     private String jobName;
+    @NotNull(groups = {Create.class,Update.class})
     private String jobSvn;
     private Long jobActive;
+    @NotNull(groups = {Create.class,Update.class})
     private Long themeId;
+    @NotNull(groups = {Create.class,Update.class})
     private Long layerId;
 
     //冗余信息

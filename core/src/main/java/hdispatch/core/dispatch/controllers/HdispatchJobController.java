@@ -8,12 +8,13 @@ import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.job.TreeNode;
 import hdispatch.core.dispatch.service.JobService;
 import hdispatch.core.dispatch.service.SvnFileSysService;
+import hdispatch.core.dispatch.utils.group.Create;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.quartz.JobListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +72,7 @@ public class HdispatchJobController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/job/submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData addJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {
+    public ResponseData addJobs(@RequestBody @Validated(Create.class) List<Job> jobList, BindingResult result, HttpServletRequest request) {
 
         ResponseData rd = null;
         //后台验证
