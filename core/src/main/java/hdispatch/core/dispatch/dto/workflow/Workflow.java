@@ -15,6 +15,7 @@ public class Workflow extends BaseDTO {
     private String projectName;
     private String flowId;
     private String description;
+    private String graph;
     private List<WorkflowProperty> properties;
     private List<WorkflowJob> jobs;
 
@@ -78,6 +79,16 @@ public class Workflow extends BaseDTO {
 
     public Workflow setDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+
+    public String getGraph() {
+        return graph;
+    }
+
+    public Workflow setGraph(String graph) {
+        this.graph = graph;
         return this;
     }
 

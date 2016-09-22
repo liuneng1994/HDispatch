@@ -20,6 +20,7 @@
         <result property="projectName" column="project_name"></result>
         <result property="flowId" column="flow_id"></result>
         <result property="description" column="description"></result>
+        <result property="graph" column="graph"></result>
         <collection property="properties" column="workflow_id" select="getProperties" javaType="java.util.List"
                     ofType="hdispatch.core.dispatch.dto.workflow.WorkflowProperty">
         </collection>
@@ -56,9 +57,9 @@
         SELECT
         *
         FROM
-        hdispatch_workflow
+            hdispatch_workflow
         WHERE
-        `workflow_id` = #{workflowId}
+            `workflow_id` = #{workflowId}
     </select>
 
     <select id="getJobs" parameterType="long" resultMap="job">
@@ -87,14 +88,16 @@
                 `name`,
                 `description`,
                 `theme_id`,
-                `layer_id`
+                `layer_id`,
+                `graph`
             )
         VALUES
             (
               #{name},
               #{description},
               #{themeId},
-              #{layerId}
+              #{layerId},
+              #{graph}
             )
     </insert>
     <update id="updateProjectNameAndFlowIdById">
@@ -115,6 +118,27 @@
       WHERE
             workflow_id=#{workflowId}
     </update>
+
+    <update id="update" parameterType="hdispatch.core.dispatch.dto.workflow.Workflow">
+        UPDATE
+            hdispatch_workflow
+        SET
+            theme_id=#{themeId},
+            layer_id=#{layerId},
+            description=#{description}
+            graph=#{graph}
+        WHERE
+            workflow_id=#{workflowId}
+    </update>
+    
+    <select id="getGraph" resultType="string">
+        SELECT
+            graph
+        FROM
+            hdispatch_workflow
+        WHERE
+            workflow_id=#{workflowId}
+    </select>
 
     <select id="query" resultMap="simpleWorkflow">
         SELECT

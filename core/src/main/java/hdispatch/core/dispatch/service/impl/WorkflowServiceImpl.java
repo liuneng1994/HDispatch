@@ -64,7 +64,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             if (workflow.getProperties() != null) {
                 workflow.getProperties().forEach(workflowProperty -> workflowProperty.setWorkflowId(id));
             }
-            if (workflow.getJobs()!=null) {
+            if (workflow.getJobs() != null) {
                 workflow.getJobs().forEach(workflowJob -> workflowJob.setWorkflowId(id));
             }
             if (workflow.getProperties() != null && !workflow.getProperties().isEmpty()) {
@@ -101,6 +101,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             if (workflow.getJobs() != null) {
                 workflowJobMapper.batchInsert(workflow.getJobs());
             }
+            workflowMapper.update(workflow);
             ret.put(RET_SUCCESS, String.format("Workflow %d update sucess", workflow.getWorkflowId()));
         }
         return ret;
@@ -143,8 +144,14 @@ public class WorkflowServiceImpl implements WorkflowService {
         if (StringUtils.isEmpty(graph)) {
             return false;
         }
-        int result= workflowMapper.saveGraph(workflowId,graph);
-        return result >0;
+        int result = workflowMapper.saveGraph(workflowId, graph);
+        return result > 0;
+    }
+
+    @Override
+    @Transactional
+    public String getGraph(long workflowId) {
+        return workflowMapper.getGraph(workflowId);
     }
 
     @Override

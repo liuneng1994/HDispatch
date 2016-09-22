@@ -22,5 +22,7 @@ public interface WorkflowService {
 
     boolean saveGraph(long workflowId, String graph);
 
+    String getGraph(long workflowId);
+
     List<SimpleWorkflow> queryWorkflow(Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
 }

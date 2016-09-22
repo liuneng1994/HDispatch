@@ -14,11 +14,15 @@ public interface WorkflowMapper {
 
     Long create(Workflow workflow);
 
+    int update(Workflow workflow);
+
     Workflow getById(Long workflowId);
 
     int updateProjectNameAndFlowIdById(@Param("workflowId") long workflowId,@Param("projectName") String projectName,@Param("flowId") String flowId);
 
     int saveGraph(@Param("workflowId") Long workflowId,@Param("graph") String graph);
+
+    String getGraph(Long workflowId);
 
     List<SimpleWorkflow> query(@Param("themeId") Long themeId, @Param("layerId") Long layerId, @Param("workflowName") String workflowName, @Param("description") String decription);
 }

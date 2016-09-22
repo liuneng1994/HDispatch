@@ -2,7 +2,7 @@
  * Created by hasee on 2016/9/21.
  */
 (function () {
-    angular.module('dispatch').controller('workflowListController', ['$scope', 'workflowService', function ($scope, workflowService) {
+    angular.module('dispatch').controller('workflowListController', ['$window','$scope', 'workflowService', function ($window, $scope, workflowService) {
         var vm = this;
         vm.workflow = {};
         vm.workflow.workflowName = '';
@@ -83,9 +83,7 @@
                     title: '编辑',
                     width: 100,
                     template: function (item) {
-                        var html = "<button  class='btn btn-info'onclick='openEditPage(\"" + item.flowId + "\")'"
-                            + ">编辑"
-                            + "</button>";
+                        var html = "<button class='btn btn-info' ng-click='vm.edit("+item.workflowId+")'>编辑</button>";
                         return html;
                     }
                 }]
@@ -94,6 +92,11 @@
         vm.search = function() {
             $('#grid').data('kendoGrid').dataSource
                 .read();
+        };
+
+        vm.edit = function(id) {
+            $window.sessionStorage['workflowId'] = id;
+            location = '/dispatch/workflow/workflow_update.html';
         };
 
         $scope.$watch('vm.workflow.themeId', function () {

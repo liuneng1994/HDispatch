@@ -68,8 +68,8 @@
             var connect = function (source, target) {
                 if (source && target)
                     graph.addCell(new joint.dia.Link({
-                            source: source,
-                            target: target,
+                            source: {id: source.id},
+                            target: {id: target.id},
                             attrs: defaultLinkAttrs
                         }
                     ));
@@ -266,8 +266,48 @@
             },
             autoFormat: function (jobStore) {
                 return jobStore.layer();
-            }
+            },
+            bindEvent: function(vm) {
+                vm.paper.on('cell:pointerclick', function (cellView, event) {
+                    vm.graphTool.select(cellView);
+                });
 
+                vm.paper.on('cell:pointerdown', vm.graphTool.linkNode.pointerdown);
+                vm.paper.on('cell:pointermove', vm.graphTool.linkNode.pointermove);
+                vm.paper.on('cell:pointerup', vm.graphTool.linkNode.pointerup);
+
+                vm.graph.on('change:position', vm.graphTool.linkNode.changePosition);
+                vm.graph.on('add', function (cell) {
+                    if (cell instanceof joint.dia.Element) {
+                        var job = cell.prop('job');
+                        if (job) {
+                            vm.jobStore.add(job);
+                        }
+                    }
+                    if (cell instanceof joint.dia.Link && cell.getSourceElement() && cell.getTargetElement()) {
+                        var sourceName = cell.getSourceElement().prop('job/name');
+                        var targetName = cell.getTargetElement().prop('job/name');
+                        if (sourceName && targetName) {
+                            vm.jobStore.addJobDept(targetName, sourceName);
+                        }
+                    }
+                });
+                vm.graph.on('remove', function (cell) {
+                    if (cell instanceof joint.dia.Element) {
+                        var job = cell.prop('job');
+                        if (job) {
+                            vm.jobStore.remove(job);
+                        }
+                    }
+                    if (cell instanceof joint.dia.Link && cell.get('source') instanceof joint.dia.Element && cell.get('target') instanceof joint.dia.Element) {
+                        var sourceName = cell.get('source').prop('job/name');
+                        var targetName = cell.get('target').prop('job/name');
+                        if (sourceName && targetName) {
+                            vm.jobStore.removeJobDept(targetName, sourceName);
+                        }
+                    }
+                });
+            }
         }
     }
 })()

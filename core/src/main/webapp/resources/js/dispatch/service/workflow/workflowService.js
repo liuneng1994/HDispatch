@@ -42,18 +42,6 @@
             });
         };
 
-        var saveGraph = function (workflowId, graph) {
-            return httpService.postForm('/dispatcher/workflow/saveGraph',
-                {workflowId: workflowId, graph: graph},
-                function (data, defered) {
-                    if (data.success) {
-                        defered.resolve(data.message);
-                    } else {
-                        defered.reject(data.message)
-                    }
-                });
-        };
-
         var generateWorkflow = function (workflowId) {
             return httpService.get('/dispatcher/workflow/generateWorkflow',
                 {
@@ -78,14 +66,36 @@
             });
         };
 
+        var workflow =function(workflowId) {
+            var params = {workflowId:workflowId};
+            return httpService.get('/dispatcher/workflow/get',params,function(data, defered) {
+                if (data.success) {
+                    defered.resolve(data.rows[0]);
+                } else {
+                    defered.reject(data)
+                }
+            });
+        }
+
+        var updateWorkflow = function(workflow) {
+            return httpService.postJSON('/dispatcher/workflow/update', workflow, function (data, defered) {
+                if (data.success) {
+                    defered.resolve(data.message);
+                } else {
+                    defered.reject(data.message)
+                }
+            });
+        }
+
         return {
             themes: themes,
             layers: layers,
             jobs: jobs,
             createWorkflow: createWorkflow,
-            saveGraph: saveGraph,
+            updateWorkflow: updateWorkflow,
             generateWorkflow: generateWorkflow,
-            query: query
+            query: query,
+            workflow: workflow
         };
     }
 })();

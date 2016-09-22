@@ -4,11 +4,11 @@
     <script src="../../lib/jointJS/backbone-min.js"></script>
     <script src="../../lib/jointJS/joint.js"></script>
     <script src="../../resources/js/dispatch/config/module.js"></script>
-    <script src="../../resources/js/dispatch/controller/workflow/workflowCreateController.js"></script>
+    <script src="../../resources/js/dispatch/controller/workflow/workflowUpdateController.js"></script>
     <script src="../../resources/js/dispatch/service/common/httpService.js"></script>
     <script src="../../resources/js/dispatch/service/workflow/workflowService.js"></script>
-    <script src="../../resources/js/dispatch/directive/workflow.js"></script>
-    <body ng-app="dispatch" ng-controller="workflowCreateController as vm">
+    <script src="../../resources/js/dispatch/service/workflow/workflowDiagramService.js"></script>
+    <body ng-app="dispatch" ng-controller="workflowUpdateController as vm">
     <div id="content-container">
         <div kendo-window="vm.jobWindow" k-title="'添加Job'" k-width="600" k-on-open="vm.jobWindow.visible = true"
              k-on-close="vm.jobWindow.visible = false" k-visible="false">
@@ -76,8 +76,9 @@
                                 <label class="col-sm-4 control-label">主题</label>
                                 <div class="col-sm-8 ">
                                     <select class="col-sm-12" name="theme"
-                                            ng-model="vm.workflow.themeId"
+                                            k-ng-model="vm.workflow.themeId"
                                             kendo-drop-down-list
+                                            k-value-primitive="true"
                                             k-data-text-field="'themeName'"
                                             k-data-value-field="'themeId'"
                                             k-data-source="vm.themes" style="padding-left:0;padding-right:0"></select>
@@ -90,8 +91,9 @@
                                 <label class="col-sm-4 control-label">层级</label>
                                 <div class="col-sm-8 ">
                                     <select name="layer" class="col-sm-12"
-                                            ng-model="vm.workflow.layerId"
+                                            k-ng-model="vm.workflow.layerId"
                                             kendo-drop-down-list
+                                            k-value-primitive="true"
                                             k-data-text-field="'layerName'"
                                             k-data-value-field="'layerId'"
                                             k-data-source="vm.layers" style="padding-left:0;padding-right:0"></select>
