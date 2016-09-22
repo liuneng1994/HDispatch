@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by yyz on 2016/9/7.
@@ -40,10 +42,14 @@ public class LayerController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         //        查询theme是否存在并且处于active状态
         ResponseData rd = null;
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
         if(themeId < 0){
             rd = new ResponseData(false);
-            rd.setMessage("themeId不合法");
-            logger.info("尝试访问数据：themeId不合法");
+            //themeId不合法
+            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.illegal_themeId",null,locale);
+            rd.setMessage(errorMsg);
+            logger.info(errorMsg);
             return rd;
         }
         //检查主题是否被删除
@@ -52,8 +58,10 @@ public class LayerController extends BaseController {
         Theme themeReturn = themeService.selectActiveThemeById(themeTemp);
         if(null == themeReturn){
             rd = new ResponseData(false);
-            rd.setMessage("主题已删除");
-            logger.info("尝试访问数据：theme已删除");
+            //主题已删除
+            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.theme_not_exist",null,locale);
+            rd.setMessage(errorMsg);
+            logger.info(errorMsg);
             return rd;
         }
         //读取主题下面没有被删除的层
@@ -73,15 +81,10 @@ public class LayerController extends BaseController {
         //        查询theme是否存在并且处于active状态
         ResponseData rd = null;
         List<Layer> layerList = new ArrayList<Layer>();
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
         //如果没有设置themeId，那么查询所有的层
         if(themeId < 0){
-//            不允许在没有设置themeId的前提下，访问层，为了在页面中新增加job方便
-//            layerList = layerService.selectAllActiveLayersWithoutPaging(requestContext);
-//            rd = new ResponseData(layerList);
-//            rd = new ResponseData(false);
-//            rd.setMessage("非法的主题");
-//            logger.error("非法的主题，可能是非法访问");
-//            return rd;
             rd = new ResponseData(true);
             return rd;
         }
@@ -92,8 +95,10 @@ public class LayerController extends BaseController {
         Theme themeReturn = themeService.selectActiveThemeById(themeTemp);
         if(null == themeReturn){
             rd = new ResponseData(false);
-            rd.setMessage("主题已删除");
-            logger.info("尝试访问数据：theme已删除");
+            //主题已删除
+            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.theme_not_exist",null,locale);
+            rd.setMessage(errorMsg);
+            logger.info(errorMsg);
             return rd;
         }
         //读取主题下面没有被删除的层
@@ -132,9 +137,13 @@ public class LayerController extends BaseController {
                 flag = true;
             }
         }
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
         if(flag){
             rd = new ResponseData(false);
-            rd.setMessage("以下层已经存在:"+sb.toString());
+            //以下层已经存在
+            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.layer_already_exist",null,locale);
+            rd.setMessage(errorMsg+":"+sb.toString());
             return rd;
         }
         IRequest requestContext = createRequestContext(request);
@@ -142,7 +151,8 @@ public class LayerController extends BaseController {
         try {
             rd = new ResponseData(layerService.batchUpdate(requestContext, layerList));
         } catch (Exception e) {
-            logger.error("保存层中途失败",e);
+            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_during_create_layer",null,locale);
+            logger.error(errorMsg,e);
         }
         return rd;
     }

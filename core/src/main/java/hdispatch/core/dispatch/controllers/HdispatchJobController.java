@@ -12,14 +12,17 @@ import hdispatch.core.dispatch.utils.group.Create;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by yyz on 2016/9/11.
@@ -36,6 +39,7 @@ public class HdispatchJobController extends BaseController {
     private JobService jobService;
     @Autowired
     private SvnFileSysService svnFileSysService;
+
 
     /**
      * 根据主题id，层次id以及job名称模糊查询job
@@ -108,9 +112,13 @@ public class HdispatchJobController extends BaseController {
                 flag = true;
             }
         }
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
         if (flag) {
             rd = new ResponseData(false);
-            rd.setMessage("以下任务已经存在:" + sb.toString());
+            //以下任务已经存在
+            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.job_name_already_exist", null, locale);
+            rd.setMessage(errorMsg+":" + sb.toString());
             return rd;
         }
         IRequest requestContext = createRequestContext(request);
@@ -118,7 +126,12 @@ public class HdispatchJobController extends BaseController {
         try {
             rd = new ResponseData(jobService.batchUpdate(requestContext, jobList));
         } catch (Exception e) {
-            logger.error("保存任务中途失败", e);
+            //保存任务中途失败
+            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_saving", null, locale);
+            logger.error(errorMsg, e);
+            rd = new ResponseData(false);
+            rd.setMessage(errorMsg);
+            return rd;
         }
 
         return rd;
@@ -141,13 +154,17 @@ public class HdispatchJobController extends BaseController {
         }
 
         IRequest requestContext = createRequestContext(request);
-
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
         try {
             List<Job> jobListReturn = jobService.batchUpdate(requestContext, jobList);
             rd = new ResponseData(jobListReturn);
         } catch (Exception e) {
-            logger.error("删除任务中途失败", e);
+            //删除任务中途失败
+            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_deleting", null, locale);
+            logger.error(errorMsg, e);
             rd = new ResponseData(false);
+            rd.setMessage(errorMsg);
             return rd;
         }
         return rd;
@@ -169,13 +186,17 @@ public class HdispatchJobController extends BaseController {
         nodeId = nodeId.trim();
         TreeNode treeNode = new TreeNode();
         treeNode.setNodeId(nodeId.trim());
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
         try {
             List<TreeNode> treeNodeList = svnFileSysService.fetchSubNodes(treeNode);
             responseData = new ResponseData(treeNodeList);
         } catch (Exception e) {
-            logger.error("访问SVN服务器出错",e);
+            //访问SVN服务器出错
+            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_access_svn_server", null, locale);
+            logger.error(errorMsg,e);
             responseData = new ResponseData(false);
-            responseData.setMessage("访问SVN服务器出错");
+            responseData.setMessage(errorMsg);
             return responseData;
         }
         return responseData;
