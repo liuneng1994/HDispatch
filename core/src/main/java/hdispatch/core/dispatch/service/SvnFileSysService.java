@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Created by yyz on 2016/9/14.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
  *
  * 用于获取SVN所在服务器的文件目录
  */

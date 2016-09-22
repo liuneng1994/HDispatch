@@ -16,7 +16,9 @@ import java.util.Vector;
 
 /**
  * Created by yyz on 2016/9/14.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
+ *
+ * SVN文件操作服务实现类
  */
 @Service
 public class SvnFileSysServiceImpl implements SvnFileSysService {
@@ -38,6 +40,12 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
                 setRootPath(SVN_FILE_SYS_ROOTPATH);
     }
 
+    /**
+     * 根据节点获取子节点
+     * @param treeNode
+     * @return
+     * @throws Exception
+     */
     @Override
     public List<TreeNode> fetchSubNodes(TreeNode treeNode) throws Exception {
         List<TreeNode> list = new ArrayList<TreeNode>();
@@ -96,6 +104,10 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
         return list;
     }
 
+    /**
+     * 关闭连接信道
+     * @param channel
+     */
     private static void closeChannel(Channel channel) {
         if (channel != null) {
             if (channel.isConnected()) {
@@ -104,6 +116,10 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
         }
     }
 
+    /**
+     * 关闭连接会话
+     * @param session
+     */
     private static void closeSession(Session session) {
         if (session != null) {
             if (session.isConnected()) {
@@ -112,6 +128,13 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
         }
     }
 
+    /**
+     * 判断是否存在子节点
+     * @param sftp
+     * @param filePath
+     * @return
+     * @throws SftpException
+     */
     private static boolean hasChildren(ChannelSftp sftp, String filePath) throws SftpException {
         boolean flag = false;
         if(filePath.endsWith(".kjb")||filePath.endsWith(".KJB")){
