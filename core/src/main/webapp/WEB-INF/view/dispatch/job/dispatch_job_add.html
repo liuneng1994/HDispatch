@@ -138,13 +138,13 @@
                                 if(operation =='create' || operation =='update'){
                                     datas = options.models.map(function(data){
                                         data['__status'] = (operation =='create' ? 'add' : 'update');
-                                        //这种情况只适用于当前单行情况
-                                        if(operation =='create'){
-                                            data['themeName'] = themeName_grid_line;
-                                            data['layerName'] = layerName_grid_line;
-                                            data['themeId'] = grid_dropdown_themeId;
-                                            data['layerId'] = grid_dropdown_layerId;
-                                        }
+//                                        //这种情况只适用于当前单行情况
+//                                        if(operation =='create'){
+//                                            data['themeName'] = themeName_grid_line;
+//                                            data['layerName'] = layerName_grid_line;
+//                                            data['themeId'] = grid_dropdown_themeId;
+//                                            data['layerId'] = grid_dropdown_layerId;
+//                                        }
                                         return data;
                                     });
                                 }
