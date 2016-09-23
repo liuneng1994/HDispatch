@@ -32,11 +32,11 @@
 
   <!--配置SVN服务器-->
   <!--<context:property-placeholder location="classpath:svnFileSys.properties"/>-->
-  <!--<bean id="svnConfig" class="hdispatch.core.dispatch.dto.job.SvnConfig" scope="singleton">-->
-    <!--<property name="ip" value="${svn_server_ip}"/>-->
-    <!--<property name="port" value="${svn_server_port}"/>-->
-    <!--<property name="userName" value="${svn_server_userName}"/>-->
-    <!--<property name="password" value="${svn_server_pwd}"/>-->
-    <!--<property name="rootPath" value="${svn_server_rootPath}"/>-->
-  <!--</bean>-->
+  <bean id="svnConfig" class="hdispatch.core.dispatch.dto.job.SvnConfig" scope="singleton">
+    <property name="ip" value="172.20.0.203"/>
+    <property name="port" value="22"/>
+    <property name="userName" value="hive"/>
+    <property name="password" value="handoracle"/>
+    <property name="rootPath" value="/home/ETL"/>
+  </bean>
 </beans>
