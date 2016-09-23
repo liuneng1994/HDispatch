@@ -3,37 +3,36 @@
  */
 (function () {
     'use strict';
-    angular.module('dispatch').controller('workflowUpdateController', ['$window', '$scope', 'workflowService', 'workflowDiagramService', workflowUpdateController]);
-    function workflowUpdateController($window, $scope, workflowService, wfDiaService) {
+    angular.module('dispatch').controller('workflowUpdateController', ['$timeout','$window', '$scope', 'workflowService', 'workflowDiagramService', workflowUpdateController]);
+    function workflowUpdateController($timeout, $window, $scope, workflowService, wfDiaService) {
         var vm = this;
+        window.vm = vm;
         vm.workflow = {};
         vm.newJob = new Job();
         vm.themes = {};
-        vm.layers = {};
+        vm.layers = [];
         vm.jobLayers = [];
         vm.jobSources = [];
-        vm.paperName = 'create'
         vm.graph = new joint.dia.Graph;
-        vm.paper = wfDiaService.newPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
+        vm.paper = wfDiaService.newPaper($('#graph').parent().width(), 600, vm.graph, '#graph');
         vm.jobStore = wfDiaService.newJobStore();
         vm.graphTool = wfDiaService.newGraphTool(vm.paper, vm.graph);
+        vm.themeChange = function(themeId) {
+            vm.workflow.layerId = null;
+            refreshLayers('layers', themeId);
+        };
+        vm.jobThemeChange = function() {
+            vm.newJob.layerId = null;
+            refreshLayers('jobLayers', vm.newJob.themeId);
+        };
+        vm.jobLayerChange = function() {
+            vm.newJob.jobSource = null;
+            refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
+        };
 
         wfDiaService.bindEvent(vm);
         refreshThemes();
         init();
-
-        $scope.$watch('vm.workflow.themeId', function () {
-            vm.workflow.layerId = null;
-            refreshLayers('layers', vm.workflow.themeId);
-        });
-        $scope.$watch('vm.newJob.themeId', function () {
-            vm.newJob.layerId = null;
-            refreshLayers('jobLayers', vm.newJob.themeId);
-        });
-        $scope.$watch('vm.newJob.layerId', function () {
-            vm.newJob.jobSource = null;
-            refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
-        });
 
         vm.createJob = function () {
             if (vm.jobStore.contains(vm.newJob.name)) {
@@ -100,7 +99,6 @@
             this.themeId = new Number();
             this.layerId = 0;
             this.name = '';
-            this.jobSource = new Number();
             this.dept = [];
         }
 
@@ -113,8 +111,12 @@
             }
             vm.workflow.workflowId = workflowId;
             workflowService.workflow(workflowId).then(function (data) {
+                refreshLayers('layers', data.themeId);
                 vm.workflow.themeId = data.themeId;
-                vm.workflow.layerId = data.layerId;
+                $timeout(function(){
+                    vm.workflow.layerId = data.layerId;
+                },200);
+
                 vm.workflow.workflowName = data.name;
                 vm.workflow.description = data.description;
                 vm.workflow.graph = data.graph;

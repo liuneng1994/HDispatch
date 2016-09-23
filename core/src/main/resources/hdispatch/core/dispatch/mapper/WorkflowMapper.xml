@@ -125,7 +125,7 @@
         SET
             theme_id=#{themeId},
             layer_id=#{layerId},
-            description=#{description}
+            description=#{description},
             graph=#{graph}
         WHERE
             workflow_id=#{workflowId}

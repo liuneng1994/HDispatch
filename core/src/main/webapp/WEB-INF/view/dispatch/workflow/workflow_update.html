@@ -28,6 +28,7 @@
                             <select class="col-sm-12" name="theme"
                                     ng-model="vm.newJob.themeId"
                                     kendo-drop-down-list
+                                    k-on-change="vm.jobThemeChange()"
                                     k-data-text-field="'themeName'"
                                     k-data-value-field="'themeId'"
                                     k-data-source="vm.themes" style="padding-left:0;padding-right:0"></select>
@@ -40,6 +41,7 @@
                             <select class="col-sm-12" name="layer"
                                     ng-model="vm.newJob.layerId"
                                     kendo-drop-down-list
+                                    k-on-change="vm.jobLayerChange()";
                                     k-data-text-field="'layerName'"
                                     k-data-value-field="'layerId'"
                                     k-data-source="vm.jobLayers" style="padding-left:0;padding-right:0"></select>
@@ -79,6 +81,7 @@
                                             k-ng-model="vm.workflow.themeId"
                                             kendo-drop-down-list
                                             k-value-primitive="true"
+                                            k-on-change="vm.themeChange(vm.workflow.themeId)"
                                             k-data-text-field="'themeName'"
                                             k-data-value-field="'themeId'"
                                             k-data-source="vm.themes" style="padding-left:0;padding-right:0"></select>
@@ -91,7 +94,8 @@
                                 <label class="col-sm-4 control-label">层级</label>
                                 <div class="col-sm-8 ">
                                     <select name="layer" class="col-sm-12"
-                                            k-ng-model="vm.workflow.layerId"
+                                            ng-model="vm.workflow.layerId"
+                                            k-ng-delay="vm.workflow.layerId"
                                             kendo-drop-down-list
                                             k-value-primitive="true"
                                             k-data-text-field="'layerName'"
@@ -133,7 +137,7 @@
                     <button class="k-button" ng-click="vm.deleteJob()">删除</button>
                     <button class="k-button" ng-click="vm.save()" ng-disabled="flow.$invalid||!vm.workflow.themeId||!vm.workflow.layerId">保存</button>
                     <button class="k-button" ng-click="vm.generateWorkflow()" ng-disabled="!vm.workflow.workflowId">生成</button>
-                    <button class="k-button" ng-click="vm.format()" ng-show="false">格式化</button>
+                    <a href="/dispatch/workflow/workflow_list.html" class="k-button btn-danger">返回列表</a>
                 </div>
             </div>
             <div class="panel col-sm-offset-0">
