@@ -267,7 +267,7 @@
             autoFormat: function (jobStore) {
                 return jobStore.layer();
             },
-            bindEvent: function(vm) {
+            bindEvent: function (vm) {
                 vm.paper.on('cell:pointerclick', function (cellView, event) {
                     vm.graphTool.select(cellView);
                 });
@@ -275,7 +275,60 @@
                 vm.paper.on('cell:pointerdown', vm.graphTool.linkNode.pointerdown);
                 vm.paper.on('cell:pointermove', vm.graphTool.linkNode.pointermove);
                 vm.paper.on('cell:pointerup', vm.graphTool.linkNode.pointerup);
+                vm.paper.on('blank:mousewheel', (function () {
+                    var rate = 0.2;
+                    var scale = 1;
+                    var minScale = 0.2;
+                    var maxScale = 5;
+                    var baseHeight = vm.paper.options.height;
+                    var baseWidth = vm.paper.options.width;
+                    return function (e, x, y, delta) {
+                        e = e || window.event;
+                        if (e.stopPropagation) e.stopPropagation();
+                        else e.cancelBubble = true;
+                        if (e.preventDefault) e.preventDefault();
+                        else e.returnValue = false;
 
+                        var newScale = scale + delta * rate;
+                        if (newScale > maxScale || newScale < minScale) return;
+                        scale = newScale;
+                        vm.paper.scale(scale, scale);
+                        vm.paper.setDimensions(baseWidth * scale, baseHeight * scale);
+                    };
+                })());
+
+                var dragTool = (function () {
+                    var startPosition = null;
+                    var baseLeft = null;
+                    var baseTop = null;
+                    var rate = 1;
+                    return {
+                        pointerdown: function (evt, x, y) {
+                            startPosition = {x: evt.offsetX, y: evt.offsetY};
+                            baseLeft = $('#graphHolder').scrollLeft();
+                            baseTop = $('#graphHolder').scrollTop();
+                            console.log(startPosition, baseLeft, baseTop)
+                        },
+                        pointermove: function (evt) {
+                            if (evt.which == 1) {
+                                var offsetX = evt.offsetX - startPosition.x;
+                                var offsetY = evt.offsetY - startPosition.y;
+                                var scrollLeft = baseLeft - offsetX * rate;
+                                var scrollTop = baseTop - offsetY * rate;
+                                console.log(evt.offsetX,evt.offsetY,scrollLeft,scrollTop)
+                                if (scrollLeft+$('#graphHolder').width() < $('#graphHolder')[0].scrollWidth) {
+                                    $('#graphHolder').scrollLeft(scrollLeft);
+                                }
+                                if (scrollTop+$('#graphHolder').height() < $('#graphHolder')[0].scrollHeight) {
+                                    $('#graphHolder').scrollTop(scrollTop);
+                                }
+                            }
+                        }
+                    }
+                })();
+
+                vm.paper.on('blank:pointerdown', dragTool.pointerdown);
+                vm.graphHolderPointerMove = dragTool.pointermove;
                 vm.graph.on('change:position', vm.graphTool.linkNode.changePosition);
                 vm.graph.on('add', function (cell) {
                     if (cell instanceof joint.dia.Element) {

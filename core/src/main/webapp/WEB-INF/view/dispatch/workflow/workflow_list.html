@@ -6,11 +6,56 @@
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
     <script src="${base.contextPath}/common/language?var=languageData"
             type="text/javascript"></script>
-    <div id="tipDelete"></div>
-    <div id="dialog"></div>
+    <div kendo-window="vm.scheduleWindow" k-title="'调度工作流'" k-width="600" k-on-open="vm.scheduleWindow.visible = true"
+         k-on-close="vm.scheduleWindow.visible = false" k-visible="false">
+        <form name="job" class="form-horizontal" style="width:100%" novalidate>
+            <div class="col-sm-10">
+                <div class="form-group">
+                    <label class="control-label col-sm-3">工作流</label>
+                    <span class="control-label col-sm-6 text-left">aaaaaa</span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">首次执行时间</label>
+                    <div class="col-sm-6">
+                        <input kendo-date-time-picker k-ng-model="vm.scheduleInfo.startTime" style="width:100%" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">是否循环</label>
+                    <div class="col-sm-6">
+                        <input type="checkbox" id="recurring" class="k-checkbox"/>
+                        <label class="k-checkbox-label" for="recurring"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">周期</label>
+                    <div class="col-sm-6">
+                        <input type="number" class="k-textbox">
+                        <select style="width:50px;"
+                                kendo-drop-down-list
+                                k-data-text-field="'name'"
+                                k-data-value-field="'value'"
+                                k-data-source="vm.periods"
+                                style="padding-left:0;padding-right:0"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">重复次数</label>
+                    <div class="col-sm-6">
+                        <input type="number" class="k-textbox">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3">
+                        <button class="k-button">提交</button>
+                        <button class="k-button">取消</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
     <div id="content-container">
         <div id="page-content">
-
             <div class="panel">
                 <form name="flow" novalidate>
                     <div class="panel-body">
@@ -24,6 +69,7 @@
                                             <select class="col-sm-12" name="theme"
                                                     ng-model="vm.workflow.themeId"
                                                     kendo-combo-box
+                                                    k-on-change="vm.workflow.themeId"
                                                     k-data-text-field="'themeName'"
                                                     k-data-value-field="'themeId'"
                                                     k-data-source="vm.themes"

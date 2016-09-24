@@ -93,6 +93,11 @@
         vm.format = function () {
             var result = vm.graphTool.autoFormat(vm.jobStore);
             console.log(result);
+        };
+
+        vm.mousedown=function(evt) {
+        };
+        vm.mousemove=function(evt) {
         }
 
         function Job() {

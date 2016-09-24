@@ -140,7 +140,7 @@
                     <a href="/dispatch/workflow/workflow_list.html" class="k-button btn-danger">返回列表</a>
                 </div>
             </div>
-            <div class="panel col-sm-offset-0">
+            <div id="graphHolder" class="panel col-sm-offset-0" style="overflow: scroll; height:600px;cursor:-webkit-grab" ng-mousemove="vm.graphHolderPointerMove($event)">
                 <div id="graph"></div>
             </div>
         </div>

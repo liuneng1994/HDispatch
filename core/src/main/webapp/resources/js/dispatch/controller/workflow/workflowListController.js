@@ -10,6 +10,12 @@
         vm.total = 0;
         vm.themes = {};
         vm.layers = {};
+        vm.periods = [{name:'月',value:'M'},
+            {name:'周',value:'w'},
+            {name:'天',value:'d'},
+            {name:'时',value:'H'},
+            {name:'分',value:'m'},
+            {name:'秒',value:'s'}];
         vm.gridOptions = {
             dataSource: {
                 transport: {
@@ -83,7 +89,8 @@
                     title: '编辑',
                     width: 100,
                     template: function (item) {
-                        var html = "<button class='btn btn-info' ng-click='vm.edit("+item.workflowId+")'>编辑</button>";
+                        var html = "<button class='btn btn-info' ng-click='vm.edit("+item.workflowId+")'>编辑</button>"+
+                            '<button class="btn btn-primary" ng-click="vm.schedule('+item.workflowId+')">调度</button>';
                         return html;
                     }
                 }]
@@ -99,10 +106,13 @@
             location = '/dispatch/workflow/workflow_update.html';
         };
 
-        $scope.$watch('vm.workflow.themeId', function () {
+        vm.themeChange=function(themeId) {
             vm.workflow.layerId = undefined;
-            refreshLayers('layers', vm.workflow.themeId);
-        });
+            refreshLayers('layers', themeId);
+        }
+        vm.schedule = function(workflowId) {
+            vm.scheduleWindow.center().open();
+        };
         refreshThemes();
         return vm;
 
