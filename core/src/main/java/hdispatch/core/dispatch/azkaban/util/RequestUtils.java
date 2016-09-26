@@ -6,7 +6,8 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.Map;
  * Supports http request method.
  */
 public class RequestUtils {
-    private static Logger logger = Logger.getLogger(RequestUtils.class);
+    private static Logger logger = LoggerFactory.getLogger(RequestUtils.class);
     private static final String SESSION_ID = "session.id";
     private static final String URL_SEPERATOR = "/";
     private static final Gson gson = new Gson();

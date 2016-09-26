@@ -39,9 +39,70 @@
                     selected = cellView.model;
                 }
             };
+            var linkNode = (function () {
+                function changePostion(cell) {
+                    if (draw) {
+                        cell.set('position', cell.previous('position'));
+                    }
+                };
+                var draw = false;
+                var source = null;
+                var target = null;
+                var tempLink = new joint.dia.Link({
+                    source: {x: 0, y: 0},
+                    target: {x: 0, y: 0},
+                    attrs: defaultLinkAttrs
+                });
+                return {
+                    pointerdown: function (cellView, event, x, y) {
+                        //判断是否为鼠标右键
+                        if (event.button == 2) {
+                            draw = true;
+                            tempLink.set('source', cellView.model);
+                            source = cellView.model;
+                            source.on('change:position', changePostion);
+                            tempLink.set('target', {x: x, y: y});
+                            tempLink.addTo(graph);
+                        }
+                    },
+                    pointermove: function (cellView, event, x, y) {
+                        if (draw) {
+                            event && event.preventDefault();
+                            tempLink.set('target', {x: x, y: y});
+                        }
+                    },
+                    pointerup: function (cellView, event) {
+                        if (draw) {
+                            var targetPoint = tempLink.get('target');
+                            var elements = paper.findViewsFromPoint(targetPoint);
+                            if (elements.length && elements[0] instanceof joint.dia.ElementView) {
+                                if (elements[0].model.id != source.id) {
+                                    if (!isConnected(source, elements[0].model)) {
+                                        target = elements[0].model;
+                                        connect(source, target);
+                                    }
+                                }
+                                target = elements[0].model;
+                            }
+                            tempLink.remove();
+                            tempLink = new joint.dia.Link({
+                                    source: {x: 0, y: 0},
+                                    target: {x: 0, y: 0},
+                                    attrs: defaultLinkAttrs
+                                }
+                            );
+                            source.off('change:position', changePostion);
+                            draw = false;
+                            source = null;
+                            target = null;
+                        }
+                    }
+                }
+            })();
+            var newNodePostion = {x: 100,y:100};
             var createJobNode = function (job) {
                 var node = new joint.shapes.basic.Rect({
-                    position: {x: 100, y: 30},
+                    position: {x: newNodePostion.x, y: newNodePostion.y},
                     size: {width: job.name.length * 7 + 20 > 100 ? job.name.length * 7 + 20 : 100, height: 45},
                     attrs: {
                         rect: {
@@ -53,7 +114,7 @@
                             fill: 'lightgray',
                             'fill-opacity': .5
                         },
-                        text: {text: job.name, fill: 'black', cursor: 'crosshair'}
+                        text: {text: job.name, fill: 'black'}
                     }
                 });
                 node.prop('job', job);
@@ -85,6 +146,7 @@
                  * @param job
                  */
                 createJobNode: createJobNode,
+                newNodePosition: newNodePostion,
                 /**
                  * 删除选中的任务节点
                  */
@@ -95,62 +157,7 @@
                  * @param target 目标节点
                  */
                 connect: connect,
-                linkNode: (function () {
-                    var draw = false;
-                    var source = null;
-                    var target = null;
-                    var tempLink = new joint.dia.Link({
-                        source: {x: 0, y: 0},
-                        target: {x: 0, y: 0},
-                        attrs: defaultLinkAttrs
-                    });
-                    return {
-                        pointerdown: function (cellView, event, x, y) {
-                            if (event.target.nodeName == 'tspan') {
-                                draw = true;
-                                tempLink.set('source', cellView.model);
-                                source = cellView.model;
-                                tempLink.set('target', {x: x, y: y});
-                                tempLink.addTo(graph);
-                            }
-                        },
-                        pointermove: function (cellView, event, x, y) {
-                            if (draw) {
-                                tempLink.set('target', {x: x, y: y});
-                            }
-                        },
-                        pointerup: function (cellView, event) {
-                            if (draw) {
-                                var targetPoint = tempLink.get('target');
-                                var elements = paper.findViewsFromPoint(targetPoint);
-                                if (elements.length && elements[0] instanceof joint.dia.ElementView) {
-                                    if (elements[0].model.id != source.id) {
-                                        if (!isConnected(source, elements[0].model)) {
-                                            target = elements[0].model;
-                                            connect(source, target);
-                                        }
-                                    }
-                                    target = elements[0].model;
-                                }
-                                tempLink.remove();
-                                tempLink = new joint.dia.Link({
-                                        source: {x: 0, y: 0},
-                                        target: {x: 0, y: 0},
-                                        attrs: defaultLinkAttrs
-                                    }
-                                );
-                                draw = false;
-                                source = null;
-                                target = null;
-                            }
-                        },
-                        changePosition: function (cell) {
-                            if (draw) {
-                                cell.set('position', cell.previous('position'));
-                            }
-                        }
-                    }
-                })()
+                linkNode: linkNode
 
             };
 
@@ -271,6 +278,27 @@
                 vm.paper.on('cell:pointerclick', function (cellView, event) {
                     vm.graphTool.select(cellView);
                 });
+                var menuPosition = {};
+                $("#blankMenu").kendoContextMenu({
+                    target: "#graphHolder",
+                    animation: {
+                        open: { effects: "fadeIn" },
+                        duration: 500
+                    },
+                    select: function (evt) {
+                        if (evt.item.id == "createJob") {
+                            vm.jobWindow.center().open();
+                        }
+                    }
+                });
+                vm.paper.on('cell:contextmenu', function (evt, x, y) {
+                    $("#blankMenu").data('kendoContextMenu').open(x,y);
+                });
+
+                vm.paper.on('blank:contextmenu', function (evt, x, y) {
+                    vm.graphTool.newNodePosition.x = x;
+                    vm.graphTool.newNodePosition.y = y;
+                });
 
                 vm.paper.on('cell:pointerdown', vm.graphTool.linkNode.pointerdown);
                 vm.paper.on('cell:pointermove', vm.graphTool.linkNode.pointermove);
@@ -296,40 +324,70 @@
                         vm.paper.setDimensions(baseWidth * scale, baseHeight * scale);
                     };
                 })());
+                var drag = null;
+                $(function () {
 
-                var dragTool = (function () {
-                    var startPosition = null;
-                    var baseLeft = null;
-                    var baseTop = null;
-                    var rate = 1;
-                    return {
-                        pointerdown: function (evt, x, y) {
-                            startPosition = {x: evt.offsetX, y: evt.offsetY};
-                            baseLeft = $('#graphHolder').scrollLeft();
-                            baseTop = $('#graphHolder').scrollTop();
-                            console.log(startPosition, baseLeft, baseTop)
+                    var drag = function drag() {
+                        this.dragWrap = $("#graphHolder");
+                        this.init.apply(this, arguments);
+                    };
+                    drag.prototype = {
+                        constructor: drag,
+                        _dom: {},
+                        _x: 0,
+                        _y: 0,
+                        _top: 0,
+                        _left: 0,
+                        move: false,
+                        down: false,
+                        init: function () {
+                            this.bindEvent();
                         },
-                        pointermove: function (evt) {
-                            if (evt.which == 1) {
-                                var offsetX = evt.offsetX - startPosition.x;
-                                var offsetY = evt.offsetY - startPosition.y;
-                                var scrollLeft = baseLeft - offsetX * rate;
-                                var scrollTop = baseTop - offsetY * rate;
-                                console.log(evt.offsetX,evt.offsetY,scrollLeft,scrollTop)
-                                if (scrollLeft+$('#graphHolder').width() < $('#graphHolder')[0].scrollWidth) {
-                                    $('#graphHolder').scrollLeft(scrollLeft);
+                        bindEvent: function () {
+                            var t = this;
+                            vm.paper.on('blank:pointerdown', function (e) {
+                                e && e.preventDefault();
+                                if (!t.move) {
+                                    t.mouseDown(e);
                                 }
-                                if (scrollTop+$('#graphHolder').height() < $('#graphHolder')[0].scrollHeight) {
-                                    $('#graphHolder').scrollTop(scrollTop);
-                                }
-                            }
-                        }
-                    }
-                })();
+                            });
+                            $('body').on('mouseup', '#graphHolder', function (e) {
+                                t.mouseUp(e);
+                            });
 
-                vm.paper.on('blank:pointerdown', dragTool.pointerdown);
-                vm.graphHolderPointerMove = dragTool.pointermove;
-                vm.graph.on('change:position', vm.graphTool.linkNode.changePosition);
+                            $('body').on('mousemove', '#graphHolder', function (e) {
+                                if (t.down) {
+                                    t.mouseMove(e);
+                                }
+                            });
+                        },
+                        mouseMove: function (e) {
+                            e && e.preventDefault();
+                            this.move = true;
+                            var x = this._x - e.clientX,
+                                y = this._y - e.clientY,
+                                dom = document.getElementById('graphHolder');
+                            dom.scrollLeft = (this._left + x);
+                            dom.scrollTop = (this._top + y);
+                        },
+                        mouseUp: function (e) {
+                            e && e.preventDefault();
+                            this.move = false;
+                            this.down = false;
+                            this.dragWrap.css('cursor', '');
+                        },
+                        mouseDown: function (e) {
+                            this.move = false;
+                            this.down = true;
+                            this._x = e.clientX;
+                            this._y = e.clientY;
+                            this._top = document.getElementById('graphHolder').scrollTop;
+                            this._left = document.getElementById('graphHolder').scrollLeft;
+                            this.dragWrap.css('cursor', 'move');
+                        }
+                    };
+                    drag = new drag();
+                });
                 vm.graph.on('add', function (cell) {
                     if (cell instanceof joint.dia.Element) {
                         var job = cell.prop('job');

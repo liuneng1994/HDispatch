@@ -2,7 +2,7 @@
  * Created by hasee on 2016/9/21.
  */
 (function () {
-    angular.module('dispatch').controller('workflowListController', ['$window','$scope', 'workflowService', function ($window, $scope, workflowService) {
+    angular.module('dispatch').controller('workflowListController', ['$window', '$scope', 'workflowService', function ($window, $scope, workflowService) {
         var vm = this;
         vm.workflow = {};
         vm.workflow.workflowName = '';
@@ -10,21 +10,21 @@
         vm.total = 0;
         vm.themes = {};
         vm.layers = {};
-        vm.periods = [{name:'月',value:'M'},
-            {name:'周',value:'w'},
-            {name:'天',value:'d'},
-            {name:'时',value:'H'},
-            {name:'分',value:'m'},
-            {name:'秒',value:'s'}];
+        vm.periods = [{name: '月', value: 'M'},
+            {name: '周', value: 'w'},
+            {name: '天', value: 'd'},
+            {name: '时', value: 'H'},
+            {name: '分', value: 'm'},
+            {name: '秒', value: 's'}];
         vm.gridOptions = {
             dataSource: {
                 transport: {
                     read: function (options) {
                         vm.workflow.page = options.data.page;
                         vm.workflow.pageSize = options.data.pageSize;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) vm.workflow.themeId=0;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) vm.workflow.layerId=0;
-                        workflowService.query(vm.workflow).then(function(data) {
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) vm.workflow.themeId = 0;
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) vm.workflow.layerId = 0;
+                        workflowService.query(vm.workflow).then(function (data) {
                             vm.total = data.total;
                             options.success(data.rows);
                         });
@@ -89,29 +89,62 @@
                     title: '编辑',
                     width: 100,
                     template: function (item) {
-                        var html = "<button class='btn btn-info' ng-click='vm.edit("+item.workflowId+")'>编辑</button>"+
-                            '<button class="btn btn-primary" ng-click="vm.schedule('+item.workflowId+')">调度</button>';
+                        var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>" +
+                            '<button class="btn btn-primary" ng-click="vm.schedule(' + item.workflowId + ')">调度</button>';
                         return html;
                     }
                 }]
         };
 
-        vm.search = function() {
+        vm.search = function () {
             $('#grid').data('kendoGrid').dataSource
                 .read();
         };
 
-        vm.edit = function(id) {
+        vm.edit = function (id) {
             $window.sessionStorage['workflowId'] = id;
             location = '/dispatch/workflow/workflow_update.html';
         };
 
-        vm.themeChange=function(themeId) {
+        vm.themeChange = function (themeId) {
             vm.workflow.layerId = undefined;
             refreshLayers('layers', themeId);
         }
-        vm.schedule = function(workflowId) {
+        vm.schedule = function (workflowId) {
+            vm.scheduleFlow = {};
+            vm.scheduleFlow.loading = true;
+            vm.scheduleFlow.isrecurring = false;
+            vm.scheduleFlow.period = 'M';
+            workflowService.workflow(workflowId).then(function (data) {
+                vm.scheduleFlow.projectName = data.projectName;
+                vm.scheduleFlow.flowId = data.flowId;
+                vm.scheduleFlow.name = data.name;
+                vm.scheduleFlow.loading = false;
+            })
             vm.scheduleWindow.center().open();
+        };
+        vm.scheduleSubmit = function () {
+            var scheduleInfo = {};
+            if (!vm.scheduleFlow.startTime||!(vm.scheduleFlow.isrecurring&&vm.scheduleFlow.periodVal)) {
+                alert('请填写完整信息');
+                return;
+            }
+            scheduleInfo.projectName = vm.scheduleFlow.projectName;
+            scheduleInfo.flow = vm.scheduleFlow.flowId;
+            scheduleInfo.time = moment(vm.scheduleFlow.startTime).format('hh,mm,a,Z');
+            scheduleInfo.date = moment(vm.scheduleFlow.startTime).format('MM/DD/YYYY');
+            scheduleInfo.isrecurring = vm.scheduleFlow.isrecurring;
+            if (scheduleInfo.isrecurring) {
+                scheduleInfo.period = vm.scheduleFlow.period;
+                scheduleInfo.periodVal = vm.scheduleFlow.periodVal;
+            }
+            workflowService.scheduleWorkflow(scheduleInfo).then(function(data) {
+                alert(data.message);
+            });
+            vm.scheduleWindow.close();
+        };
+        vm.scheduleCancel = function () {
+            vm.scheduleWindow.close();
         };
         refreshThemes();
         return vm;

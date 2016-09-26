@@ -72,18 +72,24 @@
                 if (data.success) {
                     defered.resolve(data.rows[0]);
                 } else {
-                    defered.reject(data)
+                    defered.reject(data);
                 }
             });
-        }
+        };
 
         var updateWorkflow = function(workflow) {
             return httpService.postJSON('/dispatcher/workflow/update', workflow, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data.message);
                 } else {
-                    defered.reject(data.message)
+                    defered.reject(data.message);
                 }
+            });
+        };
+
+        var scheduleWorkflow = function(scheduleInfo) {
+            return httpService.get('/schedule/schedule', scheduleInfo, function(data,defered) {
+                defered.resolve(data.messsage);
             });
         }
 
@@ -95,7 +101,8 @@
             updateWorkflow: updateWorkflow,
             generateWorkflow: generateWorkflow,
             query: query,
-            workflow: workflow
+            workflow: workflow,
+            scheduleWorkflow: scheduleWorkflow
         };
     }
 })();

@@ -13,7 +13,7 @@
         vm.graph = new joint.dia.Graph;
         vm.paper = wfDiaService.newPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
         vm.jobStore = wfDiaService.newJobStore();
-        vm.graphTool = wfDiaService.newGraphTool(vm.paper,vm.graph);
+        vm.graphTool = wfDiaService.newGraphTool(vm.paper, vm.graph);
 
 
         refreshThemes();
@@ -73,10 +73,10 @@
             });
         };
 
-        vm.generateWorkflow = function() {
-            workflowService.generateWorkflow(vm.workflow.workflowId).then(function(data){
+        vm.generateWorkflow = function () {
+            workflowService.generateWorkflow(vm.workflow.workflowId).then(function (data) {
                 $window.alert(data);
-            },function(data){
+            }, function (data) {
                 $window.alert(data);
             });
         }
@@ -86,7 +86,7 @@
             vm.newJob.name = null;
         };
 
-        vm.format = function() {
+        vm.format = function () {
             var result = vm.graphTool.autoFormat(vm.jobStore);
             console.log(result);
         }

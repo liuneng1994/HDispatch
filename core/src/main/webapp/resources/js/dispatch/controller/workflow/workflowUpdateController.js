@@ -3,10 +3,9 @@
  */
 (function () {
     'use strict';
-    angular.module('dispatch').controller('workflowUpdateController', ['$timeout','$window', '$scope', 'workflowService', 'workflowDiagramService', workflowUpdateController]);
+    angular.module('dispatch').controller('workflowUpdateController', ['$timeout', '$window', '$scope', 'workflowService', 'workflowDiagramService', workflowUpdateController]);
     function workflowUpdateController($timeout, $window, $scope, workflowService, wfDiaService) {
         var vm = this;
-        window.vm = vm;
         vm.workflow = {};
         vm.newJob = new Job();
         vm.themes = {};
@@ -14,18 +13,18 @@
         vm.jobLayers = [];
         vm.jobSources = [];
         vm.graph = new joint.dia.Graph;
-        vm.paper = wfDiaService.newPaper($('#graph').parent().width(), 600, vm.graph, '#graph');
+        vm.paper = wfDiaService.newPaper(5000, 5000, vm.graph, '#graph');
         vm.jobStore = wfDiaService.newJobStore();
         vm.graphTool = wfDiaService.newGraphTool(vm.paper, vm.graph);
-        vm.themeChange = function(themeId) {
+        vm.themeChange = function (themeId) {
             vm.workflow.layerId = null;
             refreshLayers('layers', themeId);
         };
-        vm.jobThemeChange = function() {
+        vm.jobThemeChange = function () {
             vm.newJob.layerId = null;
             refreshLayers('jobLayers', vm.newJob.themeId);
         };
-        vm.jobLayerChange = function() {
+        vm.jobLayerChange = function () {
             vm.newJob.jobSource = null;
             refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
         };
@@ -95,11 +94,6 @@
             console.log(result);
         };
 
-        vm.mousedown=function(evt) {
-        };
-        vm.mousemove=function(evt) {
-        }
-
         function Job() {
             this.themeId = new Number();
             this.layerId = 0;
@@ -118,9 +112,9 @@
             workflowService.workflow(workflowId).then(function (data) {
                 refreshLayers('layers', data.themeId);
                 vm.workflow.themeId = data.themeId;
-                $timeout(function(){
+                $timeout(function () {
                     vm.workflow.layerId = data.layerId;
-                },200);
+                }, 200);
 
                 vm.workflow.workflowName = data.name;
                 vm.workflow.description = data.description;
