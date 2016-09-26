@@ -34,23 +34,16 @@
                 </div>
                 <div id="svnParametersListGrid" style="clear:both"></div>
             </div>
-            <div id="batchCreateJobWindow_div"></div>
-            <div id="grid_svn_div"></div>
+            <div id="importByExcelWindow_div"></div>
         </div>
         <script type="text/javascript">
             var wnd, batchCreateJobWindowTemplate;
-            var grid_svn_wnd, grid_svn_template;
 
-            var themeBaseUrl = "${base.contextPath}/dispatcher/theme/";
-            var layerBaseUrl = "${base.contextPath}/dispatcher/layer/";
-            var jobBaseUrl = "${base.contextPath}/dispatcher/job/";
-            function grid_button_click(e) {
-                //触发TreeView窗口
-                showGridSvnTreeViewWindow(e);
-            };
+            var svnParameterBaseUrl = "${base.contextPath}/dispatcher/svnParameter/";
+
             $(document).ready(function () {
                 //声明批量创建job窗口
-                wnd = $("#batchCreateJobWindow_div")
+                wnd = $("#importByExcelWindow_div")
                         .kendoWindow({
                             title: '<@spring.message "hdispatch.job.job_create.job_batch_create_title"/>',
                             modal: true,
@@ -67,24 +60,6 @@
                         }).data("kendoWindow");
                 batchCreateJobWindowTemplate = kendo.template($("#batchCreateJobWindow_template").html());
 
-                //声明grid中treeView窗口
-                grid_svn_wnd = $("#grid_svn_div")
-                        .kendoWindow({
-                            title: '<@spring.message "hdispatch.job.svn.select_svn"/>',
-                            modal: true,
-                            visible: false,
-                            resizable: true,
-                            actions: [
-                                "Pin",
-                                "Minimize",
-                                "Maximize",
-                                "Close"
-                            ],
-                            width: 500,
-                            height:350
-                        }).data("kendoWindow");
-                grid_svn_template = kendo.template($("#grid_svn_treeView_template").html());
-
                 //声明主窗口
                 var viewModel = kendo.observable({
                     model:{themeId:'',layerId:'',jobName:'',page:''},
@@ -93,33 +68,28 @@
                         $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
                     }
                 });
-                //用于存储themeName、layerName，这种情况只适用于当前单行编辑
-                var themeName_grid_line,layerName_grid_line;
-                //存储grid中行内编辑的下拉框值
-                var grid_dropdown_themeId;
-                var grid_dropdown_layerId;
                 //任务行表显示数据加载和窗口渲染
-                var jobs_data = new kendo.data.DataSource({
+                var svn_parameter_data= new kendo.data.DataSource({
                     transport: {
                         read:  {
-                            url: jobBaseUrl+"query",
+                            url: svnParameterBaseUrl+"query",
                             type : 'GET',
                             dataType: "json"
                         },
                         create: {
-                            url: jobBaseUrl+'submit',
+                            url: svnParameterBaseUrl+'submit',
                             type : 'POST',
                             dataType: "json",
                             contentType:"application/json"
                         },
                         update: {
-                            url: jobBaseUrl + "update",
+                            url: svnParameterBaseUrl + "update",
                             type : 'POST',
                             dataType: "application/json",
                             contentType:"application/json"
                         },
                         destroy: {
-                            url: jobBaseUrl + "remove",
+                            url: svnParameterBaseUrl + "remove",
                             type : 'POST',
                             dataType: "application/json",
                             contentType:"application/json"
@@ -131,13 +101,6 @@
                                 if(operation =='create' || operation =='update'){
                                     datas = options.models.map(function(data){
                                         data['__status'] = (operation =='create' ? 'add' : 'update');
-//                                        //这种情况只适用于当前单行情况
-//                                        if(operation =='create'){
-//                                            data['themeName'] = themeName_grid_line;
-//                                            data['layerName'] = layerName_grid_line;
-//                                            data['themeId'] = grid_dropdown_themeId;
-//                                            data['layerId'] = grid_dropdown_layerId;
-//                                        }
                                         return data;
                                     });
                                 }
@@ -149,7 +112,7 @@
                                 }
 
                                 var data_str = kendo.stringify(datas);
-                                jobs_data = data_str;
+                                svn_parameter_data= data_str;
                                 return data_str;
                             }
                             else if (operation === "read") {
@@ -214,9 +177,8 @@
                     }
                 });
                 var svnParametersListGrid_kendo = $("#svnParametersListGrid").kendoGrid({
-                    dataSource: jobs_data,
+                    dataSource: svn_parameter_data,
                     resizable: true,
-//                    selectable: "single",
                     selectable: "multiple",
                     scrollable: false,
                     pageable: {
@@ -266,15 +228,21 @@
                                     template: '<input class="checkbox" type="checkbox"/>',
                                     width: '16px'
                                 },
-                                { 'field': 'jobId','hidden':true },
-                                { 'field': 'themeId','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "100px", editor: themeDropDownEditor, template: "#=themeName#" },
-                                { 'field': 'layerId','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "100px", editor: layerDropDownEditor, template: "#=layerName#" },
-                                { 'field': 'jobName','title':'<@spring.message "hdispatch.job_name"/>', 'width': "100px" },
-                                { 'field': 'jobSvn','title':'<@spring.message "hdispatch.job.svn.svn_file"/>', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
-//                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
+                                { 'field': 'scheduleParaId','hidden':true },
+                                { 'field': 'subjectName','title':'主题名称', 'width': "100px" },
+                                { 'field': 'mappingName','title':'MAPPING名称', 'width': "100px" },
+                                { 'field': 'sessionName','title':'SESSION名称', 'width': "100px" },
+                                { 'field': 'layerId','title':'WORKFLOW名称', 'width': "100px" },
+                                { 'field': 'layerId','title':'参数名称', 'width': "100px" },
+                                { 'field': 'layerId','title':'参数值', 'width': "100px" },
+                                { 'field': 'layerId','title':'时间掩码格式', 'width': "100px" },
+                                { 'field': 'layerId','title':'偏移量', 'width': "100px" },
+                                { 'field': 'layerId','title':'起始日期', 'width': "100px" },
+                                { 'field': 'layerId','title':'失效日期', 'width': "100px" },
+                                { 'field': 'layerId','title':'频率', 'width': "100px" },
+                                { 'field': 'layerId','title':'有效标志', 'width': "100px" },
                         { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
                     ],
-//                    editable: "inline"
                     editable: true
                 });
                 //自定义toolbar中的按钮
@@ -293,631 +261,21 @@
                         $.each(checkedIds,function(key,value){
                             if(checkedIds[key])
                             {
-                                jobs_data.remove(jobs_data.get(key));
+                                svn_parameter_data.remove(svn_parameter_data.get(key));
                                 checkedIds[key]=false;
                             }
                         });
-//                        svnParametersListGrid_kendo.dataSource.sync();
-                        jobs_data.sync();
-//                        svnParametersListGrid_kendo.refresh();
-//                        jobs_data.delete();
+                        svn_parameter_data.sync();
                     }
-                });
-
-                //声明grid中的下拉框
-                var grid_themeDropDown_dataSource=new kendo.data.DataSource({
-                    transport: {
-                        read: {
-                            url: themeBaseUrl+"queryAll",
-                            type : 'GET',
-                            dataType: "json"
-                        },
-                        parameterMap: function(options, operation) {
-                            if (operation === "read") {
-                                var map = {};
-
-                                for(var k in map){
-                                    if(map[k]==='')delete map[k]
-                                }
-                                return map;
-                            }
-                        }
-                    },
-                    schema: {
-                        data:'rows',
-                        model: {
-                            id: 'themeId',
-                            fields: {
-                                themeId: { type: 'number',validation: { required: true } },
-                                themeName: { type: 'string',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    }
-                });
-                var grid_themeDropDownList;
-                function themeDropDownEditor(container, options) {
-                    grid_themeDropDownList = $('<input id="grid_dropdown_theme_input" required name="' + options.field + '"/>')
-                            .appendTo(container)
-                            .kendoDropDownList({
-                                autoBind: true,
-                                dataTextField: "themeName",
-                                dataValueField: "themeId",
-                                dataBound:onGridThemeDataBound,
-                                change: onGridThemeChange,
-                                select:onGridThemeSelect,
-                                close:onGridThemeClose,
-                                dataSource:grid_themeDropDown_dataSource
-                            });
-                };
-                var grid_layerDropDown_dataSource =  new kendo.data.DataSource({
-                    transport: {
-                        read: {
-                            url: layerBaseUrl+"queryAll",
-                            type : 'GET',
-                            dataType: "json"
-                        },
-                        parameterMap: function(options, operation) {
-                            if (operation === "read") {
-                                var map = {};
-                                if(!grid_dropdown_themeId){
-                                    grid_dropdown_themeId='-100';
-                                }
-                                map.themeId=grid_dropdown_themeId;
-                                for(var k in map){
-                                    if(map[k]==='')delete map[k]
-                                }
-                                return map;
-                            }else{
-//                                console.log("layerId:没有进入加载读取数据");
-                            }
-                        }
-                    },
-                    schema: {
-                        data:'rows',
-                        model: {
-                            id: 'layerId',
-                            fields: {
-                                layerId: { type: 'number',validation: { required: true } },
-                                layerName: { type: 'string',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    }
-                });
-                var grid_layerDropDownList;
-                function layerDropDownEditor(container, options) {
-                    grid_layerDropDownList = $('<input id="grid_dropdown_layer_input" required name="' + options.field + '"/>')
-                            .appendTo(container)
-                            .kendoDropDownList({
-                                autoBind: true,
-                                dataTextField: "layerName",
-                                dataValueField: "layerId",
-                                dataBound:onGridLayerDataBound,
-                                open:onGridLayerChange,
-                                select:onGridLayerSelect,
-                                close:onGridLayerClose,
-                                dataSource:grid_layerDropDown_dataSource
-                            });
-                };
-                function onGridThemeDataBound(e) {
-                    grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
-                    //获取对应的themeName值
-                    var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
-                    themeName_grid_line = color.text();
-//                    //设置当前行的themeName
-//                    setEditingRowThemeName(rowIndex_grid_edicting,themeName_grid_line);
-                    grid_layerDropDown_dataSource.read();
-                };
-                function onGridThemeChange(e) {
-                    grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
-                    //获取对应的themeName值
-                    var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
-                    themeName_grid_line = color.text();
-                    grid_layerDropDown_dataSource.read();
-                };
-                function onGridThemeSelect(e) {
-                    grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
-                    //获取对应的themeName值
-                    var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
-                    themeName_grid_line = color.text();
-                    grid_layerDropDown_dataSource.read();
-                };
-                function onGridThemeClose(e) {
-                    grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
-                    //获取对应的themeName值
-                    var color = $("#grid_dropdown_theme_input").data("kendoDropDownList");
-                    themeName_grid_line = color.text();
-                    //设置当前行的themeName
-                    setEditingRowThemeName(rowIndex_grid_edicting,themeName_grid_line);
-                    grid_layerDropDown_dataSource.read();
-                };
-                function onGridLayerDataBound(e) {
-                    grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
-                    //获取对应的layerName值
-                    var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
-                    layerName_grid_line = color.text();
-
-//                    //设置当前行的layerName
-//                    setEditingRowLayerName(rowIndex_grid_edicting,layerName_grid_line);
-                };
-                function onGridLayerChange(e) {
-                    grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
-                    //获取对应的layerName值
-                    var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
-                    layerName_grid_line = color.text();
-                };
-                function onGridLayerSelect(e) {
-                    grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
-                    //获取对应的layerName值
-                    var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
-                    layerName_grid_line = color.text();
-                };
-                function onGridLayerClose(e) {
-                    grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
-                    //获取对应的layerName值
-                    var color = $("#grid_dropdown_layer_input").data("kendoDropDownList");
-                    layerName_grid_line = color.text();
-
-                    //设置当前行的layerName
-                    setEditingRowLayerName(rowIndex_grid_edicting,layerName_grid_line);
-                };
-
-                //声明grid中显示TreeView的控件
-                var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
-                homogeneous = new kendo.data.HierarchicalDataSource({
-                    transport: {
-                        read: {
-                            url: serviceRoot,
-                            type:"GET",
-                            dataType: "json"
-                        }
-                    },
-                    schema: {
-                        data:'rows',
-                        model: {
-                            id: "nodeId",
-                            hasChildren: "hasChild",
-                            fields: {
-                                nodeId: { type: 'string',validation: { required: true } },
-                                nodeName: { type: 'string',validation: { required: true } },
-                                hasChild: { type: 'boolean',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    }
-                });
-
-                function svnTreeEditor(container, options) {
-//                    $('<div required name="' + options.field + '"/>')
-//                            .appendTo(container)
-//                            .kendoTreeView({
-//                                checkboxes: {
-//                                    checkChildren: true
-//                                },
-//                                dataSource: homogeneous,
-//                                dataTextField: "nodeName",
-//                                check: onCheck
-//                    });
-//                    $('<button onclick="grid_button_click()">选择</button>')
-//                            .appendTo(container);
-//                    $('<div style="display:inline-block;margin:0%;padding:0px"><input id="grid_jobSvn_input" readonly="readonly" style="width:60%;"/><button onclick="grid_button_click()" style="width:30%;">选择</button></div>')
-//                            .appendTo(container);
-//$('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-i-insert-n">...</button>')
-//                            .appendTo(container);
-
-                    $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" readonly="readonly" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
-                            .appendTo(container);
-
-
-
-                };
-
-                //声明两个查询用的下拉框
-                var input_themeId_dataSource = new kendo.data.DataSource({
-                    transport: {
-                        read: {
-                            url: themeBaseUrl+"queryAll",
-                            type : 'GET',
-                            dataType: "json"
-                        },
-                        parameterMap: function(options, operation) {
-                            if (operation === "read") {
-                                var map = {};
-
-                                for(var k in map){
-                                    if(map[k]==='')delete map[k]
-                                }
-                                return map;
-                            }
-                        }
-                    },
-                    schema: {
-                        data:'rows',
-                        model: {
-                            id: 'themeId',
-                            fields: {
-                                themeId: { type: 'number',validation: { required: true } },
-                                themeName: { type: 'string',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    }
-                });
-                $("#input_themeId").kendoDropDownList({
-//                    optionLabel: '<@spring.message "hdispatch.select_theme"/>',
-                    autoBind:true,
-                    dataTextField: "themeName",
-                    dataValueField: "themeId",
-                    dataSource: input_themeId_dataSource,
-                    change: onChange,
-                    dataBound:onDataBound
-                });
-                var input_layerId_dataSource =  new kendo.data.DataSource({
-                    transport: {
-                        read: {
-                            url: layerBaseUrl+"queryAll",
-                            type : 'GET',
-                            dataType: "json"
-                        },
-                        parameterMap: function(options, operation) {
-                            if (operation === "read") {
-                                var map = {};
-                                if(!viewModel.model.themeId){
-                                    viewModel.model.themeId='-100';
-                                }
-                                map.themeId=viewModel.model.themeId;
-                                for(var k in map){
-                                    if(map[k]==='')delete map[k]
-                                }
-                                return map;
-                            }else{
-//                                    console.log("layerId:没有进入加载读取数据");
-                            }
-                        }
-                    },
-                    schema: {
-                        data:'rows',
-                        model: {
-                            id: 'layerId',
-                            fields: {
-                                layerId: { type: 'number',validation: { required: true } },
-                                layerName: { type: 'string',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    }
-                });
-                $("#input_layerId").kendoDropDownList({
-//                    optionLabel: '<@spring.message "hdispatch.select_layer"/>',
-                    autoBind:true,
-                    dataTextField: "layerName",
-                    dataValueField: "layerId",
-                    dataSource: input_layerId_dataSource,
-                    dataBound:onDataBound_2
                 });
 
                 //绑定主页面的数据和视图
                 kendo.bind($('#theme-content'),viewModel);
-
-                //查询级联事件处理
-                function onChange() {
-                    viewModel.model.themeId=$("#input_themeId").val();
-
-                    input_layerId_dataSource.read();
-                };
-                function onDataBound(e) {
-                    viewModel.model.themeId=$("#input_themeId").val();
-                    input_layerId_dataSource.read();
-                };
-                function onDataBound_2(e) {
-                    viewModel.model.layerId=$("#input_layerId").val();
-                }
             });
 
 
-            //显示批量创建job页面
-            //声明批量创建job页面中的数据源
-            var batchCreateJob_themeId_dataSource = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: themeBaseUrl+"queryAll",
-                        type : 'GET',
-                        dataType: "json"
-                    },
-                    parameterMap: function(options, operation) {
-                        if (operation === "read") {
-                            var map = {};
-
-                            for(var k in map){
-                                if(map[k]==='')delete map[k]
-                            }
-                            return map;
-                        }
-                    }
-                },
-                schema: {
-                    data:'rows',
-                    model: {
-                        id: 'themeId',
-                        fields: {
-                            themeId: { type: 'number',validation: { required: true } },
-                            themeName: { type: 'string',validation: { required: true } }
-                        }
-                    },
-                    errors: function(res){
-                        if(!res.success) {
-                            if(res.message){
-                                return res.message;
-                            }
-                        }else{
-                            if(res.message){
-                                return res.message;
-                            }
-                        }
-                    }
-                },
-                error: function(e) {
-                    alert(e.errors)
-                }
-            });
-            var batchCreateJob_layerId_dataSource =  new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: layerBaseUrl+"queryAll",
-                        type : 'GET',
-                        dataType: "json"
-                    },
-                    parameterMap: function(options, operation) {
-                        if (operation === "read") {
-                            var map = {};
-                            if(!batchCreateJobViewModel.model.themeId){
-                                batchCreateJobViewModel.model.themeId='-100';
-                            }
-                            map.themeId=batchCreateJobViewModel.model.themeId;
-                            for(var k in map){
-                                if(map[k]==='')delete map[k]
-                            }
-                            return map;
-                        }else{
-//                            console.log("layerId:没有进入加载读取数据");
-                        }
-                    }
-                },
-                schema: {
-                    data:'rows',
-                    model: {
-                        id: 'layerId',
-                        fields: {
-                            layerId: { type: 'number',validation: { required: true } },
-                            layerName: { type: 'string',validation: { required: true } }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    },
-                    errors: function(res){
-                        if(!res.success) {
-                            if(res.message){
-                                return res.message;
-                            }
-                        }else{
-                            if(res.message){
-                                return res.message;
-                            }
-                        }
-                    }
-                }
-            });
-
-            function showBatchCreateJobWindow(e) {
-                e.preventDefault();
-
-                wnd.content(batchCreateJobWindowTemplate);
-                wnd.center().open();
-
-                loadBatchCreateData();
-            }
-
-            var batchCreateJobViewModel;
-            function loadBatchCreateData() {
-                batchCreateJobViewModel = kendo.observable({
-                    model:{
-                        themeId:'',
-                        layerId:'',
-                        jobSvn:''
-                    }
-                });
-                $("#batchCreateForm_input_themeId").kendoDropDownList({
-                    autoBind:true,
-                    dataTextField: "themeName",
-                    dataValueField: "themeId",
-                    dataSource: batchCreateJob_themeId_dataSource,
-                    change: onThemeIdChange_batchCreateForm,
-                    dataBound:onThemeIdDataBound_batchCreateForm,
-                    close:onThemeIdClose_batchCreateForm
-                });
-                $("#batchCreateForm_input_layerId").kendoDropDownList({
-                    autoBind:true,
-                    dataTextField: "layerName",
-                    dataValueField: "layerId",
-                    dataSource: batchCreateJob_layerId_dataSource,
-                    dataBound:onLayerIdDataBound_batchCreateForm,
-                    close:onLayerIdClose_batchCreateForm
-                });
-                var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
-                //存放选中的SVN文件路径
-                var checkedNodes = [];
-                homogeneous = new kendo.data.HierarchicalDataSource({
-                    transport: {
-                        read: {
-                            url: serviceRoot,
-                            type:"GET",
-                            dataType: "json"
-                        }
-                    },
-                    schema: {
-                        data:'rows',
-                        model: {
-                            id: "nodeId",
-                            hasChildren: "hasChild",
-                            fields: {
-                                nodeId: { type: 'string',validation: { required: true } },
-                                nodeName: { type: 'string',validation: { required: true } },
-                                hasChild: { type: 'boolean',validation: { required: true } },
-                                expanded: { type: 'boolean',validation: { required: true } },
-                                spriteCssClass: { type: 'string',validation: { required: true } },
-
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    }
-                });
-
-                $("#batchCreateForm_input_svn").kendoTreeView({
-                    checkboxes: {
-                        checkChildren: true
-                    },
-                    dataSource: homogeneous,
-                    dataTextField: "nodeName",
-                    check: onCheck
-                });
-                // function that gathers IDs of checked nodes
-                function checkedNodeIds(nodes, checkedNodes) {
-                    for (var i = 0; i < nodes.length; i++) {
-                        if (nodes[i].checked && !nodes[i].hasChildren) {
-                            checkedNodes.push(nodes[i].id);
-                        }
-
-                        if (nodes[i].hasChildren) {
-                            checkedNodeIds(nodes[i].children.view(), checkedNodes);
-                        }
-                    }
-                }
-
-                // show checked node IDs on datasource change
-                function onCheck(e) {
-                    checkedNodes = [];
-                    var treeView = $("#batchCreateForm_input_svn").data("kendoTreeView"),
-                            message;
-                    checkedNodeIds(treeView.dataSource.view(), checkedNodes);
-                    if (checkedNodes.length > 0) {
-                        message = checkedNodes.join(",");
-                    } else {
-                        message = "";
-                    }
-
-//                    $("#result").html(message);
-                    $("#result").val(message);
-                }
-
-                kendo.bind($('#batchCreateJobForm'),batchCreateJobViewModel);
-            }
-
-
-            function onThemeIdChange_batchCreateForm(e) {
-                batchCreateJobViewModel.model.themeId=$("#batchCreateForm_input_themeId").val();
-                batchCreateJob_layerId_dataSource.read();
-            }
-            function onThemeIdDataBound_batchCreateForm(e) {
-                batchCreateJobViewModel.model.themeId=$("#batchCreateForm_input_themeId").val();
-                batchCreateJob_layerId_dataSource.read();
-            }
-            function onThemeIdClose_batchCreateForm(e) {
-                batchCreateJobViewModel.model.themeId=$("#batchCreateForm_input_themeId").val();
-                batchCreateJob_layerId_dataSource.read();
-            }
-
-            function onLayerIdDataBound_batchCreateForm(e) {
-                batchCreateJobViewModel.model.layerId=$("#batchCreateForm_input_layerId").val();
-            }
-            function onLayerIdClose_batchCreateForm(e) {
-                batchCreateJobViewModel.model.layerId=$("#batchCreateForm_input_layerId").val();
-            }
-
-            //显示grid中TreeView窗口
-            var rowIndex_grid_edicting;
-            //为grid中的每一行绑定点击事件
-            $("#svnParametersListGrid").on("click", "tr", function (e) {
-                rowIndex_grid_edicting = $(this).index();
-            });
             //为grid中的checkBox绑定选中事件
             $("#svnParametersListGrid").on("click", ".checkbox" , selectRow);
-            //为grid中的TreeView中的每个k-item类型绑定双击事件
-            //移动到下面每次初始化之后进行设置
-            //            $('#grid_svn_treeView_div.k-widget.k-treeview').unbind("dblclick");
-            //            $("#grid_svn_treeView_div.k-widget.k-treeview").dblclick(function(e){
-            //                e.stopPropagation();
-            //                getSelectedSvn();
-            //            });
             var checkedIds = {};
             function selectRow() {
                 var checked = this.checked,
@@ -932,179 +290,6 @@
                     row.removeClass("k-state-selected");
                 }
             }
-            var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
-            var grid_treeView_dataSource = new kendo.data.HierarchicalDataSource({
-                transport: {
-                    read: {
-                        url: serviceRoot,
-                        type:"GET",
-                        dataType: "json"
-                    }
-                },
-                schema: {
-                    data:'rows',
-                    model: {
-                        id: "nodeId",
-                        hasChildren: "hasChild",
-                        fields: {
-                            nodeId: { type: 'string',validation: { required: true } },
-                            nodeName: { type: 'string',validation: { required: true } },
-                            hasChild: { type: 'boolean',validation: { required: true } },
-                            expanded: { type: 'boolean',validation: { required: true } },
-                            spriteCssClass: { type: 'string',validation: { required: true } },
-
-                        }
-                    },
-                    errors: function(res){
-                        if(!res.success) {
-                            if(res.message){
-                                return res.message;
-                            }
-                        }else{
-                            if(res.message){
-                                return res.message;
-                            }
-                        }
-                    }
-                },
-                error: function(e) {
-                    alert(e.errors)
-                }
-            });
-            function showGridSvnTreeViewWindow(e) {
-                grid_svn_wnd.content(grid_svn_template);
-                grid_svn_wnd.center().open();
-
-                var grid_treeView_module= kendo.observable({
-                    model:{}
-                });
-
-                $("#grid_svn_treeView_div").kendoTreeView({
-                    dataSource: grid_treeView_dataSource,
-                    dataTextField: "nodeName",
-                    select:onGridSvnSelect
-                });
-
-                function onGridSvnSelect(e) {
-                    $("#grid_svn_treeView_jobSvn").val(this.text(e.node));
-                }
-
-                //为grid中的TreeView中的每个k-item类型绑定双击事件
-                $('#grid_svn_treeView_div.k-widget.k-treeview').unbind("dblclick");
-                $("#grid_svn_treeView_div.k-widget.k-treeview").dblclick(function(e){
-                    e.stopPropagation();
-                    getSelectedSvn_doubleClick();
-                });
-
-                kendo.bind($('#grid_treeView_div'),grid_treeView_module);
-            };
-            //grid中treeView选择结果处理
-            var jobSvn_node_checked = '';
-            function getSelectedNodeId(nodes) {
-                for (var i = 0; i < nodes.length; i++) {
-                    if (nodes[i].selected) {
-                        if(!nodes[i]._childrenOptions.data.hasChild){
-                            //不得不采用这种方式：因为nodes中下标是可以重复的，并且node节点的id在kendoUI中也是可以重复的
-                            jobSvn_node_checked = nodes[i]._childrenOptions.data.nodeId;
-                            break;
-                        }else {
-                            alert('<@spring.message "hdispatch.job.not_yet_select_any_svn_file"/>');
-                        }
-                    }
-                    if (nodes[i].hasChildren) {
-                        getSelectedNodeId(nodes[i].children.view());
-                    }
-                }
-            };
-            function getSelectedSvn() {
-                var nodes = grid_treeView_dataSource.view();
-                getSelectedNodeId(nodes);
-
-                if(jobSvn_node_checked && jobSvn_node_checked.length>0){
-                    //获取当前选择行数据
-//                    console.log($('#svnParametersListGrid').data("kendoGrid")._data);
-//                    console.log($('#svnParametersListGrid').data("kendoGrid")._data[rowIndex_grid_edicting]);
-//                    var data = $('#svnParametersListGrid').data("kendoGrid")._data[rowIndex_grid_edicting];
-                    var data = getEdictingRowData(rowIndex_grid_edicting);
-                    //设置某列的新值
-                    data.set("jobSvn",jobSvn_node_checked);
-                    //关闭窗口
-                    grid_svn_wnd.close();
-                }
-            };
-            function getSelectedNodeId_doubleClick(nodes) {
-                for (var i = 0; i < nodes.length; i++) {
-                    if (nodes[i].selected) {
-                        if(!nodes[i]._childrenOptions.data.hasChild){
-                            //不得不采用这种方式：因为nodes中下标是可以重复的，并且node节点的id在kendoUI中也是可以重复的
-                            jobSvn_node_checked = nodes[i]._childrenOptions.data.nodeId;
-                            break;
-                        }
-                    }
-                    if (nodes[i].hasChildren) {
-                        getSelectedNodeId_doubleClick(nodes[i].children.view());
-                    }
-                }
-            };
-            function getSelectedSvn_doubleClick() {
-                var nodes = grid_treeView_dataSource.view();
-                getSelectedNodeId_doubleClick(nodes);
-
-                if(jobSvn_node_checked && jobSvn_node_checked.length>0){
-                    var data = getEdictingRowData(rowIndex_grid_edicting);
-                    //设置某列的新值
-                    data.set("jobSvn",jobSvn_node_checked);
-                    //关闭窗口
-                    grid_svn_wnd.close();
-                }
-            };
-
-            //提交批量创建job
-            function submitBatchCreateJobForm(e) {
-                var themeId_temp_batchCreateJob = $("#batchCreateForm_input_themeId").val();
-                var layerId_temp_batchCreateJob = $("#batchCreateForm_input_layerId").val();
-                var jobSvn_temp_batchCreateJob = $("#result").val();
-                var batchCreateUrl = "${base.contextPath}/dispatcher/job/batchSubmit";
-
-                if(!themeId_temp_batchCreateJob || themeId_temp_batchCreateJob < 0){
-//                    console.log("没有填写theeId");
-                    alert('<@spring.message "hdispatch.theme.please_select_theme"/>');
-                    return;
-                }
-                if(!layerId_temp_batchCreateJob || layerId_temp_batchCreateJob < 0){
-//                    console.log("没有填写layerId");
-                    alert('<@spring.message "hdispatch.layer.please_select_layer"/>');
-                    return;
-                }
-                if(!jobSvn_temp_batchCreateJob || jobSvn_temp_batchCreateJob.length <= 0){
-//                    console.log("没有选择SVN文件");
-                    alert('<@spring.message "hdispatch.job.not_yet_select_any_svn_file"/>');
-                    return;
-                }
-
-                //构建请求参数
-                map = {
-                    themeId:themeId_temp_batchCreateJob,
-                    layerId:layerId_temp_batchCreateJob,
-                    jobSvn:jobSvn_temp_batchCreateJob
-                };
-                var batchCreateJob_data = kendo.stringify(map);
-                $.ajax({
-                    type: 'POST',
-                    url: batchCreateUrl,
-                    data: JSON.stringify(batchCreateJob_data),
-                    contentType:"application/json",
-                    success: function (data) {
-                        if(!data.success){
-                            alert('<@spring.message "hdispatch.create_failure"/>：'+data.message);
-                        }else{
-                            alert('<@spring.message "hdispatch.create_success"/>');
-                            wnd.close();
-                        }
-                    },
-                    dataType: "json"
-                });
-            };
 
             //获取当前行的数据
             function getEdictingRowData(index)
@@ -1124,8 +309,8 @@
                 data_temp.set("layerName",layerName);
             }
         </script>
-        <script type="text/x-kendo-template" id="grid_svn_treeView_template">
-            <div id="grid_treeView_div">
+        <script type="text/x-kendo-template" id="import_by_excel_template">
+            <div id="import_by_excel_div">
                 <ul class="fieldList">
                     <li>
                         <div>
@@ -1140,41 +325,6 @@
                     </li>
                     <li>
                         <button class="k-button k-primary k-submit" onclick="getSelectedSvn()"><@spring.message "hdispatch.job.job_create.select"/></button>
-                    </li>
-                </ul>
-            </div>
-        </script>
-        <script type="text/x-kendo-template" id="batchCreateJobWindow_template">
-            <div id="batchCreateJobForm" class="k-content">
-                <ul class="fieldList">
-                    <li>
-                        <label for="batchCreateForm_input_themeId"><@spring.message "hdispatch.theme"/></label>
-                        <input id="batchCreateForm_input_themeId"
-                               data-placeholder='<@spring.message "hdispatch.select_theme"/>'
-                               style="width: 100%;"
-                               data-bind="value:model.themeId"/>
-                    </li>
-                    <li>
-                        <label for="batchCreateForm_input_layerId"><@spring.message "hdispatch.layer"/></label>
-                        <input id="batchCreateForm_input_layerId"
-                               class="k-selectbox"
-                               style="width: 100%;"
-                               data-placeholder='<@spring.message "hdispatch.select_layer"/>'
-                               data-bind="value:model.layerId"/>
-                    </li>
-                    <li id="svn_li">
-                        <label for="batchCreateForm_input_svn"><@spring.message "hdispatch.job.svn.svn_file"/></label>
-                        <div id="batchCreateForm_input_svn" style="width: 100%"></div>
-                    </li>
-                    <li>
-                        <label for="result"><@spring.message "hdispatch.job.job_create.svn_file_selected"/>：</label>
-                        <!--<div id="result" style="width: 100%"></div>-->
-                        <textarea readonly="readonly" id="result" style="width: 100%"
-                                  data-bind="value:model.jobSvn"/>
-                    </li>
-
-                    <li>
-                        <button class="k-button k-primary k-submit" onclick="submitBatchCreateJobForm()"><@spring.message "hdispatch.create"/></button>
                     </li>
                 </ul>
             </div>
@@ -1220,4 +370,4 @@
         }
 
     </style>
-    </html>
+</html>
