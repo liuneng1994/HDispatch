@@ -7,6 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+
     <artifactId>core-db</artifactId>
     <packaging>jar</packaging>
 
@@ -36,12 +37,6 @@
             <artifactId>groovy-xml</artifactId>
             <version>${groovy.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.49</version>
-        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -51,6 +46,7 @@
                 <includes>
                     <include>**/*.groovy</include>
                     <include>**/*.xml</include>
+                    <include>**/*.sql</include>
                 </includes>
             </resource>
         </resources>

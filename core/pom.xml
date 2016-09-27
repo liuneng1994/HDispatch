@@ -12,6 +12,30 @@
   <name>core</name>
   <url>http://maven.apache.org</url>
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.53</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>3.9</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml-schemas</artifactId>
+      <version>3.9</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>3.9</version>
+    </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -72,30 +96,6 @@
       <artifactId>hap-db</artifactId>
       <version>${hap.version}</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
-    <dependency>
-      <groupId>com.jcraft</groupId>
-      <artifactId>jsch</artifactId>
-      <version>0.1.53</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-      <version>3.9</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas -->
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml-schemas</artifactId>
-      <version>3.9</version>
-    </dependency>
-      <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
-      <dependency>
-          <groupId>org.apache.poi</groupId>
-          <artifactId>poi-ooxml</artifactId>
-          <version>3.9</version>
-      </dependency>
   </dependencies>
   <build>
     <finalName>core</finalName>
@@ -123,6 +123,7 @@
           <include>**/*.xml</include>
         </includes>
       </resource>
+
     </resources>
     <plugins>
       <plugin>
@@ -165,7 +166,7 @@
             <version>${hap.version}</version>
           </dependency>
           <dependency>
-            <groupId>hdispatch</groupId>
+            <groupId>hbi</groupId>
             <artifactId>core-db</artifactId>
             <version>1.0-SNAPSHOT</version>
           </dependency>
@@ -241,14 +242,14 @@
     </profile>
     <profile>
       <id>sit</id>
-      <activation/>
+      <activation />
       <properties>
         <profile.env>sit</profile.env>
       </properties>
     </profile>
     <profile>
       <id>uat</id>
-      <activation/>
+      <activation />
       <properties>
         <profile.env>uat</profile.env>
       </properties>

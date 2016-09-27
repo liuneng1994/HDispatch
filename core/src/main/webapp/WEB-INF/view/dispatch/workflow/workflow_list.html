@@ -1,13 +1,13 @@
 <#include "../../include/header.html">
-    <script src="../../resources/js/dispatch/config/module.js"></script>
-    <script src="../../resources/js/dispatch/controller/workflow/workflowListController.js"></script>
-    <script src="../../resources/js/dispatch/service/common/httpService.js"></script>
-    <script src="../../resources/js/dispatch/service/workflow/workflowService.js"></script>
-    <script src="../../lib/moment.min.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
+    <script src="${base.contextPath}/lib/moment.min.js"></script>
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
     <script src="${base.contextPath}/common/language?var=languageData"
             type="text/javascript"></script>
-    <div kendo-window="vm.scheduleWindow" k-title="'调度工作流'" k-width="600" k-on-open="vm.scheduleWindow.visible = true"
+    <div kendo-window="vm.scheduleWindow" k-title="'调度工作流'" k-width="600" k-module="true" k-on-open="vm.scheduleWindow.visible = true"
          k-on-close="vm.scheduleWindow.visible = false" k-visible="false">
         <p class="text-center" ng-show="vm.scheduleFlow.loading">加载中</p>
         <form name="schedule" class="form-horizontal" style="width:100%" novalidate ng-hide="vm.scheduleFlow.loading">
