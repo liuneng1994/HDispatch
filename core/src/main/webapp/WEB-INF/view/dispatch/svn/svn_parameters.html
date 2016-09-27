@@ -1,0 +1,373 @@
+<#include "../../include/header.html">
+<body>
+    <div>
+        <div id="content-container">
+            <div id="theme-content">
+                <div class="panel">
+                    <form class="form-horizontal">
+                        <div class="panel-body col-sm-offset-0">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label style="width: 20%">主题名称</label>
+                                    <input id="input_themeId" type="text" style="width: 70%" data-bind="value:model.themeId">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label style="width: 20%">MAPPING名称</label>
+                                    <input id="input_layerId" type="text" style="width:70%" data-bind="value:model.layerId">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label style="width: 20%">参数 </label>
+                                    <input id="input_layerName" type="text" style="width:70%" data-bind="value:model.jobName" class="k-textbox">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <span class="btn btn-success" data-bind="click:queryResource" type="submit"><@spring.message "hdispatch.query"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="svnParametersListGrid" style="clear:both"></div>
+            </div>
+            <div id="importByExcelWindow_div"></div>
+        </div>
+        <script type="text/javascript">
+            var wnd, batchCreateJobWindowTemplate;
+
+            var svnParameterBaseUrl = "${base.contextPath}/dispatcher/svnParameter/";
+
+            $(document).ready(function () {
+                //声明批量创建job窗口
+                wnd = $("#importByExcelWindow_div")
+                        .kendoWindow({
+                            title: '<@spring.message "hdispatch.job.job_create.job_batch_create_title"/>',
+                            modal: true,
+                            visible: false,
+                            resizable: true,
+                            actions: [
+                                "Pin",
+                                "Minimize",
+                                "Maximize",
+                                "Close"
+                            ],
+                            width: 800,
+                            height:500
+                        }).data("kendoWindow");
+                batchCreateJobWindowTemplate = kendo.template($("#batchCreateJobWindow_template").html());
+
+                //声明主窗口
+                var viewModel = kendo.observable({
+                    model:{themeId:'',layerId:'',jobName:'',page:''},
+                    queryResource: function(e) {
+                        viewModel.model.page=1;
+                        $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
+                    }
+                });
+                //任务行表显示数据加载和窗口渲染
+                var svn_parameter_data= new kendo.data.DataSource({
+                    transport: {
+                        read:  {
+                            url: svnParameterBaseUrl+"query",
+                            type : 'GET',
+                            dataType: "json"
+                        },
+                        create: {
+                            url: svnParameterBaseUrl+'submit',
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
+                        update: {
+                            url: svnParameterBaseUrl + "update",
+                            type : 'POST',
+                            dataType: "application/json",
+                            contentType:"application/json"
+                        },
+                        destroy: {
+                            url: svnParameterBaseUrl + "remove",
+                            type : 'POST',
+                            dataType: "application/json",
+                            contentType:"application/json"
+                        },
+                        parameterMap: function(options, operation) {
+                            //封装请求参数
+                            if (operation !== "read" && options.models) {
+                                var datas = options.models;
+                                if(operation =='create' || operation =='update'){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = (operation =='create' ? 'add' : 'update');
+                                        return data;
+                                    });
+                                }
+                                if('destroy'==operation){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = 'delete';
+                                        return data;
+                                    });
+                                }
+
+                                var data_str = kendo.stringify(datas);
+                                svn_parameter_data= data_str;
+                                return data_str;
+                            }
+                            else if (operation === "read") {
+                                var model = viewModel.model;
+                                if(!model.themeId){
+                                    model.themeId='-100';
+                                }
+                                if(!model.layerId){
+                                    model.layerId='-100';
+                                }
+                                if(!model.jobName){
+                                    model.jobName=' ';
+                                }
+
+                                var map = {themeId: model.themeId,layerId: model.layerId,jobName:model.jobName};
+
+                                if (options.page)
+                                    map.page = options.page;
+                                if(model.page){
+                                    map.page = 1;
+                                    model.page = '';
+                                }
+                                if (options.pageSize)
+                                    map.pageSize = options.pageSize;
+                                for(var k in map){
+                                    if(map[k]==='')delete map[k]
+                                }
+                                return map;
+                            }
+                        }
+                    },
+                    batch: true,
+                    serverPaging : true,
+                    pageSize: 5,
+                    selectable: "multiple",
+                    schema: {
+                        data:'rows',
+                        total:'total',
+                        model: {
+                            id: 'jobId',
+                            fields: {
+                                themeId: { type: 'number',validation: { required: true } },
+                                layerId: { type: 'number',validation: { required: true } },
+                                jobId: { type: 'number',validation: { required: true } },
+                                themeName: { type: 'string',validation: { required: true } },
+                                layerName: { type: 'string',validation: { required: true } },
+                                jobName: { type: 'string',validation: { required: true } },
+                                jobSvn: { type: 'string',validation: { required: true } }
+                            }
+                        },
+                        errors: function(res){
+                            if(!res.success) {
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }else{
+                                if(res.message){
+                                    return res.message;
+                                }
+                            }
+                        }
+                    }
+                });
+                var svnParametersListGrid_kendo = $("#svnParametersListGrid").kendoGrid({
+                    dataSource: svn_parameter_data,
+                    resizable: true,
+                    selectable: "multiple",
+                    scrollable: false,
+                    pageable: {
+                        pageSizes:[5, 10, 20, 50],
+                        refresh:true,
+                        buttonCount:5,
+                        messages: {
+                            noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                            display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
+                            empty: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                            page: '<@spring.message "hdispatch.grid_page"/>',
+                            of: "/ {0}",
+                            itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',
+                            first: '<@spring.message "hdispatch.grid_first_page"/>',
+                            previous: '<@spring.message "hdispatch.grid_pre_page"/>',
+                            next: '<@spring.message "hdispatch.grid_next_page"/>',
+                            last: '<@spring.message "hdispatch.grid_last_page"/>',
+                            refresh: '<@spring.message "hdispatch.grid_refresh"/>'
+                        }
+                    },
+                    toolbar: [
+                        {
+                            name:"create",
+                            text:'<@spring.message "hdispatch.create"/>'
+                        },
+                        {
+                            name:"save",
+                            text:'<@spring.message "hdispatch.save"/>'
+                        },
+                        {
+                            name:"cancel",
+                            text:'<@spring.message "hdispatch.cancel"/>'
+                        },
+                        {
+                            name:"batchCreateJob",
+                            text:'<@spring.message "hdispatch.job.batch_create"/>'
+                        },
+                        {
+                            name:"batchDeleteJob",
+                            text:'<@spring.message "hdispatch.job.batch_delete"/>'
+                        }
+                    ],
+                    columns:
+                            [
+                                {
+                                    title: '',
+                                    template: '<input class="checkbox" type="checkbox"/>',
+                                    width: '16px'
+                                },
+                                { 'field': 'scheduleParaId','hidden':true },
+                                { 'field': 'subjectName','title':'主题名称', 'width': "100px" },
+                                { 'field': 'mappingName','title':'MAPPING名称', 'width': "100px" },
+                                { 'field': 'sessionName','title':'SESSION名称', 'width': "100px" },
+                                { 'field': 'layerId','title':'WORKFLOW名称', 'width': "100px" },
+                                { 'field': 'layerId','title':'参数名称', 'width': "100px" },
+                                { 'field': 'layerId','title':'参数值', 'width': "100px" },
+                                { 'field': 'layerId','title':'时间掩码格式', 'width': "100px" },
+                                { 'field': 'layerId','title':'偏移量', 'width': "100px" },
+                                { 'field': 'layerId','title':'起始日期', 'width': "100px" },
+                                { 'field': 'layerId','title':'失效日期', 'width': "100px" },
+                                { 'field': 'layerId','title':'频率', 'width': "100px" },
+                                { 'field': 'layerId','title':'有效标志', 'width': "100px" },
+                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
+                    ],
+                    editable: true
+                });
+                //自定义toolbar中的按钮
+                $(".k-grid-batchCreateJob").click(function(e){
+                    showBatchCreateJobWindow(e);
+                });
+                $(".k-grid-batchDeleteJob").click(function(e){
+                    /*
+                     确认是否批量删除
+                     进行删除
+                     1.从grid中移除数据
+                     2.发送删除请求
+                     */
+                    var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
+                    if(confirmResult){
+                        $.each(checkedIds,function(key,value){
+                            if(checkedIds[key])
+                            {
+                                svn_parameter_data.remove(svn_parameter_data.get(key));
+                                checkedIds[key]=false;
+                            }
+                        });
+                        svn_parameter_data.sync();
+                    }
+                });
+
+                //绑定主页面的数据和视图
+                kendo.bind($('#theme-content'),viewModel);
+            });
+
+
+            //为grid中的checkBox绑定选中事件
+            $("#svnParametersListGrid").on("click", ".checkbox" , selectRow);
+            var checkedIds = {};
+            function selectRow() {
+                var checked = this.checked,
+                        row = $(this).closest("tr"),
+                        grid = $("#svnParametersListGrid").data("kendoGrid"),
+                        dataItem = grid.dataItem(row);
+
+                checkedIds[dataItem.jobId] = checked;
+                if (checked) {
+                    row.addClass("k-state-selected");
+                } else {
+                    row.removeClass("k-state-selected");
+                }
+            }
+
+            //获取当前行的数据
+            function getEdictingRowData(index)
+            {
+                return $('#svnParametersListGrid').data("kendoGrid")._data[index];
+            }
+            //设置当前行中的themeName
+            function setEditingRowThemeName(index,themeName)
+            {
+                var data_temp = getEdictingRowData(index);
+                data_temp.set("themeName",themeName);
+            }
+            //设置当前行中的layerName
+            function setEditingRowLayerName(index,layerName)
+            {
+                var data_temp = getEdictingRowData(index);
+                data_temp.set("layerName",layerName);
+            }
+        </script>
+        <script type="text/x-kendo-template" id="import_by_excel_template">
+            <div id="import_by_excel_div">
+                <ul class="fieldList">
+                    <li>
+                        <div>
+                            <div id="grid_svn_treeView_div"></div>
+                        </div>
+                    </li>
+                    <li id="grid_svn_li">
+                        <div id="grid_svn_result">
+                            <label for="grid_svn_treeView_jobSvn"><@spring.message "hdispatch.job.job_create.svn_file_selected"/>：</label>
+                            <input id="grid_svn_treeView_jobSvn" style="width: 100%;" readonly="readonly"/>
+                        </div>
+                    </li>
+                    <li>
+                        <button class="k-button k-primary k-submit" onclick="getSelectedSvn()"><@spring.message "hdispatch.job.job_create.select"/></button>
+                    </li>
+                </ul>
+            </div>
+        </script>
+
+        <style>
+            #batchCreateForm_input_svn .k-sprite {
+                background-image: url("../../../../lib/images/coloricons-sprite.png");
+            }
+            #grid_treeView_div .k-sprite {
+                background-image: url("../../../../lib/images/coloricons-sprite.png");
+            }
+            .rootfolder { background-position: 0 0; }
+            .folder     { background-position: 0 -16px; }
+            .pdf        { background-position: 0 -32px; }
+            .html       { background-position: 0 -48px; }
+            .image      { background-position: 0 -64px; }
+            #svn_li .k-checkbox-label {display: inline-block}
+            #grid_svn_li .k-checkbox-label {display: inline-block}
+            #batchCreateForm_input_svn .k-checkbox-wrapper {display: inline-block}
+        </style>
+    </div>
+    </body>
+    <style>
+        .fieldList {
+            margin: 0 0 -2em;
+            padding: 0;
+        }
+
+        .fieldList li {
+            list-style: none;
+            padding-bottom: 2em;
+            width: 100%;
+        }
+
+        .fieldList label {
+            display: block;
+            padding-bottom: 1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+            color: #444;
+        }
+
+    </style>
+</html>

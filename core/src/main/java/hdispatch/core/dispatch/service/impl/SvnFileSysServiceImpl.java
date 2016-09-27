@@ -16,28 +16,37 @@ import java.util.Vector;
 
 /**
  * Created by yyz on 2016/9/14.
- * yazheng.yang@hand-china.com
+ * @author yazheng.yang@hand-china.com
+ *
+ * SVN文件操作服务实现类
  */
 @Service
 public class SvnFileSysServiceImpl implements SvnFileSysService {
-    public static final String SVN_CONFIG_FILE = "svnFileSys.properties";
-    public static String SVN_FILE_SYS_IP = "172.20.0.203";
-    public static int SVN_FILE_SYS_PORT = 22;
-    public static String SVN_FILE_SYS_USERNAME = "hive";
-    public static String SVN_FILE_SYS_PASSWORD = "handoracle";
-    public static String SVN_FILE_SYS_ROOTPATH = "/home/ETL";
-    //    @Autowired
-    public static SvnConfig svnConfig = new SvnConfig();
+//    public static final String SVN_CONFIG_FILE = "svnFileSys.properties";
+//    public static String SVN_FILE_SYS_IP = "172.20.0.203";
+//    public static int SVN_FILE_SYS_PORT = 22;
+//    public static String SVN_FILE_SYS_USERNAME = "hive";
+//    public static String SVN_FILE_SYS_PASSWORD = "handoracle";
+//    public static String SVN_FILE_SYS_ROOTPATH = "/home/ETL";
+//    //    @Autowired
+//    public static SvnConfig svnConfig = new SvnConfig();
     private Logger logger = Logger.getLogger(SvnFileSysServiceImpl.class);
+    @Autowired
+    private SvnConfig svnConfig;
+//    static {
+//        svnConfig.setIp(SVN_FILE_SYS_IP).
+//                setPort(SVN_FILE_SYS_PORT).
+//                setUserName(SVN_FILE_SYS_USERNAME).
+//                setPassword(SVN_FILE_SYS_PASSWORD).
+//                setRootPath(SVN_FILE_SYS_ROOTPATH);
+//    }
 
-    static {
-        svnConfig.setIp(SVN_FILE_SYS_IP).
-                setPort(SVN_FILE_SYS_PORT).
-                setUserName(SVN_FILE_SYS_USERNAME).
-                setPassword(SVN_FILE_SYS_PASSWORD).
-                setRootPath(SVN_FILE_SYS_ROOTPATH);
-    }
-
+    /**
+     * 根据节点获取子节点
+     * @param treeNode
+     * @return
+     * @throws Exception
+     */
     @Override
     public List<TreeNode> fetchSubNodes(TreeNode treeNode) throws Exception {
         List<TreeNode> list = new ArrayList<TreeNode>();
@@ -96,6 +105,10 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
         return list;
     }
 
+    /**
+     * 关闭连接信道
+     * @param channel
+     */
     private static void closeChannel(Channel channel) {
         if (channel != null) {
             if (channel.isConnected()) {
@@ -104,6 +117,10 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
         }
     }
 
+    /**
+     * 关闭连接会话
+     * @param session
+     */
     private static void closeSession(Session session) {
         if (session != null) {
             if (session.isConnected()) {
@@ -112,6 +129,13 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
         }
     }
 
+    /**
+     * 判断是否存在子节点
+     * @param sftp
+     * @param filePath
+     * @return
+     * @throws SftpException
+     */
     private static boolean hasChildren(ChannelSftp sftp, String filePath) throws SftpException {
         boolean flag = false;
         if(filePath.endsWith(".kjb")||filePath.endsWith(".KJB")){

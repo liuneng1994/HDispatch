@@ -1,7 +1,6 @@
 <#include "../../include/header.html">
 <body>
 <div>
-    <!--曾经出错原因：头部引用相对地址错误-->
     <div id="content-container">
         <div id="theme-content">
             <div class="panel">
@@ -9,7 +8,7 @@
                     <div class="panel-body col-sm-offset-0">
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label style="width: 20%">主题名称</label>
+                                <label style="width: 20%"><@spring.message "hdispatch.theme_name"/></label>
                                 <!--<div class="col-sm-4">-->
                                 <input id="input1" type="text" style="width: 70%" data-bind="value:model.themeName" class="k-textbox">
                                 <!--</div>-->
@@ -17,15 +16,15 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label style="width: 20%">主题描述</label>
+                                <label style="width: 30%"><@spring.message "hdispatch.theme.theme_description"/></label>
                                 <!--<div class="col-sm-4">-->
-                                <input type="text" style="width:70%" data-bind="value:model.themeDescription" class="k-textbox">
+                                <input type="text" style="width:60%" data-bind="value:model.themeDescription" class="k-textbox">
                                 <!--</div>-->
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <span class="btn btn-success" data-bind="click:queryResource" type="submit">查询</span>
+                                <span class="btn btn-success" data-bind="click:queryResource" type="submit"><@spring.message "hdispatch.query"/></span>
                             </div>
                         </div>
                     </div>
@@ -43,11 +42,13 @@
     </div>
     <script type="text/javascript">
         var wnd, detailsTemplate;
+        var baseUrl_theme = "${base.contextPath}/dispatcher/theme/";
+        var baseUrl_layer = "${base.contextPath}/dispatcher/layer/";
         $(document).ready(function () {
             //声明详情窗口
             wnd = $("#details")
                     .kendoWindow({
-                        title: "层次管理",
+                        title: '<@spring.message "hdispatch.theme.layer_manage_title"/>',
                         modal: true,
                         visible: false,
                         resizable: false,
@@ -62,17 +63,16 @@
                     $('#themeListGrid').data('kendoGrid').dataSource.read();
                 }
             });
-            var baseUrl = "${base.contextPath}/dispatcher/theme/";
-            console.info(baseUrl);
+
             var themes_data = new kendo.data.DataSource({
                 transport: {
                     read:  {
-                        url: baseUrl+"query",
+                        url: baseUrl_theme+"query",
                         type : 'GET',
                         dataType: "json"
                     },
                     create: {
-                        url: baseUrl+'submit',
+                        url: baseUrl_theme+'submit',
                         type : 'POST',
                         dataType: "json",
                         contentType:"application/json"
@@ -81,7 +81,6 @@
                         //封装请求参数
                         if (operation !== "read" && options.models) {
                             var datas = options.models;
-                            console.log(datas);
                             if(operation =='create' || operation =='update'){
                                 datas = options.models.map(function(data){
                                     data['__status'] = (operation =='create' ? 'add' : 'update');
@@ -90,11 +89,6 @@
                             }
                             var data_str = kendo.stringify(datas);
                             themes_data = data_str;
-                            console.log(data_str);
-//                        var map = {
-//                            themes_data_array:data_str
-//                        };
-//                        return map;
                             return data_str;
                         } else if (operation === "read") {
                             var model = viewModel.model;
@@ -112,7 +106,6 @@
                             for(var k in map){
                                 if(map[k]==='')delete map[k]
                             }
-                            console.log("theme查询请求参数:"+map);
                             return map;
                         }
                     }
@@ -151,37 +144,40 @@
                     refresh:true,
                     buttonCount:5,
                     messages: {
-                        noRecords: "未找到任何数据",
-                        display: "{0} - {1} 共 {2} 条数据",
-                        empty: "没有数据",
-                        page: "页",
+                        noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                        display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
+                        empty: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                        page: '<@spring.message "hdispatch.grid_page"/>',
                         of: "/ {0}",
-                        itemsPerPage: "条每页",
-                        first: "第一页",
-                        previous: "前一页",
-                        next: "下一页",
-                        last: "最后一页",
-                        refresh: "刷新"
+                        itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',
+                        first: '<@spring.message "hdispatch.grid_first_page"/>',
+                        previous: '<@spring.message "hdispatch.grid_pre_page"/>',
+                        next: '<@spring.message "hdispatch.grid_next_page"/>',
+                        last: '<@spring.message "hdispatch.grid_last_page"/>',
+                        refresh: '<@spring.message "hdispatch.grid_refresh"/>'
                     }
                 },
-                toolbar: [{
-                    name:"create",
-                    text:'创建'
-                },{
-                    name:"save",
-                    text:'保存'
-                },{
-                    name:"cancel",
-                    text:'取消'
-                }
+                toolbar: [
+                    {
+                        name:"create",
+                        text:'<@spring.message "hdispatch.create"/>'
+                    },
+                    {
+                        name:"save",
+                        text:'<@spring.message "hdispatch.save"/>'
+                    },
+                    {
+                        name:"cancel",
+                        text:'<@spring.message "hdispatch.cancel"/>'
+                    }
                 ],
                 columns:
                         [
                             { 'field': 'themeId','hidden':true },
-                            { 'field': 'themeName','title':'主题名称', 'width': "150px" },
-                            { 'field': 'themeSequence','title':'排序编号', 'width': "100px" },
-                            { 'field': 'themeDescription','title':'主题描述', 'width': "200px" },
-                            { command: { text: "编辑层", click: showDetails }, title: "层操作", width: "100px" },
+                            { 'field': 'themeName','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "150px" },
+                            { 'field': 'themeSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "100px" },
+                            { 'field': 'themeDescription','title':'<@spring.message "hdispatch.theme.theme_description"/>', 'width': "200px" },
+                            { command: { text: '<@spring.message "hdispatch.theme.theme_create.edict_layer"/>', click: showDetails }, title: '<@spring.message "hdispatch.theme.layer_operation"/>', width: "100px" }
                         ],
                 editable: true
             });
@@ -191,9 +187,8 @@
         function showDetails(e) {
             e.preventDefault();
             var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-            console.log(dataItem);
             if(!dataItem.themeId || !dataItem.themeName){
-                alert("非法访问");
+                alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
                 return;
             }
             wnd.content(detailsTemplate(dataItem));
@@ -201,8 +196,8 @@
             loadLayerGrid(dataItem);
         }
         function loadLayerGrid(layerHeaderData) {
-            var baseUrl = "${base.contextPath}/dispatcher/layer/";
-            console.info(baseUrl);
+
+            console.info(baseUrl_layer);
             var layerViewModel = kendo.observable({
                 model:{
                     themeId:layerHeaderData.themeId
@@ -211,11 +206,11 @@
             var layers_data = new kendo.data.DataSource({
                 transport: {
                     read:  {
-                        url: baseUrl+"query",
+                        url: baseUrl_layer+"query",
                         dataType: "json"
                     },
                     create: {
-                        url: baseUrl+'submit',
+                        url: baseUrl_layer+'submit',
                         type : 'POST',
                         dataType: "json",
                         contentType:"application/json"
@@ -224,33 +219,22 @@
                         //封装请求参数
                         if (operation !== "read" && options.models) {
                             var layer_datas = options.models;
-                            console.log(layer_datas);
                             if(operation =='create' || operation =='update'){
                                 layer_datas = options.models.map(function(data){
                                     data['__status'] = (operation =='create' ? 'add' : 'update');
                                     return data;
                                 });
                             }
-                            console.log("循环输出表格中的数据,开始");
                             for(var k in layer_datas){
                                 layer_datas[k].themeId=layerHeaderData.themeId;
-                                console.log(layer_datas[k]);
                             }
-                            console.log("循环输出表格中的数据,结束");
                             var layer_data_str = kendo.stringify(layer_datas);
-                            console.log(layer_data_str);
-//                        var map = {
-//                            layers_data_array:layer_data_str
-//                        };
-//                        return map;
+
                             return layer_data_str;
                         } else if (operation === "read") {
                             var layerModel = layerViewModel.model;
-                            console.log("层里面的model:"+layerModel);
-                            console.log("层里面的themeId:"+layerModel.themeId);
                             if(!layerModel.themeId){
-                                console.log("themeId值没有设置，非法访问");
-                                alert("themeId值没有设置，非法访问");
+                                alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer_for_not_set_themeId"/>');
                                 return;
                             }
                             var map = {themeId: layerModel.themeId};
@@ -261,7 +245,6 @@
                             for(var k in map){
                                 if(map[k]==='')delete map[k]
                             }
-                            console.log(map);
                             return map;
                         }
                     }
@@ -301,35 +284,38 @@
                     refresh:true,
                     buttonCount:5,
                     messages: {
-                        noRecords: "未找到任何数据",
-                        display: "{0} - {1} 共 {2} 条数据",
-                        empty: "没有数据",
-                        page: "页",
+                        noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                        display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
+                        empty: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                        page: '<@spring.message "hdispatch.grid_page"/>',
                         of: "/ {0}",
-                        itemsPerPage: "条每页",
-                        first: "第一页",
-                        previous: "前一页",
-                        next: "下一页",
-                        last: "最后一页",
-                        refresh: "刷新"
+                        itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',
+                        first: '<@spring.message "hdispatch.grid_first_page"/>',
+                        previous: '<@spring.message "hdispatch.grid_pre_page"/>',
+                        next: '<@spring.message "hdispatch.grid_next_page"/>',
+                        last: '<@spring.message "hdispatch.grid_last_page"/>',
+                        refresh: '<@spring.message "hdispatch.grid_refresh"/>'
                     }
                 },
-                toolbar: [{
-                    name:"create",
-                    text:'创建'
-                },{
-                    name:"save",
-                    text:'保存'
-                },{
-                    name:"cancel",
-                    text:'取消'
-                }
+                toolbar: [
+                    {
+                        name:"create",
+                        text:'<@spring.message "hdispatch.create"/>'
+                    },
+                    {
+                        name:"save",
+                        text:'<@spring.message "hdispatch.save"/>'
+                    },
+                    {
+                        name:"cancel",
+                        text:'<@spring.message "hdispatch.cancel"/>'
+                    }
                 ],
                 columns:
                         [
-                            { 'field': 'layerName','title':'层名称', 'width': 70 },
-                            { 'field': 'layerDescription','title':'层描述', 'width': 70 },
-                            { 'field': 'layerSequence','title':'排序编号', 'width': 70 }
+                            { 'field': 'layerName','title':'<@spring.message "hdispatch.layer_name"/>', 'width': 70 },
+                            { 'field': 'layerDescription','title':'<@spring.message "hdispatch.layer.layer_description"/>', 'width': 70 },
+                            { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': 70 }
                         ],
                 editable: true
             });
@@ -345,7 +331,7 @@
                             <div class="col-md-12">
                                 <div class="col-md-12 col-md-offset-0">
                                     <label class="col-md-5 control-label col-md-offset-0">
-                                        主题名称：#= themeName #
+                                        <span style="font-size: 20px"><@spring.message "hdispatch.theme_name"/>：</span>#= themeName #
                                     </label>
                                 </div>
                             </div>

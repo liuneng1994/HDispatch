@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by yyz on 2016/9/6.
@@ -84,9 +86,13 @@ public class ThemeController extends BaseController {
                 flag = true;
             }
         }
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
         if (flag) {
             rd = new ResponseData(false);
-            rd.setMessage("以下主题已经存在:" + sb.toString());
+            //
+            String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.theme_name_already_exist", null, locale);
+            rd.setMessage(errorMsg+":" + sb.toString());
             return rd;
         }
         IRequest requestContext = createRequestContext(request);
@@ -94,7 +100,9 @@ public class ThemeController extends BaseController {
         try {
             rd = new ResponseData(themeService.batchUpdate(requestContext, themeList));
         } catch (Exception e) {
-            logger.error("保存主题中途失败", e);
+            //保存主题中途失败
+            String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.error_during_saving", null, locale);
+            logger.error(errorMsg, e);
         }
         return rd;
     }
