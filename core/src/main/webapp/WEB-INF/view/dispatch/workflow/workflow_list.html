@@ -7,7 +7,7 @@
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
     <script src="${base.contextPath}/common/language?var=languageData"
             type="text/javascript"></script>
-    <div kendo-window="vm.scheduleWindow" k-title="'调度工作流'" k-width="600" k-module="true" k-on-open="vm.scheduleWindow.visible = true"
+    <div kendo-window="vm.scheduleWindow" k-title="'调度工作流'" k-modal="true" k-width="600" k-on-open="vm.scheduleWindow.visible = true"
          k-on-close="vm.scheduleWindow.visible = false" k-visible="false">
         <p class="text-center" ng-show="vm.scheduleFlow.loading">加载中</p>
         <form name="schedule" class="form-horizontal" style="width:100%" novalidate ng-hide="vm.scheduleFlow.loading">
@@ -19,30 +19,30 @@
                 <div class="form-group">
                     <label class="control-label col-sm-3">首次执行时间</label>
                     <div class="col-sm-6">
-                        <input kendo-date-time-picker name="startTime" k-ng-model="vm.scheduleFlow.startTime" style="width:100%" ng-required="true"/>
+                        <input kendo-date-time-picker name="startTime" k-ng-model="vm.scheduleFlow.startTime"  style="width:100%" ng-required="true" style="padding-left:0;padding-right:0;width:100%;"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3">是否循环</label>
                     <div class="col-sm-6">
-                        <input type="checkbox" id="recurring" class="k-checkbox" ng-model="vm.scheduleFlow.isrecurring"/>
+                        <input type="checkbox" id="recurring" class="k-checkbox" ng-model="vm.scheduleFlow.isrecurring" />
                         <label class="k-checkbox-label" for="recurring"></label>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3">周期</label>
                     <div class="col-sm-6">
-                        <input type="number" class="k-textbox" ng-model="vm.scheduleFlow.periodVal" ng-required="vm.scheduleFlow.isrecurring" ng-disabled="!vm.scheduleFlow.isrecurring">
+                        <input type="number" class="k-textbox" ng-model="vm.scheduleFlow.periodVal" ng-required="vm.scheduleFlow.isrecurring" ng-disabled="!vm.scheduleFlow.isrecurring" style="padding-left:0;padding-right:0;width:78%;"/>
                         <select style="width:50px;"
                                 kendo-drop-down-list
                                 ng-model="vm.scheduleFlow.period"
                                 k-data-text-field="'name'"
                                 k-data-value-field="'value'"
                                 k-data-source="vm.periods"
-                                style="padding-left:0;padding-right:0"></select>
+                                style="padding-left:0;padding-right:0;width:30%;"></select>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="row">
                     <div class="col-sm-offset-3">
                         <button class="k-button" ng-click="vm.scheduleSubmit()" ng-disabled="schedule.$invalid||!vm.scheduleFlow.startTime">提交</button>
                         <button class="k-button" ng-click="vm.scheduleCancel()">取消</button>
@@ -70,7 +70,7 @@
                                                     k-data-text-field="'themeName'"
                                                     k-data-value-field="'themeId'"
                                                     k-data-source="vm.themes"
-                                                    style="padding-left:0;padding-right:0"></select>
+                                                    style="padding-left:0;padding-right:0;width:100%;"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -84,7 +84,7 @@
                                                     k-data-text-field="'layerName'"
                                                     k-data-value-field="'layerId'"
                                                     k-data-source="vm.layers"
-                                                    style="padding-left:0;padding-right:0">123123</select>
+                                                    style="padding-left:0;padding-right:0;width:100%;">123123</select>
                                         </div>
                                     </div>
                                 </div>
@@ -96,7 +96,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">工作流名称</label>
                                         <div class="col-sm-8 ">
-                                            <input class="col-sm-12 k-textbox" name="workflowName" workflowName
+                                            <input class="col-sm-12 k-textbox" name="workflowName" style="padding-left:0;padding-right:0;width:100%;"
                                                    ng-model="vm.workflow.workflowName" type="text"/>
                                         </div>
                                     </div>
@@ -105,7 +105,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">工作流描述</label>
                                         <div class="col-sm-8 ">
-                                            <input class="col-sm-12 k-textbox" name="description"
+                                            <input class="col-sm-12 k-textbox" name="description" style="padding-left:0;padding-right:0;width:100%;"
                                                    ng-model="vm.workflow.description" type="text"/>
                                         </div>
                                     </div>

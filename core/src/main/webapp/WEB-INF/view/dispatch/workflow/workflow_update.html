@@ -10,7 +10,7 @@
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowDiagramService.js"></script>
     <body ng-app="dispatch" ng-controller="workflowUpdateController as vm">
     <div id="content-container">
-        <div kendo-window="vm.jobWindow" k-title="'添加Job'" k-width="600" k-on-open="vm.jobWindow.visible = true"
+        <div kendo-window="vm.jobWindow" k-title="'添加Job'" k-modal="true" k-width="600" k-on-open="vm.jobWindow.visible = true"
              k-on-close="vm.jobWindow.visible = false" k-visible="false">
             <form name="job" class="form-horizontal" style="width:100%" novalidate>
                 <div class="col-sm-10">
@@ -84,7 +84,7 @@
                                             k-on-change="vm.themeChange(vm.workflow.themeId)"
                                             k-data-text-field="'themeName'"
                                             k-data-value-field="'themeId'"
-                                            k-data-source="vm.themes" style="padding-left:0;padding-right:0"></select>
+                                            k-data-source="vm.themes" style="padding-left:0;padding-right:0;width:100%;"></select>
                                     <span style="color:red;" ng-show="flow.theme.$dirty&&!vm.workflow.themeId">请选择主题</span>
                                 </div>
                             </div>
@@ -100,7 +100,7 @@
                                             k-value-primitive="true"
                                             k-data-text-field="'layerName'"
                                             k-data-value-field="'layerId'"
-                                            k-data-source="vm.layers" style="padding-left:0;padding-right:0"></select>
+                                            k-data-source="vm.layers" style="padding-left:0;padding-right:0;width:100%;"></select>
                                     <span style="color:red;" ng-show="flow.layer.$dirty&&!vm.workflow.layerId">请选择层级</span>
                                 </div>
                             </div>
@@ -113,7 +113,7 @@
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">工作流名称</label>
                                 <div class="col-sm-8 ">
-                                    <input class="col-sm-12 k-textbox" name="workflowName" workflowName ng-model="vm.workflow.workflowName" type="text" ng-disabled="true"/>
+                                    <input class="col-sm-12 k-textbox" name="workflowName" style="padding-left:0;padding-right:0;width:100%;" ng-model="vm.workflow.workflowName" type="text" ng-disabled="true"/>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">工作流描述</label>
                                 <div class="col-sm-8 ">
-                                    <input class="col-sm-12 k-textbox" name="description" ng-model="vm.workflow.description" type="text" required/>
+                                    <input class="col-sm-12 k-textbox" name="description" style="padding-left:0;padding-right:0;width:100%;" ng-model="vm.workflow.description" type="text" required/>
                                     <span style="color:red;" ng-show="flow.description.$dirty&&flow.description.$error.required">请输入工作流描述</span>
                                 </div>
                             </div>
