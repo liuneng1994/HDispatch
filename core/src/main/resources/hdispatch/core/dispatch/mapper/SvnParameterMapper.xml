@@ -6,7 +6,7 @@ yazheng.yang@hand-china.com
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="hdispatch.core.dispatch.mapper.JobMapper">
+<mapper namespace="hdispatch.core.dispatch.mapper.SvnParameterMapper">
     <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.svn.SvnParameter" extends="com.hand.hap.mapper.StdMapper.STD">
         <id column="SCHEDULE_PARA_ID" property="scheduleParaId"/>
         <result column="PARAMETER_NAME" property="parameterName"/>
@@ -38,24 +38,24 @@ yazheng.yang@hand-china.com
                 and SCHEDULE_PARA_ID = #{scheduleParaId}
             </if>
             <if test="parameterName != null">
-                <bind name="pattern" value="'%' + _parameter.parameterName + '%'"/>
-                AND PARAMETER_NAME like #{pattern}
+                <bind name="pattern_parameterName" value="'%' + _parameter.parameterName + '%'"/>
+                AND PARAMETER_NAME like #{pattern_parameterName}
             </if>
             <if test="subjectName != null">
-                <bind name="pattern" value="'%' + _parameter.subjectName + '%'"/>
-                AND SUBJECT_NAME like #{pattern}
+                <bind name="pattern_subjectName" value="'%' + _parameter.subjectName + '%'"/>
+                AND SUBJECT_NAME like #{pattern_subjectName}
             </if>
             <if test="mappingName != null">
-                <bind name="pattern" value="'%' + _parameter.mappingName + '%'"/>
-                AND MAPPING_NAME like #{pattern}
+                <bind name="pattern_mappingName" value="'%' + _parameter.mappingName + '%'"/>
+                AND MAPPING_NAME like #{pattern_mappingName}
             </if>
             <if test="sessionName != null">
-                <bind name="pattern" value="'%' + _parameter.sessionName + '%'"/>
-                AND SESSION_NAME like #{pattern}
+                <bind name="pattern_sessionName" value="'%' + _parameter.sessionName + '%'"/>
+                AND SESSION_NAME like #{pattern_sessionName}
             </if>
             <if test="workFlowName != null">
-                <bind name="pattern" value="'%' + _parameter.workFlowName + '%'"/>
-                AND WORKFLOW_NAME like #{pattern}
+                <bind name="pattern_workFlowName" value="'%' + _parameter.workFlowName + '%'"/>
+                AND WORKFLOW_NAME like #{pattern_workFlowName}
             </if>
         </where>
     </select>
@@ -69,8 +69,8 @@ yazheng.yang@hand-china.com
     </select>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="scheduleParaId">
-        INSERT INTO hdispatch_fnd_schedule_parameter (PARAMETER_NAME, PARAMETER_SORT, SUBJECT_NAME, MAPPING_NAME, SESSION_NAME, WORKFLOW_NAME, PARAMETER_VALUE, FORMAT_MASK, PARA_OFFSET, FREQUENCY, ENABLE_FLAG, START_DATE_ACTIVE, END_DATE_ACTIVE, CREATION_DATE, CREATED_BY, LAST_UPDATED_BY, LAST_UPDATE_DATE)
-        VALUES (#{parameterName},#{parameterSort},#{subjectName},#{mappingName},#{sessionName},#{workFlowName},#{parameterValue},#{formatMask},#{paraOffset},#{frequency},#{enableFlag},#{startDateActive},#{endDateActive},#{creationDate},#{createdBy},#{lastUpdatedBy},#{lastUpdateDate})
+        INSERT INTO hdispatch_fnd_schedule_parameter (PARAMETER_NAME, PARAMETER_SORT, SUBJECT_NAME, MAPPING_NAME, SESSION_NAME, WORKFLOW_NAME, PARAMETER_VALUE, FORMAT_MASK, PARA_OFFSET, FREQUENCY, ENABLE_FLAG, START_DATE_ACTIVE, END_DATE_ACTIVE, CREATION_DATE, LAST_UPDATE_DATE)
+        VALUES (#{parameterName},#{parameterSort},#{subjectName},#{mappingName},#{sessionName},#{workFlowName},#{parameterValue},#{formatMask},#{paraOffset},#{frequency},#{enableFlag},#{startDateActive},#{endDateActive},#{creationDate},#{lastUpdateDate})
     </insert>
     <update id="updateById">
         UPDATE hdispatch_fnd_schedule_parameter

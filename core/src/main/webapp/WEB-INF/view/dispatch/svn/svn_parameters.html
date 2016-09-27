@@ -8,20 +8,20 @@
                         <div class="panel-body col-sm-offset-0">
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label style="width: 20%">主题名称</label>
-                                    <input id="input_themeId" type="text" style="width: 70%" data-bind="value:model.themeId">
+                                    <label style="width: 30%"><@spring.message "hdispatch.svn.svn_parameter.subject_name"/></label>
+                                    <input id="input_themeId" type="text" style="width: 60%" data-bind="value:model.subjectName" class="k-textbox">
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label style="width: 20%">MAPPING名称</label>
-                                    <input id="input_layerId" type="text" style="width:70%" data-bind="value:model.layerId">
+                                    <label style="width: 30%"><@spring.message "hdispatch.svn.svn_parameter.mapping_name"/></label>
+                                    <input id="input_layerId" type="text" style="width:60%" data-bind="value:model.mappingName" class="k-textbox">
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label style="width: 20%">参数 </label>
-                                    <input id="input_layerName" type="text" style="width:70%" data-bind="value:model.jobName" class="k-textbox">
+                                    <label style="width: 30%"><@spring.message "hdispatch.svn.svn_parameter.parameter_name"/></label>
+                                    <input id="input_layerName" type="text" style="width:60%" data-bind="value:model.parameterName" class="k-textbox">
                                 </div>
                             </div>
                             <div class="col-sm-3">
@@ -37,12 +37,12 @@
             <div id="importByExcelWindow_div"></div>
         </div>
         <script type="text/javascript">
-            var wnd, batchCreateJobWindowTemplate;
+            var wnd, batchCreateWindowTemplate;
 
             var svnParameterBaseUrl = "${base.contextPath}/dispatcher/svnParameter/";
 
             $(document).ready(function () {
-                //声明批量创建job窗口
+                //声明 从excel导入数据 窗口
                 wnd = $("#importByExcelWindow_div")
                         .kendoWindow({
                             title: '<@spring.message "hdispatch.job.job_create.job_batch_create_title"/>',
@@ -55,20 +55,20 @@
                                 "Maximize",
                                 "Close"
                             ],
-                            width: 800,
-                            height:500
+                            width: 400,
+                            height:200
                         }).data("kendoWindow");
-                batchCreateJobWindowTemplate = kendo.template($("#batchCreateJobWindow_template").html());
+                batchCreateWindowTemplate = kendo.template($("#import_by_excel_template").html());
 
                 //声明主窗口
                 var viewModel = kendo.observable({
-                    model:{themeId:'',layerId:'',jobName:'',page:''},
+                    model:{subjectName:'',mappingName:'',parameterName:'',page:''},
                     queryResource: function(e) {
                         viewModel.model.page=1;
                         $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
                     }
                 });
-                //任务行表显示数据加载和窗口渲染
+                //SVN参数行表显示数据加载和窗口渲染
                 var svn_parameter_data= new kendo.data.DataSource({
                     transport: {
                         read:  {
@@ -117,17 +117,17 @@
                             }
                             else if (operation === "read") {
                                 var model = viewModel.model;
-                                if(!model.themeId){
-                                    model.themeId='-100';
+                                if(!model.subjectName){
+                                    model.subjectName= ' ';
                                 }
-                                if(!model.layerId){
-                                    model.layerId='-100';
+                                if(!model.mappingName){
+                                    model.mappingName=' ';
                                 }
-                                if(!model.jobName){
-                                    model.jobName=' ';
+                                if(!model.parameterName){
+                                    model.parameterName=' ';
                                 }
 
-                                var map = {themeId: model.themeId,layerId: model.layerId,jobName:model.jobName};
+                                var map = {subjectName: model.subjectName,mappingName: model.mappingName,parameterName:model.parameterName};
 
                                 if (options.page)
                                     map.page = options.page;
@@ -152,15 +152,22 @@
                         data:'rows',
                         total:'total',
                         model: {
-                            id: 'jobId',
+                            id: 'scheduleParaId',
                             fields: {
-                                themeId: { type: 'number',validation: { required: true } },
-                                layerId: { type: 'number',validation: { required: true } },
-                                jobId: { type: 'number',validation: { required: true } },
-                                themeName: { type: 'string',validation: { required: true } },
-                                layerName: { type: 'string',validation: { required: true } },
-                                jobName: { type: 'string',validation: { required: true } },
-                                jobSvn: { type: 'string',validation: { required: true } }
+                                scheduleParaId: { type: 'number',validation: { required: true } },
+                                parameterName: { type: 'string',validation: { required: true } },
+                                parameterValue: { type: 'string',validation: { required: true } },
+                                parameterSort: { type: 'number',validation: { required: true } },
+                                subjectName: { type: 'string',validation: { required: true } },
+                                mappingName: { type: 'string',validation: { required: true } },
+                                sessionName: { type: 'string',validation: { required: true } },
+                                workFlowName: { type: 'string',validation: { required: true } },
+                                formatMask: { type: 'string',validation: { required: true } },
+                                paraOffset: { type: 'number',validation: { required: true } },
+                                frequency: { type: 'string',validation: { required: true } },
+                                enableFlag: { type: 'string',validation: { required: true } },
+                                startDateActive: { type: 'date',validation: { required: true } },
+                                endDateActive: { type: 'date',validation: { required: true } }
                             }
                         },
                         errors: function(res){
@@ -213,14 +220,24 @@
                             text:'<@spring.message "hdispatch.cancel"/>'
                         },
                         {
-                            name:"batchCreateJob",
-                            text:'<@spring.message "hdispatch.job.batch_create"/>'
+                            name:"importFromExcel",
+                            text:'<@spring.message "hdispatch.svn.import_excel"/>'
                         },
                         {
-                            name:"batchDeleteJob",
+                            name:"excel",
+                            text:'<@spring.message "hdispatch.svn.export_excel"/>'
+                        },
+                        {
+                            name:"batchDelete",
                             text:'<@spring.message "hdispatch.job.batch_delete"/>'
                         }
                     ],
+                    excel: {
+                        fileName: "SVN_parameters_Export.xlsx",
+                        proxyURL: svnParameterBaseUrl,
+                        filterable: true
+                    },
+                    format:"{0:yyyy-MM-dd}",
                     columns:
                             [
                                 {
@@ -229,27 +246,28 @@
                                     width: '16px'
                                 },
                                 { 'field': 'scheduleParaId','hidden':true },
-                                { 'field': 'subjectName','title':'主题名称', 'width': "100px" },
-                                { 'field': 'mappingName','title':'MAPPING名称', 'width': "100px" },
-                                { 'field': 'sessionName','title':'SESSION名称', 'width': "100px" },
-                                { 'field': 'layerId','title':'WORKFLOW名称', 'width': "100px" },
-                                { 'field': 'layerId','title':'参数名称', 'width': "100px" },
-                                { 'field': 'layerId','title':'参数值', 'width': "100px" },
-                                { 'field': 'layerId','title':'时间掩码格式', 'width': "100px" },
-                                { 'field': 'layerId','title':'偏移量', 'width': "100px" },
-                                { 'field': 'layerId','title':'起始日期', 'width': "100px" },
-                                { 'field': 'layerId','title':'失效日期', 'width': "100px" },
-                                { 'field': 'layerId','title':'频率', 'width': "100px" },
-                                { 'field': 'layerId','title':'有效标志', 'width': "100px" },
-                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
+                                { 'field': 'subjectName','title':'<@spring.message "hdispatch.svn.svn_parameter.subject_name"/>', 'width': "100px" },
+                                { 'field': 'mappingName','title':'<@spring.message "hdispatch.svn.svn_parameter.mapping_name"/>', 'width': "100px" },
+                                { 'field': 'sessionName','title':'<@spring.message "hdispatch.svn.svn_parameter.session_name"/>', 'width': "100px" },
+                                { 'field': 'workFlowName','title':'<@spring.message "hdispatch.svn.svn_parameter.workflow_name"/>', 'width': "100px" },
+                                { 'field': 'parameterName','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_name"/>', 'width': "100px" },
+                                { 'field': 'parameterValue','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_value"/>', 'width': "100px" },
+                                { 'field': 'formatMask','title':'<@spring.message "hdispatch.svn.svn_parameter.format_mask"/>', 'width': "100px" },
+                                { 'field': 'paraOffset','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_offset"/>', 'width': "100px" },
+//                                { 'field': 'startDateActive','title':'起始日期',format: '{0: yyyy-MM-dd HH:mm:ss}', 'width': "100px" },
+                                { 'field': 'startDateActive','title':'起始日期',format: '{0: yyyy-MM-dd}', 'width': "150px" },
+                                { 'field': 'endDateActive','title':'失效日期',format: '{0: yyyy-MM-dd}', 'width': "150px" },
+                                { 'field': 'frequency','title':'频率', 'width': "100px" },
+                                { 'field': 'enableFlag','title':'有效标志', 'width': "100px",editor:enableFlagEditor,template:"#=enableFlag#" }
+//                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
                     ],
                     editable: true
                 });
                 //自定义toolbar中的按钮
-                $(".k-grid-batchCreateJob").click(function(e){
-                    showBatchCreateJobWindow(e);
+                $(".k-grid-importFromExcel").click(function(e){
+                    showImportFromExcelWindow(e);
                 });
-                $(".k-grid-batchDeleteJob").click(function(e){
+                $(".k-grid-batchDelete").click(function(e){
                     /*
                      确认是否批量删除
                      进行删除
@@ -269,10 +287,99 @@
                     }
                 });
 
+                //设置grid中enableFlag选择框
+                function enableFlagEditor(container, options) {
+                    grid_themeDropDownList = $('<input required name="' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoDropDownList({
+                                dataTextField: "enableFlag",
+                                dataValueField: "enableFlag",
+                                dataSource:[
+                                    {
+                                        enableFlag:"Y"
+                                    },
+                                    {
+                                        enableFlag:"N"
+                                    }
+                                ],
+                                index:0
+                            });
+                };
                 //绑定主页面的数据和视图
                 kendo.bind($('#theme-content'),viewModel);
-            });
 
+            });
+            function showImportFromExcelWindow(e) {
+                e.preventDefault();
+
+                wnd.content(batchCreateWindowTemplate);
+                wnd.center().open();
+
+                loadBatchCreateData();
+            };
+
+            var batchCreateJobViewModel;
+            function loadBatchCreateData() {
+                batchCreateJobViewModel = kendo.observable({
+                    model:{
+                        themeId:'',
+                        layerId:'',
+                        jobSvn:''
+                    }
+                });
+                $('input[name="excelFiles"]').kendoUpload({
+                    validation: {
+                        allowedExtensions: [".xls", ".xlsx"]
+                    },
+                    selectable:'single',
+                    multiple:false,
+                    data:'rows',
+                    success: function (data) {
+                        console.log(data);
+                        console.log(data.success);
+                        if(!data.success){
+                            alert('<@spring.message "hdispatch.create_failure"/>：'+data.message);
+                            wnd.close();
+                        }else{
+                            alert('<@spring.message "hdispatch.create_success"/>');
+                            wnd.close();
+                        }
+                    },
+                    showFileList: true,
+                    select: onFileSelect
+                });
+                kendo.bind($('#batchCreateJobForm'),batchCreateJobViewModel);
+            };
+            function onFileSelect(e) {
+//                console.log("e.files:");
+//                console.log(e.files);
+//                console.log(e.files.length);
+//                var files = $('input[name="excelFiles"]').prop('files');//获取到文件列表
+//                console.log(files);
+//                console.log(files.length);
+                if(e.files.length > 1){
+                    alert('只能上传一个文件');
+                    $("#excelFilesForm").resetForm(true);
+                    //设置提交按钮不可用
+                    $("#excelFormButton").attr("disabled",true);
+                    return;
+                }
+                $.map(e.files, function(file) {
+                    var info = file.name;
+                    var isExcelFile = info.lastIndexOf(".xls")==info.length-4 || info.lastIndexOf(".xlsx")==info.length-5;
+                    if(!isExcelFile){
+                        alert(info+"不是Excel文件");
+                        $("#excelFilesForm").resetForm(true);
+                        //设置提交按钮不可用
+                        $("#excelFormButton").attr("disabled",true);
+                    }else{
+                        //设置提交按钮可用
+                        $("#excelFormButton").attr("disabled",false);
+//                        getUpload().disable();
+//                        getUpload().hide();
+                    }
+                }).join(", ");
+            }
 
             //为grid中的checkBox绑定选中事件
             $("#svnParametersListGrid").on("click", ".checkbox" , selectRow);
@@ -283,7 +390,7 @@
                         grid = $("#svnParametersListGrid").data("kendoGrid"),
                         dataItem = grid.dataItem(row);
 
-                checkedIds[dataItem.jobId] = checked;
+                checkedIds[dataItem.scheduleParaId] = checked;
                 if (checked) {
                     row.addClass("k-state-selected");
                 } else {
@@ -296,78 +403,58 @@
             {
                 return $('#svnParametersListGrid').data("kendoGrid")._data[index];
             }
-            //设置当前行中的themeName
-            function setEditingRowThemeName(index,themeName)
-            {
-                var data_temp = getEdictingRowData(index);
-                data_temp.set("themeName",themeName);
+
+            function submitImportFromExcelForm() {
+                var files = $('input[name="excelFiles"]').prop('files');//获取到文件列表
+                console.log(files);
+                if(files.length == 0){
+                    alert('请选择文件');
+                }else if(files.length > 1){
+                    alert('只能上传一个文件');
+                }
+                else{
+//                    $('#excelFilesForm').attr("action",svnParameterBaseUrl+"importFromExcel");
+                    getUpload().enable();
+                    var options = {
+                        url:svnParameterBaseUrl+"importFromExcel",
+//                    beforeSubmit:  showRequest,  //提交前处理
+                        success:function (data) {
+
+                            console.log(data);
+                            if(data.success){
+                                alert("成功");
+                                wnd.close();
+                            }else{
+                                alert(data.message);
+                            }
+                        },
+                        resetForm: true,
+                        dataType:  'json'
+                    };
+
+                    $('#excelFilesForm').submit(function() {
+                        $(this).ajaxSubmit(options);
+                        return false;//防止dialog 自动关闭
+                    });
+                }
+                return false;
             }
-            //设置当前行中的layerName
-            function setEditingRowLayerName(index,layerName)
-            {
-                var data_temp = getEdictingRowData(index);
-                data_temp.set("layerName",layerName);
+            function getUpload() {
+                return $('input[name="excelFiles"]').data("kendoUpload");
             }
         </script>
         <script type="text/x-kendo-template" id="import_by_excel_template">
-            <div id="import_by_excel_div">
-                <ul class="fieldList">
-                    <li>
-                        <div>
-                            <div id="grid_svn_treeView_div"></div>
-                        </div>
-                    </li>
-                    <li id="grid_svn_li">
-                        <div id="grid_svn_result">
-                            <label for="grid_svn_treeView_jobSvn"><@spring.message "hdispatch.job.job_create.svn_file_selected"/>：</label>
-                            <input id="grid_svn_treeView_jobSvn" style="width: 100%;" readonly="readonly"/>
-                        </div>
-                    </li>
-                    <li>
-                        <button class="k-button k-primary k-submit" onclick="getSelectedSvn()"><@spring.message "hdispatch.job.job_create.select"/></button>
-                    </li>
-                </ul>
+            <div id="import_by_excel_div" style="clear: both">
+                <form id="excelFilesForm" enctype="multipart/form-data" method="post">
+                    <div class="demo-section k-content">
+                        <input name="excelFiles" type="file" />
+                        <p style="padding-top: 1em; text-align: right">
+                            <button id="excelFormButton" disabled="disabled" class="k-button k-primary" onclick="submitImportFromExcelForm()"><@spring.message "hdispatch.create"/></button>
+                        </p>
+                    </div>
+                </form>
             </div>
         </script>
-
-        <style>
-            #batchCreateForm_input_svn .k-sprite {
-                background-image: url("../../../../lib/images/coloricons-sprite.png");
-            }
-            #grid_treeView_div .k-sprite {
-                background-image: url("../../../../lib/images/coloricons-sprite.png");
-            }
-            .rootfolder { background-position: 0 0; }
-            .folder     { background-position: 0 -16px; }
-            .pdf        { background-position: 0 -32px; }
-            .html       { background-position: 0 -48px; }
-            .image      { background-position: 0 -64px; }
-            #svn_li .k-checkbox-label {display: inline-block}
-            #grid_svn_li .k-checkbox-label {display: inline-block}
-            #batchCreateForm_input_svn .k-checkbox-wrapper {display: inline-block}
-        </style>
     </div>
     </body>
-    <style>
-        .fieldList {
-            margin: 0 0 -2em;
-            padding: 0;
-        }
-
-        .fieldList li {
-            list-style: none;
-            padding-bottom: 2em;
-            width: 100%;
-        }
-
-        .fieldList label {
-            display: block;
-            padding-bottom: 1em;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 14px;
-            color: #444;
-        }
-
-    </style>
 </html>
