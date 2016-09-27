@@ -45,7 +45,7 @@
                 //声明 从excel导入数据 窗口
                 wnd = $("#importByExcelWindow_div")
                         .kendoWindow({
-                            title: '<@spring.message "hdispatch.job.job_create.job_batch_create_title"/>',
+                            title: '<@spring.message "hdispatch.svn.import_excel"/>',
                             modal: true,
                             visible: false,
                             resizable: true,
@@ -346,6 +346,7 @@
                         }
                     },
                     showFileList: true,
+                    remove: onFileRemove,
                     select: onFileSelect
                 });
                 kendo.bind($('#batchCreateJobForm'),batchCreateJobViewModel);
@@ -379,6 +380,12 @@
 //                        getUpload().hide();
                     }
                 }).join(", ");
+            }
+
+            function onFileRemove() {
+                $("#excelFilesForm").resetForm(true);
+                //设置提交按钮不可用
+                $("#excelFormButton").attr("disabled",true);
             }
 
             //为grid中的checkBox绑定选中事件
