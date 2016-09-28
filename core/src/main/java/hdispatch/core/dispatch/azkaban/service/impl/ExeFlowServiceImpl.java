@@ -4,12 +4,10 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hdispatch.core.dispatch.azkaban.entity.flow.ExeFlow;
-import hdispatch.core.dispatch.azkaban.flow.FlowObj;
 import hdispatch.core.dispatch.azkaban.service.ExeFlowService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +24,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 	private HttpResponse<JsonNode> response;
 
 	@Override
-	public Object Fetchflows(String projectName) {
+	public Long Fetchflows(String projectName) {
 		try {
 			response = RequestUtils.get(RequestUrl.MANAGER).queryString("ajax", "fetchprojectflows")
 					.queryString("project", projectName).asJson();
@@ -35,7 +33,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("工程名错误！");
 			throw new IllegalArgumentException("工程名错误！", e);
 		}
-		return response.getBody().getObject();
+		return response.getBody().getObject().getLong("projectId");
 	}
 
 	@Override

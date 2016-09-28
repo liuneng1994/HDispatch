@@ -10,6 +10,6 @@ databaseChangeLog(logicalFilePath: "hdispatch/core/db/liquibase.groovy") {
     //"mysql"表示数据库类型
     //["com/hand/hap"] 表示本次要执行脚本的扫描路径,可以添加多个
     //["table", "data"] 表示在建表的同时初始化数据
-    migrationHelper.dbmigrate("mysql",["com/hand/hap","hdispatch/core"] ,["table", "data"])
+    migrationHelper.dbmigrate("mysql",["com/hand/hap","hdispatch/core"] ,["table", "data", "patch"])
 
 }

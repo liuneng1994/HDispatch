@@ -1,8 +1,8 @@
 package hdispatch.core.dispatch.mapper;
 
-import java.util.List;
-
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
+
+import java.util.List;
 
 public interface HdispatchScheduleMapper {
     int deleteByPrimaryKey(HdispatchSchedule s);
@@ -18,4 +18,6 @@ public interface HdispatchScheduleMapper {
     int updateByPrimaryKey(HdispatchSchedule record);
 
 	List<HdispatchSchedule> selectAll(HdispatchSchedule s);
+
+	HdispatchSchedule selectByFlowAndProject(HdispatchSchedule s);
 }

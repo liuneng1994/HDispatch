@@ -1,8 +1,8 @@
 package hdispatch.core.dispatch.mapper;
 
-import java.util.List;
-
 import hdispatch.core.dispatch.dto.HdispatchGroup;
+
+import java.util.List;
 
 public interface HdispatchGroupMapper {
     int deleteByPrimaryKey(Long id);
