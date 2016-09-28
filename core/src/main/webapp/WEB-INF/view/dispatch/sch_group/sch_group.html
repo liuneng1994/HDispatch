@@ -1,6 +1,9 @@
 <#-- * description: 角色界面 * version: 1.0 *author:hailin.xu@hand-china.com
 * #{copyright}# * --> <#include "../../include/header.html">
 <body>
+	<script src="../../../../lib/flatpickr.min.js"></script>
+	<link rel="stylesheet" type="text/css"
+		href="../../../../lib/flatpickr.min.css">
 	<script src="${base.contextPath}/common/language?var=languageData"
 		type="text/javascript"></script>
 	<div id="tipDelete"></div>
@@ -15,7 +18,7 @@
 						<div class="col-sm-3">
 							<div class="form-group">
 								<label class="col-sm-3 control-label"><@spring.message
-									"flowexe.flowname"/></label>
+									"hdispatch.flowlist.flowname"/></label>
 								<div class="col-sm-6">
 									<input type="text" data-bind="value:model.flowName"
 										class="k-textbox">
@@ -28,7 +31,7 @@
 						<div class="col-sm-3">
 							<div class="form-group">
 								<label class="col-sm-3 control-label"><@spring.message
-									"flowexe.groupname"/></label>
+									"hdispatch.flowlist.groupname"/></label>
 								<div class="col-sm-6">
 									<input type="text" data-bind="value:model.groupName"
 										class="k-textbox">
@@ -40,7 +43,7 @@
 						<div class="col-sm-3">
 							<div class="form-group">
 								<label class="col-sm-3 control-label"><@spring.message
-									"flowexe.projectname"/></label>
+									"hdispatch.flowlist.projectname"/></label>
 								<div class="col-sm-6">
 									<input type="text" data-bind="value:model.projectName"
 										class="k-textbox">
@@ -52,9 +55,10 @@
 						<div class="col-sm-3">
 							<div class="form-group">
 								<label class="col-sm-3 control-label"><@spring.message
-									"flowexe.date"/></label>
+									"hdispatch.flowlist.date"/></label>
 								<div class="col-sm-6">
-									<input type="date" data-bind="value:model.date"
+									<input id="picker" data-enable-time="true"
+										data-time_24hr="true" data-bind="value:model.date"
 										class="k-textbox">
 								</div>
 							</div>
@@ -77,8 +81,10 @@
 			</div>
 		</div>
 	</div>
-	<script src="../../lib/dateformat.js"></script>
+	<script src="../../../../lib/dateformat.js"></script>
 	<script type="text/javascript">
+	console.log(new Date());
+	document.getElementById("picker").flatpickr();
 		var checkedIds = {};
 
 		//on click of the checkbox:
@@ -127,16 +133,18 @@
 				}
 			});
 		}
-		function openFlowDetailPage(flow_id,exec_id) {
-			 var dialog =  $("#dialog").kendoWindow({
-			    actions: [ "Maximize", "Minimize", "Close"],
-			    width  : 920,
-			    height : 450,
-			    title  : flow_id + ' Detail', 
-			    visible: false,
-			    iframe : true,  
-			    content: 'flow_infodetail.html?flow_id=' + flow_id+'&exec_id='+exec_id
-			}).data("kendoWindow"); 
+		function openFlowDetailPage(flow_id, exec_id) {
+			var dialog = $("#dialog").kendoWindow(
+					{
+						actions : [ "Maximize", "Minimize", "Close" ],
+						width : 920,
+						height : 450,
+						title : flow_id + ' Detail',
+						visible : false,
+						iframe : true,
+						content : 'flow_infodetail.html?flow_id=' + flow_id
+								+ '&exec_id=' + exec_id
+					}).data("kendoWindow");
 			dialog.center().open();
 		}
 		window.stateColor = {
@@ -174,6 +182,7 @@
 											parameterMap : function(options,
 													type) {
 												if (type === "read") {
+													
 													var model = viewModel.model;
 													var map = {};
 													if (model.flowName) {
@@ -185,9 +194,8 @@
 													if (model.projectName) {
 														map.projectName = model.projectName;
 													}
-													if (model.date) {
-														map.date = model.date
-																.getTime();
+													if (document.getElementById("picker").value!='') {
+														 map.date = new Date(document.getElementById("picker").value).getTime(); 
 													}
 													if (options.page) {
 														map.page = options.page;
@@ -267,11 +275,11 @@
 									type : "button",
 									id : "stop",
 									text : '<@spring.message "hap.stop"/>'
-								}/* , {
-									type : "button",
-									id : "fresh",
-									text : '<@spring.message "hap.fresh"/>'
-								} */
+								} /* , {
+																	type : "button",
+																	id : "fresh",
+																	text : '<@spring.message "hap.fresh"/>'
+																} */
 
 								]
 							});
@@ -285,6 +293,7 @@
 												reorderable : true,
 												scrollable : false,
 												editable : false,
+												sortable:true,
 												pageable : {
 													pageSizes : [ 5, 10, 20, 50 ],
 													refresh : true,
@@ -310,12 +319,12 @@
 														},
 														{
 															field : "exec_id",
-															title : '<@spring.message "flowexe.exeid"/>',
+															title : '<@spring.message "hdispatch.flowlist.flowgrid.exeid"/>',
 															width : 140
 														},
 														{
 															field : "flow_id",
-															title : '<@spring.message "flowexe.flowname"/>',
+															title : '<@spring.message "hdispatch.flowlist.flowname"/>',
 															width : 80,
 															template : function(
 																	item) {
@@ -324,7 +333,9 @@
 																var html = "<a href='javascript:void(0)' style='text-decoration: none;'"
 																		+ "onclick='openFlowDetailPage(\""
 																		+ flow_id
-																		+ "\",\""+exec_id+"\")'>"
+																		+ "\",\""
+																		+ exec_id
+																		+ "\")'>"
 																		+ flow_id
 																		+ "</a>";
 																return html;
@@ -332,16 +343,17 @@
 														},
 														{
 															field : "project_name",
-															title : '<@spring.message "flowexe.projectname"/>',
+															title : '<@spring.message "hdispatch.flowlist.projectname"/>',
 															width : 200
-														},{
+														},
+														{
 															field : "group_name",
-															title : '<@spring.message "flowexe.groupname"/>',
+															title : '<@spring.message "hdispatch.flowlist.groupname"/>',
 															width : 200
 														},
 														{
 															field : "start_time",
-															title : '<@spring.message "flowexe.startdate"/>',
+															title : '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
 															width : 180,
 															template : function(
 																	dataItem) {
@@ -354,7 +366,7 @@
 														},
 														{
 															field : "end_time",
-															title : '<@spring.message "flowexe.enddate"/>',
+															title : '<@spring.message "hdispatch.flowlist.flowgrid.enddate"/>',
 															width : 180,
 															template : function(
 																	dataItem) {
@@ -372,22 +384,23 @@
 														},
 														{
 															field : "elapsed",
-															title : '<@spring.message "flowexe.rundate"/>',
+															title : '<@spring.message "hdispatch.flowlist.flowgrid.rundate"/>',
 															width : 180,
 															template : function(
 																	dataItem) {
-																var v = dataItem.end_time-dataItem.start_time;
+																var v = dataItem.end_time
+																		- dataItem.start_time;
 																/*  
 																    if(v instanceof Date){
 																        return kendo.toString(v,"yyyy-MM-dd hh:mm:ss");
 																    }
 																    return v?v:''; */
-																return v+'ms';
+																return v + 'ms';
 															}
 														},
 														{
 															field : "status",
-															title : '<@spring.message "flowexe.status"/>',
+															title : '<@spring.message "hdispatch.flowlist.flowgrid.status"/>',
 															width : 100,
 															template : function(
 																	item) {
@@ -409,7 +422,7 @@
 														},
 														{
 															field : "running",
-															title : '<@spring.message "flowexe.running"/>',
+															title : '<@spring.message "hdispatch.flowlist.flowgrid.running"/>',
 															width : 100,
 															template : function(
 																	item) {
@@ -417,8 +430,12 @@
 																var html = "<div class='progress progress-striped active'>"
 																		+ "<div class='progress-bar progress-bar-success' role='progressbar'"
 																		+ "   aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"
-																		+ "  style='width: "+status+"%;'>"
-																		+ " <span class='sr-only'>"+status+"% 完成</span></div></div>";
+																		+ "  style='width: "
+																		+ status
+																		+ "%;'>"
+																		+ " <span class='sr-only'>"
+																		+ status
+																		+ "% 完成</span></div></div>";
 																return html;
 															}
 														} ]

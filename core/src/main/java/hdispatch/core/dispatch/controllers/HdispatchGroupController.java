@@ -1,28 +1,18 @@
 package hdispatch.core.dispatch.controllers;
 
 import com.github.pagehelper.PageHelper;
-import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.ResponseData;
-
 import hdispatch.core.dispatch.azkaban.service.ExeFlowService;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
 import hdispatch.core.dispatch.dto.HdispatchGroup;
 import hdispatch.core.dispatch.service.HdispatchGroupService;
-import hdispatch.core.dispatch.service.ThemeService;
-import hdispatch.core.dispatch.service.impl.ThemeServiceImpl;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +54,7 @@ public class HdispatchGroupController {
     @RequestMapping("/group/startGroup")
     @ResponseBody
     public ResultObj start(HttpServletRequest request,
-                              @RequestParam String id
+                           @RequestParam String id
                               ) {
     	System.out.println("----------"+id);
     	//exeFlowservice.ExecuteFlow(null);
@@ -82,7 +72,7 @@ public class HdispatchGroupController {
     @RequestMapping("/group/resumeGroup")
     @ResponseBody
     public ResultObj resume(HttpServletRequest request,
-                              @RequestParam String id
+                            @RequestParam String id
                               ) {
     	System.out.println("----------"+id);
     	//exeFlowservice.ExecuteFlow(null);
@@ -100,7 +90,7 @@ public class HdispatchGroupController {
     @RequestMapping("/group/pauseGroup")
     @ResponseBody
     public ResultObj pause(HttpServletRequest request,
-                              @RequestParam String id
+                           @RequestParam String id
                               ) {
     	System.out.println("----------"+id);
     	//exeFlowservice.ExecuteFlow(null);
@@ -118,7 +108,7 @@ public class HdispatchGroupController {
     @RequestMapping("/group/stopGroup")
     @ResponseBody
     public ResultObj stop(HttpServletRequest request,
-                              @RequestParam String id
+                          @RequestParam String id
                               ) {
     	System.out.println("----------"+id);
     	//exeFlowservice.ExecuteFlow(null);

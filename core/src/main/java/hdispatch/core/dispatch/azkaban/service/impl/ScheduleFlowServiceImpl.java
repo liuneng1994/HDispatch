@@ -3,20 +3,17 @@ package hdispatch.core.dispatch.azkaban.service.impl;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import hdispatch.core.dispatch.azkaban.entity.schedule.Schedule;
 import hdispatch.core.dispatch.azkaban.flow.FlowObj;
 import hdispatch.core.dispatch.azkaban.service.ScheduleFlowService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
-
-import java.util.Map;
-
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 /**
  * Created by 邓志龙 on 2016/8/31.
@@ -153,6 +150,23 @@ public ResultObj setsla(Map<String, Object> map) {
 		obj.setMessage("success!");
 	else
 		obj.setMessage("Failed!");
+	return obj;
+}
+/**
+ * 获取sla信息
+ */
+@Override
+public ResultObj slaInfo(Map<String, Object> map) {
+	ResultObj obj=new ResultObj();
+	try {
+		response = RequestUtils.get(RequestUrl.SCHEDULE).queryString("ajax", "slaInfo")
+				.queryString(map).asJson();
+
+	} catch (UnirestException e) {
+		logger.error("schedule不存在！");
+		throw new IllegalArgumentException("schedule不存在！", e);
+	}
+	obj.setMessage(response.getBody().getObject().toString());
 	return obj;
 }
 }

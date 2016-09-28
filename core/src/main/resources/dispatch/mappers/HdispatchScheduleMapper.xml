@@ -34,6 +34,15 @@
         and submit_date > #{submit_date,jdbcType=VARCHAR}
       </if>
   </select>
+   <select id="selectByFlowAndProject" resultMap="BaseResultMap" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
+    select 
+    <include refid="Base_Column_List" />
+    from hdispatch_schedule
+    where  project_name = #{project_name,jdbcType=VARCHAR}
+    and flow_id = #{flow_id,jdbcType=VARCHAR}
+    and project_id=#{project_id,jdbcType=INTEGER}
+    
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
     delete from hdispatch_schedule
     where flow_id = #{flow_id,jdbcType=VARCHAR}
