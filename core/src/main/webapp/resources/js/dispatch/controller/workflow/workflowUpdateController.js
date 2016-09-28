@@ -144,9 +144,11 @@
         }
 
         function refreshJobs(jobs, themeId, layerId) {
-            workflowService.jobs(themeId, layerId).then(function (data) {
-                vm[jobs] = data;
-            })
+            if (themeId && layerId) {
+                workflowService.jobs(themeId, layerId).then(function (data) {
+                    vm[jobs] = data;
+                });
+            }
         }
     }
 })()

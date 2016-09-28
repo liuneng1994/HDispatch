@@ -3,7 +3,7 @@
     angular.module('dispatch').factory('workflowService', ['httpService', workflowService]);
     function workflowService(httpService) {
         var themes = function () {
-            return httpService.get('/dispatcher/theme/queryAll', {},
+            return httpService.get(_basePath + '/dispatcher/theme/queryAll', {},
                 function (data, defered) {
                     if (data.success) {
                         defered.resolve(data.rows);
@@ -11,7 +11,7 @@
                 });
         };
         var layers = function (themeId) {
-            return httpService.get('/dispatcher/layer/queryAll',
+            return httpService.get(_basePath + '/dispatcher/layer/queryAll',
                 {themeId: themeId},
                 function (data, defered) {
                     if (data.success) {
@@ -20,7 +20,7 @@
                 });
         };
         var jobs = function (themeId, layerId) {
-            return httpService.get('/dispatcher/job/query',
+            return httpService.get(_basePath + '/dispatcher/job/query',
                 {
                     themeId: themeId,
                     layerId: layerId,
@@ -33,7 +33,7 @@
             );
         };
         var createWorkflow = function (workflow) {
-            return httpService.postJSON('/dispatcher/workflow/create', workflow, function (data, defered) {
+            return httpService.postJSON(_basePath + '/dispatcher/workflow/create', workflow, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data.message);
                 } else {
@@ -43,7 +43,7 @@
         };
 
         var generateWorkflow = function (workflowId) {
-            return httpService.get('/dispatcher/workflow/generateWorkflow',
+            return httpService.get(_basePath + '/dispatcher/workflow/generateWorkflow',
                 {
                     workflowId: workflowId
                 }, function (data, defered) {
@@ -59,16 +59,16 @@
             for (var name in queryInfo) {
                 if (queryInfo.hasOwnProperty(name) && queryInfo[name] != undefined) params[name] = queryInfo[name];
             }
-            return httpService.get('/dispatcher/workflow/query',params,function(data, defered) {
+            return httpService.get(_basePath + '/dispatcher/workflow/query', params, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data);
                 }
             });
         };
 
-        var workflow =function(workflowId) {
-            var params = {workflowId:workflowId};
-            return httpService.get('/dispatcher/workflow/get',params,function(data, defered) {
+        var workflow = function (workflowId) {
+            var params = {workflowId: workflowId};
+            return httpService.get(_basePath + '/dispatcher/workflow/get', params, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data.rows[0]);
                 } else {
@@ -77,8 +77,8 @@
             });
         };
 
-        var updateWorkflow = function(workflow) {
-            return httpService.postJSON('/dispatcher/workflow/update', workflow, function (data, defered) {
+        var updateWorkflow = function (workflow) {
+            return httpService.postJSON(_basePath + '/dispatcher/workflow/update', workflow, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data.message);
                 } else {
@@ -87,9 +87,15 @@
             });
         };
 
-        var scheduleWorkflow = function(scheduleInfo) {
-            return httpService.get('/schedule/schedule', scheduleInfo, function(data,defered) {
+        var scheduleWorkflow = function (scheduleInfo) {
+            return httpService.get(_basePath + '/schedule/schedule', scheduleInfo, function (data, defered) {
                 defered.resolve(data.messsage);
+            });
+        }
+
+        var executeWorkflow = function (executeInfo) {
+            return httpService.postJSON(_basePath + '/schedule/exeflow', executeInfo, function (data, defered) {
+                defered.resolve(data.message);
             });
         }
 
@@ -102,7 +108,8 @@
             generateWorkflow: generateWorkflow,
             query: query,
             workflow: workflow,
-            scheduleWorkflow: scheduleWorkflow
+            scheduleWorkflow: scheduleWorkflow,
+            executeWorkflow: executeWorkflow
         };
     }
 })();

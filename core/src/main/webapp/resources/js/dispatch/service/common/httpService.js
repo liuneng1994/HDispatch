@@ -9,7 +9,7 @@
          * 请求错误处理函数
          */
         function errorHandler() {
-            $window.alert("net error");
+            alert("net error");
         };
         return {
             /**

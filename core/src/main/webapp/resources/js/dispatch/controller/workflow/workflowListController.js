@@ -90,7 +90,8 @@
                     width: 100,
                     template: function (item) {
                         var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>" +
-                            '<button class="btn btn-primary" ng-click="vm.schedule(' + item.workflowId + ')">调度</button>';
+                            '<button class="btn btn-primary" ng-click="vm.schedule(' + item.workflowId + ')">调度</button>' +
+                            '<button class="btn btn-info" ng-click="vm.execute(' + item.workflowId + ')">执行</button>';
                         return html;
                     }
                 }]
@@ -125,10 +126,6 @@
         };
         vm.scheduleSubmit = function () {
             var scheduleInfo = {};
-            if (!vm.scheduleFlow.startTime||!(vm.scheduleFlow.isrecurring&&vm.scheduleFlow.periodVal)) {
-                alert('请填写完整信息');
-                return;
-            }
             scheduleInfo.projectName = vm.scheduleFlow.projectName;
             scheduleInfo.flow = vm.scheduleFlow.flowId;
             scheduleInfo.time = moment(vm.scheduleFlow.startTime).format('hh,mm,a,Z');
@@ -146,6 +143,36 @@
         vm.scheduleCancel = function () {
             vm.scheduleWindow.close();
         };
+
+        vm.execute = function(workflowId) {
+            vm.executeInfo = {};
+            vm.executeInfo.loading = true;
+            workflowService.workflow(workflowId).then(function(data) {
+                vm.executeInfo.project = data.projectName;
+                vm.executeInfo.flow = data.flowId;
+                vm.executeInfo.name = data.name;
+                vm.executeInfo.description = data.description;
+                vm.executeInfo.failureAction = 'finishCurrent';
+                vm.executeInfo.loading = false;
+            })
+            vm.executeWindow.center().open();
+        };
+        vm.executeSubmit = function() {
+            if (vm.executeInfo.successEmails) {
+                vm.executeInfo.successEmailsOverride = true;
+            }
+            if (vm.executeInfo.failureEmails) {
+                vm.failureEmailsOverride = true;
+            }
+            // workflowService.executeWorkflow(vm.executeInfo).then(function(data) {
+            //     $window.alert(message);
+            // });
+            console.log(vm.executeInfo);
+            vm.executeWindow.close();
+        };
+        vm.executeCancel = function() {
+            vm.executeWindow.close();
+        }
         refreshThemes();
         return vm;
 
