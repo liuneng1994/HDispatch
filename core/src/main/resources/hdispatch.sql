@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS `hap_dev`.`hdispatch_workflow` (
   `active` TINYINT NULL DEFAULT 1,
   `theme_id` BIGINT NULL,
   `layer_id` BIGINT NULL,
+  `graph` BLOB NULL,
   OBJECT_VERSION_NUMBER DECIMAL(20, 0) DEFAULT 1,
   REQUEST_ID            BIGINT         DEFAULT -1,
   PROGRAM_ID            BIGINT         DEFAULT -1,

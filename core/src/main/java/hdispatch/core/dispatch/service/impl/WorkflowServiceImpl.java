@@ -1,7 +1,9 @@
 package hdispatch.core.dispatch.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.dto.job.Job;
+import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.mapper.JobMapper;
 import hdispatch.core.dispatch.mapper.WorkflowJobMapper;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,8 +61,12 @@ public class WorkflowServiceImpl implements WorkflowService {
         } else {
             workflowMapper.create(workflow);
             Long id = workflow.getWorkflowId();
-            workflow.getProperties().forEach(workflowProperty -> workflowProperty.setWorkflowId(id));
-            workflow.getJobs().forEach(workflowJob -> workflowJob.setWorkflowId(id));
+            if (workflow.getProperties() != null) {
+                workflow.getProperties().forEach(workflowProperty -> workflowProperty.setWorkflowId(id));
+            }
+            if (workflow.getJobs() != null) {
+                workflow.getJobs().forEach(workflowJob -> workflowJob.setWorkflowId(id));
+            }
             if (workflow.getProperties() != null && !workflow.getProperties().isEmpty()) {
                 workflowPropertyMapper.batchInsert(workflow.getProperties());
             }
@@ -94,6 +101,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             if (workflow.getJobs() != null) {
                 workflowJobMapper.batchInsert(workflow.getJobs());
             }
+            workflowMapper.update(workflow);
             ret.put(RET_SUCCESS, String.format("Workflow %d update sucess", workflow.getWorkflowId()));
         }
         return ret;
@@ -103,7 +111,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Transactional
     public boolean generateWorkflow(long workflowId) {
         Workflow workflow = workflowMapper.getById(workflowId);
-        if (workflow == null) return false;
+        if (workflow == null || workflow.getJobs() == null) return false;
         logger.info("generate workflow " + workflow);
         Set<Long> ids = new HashSet<>();
         workflow.getJobs().forEach(job -> ids.add(job.getJobSource()));
@@ -125,8 +133,32 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
+    @Transactional
     public Workflow getWorkflowByName(String name) {
         return workflowMapper.getByName(name);
+    }
+
+    @Override
+    @Transactional
+    public boolean saveGraph(long workflowId, String graph) {
+        if (StringUtils.isEmpty(graph)) {
+            return false;
+        }
+        int result = workflowMapper.saveGraph(workflowId, graph);
+        return result > 0;
+    }
+
+    @Override
+    @Transactional
+    public String getGraph(long workflowId) {
+        return workflowMapper.getGraph(workflowId);
+    }
+
+    @Override
+    @Transactional
+    public List<SimpleWorkflow> queryWorkflow(Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
+        PageHelper.startPage(page, pageSize);
+        return workflowMapper.query(themeId, layerId, workflowName, decription);
     }
 
     /**

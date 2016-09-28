@@ -1,16 +1,13 @@
 package hdispatch.core.dispatch.dto.workflow;
 
 import com.hand.hap.system.dto.BaseDTO;
-import hdispatch.core.dispatch.utils.group.Create;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * Created by 刘能 on 2016/9/12.
  */
 public class Workflow extends BaseDTO {
-    @NotNull(groups = {Create.class})
     private Long themeId;
     private Long layerId;
     private Long workflowId;
@@ -18,6 +15,7 @@ public class Workflow extends BaseDTO {
     private String projectName;
     private String flowId;
     private String description;
+    private String graph;
     private List<WorkflowProperty> properties;
     private List<WorkflowJob> jobs;
 
@@ -81,6 +79,16 @@ public class Workflow extends BaseDTO {
 
     public Workflow setDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+
+    public String getGraph() {
+        return graph;
+    }
+
+    public Workflow setGraph(String graph) {
+        this.graph = graph;
         return this;
     }
 

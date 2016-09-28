@@ -10,8 +10,9 @@ import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import org.apache.http.entity.ContentType;
-import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -26,11 +27,12 @@ import java.util.Map;
  */
 @Component
 public class ProjectServiceImpl implements ProjectService {
-    private Logger logger = Logger.getLogger(ProjectServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
     private Gson gson = new Gson();
 
     @Override
     public boolean createProject(String projectName, String description) {
+        logger.info("创建工程:{}--{}",projectName,description);
         HttpResponse<JsonNode> response;
         try {
             response = RequestUtils.post(RequestUrl.PROJECT_MANAGER).field("action", "create")
@@ -40,6 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
             logger.error("创建工程失败", e);
             throw new IllegalStateException("创建工程失败", e);
         }
+        logger.info(response.toString());
         String status = response.getBody().getObject().getString("status");
         return "success".equals(status);
     }
