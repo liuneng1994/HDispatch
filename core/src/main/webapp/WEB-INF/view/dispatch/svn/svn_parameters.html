@@ -187,7 +187,7 @@
                     dataSource: svn_parameter_data,
                     resizable: true,
                     selectable: "multiple",
-                    scrollable: false,
+                    scrollable: true,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
                         refresh:true,
@@ -243,22 +243,22 @@
                                 {
                                     title: '',
                                     template: '<input class="checkbox" type="checkbox"/>',
-                                    width: '16px'
+                                    width: 30
                                 },
                                 { 'field': 'scheduleParaId','hidden':true },
-                                { 'field': 'subjectName','title':'<@spring.message "hdispatch.svn.svn_parameter.subject_name"/>', 'width': "100px" },
-                                { 'field': 'mappingName','title':'<@spring.message "hdispatch.svn.svn_parameter.mapping_name"/>', 'width': "100px" },
-                                { 'field': 'sessionName','title':'<@spring.message "hdispatch.svn.svn_parameter.session_name"/>', 'width': "100px" },
-                                { 'field': 'workFlowName','title':'<@spring.message "hdispatch.svn.svn_parameter.workflow_name"/>', 'width': "100px" },
-                                { 'field': 'parameterName','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_name"/>', 'width': "100px" },
-                                { 'field': 'parameterValue','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_value"/>', 'width': "100px" },
-                                { 'field': 'formatMask','title':'<@spring.message "hdispatch.svn.svn_parameter.format_mask"/>', 'width': "100px" },
-                                { 'field': 'paraOffset','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_offset"/>', 'width': "100px" },
+                                { 'field': 'subjectName','title':'<@spring.message "hdispatch.svn.svn_parameter.subject_name"/>', 'width': 100 },
+                                { 'field': 'mappingName','title':'<@spring.message "hdispatch.svn.svn_parameter.mapping_name"/>', 'width': 100 },
+                                { 'field': 'sessionName','title':'<@spring.message "hdispatch.svn.svn_parameter.session_name"/>', 'width': 100 },
+                                { 'field': 'workFlowName','title':'<@spring.message "hdispatch.svn.svn_parameter.workflow_name"/>', 'width': 100 },
+                                { 'field': 'parameterName','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_name"/>', 'width': 100 },
+                                { 'field': 'parameterValue','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_value"/>', 'width': 100 },
+                                { 'field': 'formatMask','title':'<@spring.message "hdispatch.svn.svn_parameter.format_mask"/>', 'width': 100 },
+                                { 'field': 'paraOffset','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_offset"/>', 'width': 100 },
 //                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd HH:mm:ss}', 'width': "100px" },
-                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': "150px" },
-                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': "150px" },
-                                { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': "100px" },
-                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': "100px",editor:enableFlagEditor,template:"#=enableFlag#" }
+                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 150 },
+                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 150 },
+                                { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': 100 },
+                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': 100,editor:enableFlagEditor,template:"#=enableFlag#" }
 //                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
                     ],
                     editable: true
@@ -433,6 +433,7 @@
                                 wnd.close();
                             }else{
                                 alert(data.message);
+                                wnd.close();
                             }
                         },
                         resetForm: true,
