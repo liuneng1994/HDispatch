@@ -177,7 +177,7 @@ public class SvnParameterController extends BaseController{
 
 
     @RequestMapping(value = "/dispatcher/svnParameter/importFromExcel",method = RequestMethod.POST)
-    public ResponseData addSvnParameters(@RequestParam("excelFiles") CommonsMultipartFile[] files, HttpServletRequest req){
+    public ResponseData addSvnParametersFromExcel(@RequestParam("excelFiles") CommonsMultipartFile[] files, HttpServletRequest req){
 
         List<SvnParameter> svnParameterList = null;
         ResponseData rd = null;
