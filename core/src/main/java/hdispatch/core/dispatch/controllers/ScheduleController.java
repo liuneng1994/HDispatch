@@ -168,8 +168,6 @@ public class ScheduleController extends BaseController {
      *
      * @param request
      * @param scheduleId
-     * @param slaEmails
-     * @param settings
      * @return
      */
     @RequestMapping("/slaInfo")
@@ -183,10 +181,8 @@ public class ScheduleController extends BaseController {
      * 调度
      * @param request
      * @param projectName
-     * @param projectId
      * @param flow
-     * @param time
-     * @param date
+     * @param datetime
      * @param isrecurring
      * @return
      * @throws ParseException 
@@ -196,12 +192,13 @@ public class ScheduleController extends BaseController {
     public ResultObj schedule(HttpServletRequest request,
                               @RequestParam String projectName,
                               @RequestParam String flow,
-                              @RequestParam String time,
-                              @RequestParam String date,
+                              @RequestParam Long datetime,
                               @RequestParam boolean isrecurring
     ) throws ParseException {
     	Long projectId=exeFlowService.Fetchflows(projectName);
-        FlowObj obj = new FlowObj(projectName, projectId, flow, time, date);
+        SimpleDateFormat sdf=new SimpleDateFormat("MM/dd/yyyy hh,mm,a,zzz",Locale.US);
+        Date d=new Date(datetime);
+        FlowObj obj = new FlowObj(projectName, projectId, flow, sdf.format(d).split(" ")[1], sdf.format(d).split(" ")[0]);
         if(isrecurring) {
             obj.setIs_recurring();
             String period=request.getParameter("period");
@@ -218,13 +215,9 @@ public class ScheduleController extends BaseController {
         hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
         hds.setProject_name(projectName);
         hds.setFlow_id(flow);
-        
-        String d=date+" "+time;
-        SimpleDateFormat sdf=new SimpleDateFormat("MM/dd/yyyy hh,mm,a,zzz",Locale.US);
-		Date date2=sdf.parse(d);
+
 		sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
-        hds.setSubmit_date(sdf.format(date2));
+        hds.setSubmit_date(sdf.format(d));
         hdispatchScheduleService.insert(hds);
         return scheduleFlowService.scheduleFlow(obj);
 
@@ -274,4 +267,5 @@ public class ScheduleController extends BaseController {
 		
 		return obj;
 	}
+
 }
