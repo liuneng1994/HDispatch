@@ -128,8 +128,9 @@
             var scheduleInfo = {};
             scheduleInfo.projectName = vm.scheduleFlow.projectName;
             scheduleInfo.flow = vm.scheduleFlow.flowId;
-            scheduleInfo.time = moment(vm.scheduleFlow.startTime).format('hh,mm,a,Z');
-            scheduleInfo.date = moment(vm.scheduleFlow.startTime).format('MM/DD/YYYY');
+            scheduleInfo.datetime = moment(vm.scheduleFlow.startTime).valueOf();
+            //scheduleInfo.time = moment(vm.scheduleFlow.startTime).format('hh,mm,a,Z');
+            //scheduleInfo.date = moment(vm.scheduleFlow.startTime).format('MM/DD/YYYY');
             scheduleInfo.isrecurring = vm.scheduleFlow.isrecurring;
             if (scheduleInfo.isrecurring) {
                 scheduleInfo.period = vm.scheduleFlow.period;
@@ -164,9 +165,9 @@
             if (vm.executeInfo.failureEmails) {
                 vm.failureEmailsOverride = true;
             }
-            // workflowService.executeWorkflow(vm.executeInfo).then(function(data) {
-            //     $window.alert(message);
-            // });
+            workflowService.executeWorkflow(vm.executeInfo).then(function(data) {
+                alert(message);
+            });
             console.log(vm.executeInfo);
             vm.executeWindow.close();
         };
