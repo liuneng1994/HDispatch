@@ -249,7 +249,7 @@
 																	}
 																		
 																
-																var html = "<div class='progress'>"+
+																var html = "<div class='progress' style='margin:0;'>"+
 																"<div class='progress-bar progress-bar-success' role='progressbar'"+
 																"	 aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"+
 																"	 style='width: "+r1+"%;background-color:"+color1+";'>"+
@@ -324,13 +324,13 @@
 																	status = 'FAILED';
 																else if (item.status == 20)
 																	status = 'PREPARING';
-																var html = "<button "
-																		+ "style='width:80px;text-decoration: none;"
+																var html = "<div "
+																		+ "style='text-align:center;width:80px;height:13px;text-decoration: none;"
 																		+ (stateColor[status])
 																		+ "' "
 																		+ ">"
 																		+ item.meaning
-																		+ "</button>";
+																		+ "</div>";
 																return html;
 															}
 														},

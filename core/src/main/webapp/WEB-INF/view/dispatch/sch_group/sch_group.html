@@ -346,11 +346,7 @@
 															title : '<@spring.message "hdispatch.flowlist.projectname"/>',
 															width : 200
 														},
-														{
-															field : "group_name",
-															title : '<@spring.message "hdispatch.flowlist.groupname"/>',
-															width : 200
-														},
+														
 														{
 															field : "start_time",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
@@ -410,13 +406,13 @@
 																	status = 'FAILED';
 																else if (item.status == 20)
 																	status = 'PREPARING';
-																var html = "<button "
-																		+ "style='width:80px;text-decoration: none;"
+																var html = "<div "
+																		+ "style='text-align:center;height:13px;width:80px;text-decoration: none;"
 																		+ (stateColor[status])
 																		+ "' "
 																		+ ">"
 																		+ item.meaning
-																		+ "</button>";
+																		+ "</div>";
 																return html;
 															}
 														},
@@ -427,12 +423,12 @@
 															template : function(
 																	item) {
 																var status = item.running;
-																var html = "<div class='progress progress-striped active'>"
+																var html = "<div class='progress progress-striped active' style='margin:0;'>"
 																		+ "<div class='progress-bar progress-bar-success' role='progressbar'"
 																		+ "   aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"
 																		+ "  style='width: "
 																		+ status
-																		+ "%;'>"
+																		+ "%; '>"
 																		+ " <span class='sr-only'>"
 																		+ status
 																		+ "% 完成</span></div></div>";
