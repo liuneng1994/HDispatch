@@ -25,7 +25,7 @@
             $('body').append('<div id="_alert"><div class="text-left" style="padding:50px">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
                     'onclick="$(\'#_alert\').data(\'kendoWindow\').close();$(\'#_alert\').remove();">确定</button><div></div>');
             $('#_alert').kendoWindow({
-                width: "600px",
+                width: "400px",
                 title: "Warning",
                 visible: false,
                 modal: true,
@@ -34,6 +34,31 @@
                 ]
             }).data("kendoWindow").center().open();
         }
+
+        window.confirm = function (message,func) {
+            if (!func) {
+                func = function() {};
+            }
+            $('body').append('<div id="_confirm"><div class="text-left" style="padding:50px">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
+                    'onclick="window.confirm.successCallback();$(\'#_confirm\').data(\'kendoWindow\').close();$(\'#_confirm\').remove();">确定</button>' +
+                    '<button class="btn btn-danger" onclick="$(\'#_confirm\').data(\'kendoWindow\').close();$(\'#confirm\').remove();">取消</button><div></div>');
+            $('#_confirm').kendoWindow({
+                width: "400px",
+                title: "confirm",
+                visible: false,
+                modal: true,
+                actions: [
+                    "Close"
+                ]
+            }).data("kendoWindow").center().open();
+            return window.confirm;
+        }
+
+        window.confirm.accept = function (func) {
+            window.confirm.successCallback = func;
+        }
+
+
     </script>
 </head>
 <#macro lov lovid>${lovProvider.getLov(base.contextPath,base.locale,lovid)}</#macro>
