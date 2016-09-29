@@ -66,12 +66,14 @@ public class ExecutionFlowsController extends BaseController {
 			ExecutionJobs ex=new ExecutionJobs();
 			ex.setExec_id(e.getExec_id());
 			ex.setFlow_id(e.getFlow_id());
+			ex.setLang(irequest.getLocale());
 			PageHelper.startPage(page, pagesize);
 			List<ExecutionJobs> list2 = exeJobsService.selectJobsByFlow(ex);
 			for (ExecutionJobs job : list2) {
 				if(job.getStatus()==50)
 					count++;
 			}
+			System.out.println(count);
 			if(list2.size()!=0)
 			d=Math.ceil(count/list2.size());
 			else
