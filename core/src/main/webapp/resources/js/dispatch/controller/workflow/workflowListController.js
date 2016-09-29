@@ -117,12 +117,16 @@
             vm.scheduleFlow.isrecurring = false;
             vm.scheduleFlow.period = 'M';
             workflowService.workflow(workflowId).then(function (data) {
-                vm.scheduleFlow.projectName = data.projectName;
-                vm.scheduleFlow.flowId = data.flowId;
-                vm.scheduleFlow.name = data.name;
-                vm.scheduleFlow.loading = false;
+                if (data.projectName && data.flowId) {
+                    vm.scheduleFlow.projectName = data.projectName;
+                    vm.scheduleFlow.flowId = data.flowId;
+                    vm.scheduleFlow.name = data.name;
+                    vm.scheduleFlow.loading = false;
+                    vm.scheduleWindow.center().open();
+                } else {
+                    alert('没有生成工作流');
+                }
             })
-            vm.scheduleWindow.center().open();
         };
         vm.scheduleSubmit = function () {
             var scheduleInfo = {};
@@ -149,14 +153,18 @@
             vm.executeInfo = {};
             vm.executeInfo.loading = true;
             workflowService.workflow(workflowId).then(function(data) {
-                vm.executeInfo.project = data.projectName;
-                vm.executeInfo.flow = data.flowId;
-                vm.executeInfo.name = data.name;
-                vm.executeInfo.description = data.description;
-                vm.executeInfo.failureAction = 'finishCurrent';
-                vm.executeInfo.loading = false;
+                if (data.projectName && data.flowId) {
+                    vm.executeInfo.project = data.projectName;
+                    vm.executeInfo.flow = data.flowId;
+                    vm.executeInfo.name = data.name;
+                    vm.executeInfo.description = data.description;
+                    vm.executeInfo.failureAction = 'finishCurrent';
+                    vm.executeInfo.loading = false;
+                    vm.executeWindow.center().open();
+                } else {
+                    alert('没有生成工作流');
+                }
             })
-            vm.executeWindow.center().open();
         };
         vm.executeSubmit = function() {
             if (vm.executeInfo.successEmails) {

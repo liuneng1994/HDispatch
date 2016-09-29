@@ -37,7 +37,7 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             response = RequestUtils.post(RequestUrl.PROJECT_MANAGER).field("action", "create")
                     .field("name", projectName)
-                    .field("description", description).asJson();
+                    .field("description", "Description must be English").asJson();
         } catch (UnirestException e) {
             logger.error("创建工程失败", e);
             throw new IllegalStateException("创建工程失败", e);

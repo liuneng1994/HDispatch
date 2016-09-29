@@ -89,12 +89,12 @@
 
         var scheduleWorkflow = function (scheduleInfo) {
             return httpService.get(_basePath + '/schedule/schedule', scheduleInfo, function (data, defered) {
-                defered.resolve(data.messsage);
+                defered.resolve(data.message);
             });
         }
 
         var executeWorkflow = function (executeInfo) {
-            return httpService.postJSON(_basePath + '/schedule/exeflow', executeInfo, function (data, defered) {
+            return httpService.postForm(_basePath + '/schedule/exeflow', executeInfo, function (data, defered) {
                 defered.resolve(data.message);
             });
         }
