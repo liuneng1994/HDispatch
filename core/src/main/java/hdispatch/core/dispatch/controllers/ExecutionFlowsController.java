@@ -4,33 +4,21 @@ import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
-
 import hdispatch.core.dispatch.azkaban.entity.flow.ExeFlow;
 import hdispatch.core.dispatch.azkaban.service.ExeFlowService;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
 import hdispatch.core.dispatch.dto.ExecutionFlows;
 import hdispatch.core.dispatch.dto.ExecutionJobs;
-import hdispatch.core.dispatch.dto.HdispatchGroup;
 import hdispatch.core.dispatch.service.ExecutionFlowsService;
 import hdispatch.core.dispatch.service.ExecutionJobsService;
-import hdispatch.core.dispatch.service.HdispatchGroupService;
-import hdispatch.core.dispatch.service.ThemeService;
-import hdispatch.core.dispatch.service.impl.ThemeServiceImpl;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +137,7 @@ public class ExecutionFlowsController extends BaseController {
 	 */
 	@RequestMapping("/getjoblog")
 	@ResponseBody
-	public ResultObj getjoblog(HttpServletRequest request,@RequestParam int exec_id, @RequestParam String job_id)
+	public ResultObj getjoblog(HttpServletRequest request, @RequestParam int exec_id, @RequestParam String job_id)
 	{
 		Map<String,Object>map=new HashMap<>();
 		map.put("execid", exec_id);
@@ -166,7 +154,7 @@ public class ExecutionFlowsController extends BaseController {
 	 */
 	@RequestMapping("/retryfailflow")
 	@ResponseBody
-	public ResultObj retryfailflow(HttpServletRequest request,@RequestParam int exec_id)
+	public ResultObj retryfailflow(HttpServletRequest request, @RequestParam int exec_id)
 	{
 		Map<String,Object>map=new HashMap<>();
 		System.out.println(exec_id);

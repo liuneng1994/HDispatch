@@ -1,10 +1,8 @@
 package hdispatch.core.dispatch.service;
 
-import java.util.List;
-
-import com.hand.hap.core.ProxySelf;
-import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.HdispatchGroup;
+
+import java.util.List;
 
 /**
  * Created by yyz on 2016/9/5.

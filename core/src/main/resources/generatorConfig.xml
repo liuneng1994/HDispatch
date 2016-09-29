@@ -29,7 +29,12 @@
 			targetPackage="hdispatch.core.dispatch.mapper" targetProject="core\src\main\java">
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
-		<table schema="" tableName="hdispatch_schedule" enableCountByExample="false"
+		<table schema="" tableName="rep_concurrent_execute_b" enableCountByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false"
+			enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="true" />
+		</table>
+		<table schema="" tableName="rep_concurrent_request_b" enableCountByExample="false"
 			enableUpdateByExample="false" enableDeleteByExample="false"
 			enableSelectByExample="false" selectByExampleQueryId="false">
 			<property name="useActualColumnNames" value="true" />
