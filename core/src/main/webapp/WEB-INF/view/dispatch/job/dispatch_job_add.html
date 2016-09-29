@@ -242,6 +242,7 @@
                         {
                             name:"create",
                             text:'<@spring.message "hdispatch.create"/>'
+//                            template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
                         },
                         {
                             name:"save",
@@ -273,7 +274,7 @@
                             { 'field': 'jobName','title':'<@spring.message "hdispatch.job_name"/>', 'width': "100px" },
                             { 'field': 'jobSvn','title':'<@spring.message "hdispatch.job.svn.svn_file"/>', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
 //                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
-                            { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
+                            { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, spriteCssClass:'btn btn-danger k-grid-remove',title: "&nbsp;", width: "80px" }
                         ],
 //                    editable: "inline"
                     editable: true
