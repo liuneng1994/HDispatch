@@ -177,24 +177,56 @@
                             { 'field': 'themeName','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "150px" },
                             { 'field': 'themeSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "100px" },
                             { 'field': 'themeDescription','title':'<@spring.message "hdispatch.theme.theme_description"/>', 'width': "200px" },
-                            { command: { text: '<@spring.message "hdispatch.theme.theme_create.edict_layer"/>', click: showDetails }, title: '<@spring.message "hdispatch.theme.layer_operation"/>', width: "100px" }
+//                            { command: { text: '<@spring.message "hdispatch.theme.theme_create.edict_layer"/>', click: showDetails ,class:'btn btn-info'}, title: '<@spring.message "hdispatch.theme.layer_operation"/>', width: "100px" }
+                            {
+                                field : "",
+                                title : '<@spring.message "hdispatch.theme.layer_operation"/>',
+                                width : 100,
+//                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.theme.theme_create.edict_layer'/></button>"
+                                template : function(
+                                        item) {
+                                    var html = "<button  class='btn btn-info'onclick='showDetails(\""
+                                            + item.themeId
+                                            + "\",\""+item.themeName+"\")'"
+                                            + "><@spring.message 'hdispatch.theme.theme_create.edict_layer'/>"
+                                            + "</button>";
+                                    return html;
+                                }
+                            }
                         ],
                 editable: true
             });
             kendo.bind($('#theme-content'),viewModel);
+
         });
+        $("td").find("a").removeClass();
+        $("td").find("a").addClass("btn btn-info");
         //显示层详情页面
-        function showDetails(e) {
-            e.preventDefault();
-            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-            if(!dataItem.themeId || !dataItem.themeName){
+//        function showDetails(e) {
+//            e.preventDefault();
+//            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+//            if(!dataItem.themeId || !dataItem.themeName){
+//                alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
+//                return;
+//            }
+//            wnd.content(detailsTemplate(dataItem));
+//            wnd.center().open();
+//            loadLayerGrid(dataItem);
+//        }
+        function showDetails(themeId_thisRow,themeName_thisRow) {
+            if(!themeId_thisRow || !themeName_thisRow){
                 alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
                 return;
             }
+            var dataItem = {
+                themeId:themeId_thisRow,
+                themeName:themeName_thisRow
+            };
             wnd.content(detailsTemplate(dataItem));
             wnd.center().open();
             loadLayerGrid(dataItem);
         }
+
         function loadLayerGrid(layerHeaderData) {
 
             console.info(baseUrl_layer);
@@ -301,6 +333,7 @@
                     {
                         name:"create",
                         text:'<@spring.message "hdispatch.create"/>'
+//                        template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
                     },
                     {
                         name:"save",
