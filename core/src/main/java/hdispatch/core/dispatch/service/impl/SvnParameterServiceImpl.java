@@ -8,8 +8,8 @@ import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.mapper.SvnParameterMapper;
 import hdispatch.core.dispatch.service.SvnParameterService;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -93,10 +93,12 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                         svnParameter.setCreationDate(new Date());
                         svnParameter.setLastUpdateDate(new Date());
                         svnParameterMapper.create(svnParameter);
+                        svnParameter.set__status("");
                         break;
                     case DTOStatus.UPDATE:
                         svnParameter.setLastUpdateDate(new Date());
                         svnParameterMapper.updateById(svnParameter);
+                        svnParameter.set__status("");
                         break;
                     case DTOStatus.DELETE:
                         svnParameterMapper.deleteById(svnParameter);
@@ -113,11 +115,27 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     private List<SvnParameter> excelFileToList(CommonsMultipartFile file) throws Exception{
         List<SvnParameter> list = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
-        XSSFWorkbook xwb = new XSSFWorkbook(inputStream);
-        XSSFSheet sheet = xwb.getSheetAt(0);
-        XSSFRow row = null;
+//        XSSFWorkbook xwb = null;
+        Workbook xwb = null;
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename.endsWith("xlsx")){
+            //2007
+            xwb = new XSSFWorkbook(inputStream);
+        }else if (originalFilename.endsWith("xls")){
+            //2003
+            xwb = new HSSFWorkbook(inputStream);
+        }else {
+            return list;
+        }
+
+//        XSSFSheet sheet = xwb.getSheetAt(0);
+        Sheet sheet = xwb.getSheetAt(0);
+//        XSSFRow row = null;
+        Row row = null;
         DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
         // 循环输出表格中的从第二行开始内容
+        int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
+        int firstRowNum = sheet.getFirstRowNum();
         SvnParameter svnParameter = null;
         for (int i=sheet.getFirstRowNum()+1; i <= sheet.getPhysicalNumberOfRows(); i++) {
             row = sheet.getRow(i);
@@ -126,51 +144,71 @@ public class SvnParameterServiceImpl implements SvnParameterService {
             }
             short firstCellNumIndex = row.getFirstCellNum();
             if (row != null) {
-                XSSFCell cell_1 = row.getCell(firstCellNumIndex);
-                XSSFCell cell_2 = row.getCell(firstCellNumIndex+1);
-                XSSFCell cell_3 = row.getCell(firstCellNumIndex+2);
-                XSSFCell cell_4 = row.getCell(firstCellNumIndex+3);
-                XSSFCell cell_5 = row.getCell(firstCellNumIndex+4);
-                XSSFCell cell_6 = row.getCell(firstCellNumIndex+5);
-                XSSFCell cell_7 = row.getCell(firstCellNumIndex+6);
-                XSSFCell cell_8 = row.getCell(firstCellNumIndex+7);
-                XSSFCell cell_9 = row.getCell(firstCellNumIndex+8);
-                XSSFCell cell_10 = row.getCell(firstCellNumIndex+9);
-                XSSFCell cell_11 = row.getCell(firstCellNumIndex+10);
-                XSSFCell cell_12 = row.getCell(firstCellNumIndex+11);
+                Cell cell_1 = row.getCell(firstCellNumIndex);
+                Cell cell_2 = row.getCell(firstCellNumIndex+1);
+                Cell cell_3 = row.getCell(firstCellNumIndex+2);
+                Cell cell_4 = row.getCell(firstCellNumIndex+3);
+                Cell cell_5 = row.getCell(firstCellNumIndex+4);
+                Cell cell_6 = row.getCell(firstCellNumIndex+5);
+                Cell cell_7 = row.getCell(firstCellNumIndex+6);
+                Cell cell_8 = row.getCell(firstCellNumIndex+7);
+                Cell cell_9 = row.getCell(firstCellNumIndex+8);
+
                 svnParameter = new SvnParameter();
                 boolean isFormatError = false;
                 String errorMsg = "";
                 if(null != cell_1){
-                    svnParameter.setSubjectName(cell_1.toString());
+                    svnParameter.setParameterName(cell_1.toString());
+                    if(cell_1.toString().trim().equals("")){
+//                        isFormatError = true;
+//                        errorMsg += "第"+(i+1)+"行，第1列数据缺失或格式有误\n";
+                        //防止无限读取空行
+                        break;
+                    }
                 }
                 else{
                     isFormatError = true;
                     errorMsg += "第"+(i+1)+"行，第1列数据缺失或格式有误\n";
                 }
                 if(null != cell_2){
-                    svnParameter.setMappingName(cell_2.toString());
+                    svnParameter.setSubjectName(cell_2.toString());
+                    if(cell_2.toString().trim().equals("")){
+                        isFormatError = true;
+                        errorMsg += "第"+(i+1)+"行，第2列数据缺失或格式有误\n";
+                    }
                 }
                 else{
                     isFormatError = true;
                     errorMsg += "第"+(i+1)+"行，第2列数据缺失或格式有误\n";
                 }
                 if(null != cell_3){
-                    svnParameter.setSessionName(cell_3.toString());
+                    svnParameter.setMappingName(cell_3.toString());
+                    if(cell_3.toString().trim().equals("")){
+                        isFormatError = true;
+                        errorMsg += "第"+(i+1)+"行，第3列数据缺失或格式有误\n";
+                    }
                 }
                 else{
                     isFormatError = true;
                     errorMsg += "第"+(i+1)+"行，第3列数据缺失或格式有误\n";
                 }
                 if(null != cell_4){
-                    svnParameter.setWorkFlowName(cell_4.toString());
+                    svnParameter.setSessionName(cell_4.toString());
+                    if(cell_4.toString().trim().equals("")){
+                        isFormatError = true;
+                        errorMsg += "第"+(i+1)+"行，第4列数据缺失或格式有误\n";
+                    }
                 }
                 else{
                     isFormatError = true;
                     errorMsg += "第"+(i+1)+"行，第4列数据缺失或格式有误\n";
                 }
                 if(null != cell_5){
-                    svnParameter.setParameterName(cell_5.toString());
+                    svnParameter.setWorkFlowName(cell_5.toString());
+                    if(cell_5.toString().trim().equals("")){
+                        isFormatError = true;
+                        errorMsg += "第"+(i+1)+"行，第5列数据缺失或格式有误\n";
+                    }
                 }
                 else{
                     isFormatError = true;
@@ -178,6 +216,10 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                 }
                 if(null != cell_6){
                     svnParameter.setParameterValue(cell_6.toString());
+                    if(cell_6.toString().trim().equals("")){
+                        isFormatError = true;
+                        errorMsg += "第"+(i+1)+"行，第6列数据缺失或格式有误\n";
+                    }
                 }
                 else{
                     isFormatError = true;
@@ -192,7 +234,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                 }
                 if(null != cell_8){
                     try{
-                        if(cell_8.getCellType()==XSSFCell.CELL_TYPE_NUMERIC){
+                        if(cell_8.getCellType()==Cell.CELL_TYPE_NUMERIC){
                             String cellValue = String.valueOf(cell_8.getNumericCellValue());
                             double parseDouble = Double.parseDouble(cellValue);
                             int value = (int)parseDouble;
@@ -210,67 +252,18 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                     errorMsg += "第"+(i+1)+"行，第8列数据缺失或格式有误\n";
                 }
                 if(null != cell_9){
-                    try{
-                        String cellValue = null;
-                        if(cell_9.getCellType()==XSSFCell.CELL_TYPE_NUMERIC){
-                            if(DateUtil.isCellDateFormatted(cell_9)){
-                                cellValue = new DataFormatter().formatRawCellContents(cell_9.getNumericCellValue(), 0, "yyyy-MM-dd HH:mm:ss");
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                svnParameter.setStartDateActive(sdf.parse(cellValue));
-                            }else {
-                                isFormatError = true;
-                                errorMsg += "第"+(i+1)+"行，第9列数据缺失或格式有误\n";
-                            }
-                        }
-                    }catch (Exception e){
-                        isFormatError = true;
-                        errorMsg += "第"+(i+1)+"行，第9列数据缺失或格式有误\n";
-                    }
+                    svnParameter.setFrequency(cell_9.toString());
                 }
                 else{
                     isFormatError = true;
                     errorMsg += "第"+(i+1)+"行，第9列数据缺失或格式有误\n";
                 }
-                if(null != cell_10){
-                    try{
-                        String cellValue = null;
-                        if(cell_10.getCellType()==XSSFCell.CELL_TYPE_NUMERIC){
-                            if(DateUtil.isCellDateFormatted(cell_10)){
-                                cellValue = new DataFormatter().formatRawCellContents(cell_10.getNumericCellValue(), 0, "yyyy-MM-dd HH:mm:ss");
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                svnParameter.setEndDateActive(sdf.parse(cellValue));
-                            }else {
-                                isFormatError = true;
-                                errorMsg += "第"+(i+1)+"行，第10列数据缺失或格式有误\n";
-                            }
-                        }
-                    }catch (Exception e){
-                        isFormatError = true;
-                        errorMsg += "第"+(i+1)+"行，第10列数据缺失或格式有误\n";
-                    }
-                }
-                else{
-                    isFormatError = true;
-                    errorMsg += "第"+(i+1)+"行，第10列数据缺失或格式有误\n";
-                }
-                if(null != cell_11){
-                    svnParameter.setFrequency(cell_11.toString());
-                }
-                else{
-                    isFormatError = true;
-                    errorMsg += "第"+(i+1)+"行，第11列数据缺失或格式有误\n";
-                }
-                if(null != cell_12){
-                    svnParameter.setEnableFlag(cell_12.toString());
-                }
-                else{
-                    isFormatError = true;
-                    errorMsg += "第"+(i+1)+"行，第12列数据缺失或格式有误\n";
-                }
+
                 if(isFormatError){
                     throw new Exception("Excel数据格式有误:\n"+errorMsg);
                 }
                 svnParameter.set__status(DTOStatus.ADD);
+                svnParameter.setEnableFlag("Y");
                 list.add(svnParameter);
             }
 
