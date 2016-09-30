@@ -82,12 +82,12 @@
                 {
                     field: "description",
                     title: '描述',
-                    width: 300
+                    width: 200
                 },
                 {
                     field: "",
                     title: '编辑',
-                    width: 100,
+                    width: 150,
                     template: function (item) {
                         var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>" +
                             '<button class="btn btn-primary" ng-click="vm.schedule(' + item.workflowId + ')">调度</button>' +
