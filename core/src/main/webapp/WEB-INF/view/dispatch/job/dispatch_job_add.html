@@ -42,6 +42,8 @@
             var wnd, batchCreateJobWindowTemplate;
             var grid_svn_wnd, grid_svn_template;
 
+            var jobs_data;
+
             var themeBaseUrl = "${base.contextPath}/dispatcher/theme/";
             var layerBaseUrl = "${base.contextPath}/dispatcher/layer/";
             var jobBaseUrl = "${base.contextPath}/dispatcher/job/";
@@ -100,7 +102,7 @@
                 var grid_dropdown_themeId;
                 var grid_dropdown_layerId;
                 //任务行表显示数据加载和窗口渲染
-                var jobs_data = new kendo.data.DataSource({
+                jobs_data = new kendo.data.DataSource({
                     transport: {
                         read:  {
                             url: jobBaseUrl+"query",
@@ -116,7 +118,7 @@
                         update: {
                             url: jobBaseUrl + "update",
                             type : 'POST',
-                            dataType: "application/json",
+                            dataType: "json",
                             contentType:"application/json"
                         },
                         destroy: {
@@ -275,10 +277,24 @@
                             { 'field': 'jobSvn','title':'<@spring.message "hdispatch.job.svn.svn_file"/>', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
 //                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
                             { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, spriteCssClass:'btn btn-danger k-grid-remove',title: "&nbsp;", width: "80px" }
+//                        {
+//                            field : "",
+//                            title : '',
+//                            width : 100,
+////                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.delete'/></button>"
+//                            template : function(
+//                                    item) {
+//                                var html = "<button  class='btn btn-info'onclick='doDeleteJob(\""+item.jobId+"\")'"
+//                                        + "><@spring.message 'hdispatch.delete'/>"
+//                                        + "</button>";
+//                                return html;
+//                            }
+//                        }
                         ],
 //                    editable: "inline"
                     editable: true
                 });
+
                 //自定义toolbar中的按钮
                 $(".k-grid-batchCreateJob").click(function(e){
                     showBatchCreateJobWindow(e);
@@ -292,11 +308,13 @@
                      */
                     var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
                     if(confirmResult){
+                        console.log("开始输出key");
                         $.each(checkedIds,function(key,value){
                             if(checkedIds[key])
                             {
                                 jobs_data.remove(jobs_data.get(key));
                                 checkedIds[key]=false;
+                                console.log(key);
                             }
                         });
 //                        jobListGrid_kendo.dataSource.sync();
@@ -305,7 +323,6 @@
 //                        jobs_data.delete();
                     }
                 });
-
                 //声明grid中的下拉框
                 var grid_themeDropDown_dataSource=new kendo.data.DataSource({
                     transport: {
@@ -1124,6 +1141,14 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
             {
                 var data_temp = getEdictingRowData(index);
                 data_temp.set("layerName",layerName);
+            }
+            //删除当前行的数据
+            function doDeleteJob(jobId_thisRow) {
+                confirm("是否确定删除？").accept(function () {
+                    jobs_data.remove(jobs_data.get(jobId_thisRow));
+                    checkedIds[jobId_thisRow]=false;
+                    jobs_data.sync();
+                });
             }
         </script>
         <script type="text/x-kendo-template" id="grid_svn_treeView_template">
