@@ -174,7 +174,7 @@
                 vm.failureEmailsOverride = true;
             }
             workflowService.executeWorkflow(vm.executeInfo).then(function(data) {
-                alert(message);
+                alert(data);
             });
             console.log(vm.executeInfo);
             vm.executeWindow.close();

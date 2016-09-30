@@ -15,6 +15,8 @@ import hdispatch.core.dispatch.azkaban.util.ResultObj;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.service.HdispatchScheduleService;
 import hdispatch.core.dispatch.service.ProjectFlowsService;
+
+import org.apache.xerces.util.SynchronizedSymbolTable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -247,14 +249,23 @@ public class ScheduleController extends BaseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("project",project);
 			map.put("flow", flow);
+			if(successEmails!=null)
 			map.put("successEmails", successEmails);
+			if(failureEmails!=null)
 			map.put("failureEmails",failureEmails);
+			if(successEmailsOverride!=null)
 			map.put("successEmailsOverride", successEmailsOverride);
+			if(failureEmailsOverride!=null)
 			map.put("failureEmailsOverride", failureEmailsOverride);
+			if(notifyFailureFirst!=null)
 			map.put("notifyFailureFirst", notifyFailureFirst);
+			if(notifyFailureLast!=null)
 			map.put("notifyFailureLast", notifyFailureLast);
+			if(failureAction!=null)
 			map.put("failureAction", failureAction);
+			if(concurrentOption!=null)
 			map.put("concurrentOption", concurrentOption);
+			if(disabled!=null)
 			map.put("disabled", disabled);
 			ExeFlow f = exeFlowService.ExecuteFlow(map);
 			if (f.isError()) {
@@ -264,7 +275,7 @@ public class ScheduleController extends BaseController {
 				obj.setMessage(f.getMessage());
 				obj.setCode(1);
 			}
-		
+		System.out.println(obj.getMessage());
 		return obj;
 	}
 
