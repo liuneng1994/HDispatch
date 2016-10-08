@@ -63,6 +63,7 @@
        <if test="group_name != null" >
         and group_name like CONCAT('%',#{group_name},'%')
       </if>
+      order by exec_id desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from execution_flows

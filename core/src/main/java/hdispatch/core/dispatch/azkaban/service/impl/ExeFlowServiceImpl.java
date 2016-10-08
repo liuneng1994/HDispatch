@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -52,6 +53,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 
 	@Override
 	public ExeFlow ExecuteFlow(Map<String, Object> map) {
+		System.out.println(map);
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "executeFlow").queryString(map)
 					.asJson();
@@ -59,6 +61,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("流已经运行！");
 			throw new IllegalArgumentException("流已经运行！", e);
 		}
+		System.out.println(response.getBody().getObject());
 		return new ExeFlow(response.getBody().getObject());
 	}
 
@@ -161,5 +164,11 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		obj.setMessage((String)response.getBody().getObject().get("error"));
 		return obj;
 	}
-
+public static void main(String[] args) {
+	Map<String, Object>map=new HashMap<>();
+	map.put("project", "TestWorkflow");
+	map.put("flow", "TestWorkflow");
+	System.out.println(map);
+	new ExeFlowServiceImpl().ExecuteFlow(map);
+}
 }
