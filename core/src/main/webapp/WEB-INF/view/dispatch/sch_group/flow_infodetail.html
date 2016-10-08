@@ -41,7 +41,7 @@
 		    actions: [ "Maximize", "Minimize", "Close"],
 		    width  : 520,
 		    height : 350,
-		    title  : job_id + ' LogDetail', 
+		    title  : job_id + ' <@spring.message "hdispatch.flowlist.jobgrid.logdetail"/>', 
 		    visible: false,
 		    iframe : true,  
 		    content: 'job_logdetail.html?job_id=' + job_id+'&exec_id='+exec_id
@@ -199,9 +199,10 @@
 														{
 															field : "Timeline",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.running"/>',
-															width : 100,
+															width : 300,
 															template : function(
 																	item) {
+																
 																var status = item.running;
 																var start=status.split(',')[0];
 																var end=status.split(',')[1];
@@ -249,7 +250,7 @@
 																	}
 																		
 																
-																var html = "<div class='progress' style='margin:0;'>"+
+																var html = "<div class='progress' style='margin:0;height:18px;'>"+
 																"<div class='progress-bar progress-bar-success' role='progressbar'"+
 																"	 aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"+
 																"	 style='width: "+r1+"%;background-color:"+color1+";'>"+
@@ -345,7 +346,7 @@
 																var html = "<a href='javascript:void(0)' style='text-decoration: none;'"
 																		+ "onclick='openLogDetailPage(\""
 																		+ job_id
-																		+ "\",\""+exec_id+"\")'>LogDetail</a>";
+																		+ "\",\""+exec_id+"\")'>"+'<@spring.message "hdispatch.flowlist.jobgrid.logdetail"/>'+"</a>";
 																return html;
 															}
 														} ]
