@@ -66,12 +66,12 @@
             columns: [
                 {
                     field: "name",
-                    title: '工作流',
+                    title: '任务流',
                     width: 100
                 },
                 {
                     field: "theme",
-                    title: '主题',
+                    title: '任务组',
                     width: 100
                 },
                 {
@@ -86,11 +86,11 @@
                 },
                 {
                     field: "",
-                    title: '编辑',
+                    title: '',
                     width: 150,
                     template: function (item) {
                         var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>" +
-                            '<button class="btn btn-primary" ng-click="vm.schedule(' + item.workflowId + ')">调度</button>' +
+                            '<button class="btn btn-primary" ng-click="vm.schedule(' + item.workflowId + ')">计划</button>' +
                             '<button class="btn btn-info" ng-click="vm.execute(' + item.workflowId + ')">执行</button>';
                         return html;
                     }
@@ -124,7 +124,7 @@
                     vm.scheduleFlow.loading = false;
                     vm.scheduleWindow.center().open();
                 } else {
-                    alert('没有生成工作流');
+                    alert('没有生成任务流');
                 }
             })
         };
@@ -162,7 +162,7 @@
                     vm.executeInfo.loading = false;
                     vm.executeWindow.center().open();
                 } else {
-                    alert('没有生成工作流');
+                    alert('没有生成任务流');
                 }
             })
         };

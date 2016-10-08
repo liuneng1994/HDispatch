@@ -35,7 +35,7 @@
 
         vm.createJob = function () {
             if (vm.jobStore.contains(vm.newJob.name)) {
-                $window.alert("job名称已存在");
+                $window.alert("任务名称已存在");
                 return;
             }
             vm.graphTool.createJobNode(vm.newJob);
@@ -69,8 +69,7 @@
             graphJson.jobStore = vm.jobStore;
             workflow.graph = JSON.stringify(graphJson);
             workflowService.updateWorkflow(workflow).then(function (data) {
-                vm.workflow.workflowId = parseInt(data);
-                $window.alert("save success");
+                window.hdispatch.confirm("保存成功，是否立刻生成任务流").accept(vm.generateWorkflow);
             }, function (data) {
                 $window.alert(data);
             });

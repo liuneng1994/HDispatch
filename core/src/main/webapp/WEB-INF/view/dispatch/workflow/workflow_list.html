@@ -19,7 +19,7 @@
     <script src="${base.contextPath}/common/language?var=languageData"
             type="text/javascript"></script>
     <div kendo-window="vm.scheduleWindow"
-         k-title="'调度工作流'"
+         k-title="'调度任务流'"
          k-actions="['Maximize', 'Close']"
          k-modal="true"
          k-width="600"
@@ -31,7 +31,7 @@
               style="width:100%" novalidate ng-hide="vm.scheduleFlow.loading">
             <div class="col-sm-10">
                 <div class="form-group">
-                    <label class="control-label col-sm-3">工作流</label>
+                    <label class="control-label col-sm-3">任务流</label>
                     <span class="control-label col-sm-6 text-left">{{vm.scheduleFlow.name}}</span>
                 </div>
                 <div class="form-group">
@@ -80,7 +80,7 @@
         </form>
     </div>
     <div kendo-window="vm.executeWindow"
-         k-title="'执行工作流'"
+         k-title="'执行任务流'"
          k-modal="true"
          k-width="600"
          k-actions="['Maximize', 'Close']"
@@ -90,7 +90,7 @@
         <div class="text-center" ng-show="vm.executeInfo.loading">加载中</div>
         <div kendo-tab-strip ng-hide="vm.executeInfo.loading">
             <ul>
-                <li class="k-state-active">工作流预览</li>
+                <li class="k-state-active">任务流预览</li>
                 <li>通知</li>
                 <li>失败选项</li>
                 <li>并发策略</li>
@@ -98,7 +98,7 @@
             <div style="padding: 1em">
                 <div class="form-horizontal col-sm-11">
                     <div class="form-group">
-                        <div class="control-label col-sm-3">工作流</div>
+                        <div class="control-label col-sm-3">任务流</div>
                         <div class="col-sm-7">{{vm.executeInfo.name}}</div>
                     </div>
                     <div class="form-group">
@@ -125,7 +125,7 @@
                                            ng-value="true" ng-model="vm.executeInfo.notifyFailureLast"
                                            name="notifyTime" class="k-radio"
                                            ng-change="vm.executeInfo.notifyFailureFirst=false">
-                                    <label class="k-radio-label" for="flowFailure">工作流失败时提醒</label>
+                                    <label class="k-radio-label" for="flowFailure">任务流失败时提醒</label>
                                 </div>
                             </div>
                             <span class="help-block">邮件通知的时机</span>
@@ -215,7 +215,7 @@
                             <div class="panel-body col-sm-offset-0">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">主题</label>
+                                        <label class="col-sm-4 control-label">任务组</label>
                                         <div class="col-sm-8 ">
                                             <select class="col-sm-12" name="theme"
                                                     ng-model="vm.workflow.themeId"
@@ -248,7 +248,7 @@
                             <div class="panel-body col-sm-offset-0">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">工作流名称</label>
+                                        <label class="col-sm-4 control-label">任务流名称</label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="workflowName"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -258,7 +258,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">工作流描述</label>
+                                        <label class="col-sm-4 control-label">任务流描述</label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="description"
                                                    style="padding-left:0;padding-right:0;width:100%;"
