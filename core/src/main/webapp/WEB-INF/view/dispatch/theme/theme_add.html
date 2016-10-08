@@ -1,122 +1,844 @@
-<script src="../../../../lib/kendoui/js/jquery.min.js"></script>
-<script src="../../../../lib/kendoui/js/kendo.all.min.js"></script>
 <!--Created by yyz on 2016/9/6.-->
 <!--yazheng.yang@hand-china.com-->
-<div>
-  <div id="content-container" style="padding-left:30px; padding-right: 30px;">
-    <div id="page-content">
-      <div id="reportListGrid" style="clear:both"></div>
-    </div>
-  </div>
-  <!--<script type="text/javascript">-->
-    <!--$(document).ready(function () {-->
-      <!--var viewModel = kendo.observable({-->
-        <!--model: {}-->
-      <!--});-->
-      <!--var baseUrl = "${base.contextPath}/dispatcher/theme/";-->
-<!--//        console.info(baseUrl);-->
-      <!--var themes_data = new kendo.data.DataSource({-->
-        <!--transport: {-->
-          <!--read: {-->
-            <!--url: baseUrl + "query",-->
-            <!--dataType: "json"-->
-          <!--},-->
-          <!--create: {-->
-            <!--url: baseUrl + 'submit',-->
-            <!--type: 'POST',-->
-            <!--dataType: "json"-->
-          <!--},-->
-          <!--parameterMap: function (options, operation) {-->
-            <!--//封装请求参数-->
-            <!--if (operation !== "read" && options.models) {-->
-              <!--var datas = options.models;-->
-<!--//                        console.log(datas);-->
-              <!--if (operation == 'create' || operation == 'update') {-->
-                <!--datas = options.models.map(function (data) {-->
-                  <!--data['__status'] = (operation == 'create' ? 'add' : 'update');-->
-                  <!--return data;-->
-                <!--});-->
-              <!--}-->
-              <!--var data_str = kendo.stringify(datas);-->
-<!--//                        console.log(data_str);-->
-              <!--var map = {-->
-                <!--themes_data_array: data_str-->
-              <!--};-->
-              <!--return map;-->
-            <!--} else if (operation === "read") {-->
-              <!--var map = {};-->
-              <!--return map;-->
-            <!--}-->
-          <!--}-->
-        <!--},-->
-        <!--batch: true,-->
-        <!--serverPaging: true,-->
-        <!--pageSize: 10,-->
-        <!--schema: {-->
-          <!--model: {-->
-            <!--id: 'themeId',-->
-            <!--fields: {-->
-              <!--themeName: {type: 'string', validation: {required: true}},-->
-              <!--description: {type: 'string', validation: {required: true}},-->
-              <!--projectName: {type: 'string', validation: {required: true}},-->
-              <!--projectDescription: {type: 'string', validation: {required: true}}-->
-            <!--}-->
-          <!--},-->
-          <!--errors: function (res) {-->
-            <!--if (!res.success && res.message) {-->
-              <!--return res.message;-->
-            <!--}-->
-          <!--}-->
-        <!--},-->
-        <!--error: function (e) {-->
-          <!--alert(e.errors)-->
-        <!--}-->
-      <!--});-->
+<#include "../../include/header.html">
+  <body>
+  <div>
+    <div id="content-container">
+      <div id="theme-content">
+        <div class="panel">
+          <form class="form-horizontal" id="query-form">
+            <div class="panel-body col-sm-offset-0">
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label style="width: 20%"><@spring.message "hdispatch.theme_name"/></label>
+                  <input id="input1" type="text" style="width: 70%" data-bind="value:model.themeName" class="k-textbox">
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label style="width: 30%"><@spring.message "hdispatch.theme.theme_description"/></label>
+                  <input type="text" style="width:60%" data-bind="value:model.themeDescription" class="k-textbox">
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <span class="btn btn-success" data-bind="click:queryFunction" type="submit"><@spring.message "hdispatch.query"/></span>
+                </div>
+              </div>
+            </div>
+            <!--<div class="panel-footer">-->
 
-      <!--$("#reportListGrid").kendoGrid({-->
-        <!--dataSource: themes_data,-->
-        <!--resizable: true,-->
-        <!--selectable: "multiple",-->
-        <!--scrollable: false,-->
-        <!--pageable: {-->
-          <!--pageSizes: [5, 10, 20, 50],-->
-          <!--refresh: true,-->
-          <!--buttonCount: 5,-->
-          <!--messages: {-->
-            <!--noRecords: "未找到任何数据",-->
-            <!--display: "{0} - {1} 共 {2} 条数据",-->
-            <!--empty: "没有数据",-->
-            <!--page: "页",-->
-            <!--of: "/ {0}",-->
-            <!--itemsPerPage: "条每页",-->
-            <!--first: "第一页",-->
-            <!--previous: "前一页",-->
-            <!--next: "下一页",-->
-            <!--last: "最后一页",-->
-            <!--refresh: "刷新"-->
-          <!--}-->
-        <!--},-->
-        <!--toolbar: [{-->
-          <!--name: "create",-->
-          <!--text: '创建'-->
-        <!--}, {-->
-          <!--name: "save",-->
-          <!--text: '保存'-->
-        <!--}, {-->
-          <!--name: "cancel",-->
-          <!--text: '取消'-->
-        <!--}-->
-        <!--],-->
-        <!--columns: [-->
-          <!--{'field': 'themeName', 'title': '主题名称', 'width': 70, 'height': 100},-->
-          <!--{'field': 'description', 'title': '主题描述', 'width': 70, 'height': 100},-->
-          <!--{'field': 'projectName', 'title': '项目名称', 'width': 70, 'height': 100},-->
-          <!--{'field': 'projectDescription', 'title': '项目描述', 'width': 70, 'height': 100}-->
-        <!--],-->
-        <!--editable: true-->
-      <!--});-->
-      <!--kendo.bind($('#page-content'), viewModel);-->
+            <!--<div class="col-sm-offset-6">-->
+            <!--<span class="btn btn-success" data-bind="click:queryFunction" type="submit">查询</span>-->
+            <!--</div>-->
+            <!--</div>-->
+          </form>
+        </div>
+        <div id="page-content" style="clear:both">
+          <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+            <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+            <span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+            <!--<span  onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>-->
+          </div>
+          <div style="clear:both">
+            <div id="themeListGrid" style="clear: both"></div>
+          </div>
+        </div>
+      </div>
+      <div id="details"></div>
+    </div>
+    <script type="text/javascript">
+      var wnd, detailsTemplate;
+      var baseUrl_theme = "${base.contextPath}/dispatcher/theme/";
+      var baseUrl_layer = "${base.contextPath}/dispatcher/layer/";
+      var themes_data;
+      var viewModel = kendo.observable({
+          model         : {status:''},
+          createFunction: function(){
+              $('#themeListGrid').data('kendoGrid').addRow();
+          },
+          saveFunction: function(){
+              $('#themeListGrid').data('kendoGrid').saveChanges();
+//              $('#themeListGrid').data('kendoGrid').dataSource.sync();
+              $('#themeListGrid').data('kendoGrid').dataSource.read();
+              $('#themeListGrid').data('kendoGrid').dataSource.page(2147483647);
+          }
+      });
+      kendo.bind($('#query-form'), viewModel);
+      kendo.bind($('#toolbar-btn'), viewModel);
+      $(document).ready(function () {
+        //声明详情窗口
+        wnd = $("#details")
+                .kendoWindow({
+                  title: '<@spring.message "hdispatch.theme.layer_manage_title"/>',
+                  modal: true,
+                  visible: false,
+                  resizable: false,
+                  width: 800,
+                  height:450
+                }).data("kendoWindow");
+        detailsTemplate = kendo.template($("#template").html());
+        //声明主窗口
+
+
+        themes_data = new kendo.data.DataSource({
+          transport: {
+            read:  {
+              url: baseUrl_theme+"query",
+              type : 'GET',
+              dataType: "json"
+            },
+            create: {
+              url: baseUrl_theme+'submit',
+              type : 'POST',
+              dataType: "json",
+              contentType:"application/json"
+            },
+            parameterMap: function(options, operation) {
+              //封装请求参数
+              if (operation !== "read" && options.models) {
+                var datas = options.models;
+                if(operation =='create' || operation =='update'){
+                  datas = options.models.map(function(data){
+                    data['__status'] = (operation =='create' ? 'add' : 'update');
+                    return data;
+                  });
+                }
+                var data_str = kendo.stringify(datas);
+                themes_data = data_str;
+                return data_str;
+              } else if (operation === "read") {
+                var model = viewModel.model;
+                if(!model.themeName){
+                  model.themeName=' ';
+                }
+                if(!model.themeDescription){
+                  model.themeDescription=' ';
+                }
+                var map = {themeName: model.themeName,themeDescription: model.themeDescription};
+                if (options.page)
+                  map.page = options.page;
+                if (options.pageSize)
+                  map.pageSize = options.pageSize;
+                for(var k in map){
+                  if(map[k]==='')delete map[k]
+                }
+                return map;
+              }
+            }
+          },
+          batch: true,
+          serverPaging : true,
+          pageSize: 5,
+          schema: {
+            data:'rows',
+            total:'total',
+            model: {
+              id: 'themeId',
+              fields: {
+                themeName: {
+                    type: 'string',
+                    validation: { required: true },
+                    nullable: false
+                },
+                themeSequence: { type: 'number' },
+                themeDescription: { type: 'string' }
+              }
+            },
+            errors: function(res){
+              if(!res.success && res.message) {
+                return res.message;
+              }
+            }
+          },
+          error: function(e) {
+            alert(e.errors)
+          }
+        });
+        $("#themeListGrid").kendoGrid({
+          dataSource: themes_data,
+          resizable: true,
+          selectable: "multiple",
+          scrollable: false,
+          pageable: {
+            pageSizes:[5, 10, 20, 50],
+            refresh:true,
+            buttonCount:5,
+            messages: {
+              noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
+              display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
+              empty: '<@spring.message "hdispatch.grid_find_no_data"/>',
+              page: '<@spring.message "hdispatch.grid_page"/>',
+              of: "/ {0}",
+              itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',
+              first: '<@spring.message "hdispatch.grid_first_page"/>',
+              previous: '<@spring.message "hdispatch.grid_pre_page"/>',
+              next: '<@spring.message "hdispatch.grid_next_page"/>',
+              last: '<@spring.message "hdispatch.grid_last_page"/>',
+              refresh: '<@spring.message "hdispatch.grid_refresh"/>'
+            }
+          },
+          columns:
+                  [
+                    {
+                      'field': 'themeId','hidden':true
+                    },
+                    {
+                      'field': 'themeName',
+                      'title':'<@spring.message "hdispatch.theme_name"/>',
+                      'width': "150px",
+                      template:function (rowData) {
+                          if(!rowData.themeId){
+                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;clear: both;" name="themeName" required="required" data-bind="value:themeName">';
+//                            return '';
+                          }
+                          else{
+                              return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeName" required="required" data-bind="value:themeName" readonly="readonly" value="'+rowData.themeName+'">';
+                          }
+                      }
+                    },
+                    {
+                        'field': 'themeSequence',
+                        'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
+                        'width': "100px",
+                        template:function (rowData) {
+                            if(!rowData.themeId){
+                                return '<input name="themeSequence" class="k-input k-textbox" type="number" min="0" step="1" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence" />';
+                            }else{
+                                if(null === rowData.themeSequence||'null' == rowData.themeSequence ||  "undefined"==rowData.themeSequence){
+                                    return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:"/>';
+                                }
+                                return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence"/>';
+                            }
+                        }
+                    },
+                    {
+                        'field': 'themeDescription',
+                        'title':'<@spring.message "hdispatch.theme.theme_description"/>',
+                        'width': "200px",
+                        template:function (rowData) {
+                            if(!rowData.themeId){
+                                return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeDescription" required="required" data-bind="value:themeDescription">';
+                            }
+                            else{
+                                return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeDescription" required="required" data-bind="value:themeDescription" readonly="readonly" value="'+rowData.themeDescription+'">';
+                            }
+                        }
+                    },
+//                            { command: { text: '<@spring.message "hdispatch.theme.theme_create.edict_layer"/>', click: showDetails ,class:'btn btn-info'}, title: '<@spring.message "hdispatch.theme.layer_operation"/>', width: "100px" }
+            {
+              field : "",
+              title : '<@spring.message "hdispatch.theme.layer_operation"/>',
+              width : 100,
+//                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.theme.theme_create.edict_layer'/></button>"
+              template : function(
+                      item) {
+                if(!!item.themeId){
+                  var html = "<button  class='btn btn-info'onclick='showDetails(\""
+                          + item.themeId
+                          + "\",\""+item.themeName+"\")'"
+                          + "><@spring.message 'hdispatch.theme.theme_create.edict_layer'/>"
+                          + "</button>";
+                  return html;
+                }else{
+                  return '';
+                }
+              }
+            }
+          ],
+//          editable: true
+            editable: "inline"
+        });
+        kendo.bind($('#theme-content'),viewModel);
+        $("#themeListGrid").on("click", "tr", function (e) {
+            e.preventDefault();
+//            var index = $(this).index();
+//            var rowData = getEdictingRowData(index);
+//            if(!!rowData.themeId){
+//
+//            }
+        });
+      });
+      function getEdictingRowData(index)
+      {
+          return $('#jobListGrid').data("kendoGrid")._data[index];
+      }
+      //显示层详情页面
+//      function showDetails(e) {
+//        e.preventDefault();
+//        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+//        if(!dataItem.themeId || !dataItem.themeName){
+//          alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
+//          return;
+//        }
+//        wnd.content(detailsTemplate(dataItem));
+//        wnd.center().open();
+//        loadLayerGrid(dataItem);
+//      }
+      function showDetails(themeId_thisRow,themeName_thisRow) {
+          console.log("当前行themeId:"+themeId_thisRow);
+          if(!themeId_thisRow || !themeName_thisRow){
+              alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
+              return;
+          }
+          var dataItem = {
+              themeId:themeId_thisRow,
+              themeName:themeName_thisRow
+          };
+          wnd.content(detailsTemplate(dataItem));
+          wnd.center().open();
+          loadLayerGrid(dataItem);
+      }
+
+      function loadLayerGrid(layerHeaderData) {
+        if(!layerHeaderData.themeId){
+          alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
+          return;
+        }
+        var layerViewModel = kendo.observable({
+          model:{
+            themeId:layerHeaderData.themeId
+          }
+        });
+        var layers_data = new kendo.data.DataSource({
+          transport: {
+            read:  {
+              url: baseUrl_layer+"query",
+              dataType: "json"
+            },
+            create: {
+              url: baseUrl_layer+'submit',
+              type : 'POST',
+              dataType: "json",
+              contentType:"application/json"
+            },
+            parameterMap: function(options, operation) {
+              //封装请求参数
+              if (operation !== "read" && options.models) {
+                var layer_datas = options.models;
+                if(operation =='create' || operation =='update'){
+                  layer_datas = options.models.map(function(data){
+                    data['__status'] = (operation =='create' ? 'add' : 'update');
+                    return data;
+                  });
+                }
+                for(var k in layer_datas){
+                  layer_datas[k].themeId=layerHeaderData.themeId;
+                }
+                var layer_data_str = kendo.stringify(layer_datas);
+
+                return layer_data_str;
+              } else if (operation === "read") {
+                var layerModel = layerViewModel.model;
+                if(!layerModel.themeId){
+                  alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer_for_not_set_themeId"/>');
+                  return;
+                }
+                var map = {themeId: layerModel.themeId};
+                if (options.page)
+                  map.page = options.page;
+                if (options.pageSize)
+                  map.pageSize = options.pageSize;
+                for(var k in map){
+                  if(map[k]==='')delete map[k]
+                }
+                return map;
+              }
+            }
+          },
+          batch: true,
+          serverPaging : true,
+          pageSize: 5,
+          schema: {
+            data:'rows',
+            total:'total',
+            model: {
+              id: 'layerId',
+              fields: {
+                themeId: { type: 'number' },
+                layerName: { type: 'string',validation: { required: true } },
+                layerDescription: { type: 'string',validation: { required: true } },
+                layerSequence: { type: 'number',validation: { required: true } }
+              }
+            },
+            errors: function(res){
+              if(!res.success && res.message) {
+                return res.message;
+              }
+            }
+          },
+          error: function(e) {
+            alert(e.errors)
+          }
+        });
+        $("#layerListGrid").kendoGrid({
+          dataSource: layers_data,
+          resizable: true,
+          selectable: "multiple",
+          scrollable: false,
+          pageable: {
+            pageSizes:[5, 10, 20, 50],
+            refresh:true,
+            buttonCount:5,
+            messages: {
+              noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
+              display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
+              empty: '<@spring.message "hdispatch.grid_find_no_data"/>',
+              page: '<@spring.message "hdispatch.grid_page"/>',
+              of: "/ {0}",
+              itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',
+              first: '<@spring.message "hdispatch.grid_first_page"/>',
+              previous: '<@spring.message "hdispatch.grid_pre_page"/>',
+              next: '<@spring.message "hdispatch.grid_next_page"/>',
+              last: '<@spring.message "hdispatch.grid_last_page"/>',
+              refresh: '<@spring.message "hdispatch.grid_refresh"/>'
+            }
+          },
+          toolbar: [
+            {
+              name:"create",
+              text:'<@spring.message "hdispatch.create"/>'
+//                        template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
+            },
+            {
+              name:"save",
+              text:'<@spring.message "hdispatch.save"/>'
+            },
+            {
+              name:"cancel",
+              text:'<@spring.message "hdispatch.cancel"/>'
+            }
+          ],
+          columns:
+                  [
+                    { 'field': 'layerName','title':'<@spring.message "hdispatch.layer_name"/>', 'width': 70 },
+                    { 'field': 'layerDescription','title':'<@spring.message "hdispatch.layer.layer_description"/>', 'width': 70 },
+                    { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': 70 }
+                  ],
+          editable: true
+        });
+        kendo.bind($('#layer-content'),layerViewModel);
+      }
+    </script>
+    <script type="text/x-kendo-template" id="template">
+      <div id="details-container">
+        <div id="layer-content">
+          <div class="panel panel-primary">
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-12 col-md-offset-0">
+                    <label class="col-md-5 control-label col-md-offset-0">
+                      <span style="font-size: 20px"><@spring.message "hdispatch.theme_name"/>：</span>#= themeName #
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="layerListGrid" style="clear:both">
+          </div>
+        </div>
+      </div>
+    </script>
+  </div>
+  </body>
+    <style>
+        #themeListGrid td{
+            padding:0px;
+        }
+    </style>
+  </html>
+
+<!--以下代码是对dispatch_theme_add.html的备份-->
+    <!--<#include "../../include/header.html">-->
+    <!--<body>-->
+    <!--<div>-->
+    <!--<div id="content-container">-->
+    <!--<div id="theme-content">-->
+    <!--<div class="panel">-->
+    <!--<form class="form-horizontal">-->
+    <!--<div class="panel-body col-sm-offset-0">-->
+    <!--<div class="col-sm-3">-->
+    <!--<div class="form-group">-->
+    <!--<label style="width: 20%"><@spring.message "hdispatch.theme_name"/></label>-->
+    <!--&lt;!&ndash;<div class="col-sm-4">&ndash;&gt;-->
+    <!--<input id="input1" type="text" style="width: 70%" data-bind="value:model.themeName" class="k-textbox">-->
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-sm-3">-->
+    <!--<div class="form-group">-->
+    <!--<label style="width: 30%"><@spring.message "hdispatch.theme.theme_description"/></label>-->
+    <!--&lt;!&ndash;<div class="col-sm-4">&ndash;&gt;-->
+    <!--<input type="text" style="width:60%" data-bind="value:model.themeDescription" class="k-textbox">-->
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-sm-3">-->
+    <!--<div class="form-group">-->
+    <!--<span class="btn btn-success" data-bind="click:queryResource" type="submit"><@spring.message "hdispatch.query"/></span>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--&lt;!&ndash;<div class="panel-footer">&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<div class="col-sm-offset-6">&ndash;&gt;-->
+    <!--&lt;!&ndash;<span class="btn btn-success" data-bind="click:queryResource" type="submit">查询</span>&ndash;&gt;-->
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+    <!--</form>-->
+    <!--</div>-->
+    <!--<div id="themeListGrid" style="clear:both"></div>-->
+    <!--</div>-->
+    <!--<div id="details"></div>-->
+    <!--</div>-->
+    <!--<script type="text/javascript">-->
+    <!--var wnd, detailsTemplate;-->
+    <!--var baseUrl_theme = "${base.contextPath}/dispatcher/theme/";-->
+    <!--var baseUrl_layer = "${base.contextPath}/dispatcher/layer/";-->
+    <!--$(document).ready(function () {-->
+    <!--//声明详情窗口-->
+    <!--wnd = $("#details")-->
+    <!--.kendoWindow({-->
+    <!--title: '<@spring.message "hdispatch.theme.layer_manage_title"/>',-->
+    <!--modal: true,-->
+    <!--visible: false,-->
+    <!--resizable: false,-->
+    <!--width: 800,-->
+    <!--height:450-->
+    <!--}).data("kendoWindow");-->
+    <!--detailsTemplate = kendo.template($("#template").html());-->
+    <!--//声明主窗口-->
+    <!--var viewModel = kendo.observable({-->
+    <!--model:{},-->
+    <!--queryResource: function(e) {-->
+    <!--$('#themeListGrid').data('kendoGrid').dataSource.read();-->
+    <!--}-->
     <!--});-->
 
-  <!--</script>-->
-</div>
+    <!--var themes_data = new kendo.data.DataSource({-->
+    <!--transport: {-->
+    <!--read:  {-->
+    <!--url: baseUrl_theme+"query",-->
+    <!--type : 'GET',-->
+    <!--dataType: "json"-->
+    <!--},-->
+    <!--create: {-->
+    <!--url: baseUrl_theme+'submit',-->
+    <!--type : 'POST',-->
+    <!--dataType: "json",-->
+    <!--contentType:"application/json"-->
+    <!--},-->
+    <!--parameterMap: function(options, operation) {-->
+    <!--//封装请求参数-->
+    <!--if (operation !== "read" && options.models) {-->
+    <!--var datas = options.models;-->
+    <!--if(operation =='create' || operation =='update'){-->
+    <!--datas = options.models.map(function(data){-->
+    <!--data['__status'] = (operation =='create' ? 'add' : 'update');-->
+    <!--return data;-->
+    <!--});-->
+    <!--}-->
+    <!--var data_str = kendo.stringify(datas);-->
+    <!--themes_data = data_str;-->
+    <!--return data_str;-->
+    <!--} else if (operation === "read") {-->
+    <!--var model = viewModel.model;-->
+    <!--if(!model.themeName){-->
+    <!--model.themeName=' ';-->
+    <!--}-->
+    <!--if(!model.themeDescription){-->
+    <!--model.themeDescription=' ';-->
+    <!--}-->
+    <!--var map = {themeName: model.themeName,themeDescription: model.themeDescription};-->
+    <!--if (options.page)-->
+    <!--map.page = options.page;-->
+    <!--if (options.pageSize)-->
+    <!--map.pageSize = options.pageSize;-->
+    <!--for(var k in map){-->
+    <!--if(map[k]==='')delete map[k]-->
+    <!--}-->
+    <!--return map;-->
+    <!--}-->
+    <!--}-->
+    <!--},-->
+    <!--batch: true,-->
+    <!--serverPaging : true,-->
+    <!--pageSize: 5,-->
+    <!--schema: {-->
+    <!--data:'rows',-->
+    <!--total:'total',-->
+    <!--model: {-->
+    <!--id: 'themeId',-->
+    <!--fields: {-->
+    <!--themeName: { type: 'string',validation: { required: true } },-->
+    <!--themeSequence: { type: 'number',validation: { required: true } },-->
+    <!--themeDescription: { type: 'string',validation: { required: true } }-->
+    <!--}-->
+    <!--},-->
+    <!--errors: function(res){-->
+    <!--if(!res.success && res.message) {-->
+    <!--return res.message;-->
+    <!--}-->
+    <!--}-->
+    <!--},-->
+    <!--error: function(e) {-->
+    <!--alert(e.errors)-->
+    <!--}-->
+    <!--});-->
+    <!--$("#themeListGrid").kendoGrid({-->
+    <!--dataSource: themes_data,-->
+    <!--resizable: true,-->
+    <!--selectable: "multiple",-->
+    <!--scrollable: false,-->
+    <!--pageable: {-->
+    <!--pageSizes:[5, 10, 20, 50],-->
+    <!--refresh:true,-->
+    <!--buttonCount:5,-->
+    <!--messages: {-->
+    <!--noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',-->
+    <!--display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',-->
+    <!--empty: '<@spring.message "hdispatch.grid_find_no_data"/>',-->
+    <!--page: '<@spring.message "hdispatch.grid_page"/>',-->
+    <!--of: "/ {0}",-->
+    <!--itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',-->
+    <!--first: '<@spring.message "hdispatch.grid_first_page"/>',-->
+    <!--previous: '<@spring.message "hdispatch.grid_pre_page"/>',-->
+    <!--next: '<@spring.message "hdispatch.grid_next_page"/>',-->
+    <!--last: '<@spring.message "hdispatch.grid_last_page"/>',-->
+    <!--refresh: '<@spring.message "hdispatch.grid_refresh"/>'-->
+    <!--}-->
+    <!--},-->
+    <!--toolbar: [-->
+    <!--{-->
+    <!--name:"create",-->
+    <!--text:'<@spring.message "hdispatch.create"/>'-->
+    <!--},-->
+    <!--{-->
+    <!--name:"save",-->
+    <!--text:'<@spring.message "hdispatch.save"/>'-->
+    <!--},-->
+    <!--{-->
+    <!--name:"cancel",-->
+    <!--text:'<@spring.message "hdispatch.cancel"/>'-->
+    <!--}-->
+    <!--],-->
+    <!--columns:-->
+    <!--[-->
+    <!--{ 'field': 'themeId','hidden':true },-->
+    <!--{ 'field': 'themeName','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "150px" },-->
+    <!--{ 'field': 'themeSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "100px" },-->
+    <!--{ 'field': 'themeDescription','title':'<@spring.message "hdispatch.theme.theme_description"/>', 'width': "200px" },-->
+    <!--//                            { command: { text: '<@spring.message "hdispatch.theme.theme_create.edict_layer"/>', click: showDetails ,class:'btn btn-info'}, title: '<@spring.message "hdispatch.theme.layer_operation"/>', width: "100px" }-->
+    <!--{-->
+    <!--field : "",-->
+    <!--title : '<@spring.message "hdispatch.theme.layer_operation"/>',-->
+    <!--width : 100,-->
+    <!--//                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.theme.theme_create.edict_layer'/></button>"-->
+    <!--template : function(-->
+    <!--item) {-->
+    <!--console.log("输出themeId:"+item.themeId);-->
+    <!--console.log(!!item.themeId);-->
+    <!--if(!!item.themeId){-->
+    <!--var html = "<button  class='btn btn-info'onclick='showDetails(\""-->
+    <!--+ item.themeId-->
+    <!--+ "\",\""+item.themeName+"\")'"-->
+    <!--+ "><@spring.message 'hdispatch.theme.theme_create.edict_layer'/>"-->
+    <!--+ "</button>";-->
+    <!--return html;-->
+    <!--}else{-->
+    <!--return '';-->
+    <!--}-->
+    <!--}-->
+    <!--}-->
+    <!--],-->
+    <!--editable: true-->
+    <!--});-->
+    <!--kendo.bind($('#theme-content'),viewModel);-->
+
+    <!--});-->
+    <!--$("td").find("a").removeClass();-->
+    <!--$("td").find("a").addClass("btn btn-info");-->
+    <!--//显示层详情页面-->
+    <!--function showDetails(e) {-->
+    <!--e.preventDefault();-->
+    <!--var dataItem = this.dataItem($(e.currentTarget).closest("tr"));-->
+    <!--console.log("当前行themeId:"+dataItem.themeId);-->
+    <!--if(!dataItem.themeId || !dataItem.themeName){-->
+    <!--alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');-->
+    <!--return;-->
+    <!--}-->
+    <!--wnd.content(detailsTemplate(dataItem));-->
+    <!--wnd.center().open();-->
+    <!--loadLayerGrid(dataItem);-->
+    <!--}-->
+    <!--//        function showDetails(themeId_thisRow,themeName_thisRow) {-->
+    <!--//            console.log("当前行themeId:"+themeId_thisRow);-->
+    <!--//            if(!themeId_thisRow || !themeName_thisRow){-->
+    <!--//                alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');-->
+    <!--//                return;-->
+    <!--//            }-->
+    <!--//            var dataItem = {-->
+    <!--//                themeId:themeId_thisRow,-->
+    <!--//                themeName:themeName_thisRow-->
+    <!--//            };-->
+    <!--//            wnd.content(detailsTemplate(dataItem));-->
+    <!--//            wnd.center().open();-->
+    <!--//            loadLayerGrid(dataItem);-->
+    <!--//        }-->
+
+    <!--function loadLayerGrid(layerHeaderData) {-->
+    <!--if(!layerHeaderData.themeId){-->
+    <!--alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');-->
+    <!--return;-->
+    <!--}-->
+    <!--var layerViewModel = kendo.observable({-->
+    <!--model:{-->
+    <!--themeId:layerHeaderData.themeId-->
+    <!--}-->
+    <!--});-->
+    <!--var layers_data = new kendo.data.DataSource({-->
+    <!--transport: {-->
+    <!--read:  {-->
+    <!--url: baseUrl_layer+"query",-->
+    <!--dataType: "json"-->
+    <!--},-->
+    <!--create: {-->
+    <!--url: baseUrl_layer+'submit',-->
+    <!--type : 'POST',-->
+    <!--dataType: "json",-->
+    <!--contentType:"application/json"-->
+    <!--},-->
+    <!--parameterMap: function(options, operation) {-->
+    <!--//封装请求参数-->
+    <!--if (operation !== "read" && options.models) {-->
+    <!--var layer_datas = options.models;-->
+    <!--if(operation =='create' || operation =='update'){-->
+    <!--layer_datas = options.models.map(function(data){-->
+    <!--data['__status'] = (operation =='create' ? 'add' : 'update');-->
+    <!--return data;-->
+    <!--});-->
+    <!--}-->
+    <!--for(var k in layer_datas){-->
+    <!--layer_datas[k].themeId=layerHeaderData.themeId;-->
+    <!--}-->
+    <!--var layer_data_str = kendo.stringify(layer_datas);-->
+
+    <!--return layer_data_str;-->
+    <!--} else if (operation === "read") {-->
+    <!--var layerModel = layerViewModel.model;-->
+    <!--if(!layerModel.themeId){-->
+    <!--alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer_for_not_set_themeId"/>');-->
+    <!--return;-->
+    <!--}-->
+    <!--var map = {themeId: layerModel.themeId};-->
+    <!--if (options.page)-->
+    <!--map.page = options.page;-->
+    <!--if (options.pageSize)-->
+    <!--map.pageSize = options.pageSize;-->
+    <!--for(var k in map){-->
+    <!--if(map[k]==='')delete map[k]-->
+    <!--}-->
+    <!--return map;-->
+    <!--}-->
+    <!--}-->
+    <!--},-->
+    <!--batch: true,-->
+    <!--serverPaging : true,-->
+    <!--pageSize: 5,-->
+    <!--schema: {-->
+    <!--data:'rows',-->
+    <!--total:'total',-->
+    <!--model: {-->
+    <!--id: 'layerId',-->
+    <!--fields: {-->
+    <!--themeId: { type: 'number' },-->
+    <!--layerName: { type: 'string',validation: { required: true } },-->
+    <!--layerDescription: { type: 'string',validation: { required: true } },-->
+    <!--layerSequence: { type: 'number',validation: { required: true } }-->
+    <!--}-->
+    <!--},-->
+    <!--errors: function(res){-->
+    <!--if(!res.success && res.message) {-->
+    <!--return res.message;-->
+    <!--}-->
+    <!--}-->
+    <!--},-->
+    <!--error: function(e) {-->
+    <!--alert(e.errors)-->
+    <!--}-->
+    <!--});-->
+    <!--$("#layerListGrid").kendoGrid({-->
+    <!--dataSource: layers_data,-->
+    <!--resizable: true,-->
+    <!--selectable: "multiple",-->
+    <!--scrollable: false,-->
+    <!--pageable: {-->
+    <!--pageSizes:[5, 10, 20, 50],-->
+    <!--refresh:true,-->
+    <!--buttonCount:5,-->
+    <!--messages: {-->
+    <!--noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',-->
+    <!--display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',-->
+    <!--empty: '<@spring.message "hdispatch.grid_find_no_data"/>',-->
+    <!--page: '<@spring.message "hdispatch.grid_page"/>',-->
+    <!--of: "/ {0}",-->
+    <!--itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',-->
+    <!--first: '<@spring.message "hdispatch.grid_first_page"/>',-->
+    <!--previous: '<@spring.message "hdispatch.grid_pre_page"/>',-->
+    <!--next: '<@spring.message "hdispatch.grid_next_page"/>',-->
+    <!--last: '<@spring.message "hdispatch.grid_last_page"/>',-->
+    <!--refresh: '<@spring.message "hdispatch.grid_refresh"/>'-->
+    <!--}-->
+    <!--},-->
+    <!--toolbar: [-->
+    <!--{-->
+    <!--name:"create",-->
+    <!--text:'<@spring.message "hdispatch.create"/>'-->
+    <!--//                        template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'-->
+    <!--},-->
+    <!--{-->
+    <!--name:"save",-->
+    <!--text:'<@spring.message "hdispatch.save"/>'-->
+    <!--},-->
+    <!--{-->
+    <!--name:"cancel",-->
+    <!--text:'<@spring.message "hdispatch.cancel"/>'-->
+    <!--}-->
+    <!--],-->
+    <!--columns:-->
+    <!--[-->
+    <!--{ 'field': 'layerName','title':'<@spring.message "hdispatch.layer_name"/>', 'width': 70 },-->
+    <!--{ 'field': 'layerDescription','title':'<@spring.message "hdispatch.layer.layer_description"/>', 'width': 70 },-->
+    <!--{ 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': 70 }-->
+    <!--],-->
+    <!--editable: true-->
+    <!--});-->
+    <!--kendo.bind($('#layer-content'),layerViewModel);-->
+    <!--}-->
+    <!--</script>-->
+    <!--<script type="text/x-kendo-template" id="template">-->
+    <!--<div id="details-container">-->
+    <!--<div id="layer-content">-->
+    <!--<div class="panel panel-primary">-->
+    <!--<div class="panel-body">-->
+    <!--<div class="row">-->
+    <!--<div class="col-md-12">-->
+    <!--<div class="col-md-12 col-md-offset-0">-->
+    <!--<label class="col-md-5 control-label col-md-offset-0">-->
+    <!--<span style="font-size: 20px"><@spring.message "hdispatch.theme_name"/>：</span>#= themeName #-->
+    <!--</label>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div id="layerListGrid" style="clear:both">-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</script>-->
+    <!--</div>-->
+    <!--</body>-->
+    <!--</html>-->
