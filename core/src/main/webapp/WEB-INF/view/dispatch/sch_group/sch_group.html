@@ -28,7 +28,7 @@
 						<!-- roleCode  end-->
 
 						<!--   roleName -->
-					
+
 						<!--   roleName  end -->
 
 						<div class="col-sm-4">
@@ -74,8 +74,8 @@
 	</div>
 	<script src="../../../../lib/dateformat.js"></script>
 	<script type="text/javascript">
-	console.log(new Date());
-	document.getElementById("picker").flatpickr();
+		console.log(new Date());
+		document.getElementById("picker").flatpickr();
 		var checkedIds = {};
 
 		//on click of the checkbox:
@@ -125,25 +125,29 @@
 			});
 		}
 		function openFlowDetailPage(flow_id, exec_id) {
-			var dialog = $("#dialog").kendoWindow(
-					{
-						actions : [ "Maximize", "Minimize", "Close" ],
-						width : 920,
-						height : 450,
-						title : flow_id + ' <@spring.message "hdispatch.flowlist.flowdetail"/>',
-						visible : false,
-						iframe : true,
-						content : 'flow_infodetail.html?flow_id=' + flow_id
-								+ '&exec_id=' + exec_id
-					}).data("kendoWindow");
+			var dialog = $("#dialog")
+					.kendoWindow(
+							{
+								actions : [ "Maximize", "Minimize", "Close" ],
+								width : 920,
+								height : 450,
+								title : flow_id
+										+ ' <@spring.message "hdispatch.flowlist.flowdetail"/>',
+								visible : false,
+								iframe : true,
+								content : 'flow_infodetail.html?flow_id='
+										+ flow_id + '&exec_id=' + exec_id
+							}).data("kendoWindow");
 			dialog.center().open();
 		}
 		window.stateColor = {
 				"PAUSED" : "background-color:#FFCC00;",
 				"RUNNING" : "background-color:#00CC00;",
+				"SUCCESS" : "background-color:#33FF00;",
+				"FAILED" : "background-color:#FF3333;",
 				"SUCCESS" : "background-color:#5CB85C;",
 				"FAILED" : "background-color:#D9534F;",
-				"BLOCKED" : "background-color:black;",
+				"KILLED" : "background-color:#D9534F;",
 				"PREPARING" : "background-color:#DDDDDD;"
 		};
 
@@ -173,7 +177,7 @@
 											parameterMap : function(options,
 													type) {
 												if (type === "read") {
-													
+
 													var model = viewModel.model;
 													var map = {};
 													if (model.flowName) {
@@ -185,8 +189,12 @@
 													if (model.projectName) {
 														map.projectName = model.projectName;
 													}
-													if (document.getElementById("picker").value!='') {
-														 map.date = new Date(document.getElementById("picker").value).getTime(); 
+													if (document
+															.getElementById("picker").value != '') {
+														map.date = new Date(
+																document
+																		.getElementById("picker").value)
+																.getTime();
 													}
 													if (options.page) {
 														map.page = options.page;
@@ -267,10 +275,10 @@
 									id : "stop",
 									text : '<@spring.message "hap.stop"/>'
 								} /* , {
-																	type : "button",
-																	id : "fresh",
-																	text : '<@spring.message "hap.fresh"/>'
-																} */
+																								type : "button",
+																								id : "fresh",
+																								text : '<@spring.message "hap.fresh"/>'
+																							} */
 
 								]
 							});
@@ -284,7 +292,7 @@
 												reorderable : true,
 												scrollable : false,
 												editable : false,
-												sortable:true,
+												sortable : true,
 												pageable : {
 													pageSizes : [ 5, 10, 20, 50 ],
 													refresh : true,
@@ -307,8 +315,7 @@
 														{
 															title : '',
 															template : '<input class="checkbox" type="checkbox" />',
-															width:50
-															
+															width : 50
 														},
 														{
 															field : "exec_id",
@@ -339,7 +346,7 @@
 															title : '<@spring.message "hdispatch.flowlist.projectname"/>',
 															width : 200
 														},
-														
+
 														{
 															field : "start_time",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
@@ -379,12 +386,47 @@
 																	dataItem) {
 																var v = dataItem.end_time
 																		- dataItem.start_time;
-																/*  
-																    if(v instanceof Date){
-																        return kendo.toString(v,"yyyy-MM-dd hh:mm:ss");
-																    }
-																    return v?v:''; */
-																return v + 'ms';
+																if (v < 0)
+																	v = 0;
+																var days = Math
+																		.floor(v
+																				/ (24 * 3600 * 1000))
+																var leave1 = v
+																		% (24 * 3600 * 1000) //计算天数后剩余的毫秒数  
+																var hours = Math
+																		.floor(leave1
+																				/ (3600 * 1000))
+																var leave2 = leave1
+																		% (3600 * 1000) //计算小时数后剩余的毫秒数  
+																var minutes = Math
+																		.floor(leave2
+																				/ (60 * 1000))
+																var leave3 = leave2
+																		% (60 * 1000) //计算分钟数后剩余的毫秒数  
+																var leave4=leave3%1000;
+																var seconds = Math
+																		.round(leave3 / 1000)
+																var time=0;
+																if(days>0)
+																	time=days+'d '+hours+'h '+minutes+'m '+seconds+'s '+leave4+'ms ';
+																else
+																{
+																	if(hours>0)
+																		time=hours+'h '+minutes+'m '+seconds+'s '+leave4+'ms ';
+																	else
+																	{
+																	if(minutes>0)
+																		time=minutes+'m '+seconds+'s '+leave4+'ms ';
+																	else
+																		{
+																		if(seconds>0)
+																			time=seconds+'s '+leave4+'ms ';
+																		else
+																			time=leave4+'ms ';
+																		}
+																	}
+																}
+																return time;
 															}
 														},
 														{
@@ -399,6 +441,10 @@
 																	status = 'FAILED';
 																else if (item.status == 20)
 																	status = 'PREPARING';
+																else if (item.status == 30)
+																	status = 'RUNNING';
+																else if (item.status == 60)
+																	status = 'KILLED';
 																var html = "<div "
 																		+ "style='text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
 																		+ (stateColor[status])
@@ -416,7 +462,7 @@
 															template : function(
 																	item) {
 																var status = item.running;
-																var html = "<div class='progress progress-striped active' style='margin:0;border-radius:5px;'>"
+																var html = "<div class='progress progress-striped active' style='margin:0;border-radius:5px'>"
 																		+ "<div class='progress-bar progress-bar-success' role='progressbar'"
 																		+ "   aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"
 																		+ "  style='width: "

@@ -50,12 +50,14 @@
 	}
 	
 		window.stateColor = {
-			"PAUSED" : "background-color:#FFCC00;",
-			"RUNNING" : "background-color:#00CC00;",
-			"SUCCESS" : "background-color:#5CB85C;",
-			"FAILED" : "background-color:#D9534F;",
-			"BLOCKED" : "background-color:black;",
-			"PREPARING" : "background-color:#DDDDDD;"
+				"PAUSED" : "background-color:#FFCC00;",
+				"RUNNING" : "background-color:#00CC00;",
+				"SUCCESS" : "background-color:#33FF00;",
+				"FAILED" : "background-color:#FF3333;",
+				"SUCCESS" : "background-color:#5CB85C;",
+				"FAILED" : "background-color:#D9534F;",
+				"KILLED" : "background-color:#D9534F;",
+				"PREPARING" : "background-color:#DDDDDD;"
 		};
 
 		$(document)
@@ -305,12 +307,47 @@
 															template : function(
 																	dataItem) {
 																var v = dataItem.end_time-dataItem.start_time;
-																/*  
-																    if(v instanceof Date){
-																        return kendo.toString(v,"yyyy-MM-dd hh:mm:ss");
-																    }
-																    return v?v:''; */
-																return v+'ms';
+																if (v < 0)
+																	v = 0;
+																var days = Math
+																		.floor(v
+																				/ (24 * 3600 * 1000))
+																var leave1 = v
+																		% (24 * 3600 * 1000) //计算天数后剩余的毫秒数  
+																var hours = Math
+																		.floor(leave1
+																				/ (3600 * 1000))
+																var leave2 = leave1
+																		% (3600 * 1000) //计算小时数后剩余的毫秒数  
+																var minutes = Math
+																		.floor(leave2
+																				/ (60 * 1000))
+																var leave3 = leave2
+																		% (60 * 1000) //计算分钟数后剩余的毫秒数  
+																var leave4=leave3%1000;
+																var seconds = Math
+																		.round(leave3 / 1000)
+																var time=0;
+																if(days>0)
+																	time=days+'d '+hours+'h '+minutes+'m '+seconds+'s '+leave4+'ms ';
+																else
+																{
+																	if(hours>0)
+																		time=hours+'h '+minutes+'m '+seconds+'s '+leave4+'ms ';
+																	else
+																	{
+																	if(minutes>0)
+																		time=minutes+'m '+seconds+'s '+leave4+'ms ';
+																	else
+																		{
+																		if(seconds>0)
+																			time=seconds+'s '+leave4+'ms ';
+																		else
+																			time=leave4+'ms ';
+																		}
+																	}
+																}
+																return time;
 															}
 														},
 														{
