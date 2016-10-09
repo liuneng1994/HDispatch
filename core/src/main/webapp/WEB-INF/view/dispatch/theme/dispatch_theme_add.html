@@ -153,6 +153,7 @@
                         alert(e.errors)
                     }
                 });
+                var showAlt = false;//grid中的行背景颜色交叉变化
                 $("#themeListGrid").kendoGrid({
                     dataSource: themes_data,
                     resizable: true,
@@ -186,13 +187,28 @@
                                     'title':'<@spring.message "hdispatch.theme_name"/>',
                                     'width': "150px",
                                     template:function (rowData) {
+//                                        console.log(arguments);
+                                        if(showAlt){
+                                            bg = "background-color:#F9F9F9;";
+                                        }else {
+                                            bg="";
+                                        }
                                         if(!rowData.themeId){
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;clear: both;" name="themeName" required="required" data-bind="value:themeName">';
-//                            return '';
+                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeName" required="required" data-bind="value:themeName">';
                                         }
                                         else{
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeName" required="required" data-bind="value:themeName" readonly="readonly" value="'+rowData.themeName+'">';
+                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeName" required="required" data-bind="value:themeName" readonly="readonly" value="'+rowData.themeName+'">';
                                         }
+
+//                                        if(!rowData.themeId){
+//                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;clear: both;" name="themeName" required="required" data-bind="value:themeName">';
+////                            return '';
+//                                        }
+//                                        else{
+//                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeName" required="required" data-bind="value:themeName" readonly="readonly" value="'+rowData.themeName+'">';
+//                                        }
+
+
                                     }
                                 },
                                 {
@@ -204,10 +220,19 @@
                                             return '<input name="themeSequence" class="k-input k-textbox" type="number" min="0" step="1" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence" />';
                                         }else{
                                             if(null === rowData.themeSequence||'null' == rowData.themeSequence ||  "undefined"==rowData.themeSequence){
-                                                return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:"/>';
+                                                return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" data-bind="value:"/>';
                                             }
-                                            return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence"/>';
+                                            return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" data-bind="value:themeSequence"/>';
                                         }
+//                                        if(!rowData.themeId){
+//                                            return '<input name="themeSequence" class="k-input k-textbox" type="number" min="0" step="1" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence" />';
+//                                        }else{
+//                                            if(null === rowData.themeSequence||'null' == rowData.themeSequence ||  "undefined"==rowData.themeSequence){
+//                                                return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:"/>';
+//                                            }
+//                                            return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence"/>';
+//                                        }
+
                                     }
                                 },
                                 {
@@ -216,10 +241,10 @@
                                     'width': "200px",
                                     template:function (rowData) {
                                         if(!rowData.themeId){
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeDescription" required="required" data-bind="value:themeDescription">';
+                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeDescription" required="required" data-bind="value:themeDescription">';
                                         }
                                         else{
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeDescription" required="required" data-bind="value:themeDescription" readonly="readonly" value="'+rowData.themeDescription+'">';
+                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeDescription" required="required" data-bind="value:themeDescription" readonly="readonly" value="'+rowData.themeDescription+'">';
                                         }
                                     }
                                 },
@@ -231,6 +256,7 @@
 //                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.theme.theme_create.edict_layer'/></button>"
                             template : function(
                                     item) {
+                                showAlt = !showAlt;
                                 if(!!item.themeId){
                                     var html = "<button  class='btn btn-info'onclick='showDetails(\""
                                             + item.themeId

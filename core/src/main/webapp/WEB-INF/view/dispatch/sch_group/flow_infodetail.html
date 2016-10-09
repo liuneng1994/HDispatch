@@ -52,8 +52,8 @@
 		window.stateColor = {
 			"PAUSED" : "background-color:#FFCC00;",
 			"RUNNING" : "background-color:#00CC00;",
-			"SUCCESS" : "background-color:#33FF00;",
-			"FAILED" : "background-color:#FF3333;",
+			"SUCCESS" : "background-color:#5CB85C;",
+			"FAILED" : "background-color:#D9534F;",
 			"BLOCKED" : "background-color:black;",
 			"PREPARING" : "background-color:#DDDDDD;"
 		};
@@ -221,7 +221,7 @@
 																	r2=Math.round((length-end)/length*100);
 																	
 																	r3=0;
-																	color1="#310EBE";
+																	color1="#5CB85C";
 																	color2="#E6E6E6";
 																	color3="#E6E6E6";
 																	}
@@ -234,7 +234,7 @@
 																		
 																		color1="#E6E6E6";
 																		color2="#E6E6E6";
-																		color3="#310EBE";
+																		color3="#5CB85C";
 																	}
 																else
 																	{
@@ -245,12 +245,12 @@
 																	r3=Math.round((length-end)/length*100);
 																	
 																	color1="#E6E6E6";
-																	color2="#310EBE";
+																	color2="#5CB85C";
 																	color3="#E6E6E6";	
 																	}
 																		
 																
-																var html = "<div class='progress' style='margin:0;height:18px;'>"+
+																var html = "<div class='progress' style='margin:0;height:18px;border-radius:5px;'>"+
 																"<div class='progress-bar progress-bar-success' role='progressbar'"+
 																"	 aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"+
 																"	 style='width: "+r1+"%;background-color:"+color1+";'>"+
@@ -361,7 +361,7 @@
 																else if (item.status == 20)
 																	status = 'PREPARING';
 																var html = "<div "
-																		+ "style='text-align:center;width:80px;height:13px;text-decoration: none;"
+																		+ "style='text-align:center;width:80px;height:13px;text-decoration: none;border-radius:5px;"
 																		+ (stateColor[status])
 																		+ "' "
 																		+ ">"
