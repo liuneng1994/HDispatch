@@ -141,12 +141,21 @@
 			dialog.center().open();
 		}
 		window.stateColor = {
+<<<<<<< HEAD
 			"PAUSED" : "background-color:#FFCC00;",
 			"RUNNING" : "background-color:#00CC00;",
-			"SUCCESS" : "background-color:#5CB85C;",
-			"FAILED" : "background-color:#D9534F;",
-			"KILLED" : "background-color:#D9534F;",
+			"SUCCESS" : "background-color:#33FF00;",
+			"FAILED" : "background-color:#FF3333;",
+			"KILLED" : "background-color:#FF3333;",
 			"PREPARING" : "background-color:#DDDDDD;"
+=======
+				"PAUSED" : "background-color:#FFCC00;",
+				"RUNNING" : "background-color:#00CC00;",
+				"SUCCESS" : "background-color:#5CB85C;",
+				"FAILED" : "background-color:#D9534F;",
+				"BLOCKED" : "background-color:black;",
+				"PREPARING" : "background-color:#DDDDDD;"
+>>>>>>> origin/liuneng
 		};
 
 		$(document)
