@@ -53,7 +53,9 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 
 	@Override
 	public ExeFlow ExecuteFlow(Map<String, Object> map) {
+		System.out.println("--------------------------");
 		System.out.println(map);
+		
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "executeFlow").queryString(map)
 					.asJson();
@@ -61,6 +63,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("流已经运行！");
 			throw new IllegalArgumentException("流已经运行！", e);
 		}
+		
 		System.out.println(response.getBody().getObject());
 		return new ExeFlow(response.getBody().getObject());
 	}
@@ -107,6 +110,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 
 	@Override
 	public ExeFlow PauseFlow(Map<String, Object> map) {
+		System.out.println(map);
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "pauseFlow").queryString(map).asJson();
 
@@ -114,7 +118,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("流不在运行中！");
 			throw new IllegalArgumentException("流不在运行中！", e);
 		}
-
+		System.out.println(response.getBody().getObject());
 		return new ExeFlow(response.getBody().getObject());
 	}
 

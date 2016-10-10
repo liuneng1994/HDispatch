@@ -174,10 +174,12 @@ public class ExecutionFlowsController extends BaseController {
 	@ResponseBody
 	public ResultObj start(HttpServletRequest request, @RequestBody List<ExecutionFlows> list) {
 		ResultObj obj = new ResultObj();
+		System.out.println("------------------"+list.size());
 		for (ExecutionFlows e : list) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("project", e.getProject_name());
 			map.put("flow", e.getFlow_id());
+			System.out.println(map);
 			ExeFlow f = exeFlowservice.ExecuteFlow(map);
 			if (f.isError()) {
 				obj.setMessage(f.getError());
@@ -227,7 +229,6 @@ public class ExecutionFlowsController extends BaseController {
 	@ResponseBody
 	public ResultObj pause(HttpServletRequest request, @RequestBody List<ExecutionFlows> list) {
 		ResultObj obj = new ResultObj();
-
 		for (ExecutionFlows e : list) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("execid", e.getExec_id());

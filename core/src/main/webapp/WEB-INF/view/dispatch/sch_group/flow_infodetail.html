@@ -19,7 +19,6 @@
 	<script src="../../../../lib/dateformat.js"></script>
 	<script type="text/javascript">
 	function flowoperation_ajax(id, url, succesCallback) {
-		console.log(id);
 		$.ajax({
 			url : url,
 			type : "get",
@@ -396,8 +395,9 @@
 													exec_id,
 													'${base.contextPath}/flows/retryfailflow',
 													function(json) {
+														console.log(json.message);
 														if(json.message!=null)
-															alert("所选流已经运行完毕，无法重跑！");
+															alert("当前流已经完成，请尝试重新执行！");
 														grid.refresh();
 													});
 										}
