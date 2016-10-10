@@ -353,6 +353,12 @@
                             dataType: "json",
                             contentType:"application/json"
                         },
+                        update: {
+                            url: baseUrl_layer + "update",
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
                         parameterMap: function(options, operation) {
                             //封装请求参数
                             if (operation !== "read" && options.models) {
