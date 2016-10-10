@@ -45,10 +45,16 @@ public class LayerServiceImpl implements LayerService {
                         layer.setLayerActive(1L);
                         break;
                     case DTOStatus.UPDATE:
-
+                        Layer layerReturn = layerMapper.selectByNameAndActiveAndThemeId(layer);
+                        if(null == layerReturn){
+                            layerMapper.update(layer);
+                        }
+                        else {
+                            throw new Exception(DUPLICATE_LAYER_NAME_UNDER_THEME);
+                        }
                         break;
                     case DTOStatus.DELETE:
-
+                        layerMapper.deleteInLogic(layer);
                         break;
                     default:
                         break;
