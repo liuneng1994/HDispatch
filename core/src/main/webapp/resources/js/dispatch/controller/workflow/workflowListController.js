@@ -93,8 +93,8 @@
             $('#grid').data('kendoGrid').dataSource
                 .read();
         };
-        vm.create=function() {
-            vm.createWindow.center().maximize().open();
+        vm.create=function(url) {
+            window.location = url;
         }
 
         vm.edit = function (id) {

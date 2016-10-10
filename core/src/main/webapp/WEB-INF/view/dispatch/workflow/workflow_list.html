@@ -9,6 +9,10 @@
             list-style: none;
             padding-bottom: 1em;
         }
+
+        .k-combobox>.k-dropdown-wrap>.k-i-close {
+            top: 1em;
+        }
     </style>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
@@ -16,27 +20,6 @@
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <script src="${base.contextPath}/lib/moment.min.js"></script>
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
-    <script src="${base.contextPath}/common/language?var=languageData" type="text/javascript"></script>
-    <div kendo-window="vm.createWindow"
-         k-title="'创建任务流'"
-         k-actions="['Maximize', 'Close']"
-         k-modal="true"
-         k-width="600"
-         k-on-open="vm.createWindow.visible = true"
-         k-on-close="vm.createWindow.visible = false"
-         k-visible="false">
-        <iframe id="createWindow" src="${base.contextPath}/dispatch/workflow/workflow_create.html" style="height: 100%;width:100%;" frameborder="0"></iframe>
-    </div>
-    <div kendo-window="vm.updateWindow"
-         k-title="'编辑任务流'"
-         k-actions="['Maximize', 'Close']"
-         k-modal="true"
-         k-width="600"
-         k-on-open="vm.updateWindow.visible = true"
-         k-on-close="vm.updateWindow.visible = false"
-         k-visible="false">
-        <iframe id="updateWidow" src="${base.contextPath}/dispatch/workflow/workflow_update.html" style="height: 100%;width:100%;" frameborder="0"></iframe>
-    </div>
     <div id="content-container">
         <div id="page-content">
             <div class="panel">
@@ -113,7 +96,9 @@
 
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
-                        <div class="btn btn-success" ng-click="vm.create()">创建</div>
+                        <div class="btn btn-success"
+                             ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
+                        </div>
                     </div>
                     <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
                 </div>

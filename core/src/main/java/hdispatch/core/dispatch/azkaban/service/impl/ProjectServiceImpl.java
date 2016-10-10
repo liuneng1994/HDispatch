@@ -42,7 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
             logger.error("创建工程失败", e);
             throw new IllegalStateException("创建工程失败", e);
         }
-        logger.info(response.toString());
+        logger.info(response.getBody().toString());
         String status = response.getBody().getObject().getString("status");
         return "success".equals(status);
     }
@@ -92,6 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
             logger.error("工程文件找不到", e);
             throw new IllegalStateException("工程文件找不到", e);
         }
+        logger.info(response.getBody().toString());
         JSONObject object = response.getBody().getObject();
         Map<String, String> ret = new HashMap<>();
         if (object.has("error")) {
