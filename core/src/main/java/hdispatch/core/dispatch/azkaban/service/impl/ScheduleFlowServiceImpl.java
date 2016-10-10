@@ -79,7 +79,6 @@ public class ScheduleFlowServiceImpl implements ScheduleFlowService {
             response = RequestUtils.post(RequestUrl.SCHEDULE).field("action", "removeSched")
                     .field("scheduleId", id)
                     .asJson();
-            System.out.println(response.getBody().getObject().toString());
             if (response.getBody().getObject().getString("status").equals("success")) {
 
                 result.setCode(1);

@@ -205,8 +205,8 @@ public class ExecutionFlowsController extends BaseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("execid", e.getExec_id());
 			ExeFlow f = exeFlowservice.ResumeFlow(map);
-			if (f.isError()) {
-				obj.setMessage(f.getError());
+			if (f.isPause()) {
+				obj.setMessage(f.getResume());
 				obj.setCode(0);
 			} else {
 				obj.setMessage("success");

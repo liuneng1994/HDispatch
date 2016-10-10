@@ -12,7 +12,6 @@ public class ExeFlow {
     public ExeFlow(JSONObject obj) {
         this.obj = obj;
     }
-
     public String getMessage() {
         return obj.getString("message");
     }
@@ -49,6 +48,11 @@ public class ExeFlow {
         return obj.getString("error");
     }
 
+    public String getResume()
+    {
+    	return obj.getString("resume");
+    }
+    public boolean isPause(){return obj.has("resume");}
     public boolean isError(){return obj.has("error");}
 
 }
