@@ -247,26 +247,26 @@ public class ScheduleController extends BaseController {
 
 		ResultObj obj = new ResultObj();
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("project",project);
-			map.put("flow", flow);
+			map.put("project",project.replaceAll("\"", ""));
+			map.put("flow", flow.replaceAll("\"", ""));
 			if(successEmails!=null)
-			map.put("successEmails", successEmails);
+			map.put("successEmails", successEmails.replaceAll("\"", ""));
 			if(failureEmails!=null)
-			map.put("failureEmails",failureEmails);
+			map.put("failureEmails",failureEmails.replaceAll("\"", ""));
 			if(successEmailsOverride!=null)
-			map.put("successEmailsOverride", successEmailsOverride);
+			map.put("successEmailsOverride", successEmailsOverride.replaceAll("\"", ""));
 			if(failureEmailsOverride!=null)
-			map.put("failureEmailsOverride", failureEmailsOverride);
+			map.put("failureEmailsOverride", failureEmailsOverride.replaceAll("\"", ""));
 			if(notifyFailureFirst!=null)
-			map.put("notifyFailureFirst", notifyFailureFirst);
+			map.put("notifyFailureFirst", notifyFailureFirst.replaceAll("\"", ""));
 			if(notifyFailureLast!=null)
-			map.put("notifyFailureLast", notifyFailureLast);
+			map.put("notifyFailureLast", notifyFailureLast.replaceAll("\"", ""));
 			if(failureAction!=null)
-			map.put("failureAction", failureAction);
+			map.put("failureAction", failureAction.replaceAll("\"", ""));
 			if(concurrentOption!=null)
-			map.put("concurrentOption", concurrentOption);
+			map.put("concurrentOption", concurrentOption.replaceAll("\"", ""));
 			if(disabled!=null)
-			map.put("disabled", disabled);
+			map.put("disabled", disabled.replaceAll("\"", ""));
 			ExeFlow f = exeFlowService.ExecuteFlow(map);
 			if (f.isError()) {
 				obj.setMessage(f.getError());
