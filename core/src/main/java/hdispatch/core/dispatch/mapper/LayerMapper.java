@@ -41,4 +41,10 @@ public interface LayerMapper {
      * @return
      */
     List<Layer> selectAllActiveLayers();
+
+    /**
+     * 更新层
+     * @param layer
+     */
+    void update(Layer layer);
 }

@@ -37,4 +37,19 @@
         SELECT * FROM hdispatch_layer
         WHERE active=1
     </select>
+    <update id="update">
+        UPDATE hdispatch_layer
+        <set >
+            <if test="layerName != null" >
+                name = #{layerName,jdbcType=VARCHAR},
+            </if>
+            <if test="layerDescription != null" >
+                description = #{layerDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="layerSequence != null" >
+                display_sequence = #{layerSequence,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE layer_id=#{layerId}
+    </update>
 </mapper>
