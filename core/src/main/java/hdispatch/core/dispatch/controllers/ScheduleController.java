@@ -57,8 +57,6 @@ public class ScheduleController extends BaseController {
                               HttpServletResponse response) {
 
         IRequest i = createRequestContext(request);
-        System.out.println(i.getLocale() + "---" + i.getCompanyId() + "---" + i.getRoleId() + "---");
-
         String submitdate = request.getParameter("submitdate");
         String project_name = request.getParameter("project_name");
         String flow_id = request.getParameter("flow_id");
@@ -220,7 +218,9 @@ public class ScheduleController extends BaseController {
 
 		sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         hds.setSubmit_date(sdf.format(d));
-        hdispatchScheduleService.insert(hds);
+       
+        int i=hdispatchScheduleService.insert(hds);
+        System.out.println("-----------------------------"+i);
         return scheduleFlowService.scheduleFlow(obj);
 
     }
