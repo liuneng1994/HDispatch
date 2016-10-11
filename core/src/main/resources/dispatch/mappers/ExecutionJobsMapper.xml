@@ -52,6 +52,7 @@
 	and SCV.LANG = #{lang,jdbcType=VARCHAR}
       and exec_id = #{exec_id,jdbcType=INTEGER}
       and flow_id = #{flow_id,jdbcType=VARCHAR}
+      order by start_time asc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.ExecutionJobsKey" >
     delete from execution_jobs

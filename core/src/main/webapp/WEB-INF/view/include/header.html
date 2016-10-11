@@ -11,23 +11,20 @@
           type="text/css"/>
     <link href="${base.contextPath}/lib/kendoui/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="${base.contextPath}/lib/kendoui/styles/kendo.hap.css" rel="stylesheet" type="text/css"/>
-
     <script src="${base.contextPath}/lib/kendoui/js/jquery-1.12.3.js"></script>
-    <script src="${base.contextPath}/lib/kendoui/js/jquery.min.js"></script>
-    <script src="${base.contextPath}/lib/jszip.min.js"></script>
-    <script src="${base.contextPath}/lib/jquery.form.js"></script>
-    <script src="${base.contextPath}/lib/bootstrap/js/bootstrap.js"></script>
     <script src="${base.contextPath}/lib/angular/angular.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/kendo.all.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/cultures/kendo.culture.${base.locale.toString()?replace('_','-')}.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/messages/kendo.messages.${base.locale.toString()?replace('_','-')}.js"></script>
     <script src="${base.contextPath}/lib/kendoui/js/kendo.hap.js"></script>
+    <script src="${base.contextPath}/lib/jszip.min.js"></script>
+    <script src="${base.contextPath}/lib/jquery.form.js"></script>
     <script src="${base.contextPath}/common/prompts"></script>
     <script>
         _basePath = '${base.contextPath}', _locale = '${base.locale}';
         kendo.culture("${base.locale.toString()?replace('_','-')}");
         window.alert = function (message) {
-            $('body').append('<div id="_alert"><div class="text-left" style="padding:50px">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
+            $('body').append('<div id="_alert"><div class="text-left" style="padding:25px;font-size:1em;">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
                     'onclick="$(\'#_alert\').data(\'kendoWindow\').close();$(\'#_alert\').remove();">确定</button><div></div>');
             $('#_alert').kendoWindow({
                 width: "400px",
@@ -40,13 +37,11 @@
             }).data("kendoWindow").center().open();
         }
 
-        window.confirm = function (message,func) {
-            if (!func) {
-                func = function() {};
-            }
-            $('body').append('<div id="_confirm"><div class="text-left" style="padding:50px">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
+        window.hdispatch = window.hdispatch||{}
+        window.hdispatch.confirm = function (message) {
+            $('body').append('<div id="_confirm"><div class="text-left" style="padding:25px;font-size:1em;">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
                     'onclick="window.confirm.successCallback();$(\'#_confirm\').data(\'kendoWindow\').close();$(\'#_confirm\').remove();">确定</button>' +
-                    '<button class="btn btn-danger" onclick="$(\'#_confirm\').data(\'kendoWindow\').close();$(\'#_confirm\').remove();">取消</button><div></div>');
+                    '<button class="btn btn-danger" onclick="$(\'#_confirm\').data(\'kendoWindow\').close();$(\'#_confirm\').remove();">取消</button></div></div>');
             $('#_confirm').kendoWindow({
                 width: "400px",
                 title: "confirm",

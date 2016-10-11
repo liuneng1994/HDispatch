@@ -15,6 +15,8 @@ import hdispatch.core.dispatch.azkaban.util.ResultObj;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.service.HdispatchScheduleService;
 import hdispatch.core.dispatch.service.ProjectFlowsService;
+
+import org.apache.xerces.util.SynchronizedSymbolTable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,17 +247,26 @@ public class ScheduleController extends BaseController {
 
 		ResultObj obj = new ResultObj();
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("project",project);
-			map.put("flow", flow);
-			map.put("successEmails", successEmails);
-			map.put("failureEmails",failureEmails);
-			map.put("successEmailsOverride", successEmailsOverride);
-			map.put("failureEmailsOverride", failureEmailsOverride);
-			map.put("notifyFailureFirst", notifyFailureFirst);
-			map.put("notifyFailureLast", notifyFailureLast);
-			map.put("failureAction", failureAction);
-			map.put("concurrentOption", concurrentOption);
-			map.put("disabled", disabled);
+			map.put("project",project.replaceAll("\"", ""));
+			map.put("flow", flow.replaceAll("\"", ""));
+			if(successEmails!=null)
+			map.put("successEmails", successEmails.replaceAll("\"", ""));
+			if(failureEmails!=null)
+			map.put("failureEmails",failureEmails.replaceAll("\"", ""));
+			if(successEmailsOverride!=null)
+			map.put("successEmailsOverride", successEmailsOverride.replaceAll("\"", ""));
+			if(failureEmailsOverride!=null)
+			map.put("failureEmailsOverride", failureEmailsOverride.replaceAll("\"", ""));
+			if(notifyFailureFirst!=null)
+			map.put("notifyFailureFirst", notifyFailureFirst.replaceAll("\"", ""));
+			if(notifyFailureLast!=null)
+			map.put("notifyFailureLast", notifyFailureLast.replaceAll("\"", ""));
+			if(failureAction!=null)
+			map.put("failureAction", failureAction.replaceAll("\"", ""));
+			if(concurrentOption!=null)
+			map.put("concurrentOption", concurrentOption.replaceAll("\"", ""));
+			if(disabled!=null)
+			map.put("disabled", disabled.replaceAll("\"", ""));
 			ExeFlow f = exeFlowService.ExecuteFlow(map);
 			if (f.isError()) {
 				obj.setMessage(f.getError());
@@ -264,7 +275,7 @@ public class ScheduleController extends BaseController {
 				obj.setMessage(f.getMessage());
 				obj.setCode(1);
 			}
-		
+		System.out.println(obj.getMessage());
 		return obj;
 	}
 

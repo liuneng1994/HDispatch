@@ -66,12 +66,14 @@ public class ExecutionFlowsController extends BaseController {
 			ExecutionJobs ex=new ExecutionJobs();
 			ex.setExec_id(e.getExec_id());
 			ex.setFlow_id(e.getFlow_id());
+			ex.setLang(irequest.getLocale());
 			PageHelper.startPage(page, pagesize);
 			List<ExecutionJobs> list2 = exeJobsService.selectJobsByFlow(ex);
 			for (ExecutionJobs job : list2) {
 				if(job.getStatus()==50)
 					count++;
 			}
+			System.out.println(count);
 			if(list2.size()!=0)
 			d=Math.ceil(count/list2.size());
 			else
@@ -172,10 +174,12 @@ public class ExecutionFlowsController extends BaseController {
 	@ResponseBody
 	public ResultObj start(HttpServletRequest request, @RequestBody List<ExecutionFlows> list) {
 		ResultObj obj = new ResultObj();
+		System.out.println("------------------"+list.size());
 		for (ExecutionFlows e : list) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("project", e.getProject_name());
 			map.put("flow", e.getFlow_id());
+			System.out.println(map);
 			ExeFlow f = exeFlowservice.ExecuteFlow(map);
 			if (f.isError()) {
 				obj.setMessage(f.getError());
@@ -203,8 +207,8 @@ public class ExecutionFlowsController extends BaseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("execid", e.getExec_id());
 			ExeFlow f = exeFlowservice.ResumeFlow(map);
-			if (f.isError()) {
-				obj.setMessage(f.getError());
+			if (f.isPause()) {
+				obj.setMessage(f.getResume());
 				obj.setCode(0);
 			} else {
 				obj.setMessage("success");
@@ -225,7 +229,6 @@ public class ExecutionFlowsController extends BaseController {
 	@ResponseBody
 	public ResultObj pause(HttpServletRequest request, @RequestBody List<ExecutionFlows> list) {
 		ResultObj obj = new ResultObj();
-
 		for (ExecutionFlows e : list) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("execid", e.getExec_id());

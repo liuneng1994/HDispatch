@@ -9,7 +9,7 @@
         vm.layers = {};
         vm.jobLayers = [];
         vm.jobSources = [];
-        vm.paperName = 'create'
+        vm.paperName = 'create';
         vm.graph = new joint.dia.Graph;
         vm.paper = wfDiaService.newPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
         vm.jobStore = wfDiaService.newJobStore();
@@ -33,7 +33,7 @@
 
         vm.createJob = function () {
             if (vm.jobStore.contains(vm.newJob.name)) {
-                $window.alert("job名称已存在");
+                $window.alert("任务名称已存在");
                 return;
             }
             console.log();
@@ -67,7 +67,7 @@
             workflow.graph = JSON.stringify(graphJson);
             workflowService.createWorkflow(workflow).then(function (data) {
                 vm.workflow.workflowId = parseInt(data);
-                $window.alert("save success");
+                window.hdispatch.confirm("保存成功，是否立刻生成任务流").accept(vm.generateWorkflow);
             }, function (data) {
                 $window.alert(data);
             });
