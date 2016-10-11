@@ -172,7 +172,7 @@ public class LayerController extends BaseController {
 
     @RequestMapping(value = "/dispatcher/layer/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData updateJobs(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) throws Exception {
+    public ResponseData updateLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) throws Exception {
 
         ResponseData rd = null;
         //后台验证
