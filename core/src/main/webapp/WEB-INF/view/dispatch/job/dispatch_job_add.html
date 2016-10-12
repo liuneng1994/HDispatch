@@ -1,7 +1,6 @@
 <#include "../../include/header.html">
 <body>
     <div>
-        <!--曾经出错原因：头部引用相对地址错误-->
         <div id="content-container">
             <div id="theme-content">
                 <div class="panel">
@@ -33,14 +32,29 @@
                         </div>
                     </form>
                 </div>
-                <div id="jobListGrid" style="clear:both"></div>
+                <div id="page-content" style="clear:both">
+                    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+                        <span class="btn btn-primary k-grid-add" data-bind="click:createFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.create"/></span>
+                        <span class="btn btn-primary k-grid-add" data-bind="click:batchCreateFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_create"/></span>
+                        <!--<span class="btn btn-warning" onclick="" style="float:left;margin-right:5px;"><@spring.message "hap.pause"/></span>-->
+                        <span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
+                        <span class="btn btn-success k-grid-save-changes" data-bind="click:saveFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.save"/></span>
+                        <span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
+                    </div>
+                    <div style="clear:both">
+                        <div id="jobListGrid" style="clear:both"></div>
+                    </div>
+                </div>
             </div>
+
             <div id="batchCreateJobWindow_div"></div>
             <div id="grid_svn_div"></div>
         </div>
         <script type="text/javascript">
             var wnd, batchCreateJobWindowTemplate;
             var grid_svn_wnd, grid_svn_template;
+
+            var jobs_data;
 
             var themeBaseUrl = "${base.contextPath}/dispatcher/theme/";
             var layerBaseUrl = "${base.contextPath}/dispatcher/layer/";
@@ -87,20 +101,89 @@
                 grid_svn_template = kendo.template($("#grid_svn_treeView_template").html());
 
                 //声明主窗口
+//                var viewModel = kendo.observable({
+//                    model:{themeId:'',layerId:'',jobName:'',page:''},
+//                    queryResource: function(e) {
+//                        viewModel.model.page=1;
+//                        $('#jobListGrid').data('kendoGrid').dataSource.read();
+//                    },
+//
+//                });
+
                 var viewModel = kendo.observable({
                     model:{themeId:'',layerId:'',jobName:'',page:''},
+//                    queryResource: function(e) {
+//                        viewModel.model.page=1;
+//                        $('#jobListGrid').data('kendoGrid').dataSource.read();
+//                    },
+                    createFunction: function(){
+                        $('#jobListGrid').data('kendoGrid').addRow();
+                    },
+                    saveFunction: function(){
+                        $('#jobListGrid').data('kendoGrid').saveChanges();
+                    },
+                    cancelFunction: function(e){
+                        $('#jobListGrid').data('kendoGrid').cancelChanges();
+                    },
                     queryResource: function(e) {
-                        viewModel.model.page=1;
-                        $('#jobListGrid').data('kendoGrid').dataSource.read();
+                        $('#jobListGrid').data('kendoGrid').dataSource.page(1);
+                    },
+                    batchDeleteFunction: function(e) {
+                        /*
+                         确认是否批量删除
+                         进行删除
+                         1.从grid中移除数据
+                         2.发送删除请求
+                         */
+//                        var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
+//                        if(confirmResult){
+//                            console.log("开始输出key");
+//                            $.each(checkedIds,function(key,value){
+//                                if(checkedIds[key])
+//                                {
+//                                    jobs_data.remove(jobs_data.get(key));
+//                                    checkedIds[key]=false;
+//                                    console.log(key);
+//                                }
+//                            });
+//                            jobs_data.sync();
+//                        }
+                        var grid = $("#jobListGrid").data("kendoGrid");
+                        var checked = grid.selectedDataItems();
+                        if (grid.selectedDataItems().length) {
+                            kendo.ui.showConfirmDialog({
+                                title: $l('hap.tip.info'),
+                                message: $l('hap.tip.delete_confirm')
+                            }).done(function (event) {
+                                if (event.button == 'OK') {
+                                    $.each(checked, function (key,value) {
+                                        grid.dataSource.remove(value);
+//                                        if(checkedIds[key])
+//                                        {
+//                                            grid.dataSource.remove(grid.dataSource.get(key));
+//                                            checkedIds[key]=false;
+//                                            console.log(key+","+value);
+//                                        }
+                                    });
+                                    grid.dataSource.sync();
+                                }
+                            })
+                        }
+                    },
+                    batchCreateFunction: function (e) {
+                        showBatchCreateJobWindow(e);
                     }
                 });
+
+                kendo.bind($('#toolbar-btn'), viewModel);
+
                 //用于存储themeName、layerName，这种情况只适用于当前单行编辑
                 var themeName_grid_line,layerName_grid_line;
                 //存储grid中行内编辑的下拉框值
                 var grid_dropdown_themeId;
                 var grid_dropdown_layerId;
                 //任务行表显示数据加载和窗口渲染
-                var jobs_data = new kendo.data.DataSource({
+                jobs_data = new kendo.data.DataSource({
                     transport: {
                         read:  {
                             url: jobBaseUrl+"query",
@@ -116,7 +199,7 @@
                         update: {
                             url: jobBaseUrl + "update",
                             type : 'POST',
-                            dataType: "application/json",
+                            dataType: "json",
                             contentType:"application/json"
                         },
                         destroy: {
@@ -132,13 +215,6 @@
                                 if(operation =='create' || operation =='update'){
                                     datas = options.models.map(function(data){
                                         data['__status'] = (operation =='create' ? 'add' : 'update');
-//                                        //这种情况只适用于当前单行情况
-//                                        if(operation =='create'){
-//                                            data['themeName'] = themeName_grid_line;
-//                                            data['layerName'] = layerName_grid_line;
-//                                            data['themeId'] = grid_dropdown_themeId;
-//                                            data['layerId'] = grid_dropdown_layerId;
-//                                        }
                                         return data;
                                     });
                                 }
@@ -200,17 +276,6 @@
                                 jobName: { type: 'string',validation: { required: true } },
                                 jobSvn: { type: 'string',validation: { required: true } }
                             }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
                         }
                     }
                 });
@@ -238,29 +303,29 @@
                             refresh: '<@spring.message "hdispatch.grid_refresh"/>'
                         }
                     },
-                    toolbar: [
-                        {
-                            name:"create",
-                            text:'<@spring.message "hdispatch.create"/>'
-//                            template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
-                        },
-                        {
-                            name:"save",
-                            text:'<@spring.message "hdispatch.save"/>'
-                        },
-                        {
-                            name:"cancel",
-                            text:'<@spring.message "hdispatch.cancel"/>'
-                        },
-                        {
-                            name:"batchCreateJob",
-                            text:'<@spring.message "hdispatch.job.batch_create"/>'
-                        },
-                        {
-                            name:"batchDeleteJob",
-                            text:'<@spring.message "hdispatch.job.batch_delete"/>'
-                        }
-                    ],
+//                    toolbar: [
+//                        {
+//                            name:"create",
+//                            text:'<@spring.message "hdispatch.create"/>'
+////                            template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
+//                        },
+//                        {
+//                            name:"save",
+//                            text:'<@spring.message "hdispatch.save"/>'
+//                        },
+//                        {
+//                            name:"cancel",
+//                            text:'<@spring.message "hdispatch.cancel"/>'
+//                        },
+//                        {
+//                            name:"batchCreateJob",
+//                            text:'<@spring.message "hdispatch.job.batch_create"/>'
+//                        },
+//                        {
+//                            name:"batchDeleteJob",
+//                            text:'<@spring.message "hdispatch.job.batch_delete"/>'
+//                        }
+//                    ],
                     columns:
                         [
                             {
@@ -271,41 +336,78 @@
                             { 'field': 'jobId','hidden':true },
                             { 'field': 'themeId','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "100px", editor: themeDropDownEditor, template: "#=themeName#" },
                             { 'field': 'layerId','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "100px", editor: layerDropDownEditor, template: "#=layerName#" },
-                            { 'field': 'jobName','title':'<@spring.message "hdispatch.job_name"/>', 'width': "100px" },
+                            { 'field': 'jobName','title':'<@spring.message "hdispatch.job.job_name"/>', 'width': "100px" },
                             { 'field': 'jobSvn','title':'<@spring.message "hdispatch.job.svn.svn_file"/>', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
 //                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
-                            { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, spriteCssClass:'btn btn-danger k-grid-remove',title: "&nbsp;", width: "80px" }
+//                            { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, spriteCssClass:'btn btn-danger k-grid-remove',title: "&nbsp;", width: "80px" }
+//                        {
+//                            field : "",
+//                            title : '',
+//                            width : 100,
+////                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.delete'/></button>"
+//                            template : function(
+//                                    item) {
+//                                var html = "<button  class='btn btn-info'onclick='doDeleteJob(\""+item.jobId+"\")'"
+//                                        + "><@spring.message 'hdispatch.delete'/>"
+//                                        + "</button>";
+//                                return html;
+//                            }
+//                        }
+                        {
+                            attributes: {style: "text-align:center;padding:0px"},
+                            command : [{
+                                name:'remove',
+                                template : '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
+                                click: function(e){
+                                    var th = this;
+                                    e.preventDefault();
+                                    kendo.ui.showConfirmDialog({
+                                        title:$l('hap.tip.info'),
+                                        message: $l('hap.tip.delete_confirm')
+                                    }).done(function(event){
+                                        if(event.button == 'OK'){
+                                            var data = th.dataItem($(e.target).closest("tr"));
+                                            th.dataSource.remove(data);
+                                            th.dataSource.sync()
+                                        }
+                                    })
+                                }
+                            }],
+                            width:"40px"
+                        }
                         ],
 //                    editable: "inline"
                     editable: true
                 });
-                //自定义toolbar中的按钮
-                $(".k-grid-batchCreateJob").click(function(e){
-                    showBatchCreateJobWindow(e);
-                });
-                $(".k-grid-batchDeleteJob").click(function(e){
-                    /*
-                     确认是否批量删除
-                     进行删除
-                        1.从grid中移除数据
-                        2.发送删除请求
-                     */
-                    var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
-                    if(confirmResult){
-                        $.each(checkedIds,function(key,value){
-                            if(checkedIds[key])
-                            {
-                                jobs_data.remove(jobs_data.get(key));
-                                checkedIds[key]=false;
-                            }
-                        });
-//                        jobListGrid_kendo.dataSource.sync();
-                        jobs_data.sync();
-//                        jobListGrid_kendo.refresh();
-//                        jobs_data.delete();
-                    }
-                });
 
+                //自定义toolbar中的按钮
+//                $(".k-grid-batchCreateJob").click(function(e){
+//                    showBatchCreateJobWindow(e);
+//                });
+//                $(".k-grid-batchDeleteJob").click(function(e){
+//                    /*
+//                     确认是否批量删除
+//                     进行删除
+//                        1.从grid中移除数据
+//                        2.发送删除请求
+//                     */
+//                    var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
+//                    if(confirmResult){
+//                        console.log("开始输出key");
+//                        $.each(checkedIds,function(key,value){
+//                            if(checkedIds[key])
+//                            {
+//                                jobs_data.remove(jobs_data.get(key));
+//                                checkedIds[key]=false;
+//                                console.log(key);
+//                            }
+//                        });
+////                        jobListGrid_kendo.dataSource.sync();
+//                        jobs_data.sync();
+////                        jobListGrid_kendo.refresh();
+////                        jobs_data.delete();
+//                    }
+//                });
                 //声明grid中的下拉框
                 var grid_themeDropDown_dataSource=new kendo.data.DataSource({
                     transport: {
@@ -332,17 +434,6 @@
                             fields: {
                                 themeId: { type: 'number',validation: { required: true } },
                                 themeName: { type: 'string',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
                             }
                         }
                     }
@@ -392,17 +483,6 @@
                             fields: {
                                 layerId: { type: 'number',validation: { required: true } },
                                 layerName: { type: 'string',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
                             }
                         }
                     }
@@ -505,17 +585,6 @@
                                 nodeName: { type: 'string',validation: { required: true } },
                                 hasChild: { type: 'boolean',validation: { required: true } }
                             }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
                         }
                     }
                 });
@@ -538,7 +607,7 @@
 //$('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-i-insert-n">...</button>')
 //                            .appendTo(container);
 
-$('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" readonly="readonly" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
+$('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
                             .appendTo(container);
 
 
@@ -571,17 +640,6 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                             fields: {
                                 themeId: { type: 'number',validation: { required: true } },
                                 themeName: { type: 'string',validation: { required: true } }
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
                             }
                         }
                     }
@@ -626,17 +684,6 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                                     layerId: { type: 'number',validation: { required: true } },
                                     layerName: { type: 'string',validation: { required: true } }
                                 }
-                            },
-                            errors: function(res){
-                                if(!res.success) {
-                                    if(res.message){
-                                        return res.message;
-                                    }
-                                }else{
-                                    if(res.message){
-                                        return res.message;
-                                    }
-                                }
                             }
                         }
                     });
@@ -667,7 +714,6 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                 }
             });
 
-
             //显示批量创建job页面
             //声明批量创建job页面中的数据源
             var batchCreateJob_themeId_dataSource = new kendo.data.DataSource({
@@ -696,21 +742,7 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                             themeId: { type: 'number',validation: { required: true } },
                             themeName: { type: 'string',validation: { required: true } }
                         }
-                    },
-                    errors: function(res){
-                        if(!res.success) {
-                            if(res.message){
-                                return res.message;
-                            }
-                        }else{
-                            if(res.message){
-                                return res.message;
-                            }
-                        }
                     }
-                },
-                error: function(e) {
-                    alert(e.errors)
                 }
             });
             var batchCreateJob_layerId_dataSource =  new kendo.data.DataSource({
@@ -743,28 +775,6 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                         fields: {
                             layerId: { type: 'number',validation: { required: true } },
                             layerName: { type: 'string',validation: { required: true } }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }
-                        }
-                    },
-                    errors: function(res){
-                        if(!res.success) {
-                            if(res.message){
-                                return res.message;
-                            }
-                        }else{
-                            if(res.message){
-                                return res.message;
-                            }
                         }
                     }
                 }
@@ -828,17 +838,6 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                                 expanded: { type: 'boolean',validation: { required: true } },
                                 spriteCssClass: { type: 'string',validation: { required: true } },
 
-                            }
-                        },
-                        errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
                             }
                         }
                     }
@@ -956,21 +955,7 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                             spriteCssClass: { type: 'string',validation: { required: true } },
 
                         }
-                    },
-                    errors: function(res){
-                        if(!res.success) {
-                            if(res.message){
-                                return res.message;
-                            }
-                        }else{
-                            if(res.message){
-                                return res.message;
-                            }
-                        }
                     }
-                },
-                error: function(e) {
-                    alert(e.errors)
                 }
             });
             function showGridSvnTreeViewWindow(e) {
@@ -1124,6 +1109,14 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
             {
                 var data_temp = getEdictingRowData(index);
                 data_temp.set("layerName",layerName);
+            }
+            //删除当前行的数据
+            function doDeleteJob(jobId_thisRow) {
+                confirm("是否确定删除？").accept(function () {
+                    jobs_data.remove(jobs_data.get(jobId_thisRow));
+                    checkedIds[jobId_thisRow]=false;
+                    jobs_data.sync();
+                });
             }
         </script>
         <script type="text/x-kendo-template" id="grid_svn_treeView_template">

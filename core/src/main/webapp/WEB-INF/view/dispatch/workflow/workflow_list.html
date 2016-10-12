@@ -9,6 +9,10 @@
             list-style: none;
             padding-bottom: 1em;
         }
+
+        .k-combobox>.k-dropdown-wrap>.k-i-close {
+            top: 1em;
+        }
     </style>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
@@ -16,195 +20,6 @@
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <script src="${base.contextPath}/lib/moment.min.js"></script>
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
-    <script src="${base.contextPath}/common/language?var=languageData"
-            type="text/javascript"></script>
-    <div kendo-window="vm.scheduleWindow"
-         k-title="'调度工作流'"
-         k-actions="['Maximize', 'Close']"
-         k-modal="true"
-         k-width="600"
-         k-on-open="vm.scheduleWindow.visible = true"
-         k-on-close="vm.scheduleWindow.visible = false"
-         k-visible="false">
-        <p class="text-center" ng-show="vm.scheduleFlow.loading">加载中</p>
-        <form name="schedule" class="form-horizontal" role="form"
-              style="width:100%" novalidate ng-hide="vm.scheduleFlow.loading">
-            <div class="col-sm-10">
-                <div class="form-group">
-                    <label class="control-label col-sm-3">工作流</label>
-                    <span class="control-label col-sm-6 text-left">{{vm.scheduleFlow.name}}</span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3">开始时间</label>
-                    <div class="col-sm-6">
-                        <input kendo-date-time-picker name="startTime"
-                               k-ng-model="vm.scheduleFlow.startTime"
-                               ng-required="true"
-                               style="padding-left:0;padding-right:0;width:100%;"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3">是否重复</label>
-                    <div class="col-sm-6">
-                        <input type="checkbox" id="recurring"
-                               class="k-checkbox"
-                               ng-model="vm.scheduleFlow.isrecurring"/>
-                        <label class="k-checkbox-label"
-                               for="recurring"></label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3">周期</label>
-                    <div class="col-sm-6">
-                        <input type="number" class="k-textbox"
-                               ng-model="vm.scheduleFlow.periodVal"
-                               ng-required="vm.scheduleFlow.isrecurring"
-                               ng-disabled="!vm.scheduleFlow.isrecurring"
-                               style="padding-left:0;padding-right:0;width:78%"/>
-                        <select style="width:50px;"
-                                kendo-drop-down-list
-                                ng-model="vm.scheduleFlow.period"
-                                k-data-text-field="'name'"
-                                k-data-value-field="'value'"
-                                k-data-source="vm.periods"
-                                style="padding-left:0;padding-right:0;"></select>
-                    </div>
-                </div>
-                <div class="form-group text-center" style="margin-top: 20px;">
-                    <button class="btn btn-info" ng-click="vm.scheduleSubmit()"
-                            ng-disabled="schedule.$invalid||!vm.scheduleFlow.startTime">提交
-                    </button>
-                    <button class="btn btn-danger" ng-click="vm.scheduleCancel()">取消</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div kendo-window="vm.executeWindow"
-         k-title="'执行工作流'"
-         k-modal="true"
-         k-width="600"
-         k-actions="['Maximize', 'Close']"
-         k-on-open="vm.executeWindow.visible=true"
-         k-on-close="vm.executeWindow.visible=false"
-         k-visible="false">
-        <div class="text-center" ng-show="vm.executeInfo.loading">加载中</div>
-        <div kendo-tab-strip ng-hide="vm.executeInfo.loading">
-            <ul>
-                <li class="k-state-active">工作流预览</li>
-                <li>通知</li>
-                <li>失败选项</li>
-                <li>并发策略</li>
-            </ul>
-            <div style="padding: 1em">
-                <div class="form-horizontal col-sm-11">
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">工作流</div>
-                        <div class="col-sm-7">{{vm.executeInfo.name}}</div>
-                    </div>
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">描述</div>
-                        <div class="col-sm-7">{{vm.executeInfo.description}}</div>
-                    </div>
-                </div>
-            </div>
-            <div style="padding: 1em">
-                <form name="notification" class="form-horizontal col-sm-11">
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">通知时间</div>
-                        <div class="col-sm-7">
-                            <div>
-                                <div>
-                                    <input type="radio" id="firstFailure"
-                                           ng-value="true" ng-model="vm.executeInfo.notifyFailureFirst"
-                                           name="notifyTime" class="k-radio"
-                                           ng-change="vm.executeInfo.notifyFailureLast=false">
-                                    <label class="k-radio-label" for="firstFailure">首次任务失败时提醒</label>
-                                </div>
-                                <div>
-                                    <input type="radio" id="flowFailure"
-                                           ng-value="true" ng-model="vm.executeInfo.notifyFailureLast"
-                                           name="notifyTime" class="k-radio"
-                                           ng-change="vm.executeInfo.notifyFailureFirst=false">
-                                    <label class="k-radio-label" for="flowFailure">工作流失败时提醒</label>
-                                </div>
-                            </div>
-                            <span class="help-block">邮件通知的时机</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">成功通知邮件</div>
-                        <div class="col-sm-7">
-                            <textarea class="k-textbox" style="width:100%;" ng-model="vm.executeInfo.successEmails">
-
-                            </textarea>
-                            <span class="help-block">
-                                成功时通知的邮件地址,以逗号(英文)分隔
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">失败通知邮件</div>
-                        <div class="col-sm-7">
-                            <textarea class="k-textbox" style="width:100%;" ng-model="vm.executeInfo.failureEmails">
-
-                            </textarea>
-                            <span class="help-block">
-                                成功时通知的邮件地址,以逗号(英文)分隔
-                            </span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div style="padding: 1em">
-                <h3>失败选项</h3>
-                <p>选择一个在流执行时首次失败时的行为</p>
-                <hr>
-                <ul>
-                    <li><strong>完成当前执行</strong>只完成当前正在执行的任务</li>
-                    <li><strong>取消全部</strong>立刻杀死所有任务,并且流以失败结束</li>
-                    <li><strong>完成全部可能</strong>完成全部可能完成的任务</li>
-                </ul>
-                <select kendo-drop-down-list ng-model="vm.executeInfo.failureAction">
-                    <option value="finishCurrent">完成当前执行</option>
-                    <option value="cancelImmediately">取消全部</option>
-                    <option value="finishPossible">完成全部可能</option>
-                </select>
-            </div>
-            <div style="padding:1em">
-                <h3>并发策略</h3>
-                <p>选择流执行时的并发策略</p>
-                <hr>
-                <form action="" class="form-horizontal col-sm-11">
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">跳过</div>
-                        <div class="col-sm-7">
-                            <input id="skip" name="concurrentOption"
-                                   type="radio" value="skip"
-                                   class="k-radio" ng-model="vm.executeInfo.concurrentOption">
-                            <label for="skip" class="k-radio-label"></label>
-                            <span class="help-block">跳过执行当前流</span>
-                        </div>
-
-                    </div>
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">并发</div>
-                        <div class="col-sm-7">
-                            <input id="concurrent" name="concurrentOption"
-                                   type="radio" value="ignore"
-                                   class="k-radio" ng-model="vm.executeInfo.concurrentOption">
-                            <label for="concurrent" class="k-radio-label"></label>
-                            <span class="help-block">并发执行当前流</span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="text-center" style="margin-top:20px;">
-            <button class="btn btn-primary" ng-click="vm.executeSubmit()">确认</button>
-            <button class="btn btn-danger" ng-click="vm.executeCancel()">取消</button>
-        </div>
-    </div>
     <div id="content-container">
         <div id="page-content">
             <div class="panel">
@@ -215,7 +30,7 @@
                             <div class="panel-body col-sm-offset-0">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">主题</label>
+                                        <label class="col-sm-4 control-label">任务组</label>
                                         <div class="col-sm-8 ">
                                             <select class="col-sm-12" name="theme"
                                                     ng-model="vm.workflow.themeId"
@@ -224,7 +39,7 @@
                                                     k-data-text-field="'themeName'"
                                                     k-data-value-field="'themeId'"
                                                     k-data-source="vm.themes"
-                                                    style="padding-left:0;padding-right:0;width:100%;"></select>
+                                                    style="padding-left:0;padding-right:0;width:100%;padding-bottom:2px"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -238,7 +53,7 @@
                                                     k-data-text-field="'layerName'"
                                                     k-data-value-field="'layerId'"
                                                     k-data-source="vm.layers"
-                                                    style="padding-left:0;padding-right:0;width:100%;">123123</select>
+                                                    style="padding-left:0;padding-right:0;width:100%;;padding-bottom:2px">123123</select>
                                         </div>
                                     </div>
                                 </div>
@@ -248,7 +63,7 @@
                             <div class="panel-body col-sm-offset-0">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">工作流名称</label>
+                                        <label class="col-sm-4 control-label">任务流名称</label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="workflowName"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -258,7 +73,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">工作流描述</label>
+                                        <label class="col-sm-4 control-label">任务流描述</label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="description"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -278,7 +93,13 @@
             </div>
 
             <div class="panel">
+
                 <div class="panel-body">
+                    <div class="row" style="margin-bottom:1em;">
+                        <div class="btn btn-success"
+                             ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
+                        </div>
+                    </div>
                     <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
                 </div>
             </div>

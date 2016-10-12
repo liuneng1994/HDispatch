@@ -89,13 +89,21 @@
 
         var scheduleWorkflow = function (scheduleInfo) {
             return httpService.get(_basePath + '/schedule/schedule', scheduleInfo, function (data, defered) {
-                defered.resolve(data.message);
+                if (data.code == 1) {
+                    defered.resolve(scheduleInfo.projectName + '计划成功');
+                } else {
+                    defered.reject(scheduleInfo.projectName + '计划失败');
+                }
             });
         }
 
         var executeWorkflow = function (executeInfo) {
             return httpService.postForm(_basePath + '/schedule/exeflow', executeInfo, function (data, defered) {
-                defered.resolve(data.message);
+                if (data.code == 1) {
+                    defered.resolve(executeInfo.project + '执行成功');
+                } else {
+                    defered.reject(executeInfo.project + '执行失败');
+                }
             });
         }
 

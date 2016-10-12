@@ -25,11 +25,12 @@
                 and theme_id = #{themeId,jdbcType=DECIMAL}
             </if>
             <if test="themeName != null">
-                AND name = #{themeName,jdbcType=VARCHAR}
+                <bind name="pattern_themeName" value="'%' + _parameter.themeName + '%'" />
+                AND name like #{pattern_themeName}
             </if>
             <if test="themeDescription != null">
-                <bind name="pattern" value="'%' + _parameter.themeDescription + '%'" />
-                AND description like #{pattern}
+                <bind name="pattern_themeDescription" value="'%' + _parameter.themeDescription + '%'" />
+                AND description like #{pattern_themeDescription}
             </if>
             AND active=1
         </where>

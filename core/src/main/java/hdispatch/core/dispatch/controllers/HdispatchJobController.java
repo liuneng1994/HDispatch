@@ -158,7 +158,8 @@ public class HdispatchJobController extends BaseController {
         Locale locale = RequestContextUtils.getLocale(request);
         try {
             List<Job> jobListReturn = jobService.batchUpdate(requestContext, jobList);
-            rd = new ResponseData(jobListReturn);
+            rd = new ResponseData(true);
+            rd.setMessage("success");
         } catch (Exception e) {
             //删除任务中途失败
             String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_deleting", null, locale);
@@ -241,6 +242,13 @@ public class HdispatchJobController extends BaseController {
         return this.doCreateJob(jobList,request);
     }
 
+    /**
+     * 批量更新job
+     * @param jobList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/job/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {

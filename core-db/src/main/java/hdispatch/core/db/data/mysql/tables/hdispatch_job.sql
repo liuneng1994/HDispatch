@@ -1,14 +1,14 @@
 -- ----------------------------
--- Table structure for hdispatch_layer
+-- Table structure for hdispatch_job
 -- ----------------------------
-DROP TABLE IF EXISTS `hdispatch_layer`;
-CREATE TABLE `hdispatch_layer` (
-  `layer_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
+DROP TABLE IF EXISTS `hdispatch_job`;
+CREATE TABLE `hdispatch_job` (
+  `job_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `svn` varchar(256) DEFAULT NULL,
   `active` tinyint(4) DEFAULT '1',
-  `display_sequence` int(11) DEFAULT '0',
   `theme_id` bigint(20) DEFAULT NULL,
+  `layer_id` bigint(20) DEFAULT NULL,
   `OBJECT_VERSION_NUMBER` decimal(20,0) DEFAULT '1',
   `REQUEST_ID` bigint(20) DEFAULT '-1',
   `PROGRAM_ID` bigint(20) DEFAULT '-1',
@@ -33,5 +33,5 @@ CREATE TABLE `hdispatch_layer` (
   `ATTRIBUTE13` varchar(240) DEFAULT NULL,
   `ATTRIBUTE14` varchar(240) DEFAULT NULL,
   `ATTRIBUTE15` varchar(240) DEFAULT NULL,
-  PRIMARY KEY (`layer_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`job_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;

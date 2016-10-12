@@ -45,10 +45,27 @@ public class LayerServiceImpl implements LayerService {
                         layer.setLayerActive(1L);
                         break;
                     case DTOStatus.UPDATE:
+                        //获取当前ID的layer，判断如果名称改变，那么需要查看是否会引起重复冲突
 
+                        Layer layer1FromDb = layerMapper.selectById(layer);
+                        if(null == layer1FromDb){
+                            logger.error("illegal access for missing layer_id",new Exception("illegal access for missing layer_id"));
+                        }else {
+                            if(layer.getLayerName().equals(layer1FromDb.getLayerName())){
+                                layerMapper.update(layer);
+                            }else {
+                                Layer layerReturn = layerMapper.selectByNameAndActiveAndThemeId(layer);
+                                if(null != layerReturn){
+                                    throw new Exception(DUPLICATE_LAYER_NAME_UNDER_THEME);
+                                }
+                                else {
+                                    layerMapper.update(layer);
+                                }
+                            }
+                        }
                         break;
                     case DTOStatus.DELETE:
-
+                        layerMapper.deleteInLogic(layer);
                         break;
                     default:
                         break;

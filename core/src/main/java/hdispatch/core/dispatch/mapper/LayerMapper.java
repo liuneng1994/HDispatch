@@ -37,8 +37,21 @@ public interface LayerMapper {
     List<Layer> selectActiveLayersUnderTheme(Layer layer);
 
     /**
+     * 根据id获取层
+     * @param layer
+     * @return
+     */
+    Layer selectById(Layer layer);
+
+    /**
      * 获取所有活跃的层
      * @return
      */
     List<Layer> selectAllActiveLayers();
+
+    /**
+     * 更新层
+     * @param layer
+     */
+    void update(Layer layer);
 }

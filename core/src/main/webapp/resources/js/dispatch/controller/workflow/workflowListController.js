@@ -10,12 +10,6 @@
         vm.total = 0;
         vm.themes = {};
         vm.layers = {};
-        vm.periods = [{name: '月', value: 'M'},
-            {name: '周', value: 'w'},
-            {name: '天', value: 'd'},
-            {name: '时', value: 'H'},
-            {name: '分', value: 'm'},
-            {name: '秒', value: 's'}];
         vm.gridOptions = {
             dataSource: {
                 transport: {
@@ -43,7 +37,7 @@
             navigatable: true,
             resizable: true,
             reorderable: true,
-            scrollable: false,
+            scrollable: true,
             editable: false,
             pageable: {
                 pageSizes: [5, 10, 20, 50],
@@ -66,12 +60,12 @@
             columns: [
                 {
                     field: "name",
-                    title: '工作流',
+                    title: '任务流',
                     width: 100
                 },
                 {
                     field: "theme",
-                    title: '主题',
+                    title: '任务组',
                     width: 100
                 },
                 {
@@ -82,16 +76,14 @@
                 {
                     field: "description",
                     title: '描述',
-                    width: 300
+                    width: 200
                 },
                 {
                     field: "",
-                    title: '编辑',
-                    width: 100,
+                    title: '',
+                    width: 150,
                     template: function (item) {
-                        var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>" +
-                            '<button class="btn btn-primary" ng-click="vm.schedule(' + item.workflowId + ')">调度</button>' +
-                            '<button class="btn btn-info" ng-click="vm.execute(' + item.workflowId + ')">执行</button>';
+                        var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>"
                         return html;
                     }
                 }]
@@ -101,6 +93,9 @@
             $('#grid').data('kendoGrid').dataSource
                 .read();
         };
+        vm.create=function(url) {
+            window.location = url;
+        }
 
         vm.edit = function (id) {
             $window.sessionStorage['workflowId'] = id;
@@ -111,77 +106,8 @@
             vm.workflow.layerId = undefined;
             refreshLayers('layers', themeId);
         }
-        vm.schedule = function (workflowId) {
-            vm.scheduleFlow = {};
-            vm.scheduleFlow.loading = true;
-            vm.scheduleFlow.isrecurring = false;
-            vm.scheduleFlow.period = 'M';
-            workflowService.workflow(workflowId).then(function (data) {
-                if (data.projectName && data.flowId) {
-                    vm.scheduleFlow.projectName = data.projectName;
-                    vm.scheduleFlow.flowId = data.flowId;
-                    vm.scheduleFlow.name = data.name;
-                    vm.scheduleFlow.loading = false;
-                    vm.scheduleWindow.center().open();
-                } else {
-                    alert('没有生成工作流');
-                }
-            })
-        };
-        vm.scheduleSubmit = function () {
-            var scheduleInfo = {};
-            scheduleInfo.projectName = vm.scheduleFlow.projectName;
-            scheduleInfo.flow = vm.scheduleFlow.flowId;
-            scheduleInfo.datetime = moment(vm.scheduleFlow.startTime).valueOf();
-            //scheduleInfo.time = moment(vm.scheduleFlow.startTime).format('hh,mm,a,Z');
-            //scheduleInfo.date = moment(vm.scheduleFlow.startTime).format('MM/DD/YYYY');
-            scheduleInfo.isrecurring = vm.scheduleFlow.isrecurring;
-            if (scheduleInfo.isrecurring) {
-                scheduleInfo.period = vm.scheduleFlow.period;
-                scheduleInfo.periodVal = vm.scheduleFlow.periodVal;
-            }
-            workflowService.scheduleWorkflow(scheduleInfo).then(function(data) {
-                alert(data.message);
-            });
-            vm.scheduleWindow.close();
-        };
-        vm.scheduleCancel = function () {
-            vm.scheduleWindow.close();
-        };
 
-        vm.execute = function(workflowId) {
-            vm.executeInfo = {};
-            vm.executeInfo.loading = true;
-            workflowService.workflow(workflowId).then(function(data) {
-                if (data.projectName && data.flowId) {
-                    vm.executeInfo.project = data.projectName;
-                    vm.executeInfo.flow = data.flowId;
-                    vm.executeInfo.name = data.name;
-                    vm.executeInfo.description = data.description;
-                    vm.executeInfo.failureAction = 'finishCurrent';
-                    vm.executeInfo.loading = false;
-                    vm.executeWindow.center().open();
-                } else {
-                    alert('没有生成工作流');
-                }
-            })
-        };
-        vm.executeSubmit = function() {
-            if (vm.executeInfo.successEmails) {
-                vm.executeInfo.successEmailsOverride = true;
-            }
-            if (vm.executeInfo.failureEmails) {
-                vm.failureEmailsOverride = true;
-            }
-            workflowService.executeWorkflow(vm.executeInfo).then(function(data) {
-                alert(message);
-            });
-            console.log(vm.executeInfo);
-            vm.executeWindow.close();
-        };
-        vm.executeCancel = function() {
-            vm.executeWindow.close();
-        }
+
         refreshThemes();
         return vm;
 

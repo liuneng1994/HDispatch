@@ -74,6 +74,7 @@
 	</div>
 	<script src="../../../../lib/dateformat.js"></script>
 	<script type="text/javascript">
+		console.log(new Date());
 		document.getElementById("picker").flatpickr();
 		var checkedIds = {};
 
@@ -140,14 +141,21 @@
 			dialog.center().open();
 		}
 		window.stateColor = {
+<<<<<<< HEAD
 			"PAUSED" : "background-color:#FFCC00;",
 			"RUNNING" : "background-color:#00CC00;",
 			"SUCCESS" : "background-color:#33FF00;",
 			"FAILED" : "background-color:#FF3333;",
-			"SUCCESS" : "background-color:#5CB85C;",
-			"FAILED" : "background-color:#D9534F;",
-			"KILLED" : "background-color:#D9534F;",
+			"KILLED" : "background-color:#FF3333;",
 			"PREPARING" : "background-color:#DDDDDD;"
+=======
+				"PAUSED" : "background-color:#FFCC00;",
+				"RUNNING" : "background-color:#00CC00;",
+				"SUCCESS" : "background-color:#5CB85C;",
+				"FAILED" : "background-color:#D9534F;",
+				"BLOCKED" : "background-color:black;",
+				"PREPARING" : "background-color:#DDDDDD;"
+>>>>>>> origin/liuneng
 		};
 
 		$(document)
@@ -274,10 +282,10 @@
 									id : "stop",
 									text : '<@spring.message "hap.stop"/>'
 								} /* , {
-																															type : "button",
-																															id : "fresh",
-																															text : '<@spring.message "hap.fresh"/>'
-																														} */
+																								type : "button",
+																								id : "fresh",
+																								text : '<@spring.message "hap.fresh"/>'
+																							} */
 
 								]
 							});
@@ -289,7 +297,7 @@
 												navigatable : true,
 												resizable : true,
 												reorderable : true,
-												scrollable : true,
+												scrollable : false,
 												editable : false,
 												sortable : true,
 												pageable : {
@@ -402,48 +410,26 @@
 																				/ (60 * 1000))
 																var leave3 = leave2
 																		% (60 * 1000) //计算分钟数后剩余的毫秒数  
-																var leave4 = leave3 % 1000;
+																var leave4=leave3%1000;
 																var seconds = Math
 																		.round(leave3 / 1000)
-																var time = 0;
-																if (days > 0)
-																	time = days
-																			+ 'd '
-																			+ hours
-																			+ 'h '
-																			+ minutes
-																			+ 'm '
-																			+ seconds
-																			+ 's '
-																			+ leave4
-																			+ 'ms ';
-																else {
-																	if (hours > 0)
-																		time = hours
-																				+ 'h '
-																				+ minutes
-																				+ 'm '
-																				+ seconds
-																				+ 's '
-																				+ leave4
-																				+ 'ms ';
-																	else {
-																		if (minutes > 0)
-																			time = minutes
-																					+ 'm '
-																					+ seconds
-																					+ 's '
-																					+ leave4
-																					+ 'ms ';
-																		else {
-																			if (seconds > 0)
-																				time = seconds
-																						+ 's '
-																						+ leave4
-																						+ 'ms ';
-																			else
-																				time = leave4
-																						+ 'ms ';
+																var time=0;
+																if(days>0)
+																	time=days+'d '+hours+'h '+minutes+'m '+seconds+'s '+leave4+'ms ';
+																else
+																{
+																	if(hours>0)
+																		time=hours+'h '+minutes+'m '+seconds+'s '+leave4+'ms ';
+																	else
+																	{
+																	if(minutes>0)
+																		time=minutes+'m '+seconds+'s '+leave4+'ms ';
+																	else
+																		{
+																		if(seconds>0)
+																			time=seconds+'s '+leave4+'ms ';
+																		else
+																			time=leave4+'ms ';
 																		}
 																	}
 																}
@@ -462,12 +448,10 @@
 																	status = 'FAILED';
 																else if (item.status == 20)
 																	status = 'PREPARING';
-																else if (item.status == 30)
+																else if (item.status == 20)
 																	status = 'RUNNING';
 																else if (item.status == 60)
 																	status = 'KILLED';
-																else if (item.status == 40)
-																	status = 'PAUSED';
 																var html = "<div "
 																		+ "style='text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
 																		+ (stateColor[status])
@@ -485,7 +469,7 @@
 															template : function(
 																	item) {
 																var status = item.running;
-																var html = "<div class='progress progress-striped active' style='margin:0;border-radius:5px'>"
+																var html = "<div class='progress progress-striped active' style='margin:0;border-radius:5px;'>"
 																		+ "<div class='progress-bar progress-bar-success' role='progressbar'"
 																		+ "   aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"
 																		+ "  style='width: "
@@ -508,7 +492,9 @@
 												click : function(e) {
 													var checked = [];
 													for ( var i in checkedIds) {
-														if (checkedIds[i] === true)
+														if (checkedIds[i] === true
+																&& grid.dataSource
+																		.get(i).status == 20)
 															checked
 																	.push(grid.dataSource
 																			.get(
@@ -525,10 +511,7 @@
 																	alert(json.message);
 																else
 																	alert("所选流已经启动！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
+																grid.refresh();
 															});
 												}
 											}).data("kendoButton");
@@ -539,7 +522,9 @@
 												click : function(e) {
 													var checked = [];
 													for ( var i in checkedIds) {
-														if (checkedIds[i] === true)
+														if (checkedIds[i] === true
+																&& grid.dataSource
+																		.get(i).status == 20)
 															checked
 																	.push(grid.dataSource
 																			.get(
@@ -556,10 +541,7 @@
 																	alert(json.message);
 																else
 																	alert("所选流没有在运行中,无法暂停！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
+																grid.refresh();
 															});
 												}
 											}).data("kendoButton");
@@ -587,10 +569,7 @@
 																	alert(json.message);
 																else
 																	alert("所选流没有在运行中,无法停止！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
+																grid.refresh();
 															});
 												}
 											}).data("kendoButton");
@@ -617,10 +596,7 @@
 																	alert(json.message);
 																else
 																	alert("所选流没有在暂停中,无法恢复！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
+																grid.refresh();
 															});
 												}
 											}).data("kendoButton");
@@ -647,10 +623,7 @@
 																	alert(json.message);
 																else
 																	alert("所选流异常！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
+																grid.refresh();
 															});
 												}
 											}).data("kendoButton");

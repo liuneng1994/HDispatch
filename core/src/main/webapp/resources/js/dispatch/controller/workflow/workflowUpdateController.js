@@ -28,6 +28,14 @@
             vm.newJob.jobSource = null;
             refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
         };
+        vm.format = function() {
+            console.log(vm.graph);
+            joint.layout.DirectedGraph.layout(vm.graph, {
+                nodeSep: 50,
+                edgeSep: 50,
+                rankDir: "TB"
+            });
+        }
 
         wfDiaService.bindEvent(vm);
         refreshThemes();
@@ -35,7 +43,7 @@
 
         vm.createJob = function () {
             if (vm.jobStore.contains(vm.newJob.name)) {
-                $window.alert("job名称已存在");
+                $window.alert("任务名称已存在");
                 return;
             }
             vm.graphTool.createJobNode(vm.newJob);
@@ -69,8 +77,7 @@
             graphJson.jobStore = vm.jobStore;
             workflow.graph = JSON.stringify(graphJson);
             workflowService.updateWorkflow(workflow).then(function (data) {
-                vm.workflow.workflowId = parseInt(data);
-                $window.alert("save success");
+                window.hdispatch.confirm("保存成功，是否立刻生成任务流").accept(vm.generateWorkflow);
             }, function (data) {
                 $window.alert(data);
             });
@@ -87,11 +94,6 @@
         vm.resetWindow = function () {
             vm.jobWindow.close();
             vm.newJob.name = null;
-        };
-
-        vm.format = function () {
-            var result = vm.graphTool.autoFormat(vm.jobStore);
-            console.log(result);
         };
 
         function Job() {

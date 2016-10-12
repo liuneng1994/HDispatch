@@ -11,6 +11,7 @@ Target Server Version : 50621
 File Encoding         : 65001
 
 Date: 2016-09-27 17:11:54
+SVN参数表--by yyz
 */
 
 SET FOREIGN_KEY_CHECKS=0;
