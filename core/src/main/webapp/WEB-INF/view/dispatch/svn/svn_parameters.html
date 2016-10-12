@@ -32,7 +32,22 @@
                         </div>
                     </form>
                 </div>
-                <div id="svnParametersListGrid" style="clear:both"></div>
+
+
+                <div id="page-content" style="clear:both">
+                    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+                        <!--<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>-->
+                        <!--<span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>-->
+                        <!--<span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>-->
+                        <!--<span class="btn btn-danger k-grid-excel" data-bind="click:exportToExcelFunction" style="float:left;">导出为excel</span>-->
+                        <!--<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>-->
+                        <!--<span class="btn btn-warning" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>-->
+                        <!--<span class="btn btn-warning" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>-->
+                    </div>
+                    <div style="clear:both">
+                        <div id="svnParametersListGrid" style="clear:both"></div>
+                    </div>
+                </div>
             </div>
             <div id="importByExcelWindow_div"></div>
         </div>
@@ -66,8 +81,61 @@
                     queryResource: function(e) {
                         viewModel.model.page=1;
                         $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
+                    },
+                    createFunction: function(){
+                        $('#svnParametersListGrid').data('kendoGrid').addRow();
+                    },
+                    saveFunction: function(){
+                        $('#svnParametersListGrid').data('kendoGrid').saveChanges();
+                    },
+                    cancelFunction: function(e){
+                        $('#svnParametersListGrid').data('kendoGrid').cancelChanges();
+                    },
+                    importFromExcelFunction: function (e) {
+                        showImportFromExcelWindow(e);
+                    },
+                    batchDeleteFunction: function (e) {
+                        /*
+                         确认是否批量删除
+                         进行删除
+                         1.从grid中移除数据
+                         2.发送删除请求
+                         */
+                        var grid = $("#svnParametersListGrid").data("kendoGrid");
+                        var checked = grid.selectedDataItems();
+                        if (grid.selectedDataItems().length) {
+                            kendo.ui.showConfirmDialog({
+                                title: $l('hap.tip.info'),
+                                message: $l('hap.tip.delete_confirm')
+                            }).done(function (event) {
+                                if (event.button == 'OK') {
+                                    $.each(checked, function (key,value) {
+                                        grid.dataSource.remove(value);
+                                    });
+                                    grid.dataSource.sync();
+                                }
+                            })
+                        }
+//                        var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
+//                        if(confirmResult){
+//                            $.each(checkedIds,function(key,value){
+//                                if(checkedIds[key])
+//                                {
+//                                    svn_parameter_data.remove(svn_parameter_data.get(key));
+//                                    checkedIds[key]=false;
+//                                }
+//                            });
+//                            svn_parameter_data.sync();
+//                        }
+                    },
+                    exportToExcelFunction: function (e) {
+                        e.preventDefault();
+                        var that = $('#svnParametersListGrid').data('kendoGrid');
+                        $('#svnParametersListGrid').data('kendoGrid').saveAsExcel();
+//                        that.saveAsExcel();
                     }
                 });
+//                kendo.bind($("#toolbar-btn"),viewModel);
                 //SVN参数行表显示数据加载和窗口渲染
                 var svn_parameter_data= new kendo.data.DataSource({
                     transport: {
@@ -209,28 +277,33 @@
                     toolbar: [
                         {
                             name:"create",
-                            text:'<@spring.message "hdispatch.create"/>'
-//                            template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
-                        },
-                        {
-                            name:"save",
-                            text:'<@spring.message "hdispatch.save"/>'
-                        },
-                        {
-                            name:"cancel",
-                            text:'<@spring.message "hdispatch.cancel"/>'
+                            text:'<@spring.message "hdispatch.create"/>',
+                            template : '<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
                         },
                         {
                             name:"importFromExcel",
-                            text:'<@spring.message "hdispatch.svn.import_excel"/>'
+                            text:'<@spring.message "hdispatch.svn.import_excel"/>',
+                            template: '<span class="btn btn-primary" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>'
+                        },
+                        {
+                            name:"save",
+                            text:'<@spring.message "hdispatch.save"/>',
+                            template: '<span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>'
+                        },
+                        {
+                            name:"cancel",
+                            text:'<@spring.message "hdispatch.cancel"/>',
+                            template: '<span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>'
                         },
                         {
                             name:"excel",
-                            text:'<@spring.message "hdispatch.svn.export_excel"/>'
+                            text:'<@spring.message "hdispatch.svn.export_excel"/>',
+                            template: '<span class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>'
                         },
                         {
                             name:"batchDelete",
-                            text:'<@spring.message "hdispatch.job.batch_delete"/>'
+                            text:'<@spring.message "hdispatch.job.batch_delete"/>',
+                            template: '<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>'
                         }
                     ],
                     excel: {
