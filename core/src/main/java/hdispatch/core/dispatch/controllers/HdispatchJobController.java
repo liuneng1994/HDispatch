@@ -242,6 +242,13 @@ public class HdispatchJobController extends BaseController {
         return this.doCreateJob(jobList,request);
     }
 
+    /**
+     * 批量更新job
+     * @param jobList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/job/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateJobs(@RequestBody List<Job> jobList, BindingResult result, HttpServletRequest request) {

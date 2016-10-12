@@ -74,6 +74,12 @@ public class LayerController extends BaseController {
 
     }
 
+    /**
+     * 获取全部层级
+     * @param request
+     * @param themeId
+     * @return
+     */
     @RequestMapping(path = "/dispatcher/layer/queryAll",method = RequestMethod.GET)
     public ResponseData getLayersByThemeIdWithoutPaging(HttpServletRequest request,
                                            @RequestParam(defaultValue = "-100") Long themeId){
@@ -111,6 +117,13 @@ public class LayerController extends BaseController {
 
     }
 
+    /**
+     * 批量新建层级
+     * @param layerList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(path = "/dispatcher/layer/submit",method = RequestMethod.POST)
     @ResponseBody
     public ResponseData addLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request){
@@ -153,6 +166,35 @@ public class LayerController extends BaseController {
         } catch (Exception e) {
             String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_during_create_layer",null,locale);
             logger.error(errorMsg,e);
+        }
+        return rd;
+    }
+
+    @RequestMapping(value = "/dispatcher/layer/update", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData updateLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) throws Exception {
+
+        ResponseData rd = null;
+        //后台验证
+        getValidator().validate(layerList, result);
+        if (result.hasErrors()) {
+            rd = new ResponseData(false);
+            rd.setMessage(getErrorMessage(result, request));
+            return rd;
+        }
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+        try{
+            rd = new ResponseData(layerService.batchUpdate(requestContext,layerList));
+        }catch (Exception e){
+            if(LayerService.DUPLICATE_LAYER_NAME_UNDER_THEME.equals(e.getMessage())){
+                String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_duplicate_layer_under_theme",null,locale);
+                logger.error(errorMsg,e);
+                throw new Exception(errorMsg,e);
+            }else {
+                throw e;
+            }
         }
         return rd;
     }

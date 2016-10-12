@@ -146,7 +146,7 @@ public class SvnParameterController extends BaseController{
         Locale locale = RequestContextUtils.getLocale(request);
         try {
             List<SvnParameter> svnParameterListReturn = svnParameterService.batchUpdate(requestContext, svnParameterList);
-            rd = new ResponseData(svnParameterListReturn);
+            rd = new ResponseData(true);
         } catch (Exception e) {
             //删除任务中途失败
             String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_deleting", null, locale);

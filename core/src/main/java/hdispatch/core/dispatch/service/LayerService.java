@@ -18,4 +18,6 @@ public interface LayerService {
     List<Layer> selectActiveLayersByThemeId(IRequest requestContext,int page, int pageSize,Layer layer);
     List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext,Layer layer);
     List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext);
+
+    public static final String DUPLICATE_LAYER_NAME_UNDER_THEME="duplicate layer name under same theme";
 }

@@ -15,6 +15,8 @@ public class Layer extends BaseDTO{
     private Long layerActive;
     private Long layerSequence;
     private Long themeId;
+    //layerActive处于活跃状态的值
+    public static final Long ACTIVE_STATUS = 1L;
 
     public Long getLayerId() {
         return layerId;

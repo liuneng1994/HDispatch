@@ -36,6 +36,7 @@
                     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
                         <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
                         <span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                        <span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
                         <!--<span  onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>-->
                     </div>
                     <div style="clear:both">
@@ -60,6 +61,9 @@
 //              $('#themeListGrid').data('kendoGrid').dataSource.sync();
                     $('#themeListGrid').data('kendoGrid').dataSource.read();
                     $('#themeListGrid').data('kendoGrid').dataSource.page(2147483647);
+                },
+                cancelFunction: function(e){
+                    $('#themeListGrid').data('kendoGrid').cancelChanges();
                 }
             });
             kendo.bind($('#query-form'), viewModel);
@@ -154,11 +158,15 @@
                     }
                 });
                 var showAlt = false;//grid中的行背景颜色交叉变化
+                var bg="";
+                var isFirstLine = true;
+                var themeDataLineCounter = 0;//grid中当前行行数
+                var totalLineNum = 0;//grid中总行数
                 $("#themeListGrid").kendoGrid({
                     dataSource: themes_data,
                     resizable: true,
                     selectable: "multiple",
-                    scrollable: false,
+                    scrollable: true,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
                         refresh:true,
@@ -188,27 +196,30 @@
                                     'width': "150px",
                                     template:function (rowData) {
 //                                        console.log(arguments);
+                                        if(isFirstLine){
+                                            isFirstLine = false;
+                                            totalLineNum = $('#themeListGrid').data("kendoGrid").dataSource._data.length
+                                            showAlt = false;
+                                        }
+                                        themeDataLineCounter ++;
+                                        if(totalLineNum<=themeDataLineCounter){
+                                            isFirstLine = true;
+                                            themeDataLineCounter = 0;
+                                        }
+
                                         if(showAlt){
                                             bg = "background-color:#F9F9F9;";
                                         }else {
                                             bg="";
                                         }
+                                        showAlt = !showAlt;
+
                                         if(!rowData.themeId){
                                             return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeName" required="required" data-bind="value:themeName">';
                                         }
                                         else{
                                             return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeName" required="required" data-bind="value:themeName" readonly="readonly" value="'+rowData.themeName+'">';
                                         }
-
-//                                        if(!rowData.themeId){
-//                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;clear: both;" name="themeName" required="required" data-bind="value:themeName">';
-////                            return '';
-//                                        }
-//                                        else{
-//                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px" name="themeName" required="required" data-bind="value:themeName" readonly="readonly" value="'+rowData.themeName+'">';
-//                                        }
-
-
                                     }
                                 },
                                 {
@@ -224,15 +235,6 @@
                                             }
                                             return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" data-bind="value:themeSequence"/>';
                                         }
-//                                        if(!rowData.themeId){
-//                                            return '<input name="themeSequence" class="k-input k-textbox" type="number" min="0" step="1" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence" />';
-//                                        }else{
-//                                            if(null === rowData.themeSequence||'null' == rowData.themeSequence ||  "undefined"==rowData.themeSequence){
-//                                                return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:"/>';
-//                                            }
-//                                            return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence"/>';
-//                                        }
-
                                     }
                                 },
                                 {
@@ -250,13 +252,14 @@
                                 },
 //                            { command: { text: '<@spring.message "hdispatch.theme.theme_create.edict_layer"/>', click: showDetails ,class:'btn btn-info'}, title: '<@spring.message "hdispatch.theme.layer_operation"/>', width: "100px" }
                         {
+                            attributes: {style: "text-align:center;padding:0px"},
                             field : "",
                             title : '<@spring.message "hdispatch.theme.layer_operation"/>',
-                            width : 100,
+                            width : 50,
 //                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.theme.theme_create.edict_layer'/></button>"
                             template : function(
                                     item) {
-                                showAlt = !showAlt;
+
                                 if(!!item.themeId){
                                     var html = "<button  class='btn btn-info'onclick='showDetails(\""
                                             + item.themeId
@@ -285,7 +288,7 @@
             });
             function getEdictingRowData(index)
             {
-                return $('#jobListGrid').data("kendoGrid")._data[index];
+                return $('#themeListGrid').data("kendoGrid")._data[index];
             }
             //显示层详情页面
             //      function showDetails(e) {
@@ -300,7 +303,6 @@
             //        loadLayerGrid(dataItem);
             //      }
             function showDetails(themeId_thisRow,themeName_thisRow) {
-                console.log("当前行themeId:"+themeId_thisRow);
                 if(!themeId_thisRow || !themeName_thisRow){
                     alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
                     return;
@@ -322,8 +324,20 @@
                 var layerViewModel = kendo.observable({
                     model:{
                         themeId:layerHeaderData.themeId
+                    },
+                    createFunction: function(){
+                        $('#layerListGrid').data('kendoGrid').addRow();
+                    },
+                    saveFunction: function(){
+                        $('#layerListGrid').data('kendoGrid').saveChanges();
+                        $('#layerListGrid').data('kendoGrid').dataSource.read();
+                        $('#layerListGrid').data('kendoGrid').dataSource.page(2147483647);
+                    },
+                    cancelFunction: function(e){
+                        $('#layerListGrid').data('kendoGrid').cancelChanges();
                     }
                 });
+                kendo.bind($('#layerGrid_toolbar-btn'), viewModel);
                 var layers_data = new kendo.data.DataSource({
                     transport: {
                         read:  {
@@ -332,6 +346,12 @@
                         },
                         create: {
                             url: baseUrl_layer+'submit',
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
+                        update: {
+                            url: baseUrl_layer + "update",
                             type : 'POST',
                             dataType: "json",
                             contentType:"application/json"
@@ -418,21 +438,6 @@
                             refresh: '<@spring.message "hdispatch.grid_refresh"/>'
                         }
                     },
-                    toolbar: [
-                        {
-                            name:"create",
-                            text:'<@spring.message "hdispatch.create"/>'
-//                        template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
-                        },
-                        {
-                            name:"save",
-                            text:'<@spring.message "hdispatch.save"/>'
-                        },
-                        {
-                            name:"cancel",
-                            text:'<@spring.message "hdispatch.cancel"/>'
-                        }
-                    ],
                     columns:
                             [
                                 { 'field': 'layerName','title':'<@spring.message "hdispatch.layer_name"/>', 'width': 70 },
@@ -460,7 +465,15 @@
                             </div>
                         </div>
                     </div>
-                    <div id="layerListGrid" style="clear:both">
+                    <div style="clear:both">
+                        <div class="pull-left" id="layerGrid_toolbar-btn" style="padding-bottom:10px;">
+                            <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                            <span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                            <span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
+                        </div>
+                        <div style="clear:both">
+                            <div id="layerListGrid" style="clear: both"></div>
+                        </div>
                     </div>
                 </div>
             </div>
