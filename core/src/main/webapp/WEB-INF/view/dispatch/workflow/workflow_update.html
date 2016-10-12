@@ -2,6 +2,8 @@
     <link rel="stylesheet" href="../../lib/jointJS/joint.css"/>
     <script src="${base.contextPath}/lib/jointJS/lodash.min.js"></script>
     <script src="${base.contextPath}/lib/jointJS/backbone-min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/dagre.min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/graphlib.min.js"></script>
     <script src="${base.contextPath}/lib/jointJS/joint.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowUpdateController.js"></script>
@@ -135,6 +137,7 @@
                 <div class="row">
                     <button class="btn btn-info" ng-click="vm.jobWindow.center().open()">添加任务</button>
                     <button class="btn btn-danger" ng-click="vm.deleteJob()">删除</button>
+                    <button class="btn btn-danger" ng-click="vm.format()">格式化</button>
                     <button class="btn btn-primary" ng-click="vm.save()" ng-disabled="flow.$invalid||!vm.workflow.themeId||!vm.workflow.layerId">保存</button>
                     <button class="btn btn-info" ng-click="vm.generateWorkflow()" ng-disabled="!vm.workflow.workflowId">生成</button>
                     <a href="${base.contextPath}/dispatch/workflow/workflow_list.html" class="btn btn-danger">返回列表</a>

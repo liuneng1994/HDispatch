@@ -28,6 +28,14 @@
             vm.newJob.jobSource = null;
             refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
         };
+        vm.format = function() {
+            console.log(vm.graph);
+            joint.layout.DirectedGraph.layout(vm.graph, {
+                nodeSep: 50,
+                edgeSep: 50,
+                rankDir: "TB"
+            });
+        }
 
         wfDiaService.bindEvent(vm);
         refreshThemes();
@@ -86,11 +94,6 @@
         vm.resetWindow = function () {
             vm.jobWindow.close();
             vm.newJob.name = null;
-        };
-
-        vm.format = function () {
-            var result = vm.graphTool.autoFormat(vm.jobStore);
-            console.log(result);
         };
 
         function Job() {
