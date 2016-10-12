@@ -55,7 +55,7 @@
         and start_time > #{start_time,jdbcType=BIGINT}
       </if>
       <if test="project_name != null" >
-        and project_name like CONCAT('%',#{project_name},'%')
+        and projects.name like CONCAT('%',#{project_name},'%')
       </if>
       <if test="flow_id != null" >
         and flow_id like CONCAT('%',#{flow_id},'%')
