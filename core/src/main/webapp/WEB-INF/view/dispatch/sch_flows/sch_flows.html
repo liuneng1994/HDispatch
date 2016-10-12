@@ -146,10 +146,10 @@
 														map.flow_id = model.flowName;
 													}
 													if (model.projectName) {
-														map.project_id = model.projectName;
+														map.project_name = model.projectName;
 													}
 													if (document.getElementById("picker").value!='') {
-														 map.date = new Date(document.getElementById("picker").value).getTime(); 
+														 map.submitdate = new Date(document.getElementById("picker").value).getTime(); 
 													}
 													if (options.page) {
 														map.page = options.page;
@@ -263,7 +263,14 @@
 														{
 															field : "period",
 															title : '<@spring.message "hdispatch.schedule.schlist.period"/>',
-															width : 180
+															width : 180,
+															template : function(
+																	item) {
+																var html=item.period;
+																if(item.period=="null")
+																	html="--";
+																return html;
+															}
 														},
 														{
 															field : "hasSla",

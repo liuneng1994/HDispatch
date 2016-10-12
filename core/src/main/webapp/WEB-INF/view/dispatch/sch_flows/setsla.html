@@ -181,7 +181,7 @@ author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 
 								}
 							}
-							document.getElementById("duration").flatpickr();
+							
 
 						},
 						error : function() {
@@ -197,7 +197,7 @@ author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 			var tr = document.createElement("tr");
 			tr.innerHTML = "<td><select class='form-control' id='flow"+count+"'>"
 					+ "</select></td><td><select class='form-control'><option value='SUCCESS'>SUCCESS</option><option value='FINISH'>FINISH</option></select></td><td>"
-					+ "<input id='flatpickr"+count+"'class='form-control' data-enable-time='true' data-enable-seconds='false' data-no-calendar='true'>"
+					+ "<input id='flatpickr"+count+"'class='form-control' data-default-date='' data-enable-time='true' value='00:01' data-enable-seconds='false' data-no-calendar='true'>"
 					+ "</td><td><input type='checkbox'></td><td><input type='checkbox'></td>";
 			document.getElementById("tbody").appendChild(tr);
 			document.getElementById("flatpickr" + count).flatpickr();
