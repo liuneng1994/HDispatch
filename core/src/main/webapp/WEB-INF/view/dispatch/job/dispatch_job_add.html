@@ -334,10 +334,10 @@
                                 width: '16px'
                             },
                             { 'field': 'jobId','hidden':true },
-                            { 'field': 'themeId','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "100px", editor: themeDropDownEditor, template: "#=themeName#" },
-                            { 'field': 'layerId','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "100px", editor: layerDropDownEditor, template: "#=layerName#" },
-                            { 'field': 'jobName','title':'<@spring.message "hdispatch.job.job_name"/>', 'width': "100px" },
+                            { 'field': 'themeId','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "70px", editor: themeDropDownEditor, template: "#=themeName#" },
+                            { 'field': 'layerId','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "70px", editor: layerDropDownEditor, template: "#=layerName#" },
                             { 'field': 'jobSvn','title':'<@spring.message "hdispatch.job.svn.svn_file"/>', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
+                            { 'field': 'jobName','title':'<@spring.message "hdispatch.job.job_name"/>', 'width': "150px" },
 //                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
 //                            { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, spriteCssClass:'btn btn-danger k-grid-remove',title: "&nbsp;", width: "80px" }
 //                        {
@@ -1041,10 +1041,20 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
                     var data = getEdictingRowData(rowIndex_grid_edicting);
                     //设置某列的新值
                     data.set("jobSvn",jobSvn_node_checked);
+                    //将kjb和etl文件名作为job默认名称
+                    data.set("jobName",splitSvnFileName(jobSvn_node_checked));
                     //关闭窗口
                     grid_svn_wnd.close();
                 }
             };
+            function splitSvnFileName(path){
+                var start = path.lastIndexOf("/");
+                if(-1 != start){
+                    return path.substring(start+1,path.length-4);
+                }else {
+                    return path.substring(0,path.length-4);
+                }
+            }
 
             //提交批量创建job
             function submitBatchCreateJobForm(e) {
@@ -1201,13 +1211,13 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
 
         .fieldList li {
             list-style: none;
-            padding-bottom: 2em;
+            padding-bottom: 1em;
             width: 100%;
         }
 
         .fieldList label {
             display: block;
-            padding-bottom: 1em;
+            padding-bottom: 0em;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 14px;
