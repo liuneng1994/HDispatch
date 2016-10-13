@@ -87,11 +87,19 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
                     if(hasChild){
                         treeNode_temp.setSpriteCssClass(TreeNode.CSS_CLASS_FOLDER);
 //                        treeNode_temp.setExpanded(true);//不能设置为true，否则会递归地将非叶子节点展开
+                        treeNode_temp.setNodeId(treeNode.getNodeId()+ "/" + fileName).
+                                setNodeName(fileName).
+                                setHasChild(hasChild);
+                        list.add(treeNode_temp);
+                    }else {
+                        if(isLegalFile(fileName)){
+                            treeNode_temp.setNodeId(treeNode.getNodeId()+ "/" + fileName).
+                                    setNodeName(fileName).
+                                    setHasChild(hasChild);
+                            list.add(treeNode_temp);
+                        }
                     }
-                    treeNode_temp.setNodeId(treeNode.getNodeId()+ "/" + fileName).
-                            setNodeName(fileName).
-                            setHasChild(hasChild);
-                    list.add(treeNode_temp);
+
                 }
             }
         } catch (Exception e) {
@@ -138,10 +146,11 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
      */
     private static boolean hasChildren(ChannelSftp sftp, String filePath) throws SftpException {
         boolean flag = false;
-        if(filePath.endsWith(".kjb")||filePath.endsWith(".KJB")){
+        String surfix = filePath.substring(filePath.length()-4);
+        if(".kjb".equalsIgnoreCase(surfix)||".ktl".equalsIgnoreCase(surfix)){
             return false;
         }
-        if(filePath.endsWith(".sql")||filePath.endsWith(".SQL")){
+        if(".sql".equalsIgnoreCase(surfix)){
             return false;
         }
         Vector<?> vector = sftp.ls(filePath);
@@ -154,6 +163,16 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
                 flag = true;
                 break;
             }
+        }
+        return flag;
+    }
+
+
+    private boolean isLegalFile(String fileName){
+        boolean flag = false;
+        String surfix = fileName.substring(fileName.length()-4);
+        if(".kjb".equalsIgnoreCase(surfix) || ".ktl".equalsIgnoreCase(surfix)){
+            flag = true;
         }
         return flag;
     }
