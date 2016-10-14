@@ -15,6 +15,7 @@ import java.util.*;
 public class WorkflowUtils {
     private static String COMMAND_TEMPLATE = "%s";
     private static final String JOB_SUFFIX = ".job";
+    private static final String FLOW_PREFIX = "_";
 
     /**
      * 创建job文件
@@ -37,6 +38,24 @@ public class WorkflowUtils {
     }
 
     /**
+     * 创建flow文件.
+     *
+     * @param parentFile
+     * @param job
+     * @param jobStore
+     */
+    public static void createFlowFile(File parentFile, WorkflowJob job,Collection<Job> jobStore) {
+        File file = new File(parentFile, job.getWorkflowJobId() + JOB_SUFFIX);
+        FileUtils.deleteQuietly(file);
+        try {
+            file.createNewFile();
+            FileUtils.writeLines(file,generateFlowContent(FLOW_PREFIX + job.getWorkflowJobId(),job.getParentsJobId()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * 产生job文件内容
      *
      * @param job
@@ -53,8 +72,18 @@ public class WorkflowUtils {
         return contents;
     }
 
+    private static List<String> generateFlowContent(String flowName, String dependencies) {
+        List<String> contents = new ArrayList<>();
+        contents.add("type=flow");
+        contents.add("flow.name=" + flowName);
+        if (!StringUtils.isEmpty(dependencies)) {
+            contents.add("dependencies=" + dependencies);
+        }
+        return contents;
+    }
+
     public static void createEndJobFile(File parentFile, Workflow workflow) {
-        File file = new File(parentFile, workflow.getName() + JOB_SUFFIX);
+        File file = new File(FLOW_PREFIX + parentFile, workflow.getName() + JOB_SUFFIX);
         Set<String> wholeJobs = new HashSet<>();
         Set<String> jobsWithDept = new HashSet<>();
         workflow.getJobs().forEach(job -> wholeJobs.add(job.getWorkflowJobId()));

@@ -5,6 +5,8 @@ import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
+import hdispatch.core.dispatch.dto.workflow.WorkflowJob;
+import hdispatch.core.dispatch.exception.CircularReferenceException;
 import hdispatch.core.dispatch.mapper.JobMapper;
 import hdispatch.core.dispatch.mapper.WorkflowJobMapper;
 import hdispatch.core.dispatch.mapper.WorkflowMapper;
@@ -13,7 +15,8 @@ import hdispatch.core.dispatch.service.WorkflowService;
 import hdispatch.core.dispatch.utils.WorkflowUtils;
 import hdispatch.core.dispatch.utils.ZipUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +33,14 @@ import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
 /**
  * Created by 刘能 on 2016/9/12.
  */
+
+/**
+ * 工作流服务类
+ * @author neng.liu@hand-china.com
+ */
 @Service("workflowService")
 public class WorkflowServiceImpl implements WorkflowService {
-    private Logger logger = Logger.getLogger(WorkflowServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(WorkflowServiceImpl.class);
     @Autowired
     private WorkflowMapper workflowMapper;
     @Autowired
@@ -53,7 +61,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Override
     @Transactional
     public Map<String, Object> createWorkflow(Workflow workflow) {
-        logger.info("Creates workflow " + workflow);
+        logger.info("Creates workflow {}", workflow.toString());
         Assert.notNull(workflow, "Workflow can not be null");
         Map<String, Object> ret = new HashMap<>();
         if (workflowMapper.getByName(workflow.getName()) != null) {
@@ -115,7 +123,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         logger.info("generate workflow " + workflow);
         Set<Long> ids = new HashSet<>();
         workflow.getJobs().forEach(job -> ids.add(job.getJobSource()));
-        List<Job> jobStore = jobMapper.getByIds(ids);
+        WorkflowResolver resolver = new WorkflowResolver();
+        List<Job> jobStore = jobMapper.getByIds(resolver.resolveWorkflowJobs(workflow));
         logger.info("job source " + jobStore);
         File projectFile = generateWorkflowFile(workflow, jobStore);
         projectService.createProject(workflow.getName(), workflow.getDescription());
@@ -124,6 +133,28 @@ public class WorkflowServiceImpl implements WorkflowService {
             workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), workflow.getName());
         }
         return !result.containsKey("error");
+    }
+
+    private class WorkflowResolver {
+        private Set<String> parsedFlow = new HashSet<>();
+        private Set<Long> resolveWorkflowJobs(Workflow workflow){
+            Set<Long> jobs = new HashSet<>();
+            workflow.getJobs().forEach(workflowJob -> {
+                switch (workflowJob.getJobType()) {
+                    case "job":
+                        jobs.add(workflowJob.getJobSource());
+                        break;
+                    case "flow":
+                        if (parsedFlow.contains(workflowJob.getWorkflowJobId())) {
+                            throw new CircularReferenceException(String.format("Flow %s has circular reference", workflowJob.getWorkflowJobId()));
+                        }
+                        parsedFlow.add(workflowJob.getWorkflowJobId());
+                        jobs.addAll(resolveWorkflowJobs(workflowMapper.getById(workflowJob.getJobSource())));
+                        break;
+                }
+            });
+            return jobs;
+        }
     }
 
     @Override
@@ -175,13 +206,41 @@ public class WorkflowServiceImpl implements WorkflowService {
         FileUtils.deleteQuietly(projectDir);
         FileUtils.deleteQuietly(projectZipFile);
         projectDir.mkdir();
-        workflow.getJobs().forEach(job -> WorkflowUtils.createJobFile(projectDir, job, jobStore));
+        workflow.getJobs().forEach(job -> {
+            switch (job.getJobType()) {
+                case "job" :
+                    WorkflowUtils.createJobFile(projectDir, job, jobStore);
+                    break;
+                case "flow" :
+                    generateEmbededFlowFile(projectDir,job,jobStore);
+                    break;
+            }
+
+        });
         WorkflowUtils.createEndJobFile(projectDir, workflow);
         try {
             ZipUtils.zip(projectDir, projectZipFile);
         } catch (IOException e) {
+            logger.error("generate workflow file failed");
             throw new RuntimeException(e);
         }
+        FileUtils.deleteQuietly(projectDir);
         return projectZipFile;
+    }
+
+    private void generateEmbededFlowFile(File parentFile, WorkflowJob job, Collection<Job> jobStore) {
+        WorkflowUtils.createFlowFile(parentFile,job,jobStore);
+        Workflow workflow = workflowMapper.getById(job.getJobSource());
+        workflow.getJobs().forEach(workflowJob->{
+            switch (workflowJob.getJobType()) {
+                case "job" :
+                    WorkflowUtils.createJobFile(parentFile,workflowJob,jobStore);
+                    break;
+                case "flow" :
+                    generateEmbededFlowFile(parentFile,workflowJob,jobStore);
+                    break;
+            }
+        });
+        WorkflowUtils.createEndJobFile(parentFile, workflow);
     }
 }

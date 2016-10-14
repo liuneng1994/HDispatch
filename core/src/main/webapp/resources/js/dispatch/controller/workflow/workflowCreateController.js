@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    angular.module('dispatch').controller('workflowCreateController', ['$window', '$scope', 'workflowService', 'workflowDiagramService', workflowCreateController]);
-    function workflowCreateController($window, $scope, workflowService, wfDiaService) {
+    angular.module('dispatch').controller('workflowCreateController', ['$window', '$scope', 'workflowService', 'paintService', workflowCreateController]);
+    function workflowCreateController($window, $scope, workflowService, paintService) {
         var vm = this;
         vm.workflow = {};
         vm.newJob = new Job();
@@ -9,11 +9,10 @@
         vm.layers = {};
         vm.jobLayers = [];
         vm.jobSources = [];
-        vm.paperName = 'create';
-        vm.graph = new joint.dia.Graph;
-        vm.paper = wfDiaService.newPaper($('#graph').parent().width(), 800, vm.graph, '#graph');
-        vm.jobStore = wfDiaService.newJobStore();
-        vm.graphTool = wfDiaService.newGraphTool(vm.paper, vm.graph);
+        vm.paint = new Paint('edit');
+        paint.initScroll();
+        paint.initEdit();
+        paint.initHotKey();
 
 
         refreshThemes();
@@ -32,18 +31,15 @@
 
 
         vm.createJob = function () {
-            if (vm.jobStore.contains(vm.newJob.name)) {
+            if (vm.paint.addJobNode(vm.newJob, 100, 100) == -1) {
                 $window.alert("任务名称已存在");
                 return;
             }
-            console.log();
-            vm.graphTool.createJobNode(vm.newJob);
             vm.newJob = angular.copy(vm.newJob);
             vm.resetWindow();
         };
 
         vm.deleteJob = function () {
-            vm.graphTool.deleteJobNode();
         };
 
         vm.save = function () {
@@ -87,19 +83,18 @@
         };
 
         vm.format = function () {
-            var result = vm.graphTool.autoFormat(vm.jobStore);
-            console.log(result);
+            vm.paint.format();
         }
 
         function Job() {
             this.themeId = new Number();
             this.layerId = 0;
             this.name = '';
+            this.type = 'job';
             this.jobSource = new Number();
             this.dept = [];
         }
 
-        wfDiaService.bindEvent(vm);
         return vm;
 
         function refreshThemes() {
