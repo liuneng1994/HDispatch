@@ -23,19 +23,27 @@
     <script>
         _basePath = '${base.contextPath}', _locale = '${base.locale}';
         kendo.culture("${base.locale.toString()?replace('_','-')}");
+//        window.alert = function (message) {
+//            $('body').append('<div id="_alert"><div class="text-left" style="padding:25px;font-size:1em;">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
+//                    'onclick="$(\'#_alert\').data(\'kendoWindow\').close();$(\'#_alert\').remove();">确定</button><div></div>');
+//            $('#_alert').kendoWindow({
+//                width: "400px",
+//                title: "Warning",
+//                visible: false,
+//                modal: true,
+//                actions: [
+//                    "Close"
+//                ]
+//            }).data("kendoWindow").center().open();
+//        }
         window.alert = function (message) {
-            $('body').append('<div id="_alert"><div class="text-left" style="padding:25px;font-size:1em;">' + message + '</div><div class="text-right" style="padding-bottom:20px;padding-right:20px;"><button class="btn btn-primary" ' +
-                    'onclick="$(\'#_alert\').data(\'kendoWindow\').close();$(\'#_alert\').remove();">确定</button><div></div>');
-            $('#_alert').kendoWindow({
-                width: "400px",
-                title: "Warning",
-                visible: false,
-                modal: true,
-                actions: [
-                    "Close"
-                ]
-            }).data("kendoWindow").center().open();
-        }
+            kendo.ui.showWarningDialog(
+                    {
+                        title: $l('hap.tip.info'),
+                        message: message
+                    }
+            );
+        };
 
         window.hdispatch = window.hdispatch||{}
         window.hdispatch.confirm = function (message) {
