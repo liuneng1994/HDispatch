@@ -14,15 +14,15 @@ yazheng.yang@hand-china.com
     </resultMap>
 
     <insert id="save">
-        INSERT INTO hdispatch_theme_group(theme_group_name,theme_group_desc)
+        INSERT INTO hdispatch_themegroup(theme_group_name,theme_group_desc)
         VALUES (#{themeGroupName},#{themeGroupDesc})
     </insert>
     <select id="selectAll" resultMap="baseMap">
-        SELECT * FROM hdispatch_theme_group
+        SELECT * FROM hdispatch_themegroup
     </select>
 
     <select id="selectByThemeGroup" resultMap="baseMap">
-        SELECT * FROM hdispatch_theme_group
+        SELECT * FROM hdispatch_themegroup
         <where>
             <if test="themeGroupId != null">
                 and theme_group_id = #{themeGroupId}
@@ -39,9 +39,9 @@ yazheng.yang@hand-china.com
     </select>
 
     <update id="updateById">
-        UPDATE hdispatch_theme_group
+        UPDATE hdispatch_themegroup
         SET theme_group_name=#{themeGroupName},
-        SET theme_group_desc=#{themeGroupDesc}
+        theme_group_desc=#{themeGroupDesc}
         WHERE theme_group_id=#{themeGroupId}
     </update>
 
