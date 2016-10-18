@@ -13,7 +13,7 @@ yazheng.yang@hand-china.com
         <result column="theme_group_desc" property="themeGroupDesc"/>
     </resultMap>
 
-    <insert id="save">
+    <insert id="save"  useGeneratedKeys="true" keyProperty="themeGroupId">
         INSERT INTO hdispatch_themegroup(theme_group_name,theme_group_desc)
         VALUES (#{themeGroupName},#{themeGroupDesc})
     </insert>
