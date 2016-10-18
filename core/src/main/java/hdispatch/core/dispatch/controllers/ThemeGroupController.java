@@ -59,3 +59,61 @@ public class ThemeGroupController  extends BaseController {
         ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }
+
+    /**
+     * 批量添加主题组
+     * @param themeList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/submit", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData addThemeGroups(@RequestBody List<ThemeGroup> themeList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        //后台验证
+        getValidator().validate(themeList, result);
+        if (result.hasErrors()) {
+            rd = new ResponseData(false);
+            rd.setMessage(getErrorMessage(result, request));
+            return rd;
+        }
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+        rd = new ResponseData(themeGroupService.batchUpdate(requestContext, themeList));
+//        try {
+//            rd = new ResponseData(themeGroupService.batchUpdate(requestContext, themeList));
+//        } catch (Exception e) {
+//            //保存主题中途失败
+//            String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.error_during_saving", null, locale);
+//            logger.error(errorMsg, e);
+//        }
+        return rd;
+    }
+
+    /**
+     * 批量更新主题组
+     * @param themeGroupList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/update", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData updateThemeGroups(@RequestBody List<ThemeGroup> themeGroupList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        //后台验证
+        getValidator().validate(themeGroupList, result);
+        if (result.hasErrors()) {
+            rd = new ResponseData(false);
+            rd.setMessage(getErrorMessage(result, request));
+            return rd;
+        }
+        IRequest requestContext = createRequestContext(request);
+        rd = new ResponseData(themeGroupService.batchUpdate(requestContext,themeGroupList));
+        return rd;
+    }
+
