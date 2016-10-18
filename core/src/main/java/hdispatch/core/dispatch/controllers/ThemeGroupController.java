@@ -117,3 +117,45 @@ public class ThemeGroupController  extends BaseController {
         return rd;
     }
 
+    /**
+     * 获取所有不在某个主题组的主题
+     * @param request
+     * @param page
+     * @param pageSize
+     * @param themeName
+     * @param themeDescription
+     * @param themeGroupId
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/query", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getThemesNotInThemeGroup(HttpServletRequest request,
+                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                       @RequestParam(defaultValue = "") String themeName,
+                                       @RequestParam(defaultValue = "") String themeDescription,
+                                       @RequestParam(defaultValue = "-100") Long themeGroupId) {
+        ResponseData responseData = null;
+        if(null == themeGroupId || themeGroupId < 0){
+            responseData = new ResponseData(false);
+            return responseData;
+        }
+
+        IRequest requestContext = createRequestContext(request);
+        ThemeGroup themeGroup = new ThemeGroup();
+        themeName = themeName.trim();
+        themeDescription = themeDescription.trim();
+        if ("".equals(themeName)) {
+            themeName = null;
+        }
+        if ("".equals(themeDescription)) {
+            themeDescription = null;
+        }
+        themeGroup.setThemeGroupName(themeName);
+
+        themeGroup.setThemeGroupDesc(themeDescription);
+        List<ThemeGroup> themeList = themeGroupService.selectByThemeGroup(requestContext, themeGroup, page, pageSize);
+        responseData = new ResponseData(themeList);
+        return responseData;
+    }
+}
