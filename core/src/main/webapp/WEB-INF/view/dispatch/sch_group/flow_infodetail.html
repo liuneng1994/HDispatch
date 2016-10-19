@@ -245,46 +245,62 @@
 																			.round((end - start)
 																					/ length
 																					* 100);
+																	if(r1==0)
+																		r1=1;
 
 																	r2 = Math
-																			.round((length - end)
+																			.floor((length - end)
 																					/ length
 																					* 100);
-
+																	if(r2==0)
+																		r2=1;
+					
 																	r3 = 0;
 																	color1 = "#5CB85C";
 																	color2 = "#E6E6E6";
 																	color3 = "#E6E6E6";
 																} else if (end == length) {
 																	r1 = Math
-																			.round((start - 0)
+																			.floor((start - 0)
 																					/ length
 																					* 100);
+																	
+																	if(r1==0)
+																		r1=1;
 
 																	r2 = 0;
 																	r3 = Math
 																			.round((length - start)
 																					/ length
 																					* 100);
+																	console.log(r3)
+																	if(r3==0)
+																		r3=1;
 
 																	color1 = "#E6E6E6";
 																	color2 = "#E6E6E6";
 																	color3 = "#5CB85C";
 																} else {
 																	r1 = Math
-																			.round((start - 0)
+																			.floor((start - 0)
 																					/ length
 																					* 100);
+																	if(r1==0)
+																		r1=1;
 
 																	r2 = Math
-																			.round((end - start)
+																			.floor((end - start)
 																					/ length
 																					* 100);
+																	if(r2==0)
+																		r2=1;
 
 																	r3 = Math
-																			.round((length - end)
+																			.floor((length - end)
 																					/ length
 																					* 100);
+																	if(r3==0)
+																		r3=1;
 
 																	color1 = "#E6E6E6";
 																	color2 = "#5CB85C";

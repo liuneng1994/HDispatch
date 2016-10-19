@@ -124,14 +124,14 @@
 			});
 		}
 		function openFlowDetailPage(flow_id, exec_id) {
+			console.log(flow_id);
 			var dialog = $("#dialog")
 					.kendoWindow(
 							{
 								actions : [ "Maximize", "Minimize", "Close" ],
 								width : 920,
 								height : 450,
-								title : flow_id
-										+ ' <@spring.message "hdispatch.flowlist.flowdetail"/>',
+								title :' <@spring.message "hdispatch.flowlist.flowdetail"/>',
 								visible : false,
 								iframe : true,
 								content : 'flow_infodetail.html?flow_id='
