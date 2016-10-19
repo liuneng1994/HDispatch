@@ -47,7 +47,7 @@
         var jobPosition = {x: 100, y: 100};
         vm.createJob = function () {
             if (vm.paint.addJobNode(vm.newJob, jobPosition.x, jobPosition.y) == -1) {
-                window.hdispatch.alert("任务名称已存在");
+                window.alert("任务名称已存在");
                 return;
             }
             vm.newJob = angular.copy(vm.newJob);
@@ -79,7 +79,7 @@
             workflowService.updateWorkflow(workflow).then(function (data) {
                 window.hdispatch.confirm("保存成功，是否立刻生成任务流").accept(vm.generateWorkflow);
             }, function (data) {
-                window.hdispatch.alert(data);
+                window.alert(data);
             });
         };
 

@@ -43,7 +43,7 @@
         vm.createJob = function () {
             console.log(jobPosition);
             if (vm.paint.addJobNode(vm.newJob, jobPosition.x, jobPosition.y) == -1) {
-                window.hdispatch.alert("任务名称已存在");
+                window.alert("任务名称已存在");
                 return;
             }
             vm.newJob = angular.copy(vm.newJob);
@@ -75,15 +75,15 @@
                 vm.workflow.workflowId = parseInt(data);
                 window.hdispatch.confirm("保存成功，是否立刻生成任务流").accept(vm.generateWorkflow);
             }, function (data) {
-                window.hdispatch.alert(data);
+                window.alert(data);
             });
         };
 
         vm.generateWorkflow = function () {
             workflowService.generateWorkflow(vm.workflow.workflowId).then(function (data) {
-                window.hdispatch.alert(data);
+                window.alert(data);
             }, function (data) {
-                window.hdispatch.alert(data);
+                window.alert(data);
             });
         }
 

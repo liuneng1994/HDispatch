@@ -286,16 +286,6 @@
                             template: '<span class="btn btn-primary" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>'
                         },
                         {
-                            name:"save",
-                            text:'<@spring.message "hdispatch.save"/>',
-                            template: '<span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>'
-                        },
-                        {
-                            name:"cancel",
-                            text:'<@spring.message "hdispatch.cancel"/>',
-                            template: '<span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>'
-                        },
-                        {
                             name:"excel",
                             text:'<@spring.message "hdispatch.svn.export_excel"/>',
                             template: '<span class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>'
@@ -304,6 +294,16 @@
                             name:"batchDelete",
                             text:'<@spring.message "hdispatch.job.batch_delete"/>',
                             template: '<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>'
+                        },
+                        {
+                            name:"save",
+                            text:'<@spring.message "hdispatch.save"/>',
+                            template: '<span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>'
+                        },
+                        {
+                            name:"cancel",
+                            text:'<@spring.message "hdispatch.cancel"/>',
+                            template: '<span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>'
                         }
                     ],
                     excel: {
@@ -327,12 +327,12 @@
                                 { 'field': 'parameterName','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_name"/>', 'width': 100 },
                                 { 'field': 'parameterValue','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_value"/>', 'width': 100 },
                                 { 'field': 'formatMask','title':'<@spring.message "hdispatch.svn.svn_parameter.format_mask"/>', 'width': 100 },
-                                { 'field': 'paraOffset','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_offset"/>', 'width': 100 },
+                                { 'field': 'paraOffset','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_offset"/>', 'width': 60 },
 //                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd HH:mm:ss}', 'width': "100px" },
-                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 150 },
-                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 150 },
-                                { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': 100 },
-                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': 100,editor:enableFlagEditor,template:"#=enableFlag#" }
+                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
+                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
+                                { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': 60 },
+                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': 70,editor:enableFlagEditor,template:"#=enableFlag#" }
 //                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
                     ],
                     editable: true
