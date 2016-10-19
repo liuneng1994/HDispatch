@@ -153,8 +153,50 @@ public class ThemeGroupController  extends BaseController {
         }
         themeGroup.setThemeGroupName(themeName);
 
-        themeGroup.setThemeGroupDesc(themeDescription);
-        List<ThemeGroup> themeList = themeGroupService.selectByThemeGroup(requestContext, themeGroup, page, pageSize);
+        themeGroupTheme.setThemeDescription(themeDescription);
+        List<ThemeGroupTheme> themeList = themeGroupThemeService.selectThemesNotInThemeGroup(requestContext, themeGroupTheme, page, pageSize);
+        responseData = new ResponseData(themeList);
+        return responseData;
+    }
+
+    /**
+     * 获取主题组下的所有主题
+     * @param request
+     * @param page
+     * @param pageSize
+     * @param themeName
+     * @param themeDescription
+     * @param themeGroupId
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryUnderThemeGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getThemesInThemeGroup(HttpServletRequest request,
+                                                 @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                                 @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                                 @RequestParam(defaultValue = "") String themeName,
+                                                 @RequestParam(defaultValue = "") String themeDescription,
+                                                 @RequestParam(defaultValue = "-100") Long themeGroupId) {
+        ResponseData responseData = null;
+        if(null == themeGroupId || themeGroupId < 0){
+            responseData = new ResponseData(false);
+            return responseData;
+        }
+
+        IRequest requestContext = createRequestContext(request);
+        ThemeGroupTheme themeGroupTheme = new ThemeGroupTheme();
+        themeName = themeName.trim();
+        themeDescription = themeDescription.trim();
+        if ("".equals(themeName)) {
+            themeName = null;
+        }
+        if ("".equals(themeDescription)) {
+            themeDescription = null;
+        }
+        themeGroupTheme.setThemeName(themeName);
+
+        themeGroupTheme.setThemeDescription(themeDescription);
+        List<ThemeGroupTheme> themeList = themeGroupThemeService.selectThemesInThemeGroup(requestContext, themeGroupTheme, page, pageSize);
         responseData = new ResponseData(themeList);
         return responseData;
     }
