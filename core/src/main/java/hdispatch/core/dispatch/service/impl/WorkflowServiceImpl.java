@@ -36,6 +36,7 @@ import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
 
 /**
  * 工作流服务类
+ *
  * @author neng.liu@hand-china.com
  */
 @Service("workflowService")
@@ -137,22 +138,24 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     private class WorkflowResolver {
         private Set<String> parsedFlow = new HashSet<>();
-        private Set<Long> resolveWorkflowJobs(Workflow workflow){
+
+        private Set<Long> resolveWorkflowJobs(Workflow workflow) {
             Set<Long> jobs = new HashSet<>();
-            workflow.getJobs().forEach(workflowJob -> {
-                switch (workflowJob.getJobType()) {
-                    case "job":
-                        jobs.add(workflowJob.getJobSource());
-                        break;
-                    case "flow":
-                        if (parsedFlow.contains(workflowJob.getWorkflowJobId())) {
-                            throw new CircularReferenceException(String.format("Flow %s has circular reference", workflowJob.getWorkflowJobId()));
-                        }
-                        parsedFlow.add(workflowJob.getWorkflowJobId());
-                        jobs.addAll(resolveWorkflowJobs(workflowMapper.getById(workflowJob.getJobSource())));
-                        break;
-                }
-            });
+            if (workflow.getJobs() != null)
+                workflow.getJobs().forEach(workflowJob -> {
+                    switch (workflowJob.getJobType()) {
+                        case "job":
+                            jobs.add(workflowJob.getJobSource());
+                            break;
+                        case "flow":
+//                            if (parsedFlow.contains(workflowJob.getWorkflowJobId())) {
+//                                throw new CircularReferenceException(String.format("Flow %s has circular reference", workflowJob.getWorkflowJobId()));
+//                            }
+                            parsedFlow.add(workflowJob.getWorkflowJobId());
+                            jobs.addAll(resolveWorkflowJobs(workflowMapper.getById(workflowJob.getJobSource())));
+                            break;
+                    }
+                });
             return jobs;
         }
     }
@@ -208,16 +211,15 @@ public class WorkflowServiceImpl implements WorkflowService {
         projectDir.mkdir();
         workflow.getJobs().forEach(job -> {
             switch (job.getJobType()) {
-                case "job" :
-                    WorkflowUtils.createJobFile(projectDir, job, jobStore);
+                case "job":
+                    WorkflowUtils.createJobFile(projectDir, new ArrayList<>(), job, jobStore);
                     break;
-                case "flow" :
-                    generateEmbededFlowFile(projectDir,job,jobStore);
+                case "flow":
+                    generateEmbededFlowFile(projectDir, new ArrayList<>(), job, jobStore);
                     break;
             }
-
         });
-        WorkflowUtils.createEndJobFile(projectDir, workflow);
+        WorkflowUtils.createEndJobFile(projectDir, new ArrayList<>(), workflow);
         try {
             ZipUtils.zip(projectDir, projectZipFile);
         } catch (IOException e) {
@@ -228,19 +230,22 @@ public class WorkflowServiceImpl implements WorkflowService {
         return projectZipFile;
     }
 
-    private void generateEmbededFlowFile(File parentFile, WorkflowJob job, Collection<Job> jobStore) {
-        WorkflowUtils.createFlowFile(parentFile,job,jobStore);
+    private void generateEmbededFlowFile(File parentFile, List<String> parentWorkflow, WorkflowJob job, Collection<Job> jobStore) {
         Workflow workflow = workflowMapper.getById(job.getJobSource());
-        workflow.getJobs().forEach(workflowJob->{
+        WorkflowUtils.createFlowFile(parentFile, parentWorkflow, job.getWorkflowJobId() +"."+workflow.getName(), job, jobStore);
+        List<String> parentWorkflowCloning = new ArrayList<>();
+        parentWorkflowCloning.addAll(parentWorkflow);
+        parentWorkflowCloning.add(job.getWorkflowJobId());
+        workflow.getJobs().forEach(workflowJob -> {
             switch (workflowJob.getJobType()) {
-                case "job" :
-                    WorkflowUtils.createJobFile(parentFile,workflowJob,jobStore);
+                case "job":
+                    WorkflowUtils.createJobFile(parentFile, parentWorkflowCloning, workflowJob, jobStore);
                     break;
-                case "flow" :
-                    generateEmbededFlowFile(parentFile,workflowJob,jobStore);
+                case "flow":
+                    generateEmbededFlowFile(parentFile, parentWorkflowCloning, workflowJob, jobStore);
                     break;
             }
         });
-        WorkflowUtils.createEndJobFile(parentFile, workflow);
+        WorkflowUtils.createEndJobFile(parentFile, parentWorkflowCloning, workflow);
     }
 }

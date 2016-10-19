@@ -60,7 +60,7 @@ public class WorkflowController extends BaseController {
             return responseData;
         }
         Map<String, Object> result = workflowService.createWorkflow(workflow);
-        if (result.containsKey(RET_ERROR)) {
+         if (result.containsKey(RET_ERROR)) {
             responseData = new ResponseData(false);
             responseData.setMessage((String) result.get(RET_ERROR));
         } else {

@@ -79,6 +79,14 @@
             margin-right: 10px;
         }
     </style>
+    <link rel="stylesheet" href="../../lib/jointJS/joint.css"/>
+    <script src="${base.contextPath}/lib/jointJS/hotkeys.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/lodash.min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/dagre.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/graphlib.min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/backbone-min.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/paint.all.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/joint.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowScheduleController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
@@ -170,9 +178,11 @@
                         <div class="control-label col-sm-3">任务流</div>
                         <div class="col-sm-7">{{vm.executeInfo.name}}</div>
                     </div>
-                    <div class="form-group">
-                        <div class="control-label col-sm-3">描述</div>
-                        <div class="col-sm-7">{{vm.executeInfo.description}}</div>
+                    <div class="form-group" ng-show="vm.showExecuteGraph">
+                        <div class="control-label col-sm-3">预览</div>
+                        <div id="graphScroll" class="col-sm-7">
+                            <div id="graph"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -282,11 +292,11 @@
 
                         <div class="row form-horizontal">
                             <div class="panel-body col-sm-offset-0">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务组</label>
                                         <div class="col-sm-8 ">
-                                            <select class="col-sm-12" name="theme"
+                                            <select name="theme"
                                                     ng-model="vm.workflow.themeId"
                                                     kendo-combo-box
                                                     k-on-change="vm.themeChange(vm.workflow.themeId)"
@@ -297,11 +307,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">层级</label>
                                         <div class="col-sm-8 ">
-                                            <select name="layer" class="col-sm-12"
+                                            <select name="layer"
                                                     ng-model="vm.workflow.layerId"
                                                     kendo-combo-box
                                                     k-data-text-field="'layerName'"
@@ -311,11 +321,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row form-horizontal">
-                            <div class="panel-body col-sm-offset-0">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务流名称</label>
                                         <div class="col-sm-8 ">
@@ -325,7 +331,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务流描述</label>
                                         <div class="col-sm-8 ">
@@ -337,7 +343,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="panel-footer text-right">
 						<span class="btn btn-success" ng-click="vm.search()"

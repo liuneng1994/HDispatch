@@ -3,8 +3,8 @@
  */
 (function () {
     'use strict';
-    angular.module('dispatch').controller('workflowUpdateController', ['$timeout', '$window', '$scope', 'workflowService', 'workflowDiagramService', workflowUpdateController]);
-    function workflowUpdateController($timeout, $window, $scope, workflowService, wfDiaService) {
+    angular.module('dispatch').controller('workflowUpdateController', ['$timeout', '$window', '$scope', 'workflowService', workflowUpdateController]);
+    function workflowUpdateController($timeout, $window, $scope, workflowService) {
         var vm = this;
         vm.workflow = {};
         vm.newJob = new Job();
@@ -12,10 +12,17 @@
         vm.layers = [];
         vm.jobLayers = [];
         vm.jobSources = [];
-        vm.graph = new joint.dia.Graph;
-        vm.paper = wfDiaService.newPaper(5000, 5000, vm.graph, '#graph');
-        vm.jobStore = wfDiaService.newJobStore();
-        vm.graphTool = wfDiaService.newGraphTool(vm.paper, vm.graph);
+        vm.paint = new Paint('edit');
+        window.paint = vm.paint;
+        vm.paint.init({
+            el: '#graph',
+            elScroll: '#graphScroll',
+            height: 600,
+            width: $('body').width()
+        });
+        vm.paint.initScroll();
+        vm.paint.initEdit();
+        vm.paint.initHotKey();
         vm.themeChange = function (themeId) {
             vm.workflow.layerId = null;
             refreshLayers('layers', themeId);
@@ -26,60 +33,53 @@
         };
         vm.jobLayerChange = function () {
             vm.newJob.jobSource = null;
-            refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
+            if (vm.newJob.type == 'job')
+                refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
+            else if (vm.newJob.type == 'flow')
+                refreshFlows('jobSources', vm.newJob.themeId, vm.newJob.layerId);
         };
-        vm.format = function() {
-            console.log(vm.graph);
-            joint.layout.DirectedGraph.layout(vm.graph, {
-                nodeSep: 50,
-                edgeSep: 50,
-                rankDir: "TB"
-            });
-        }
+        vm.format = function () {
+            vm.paint.format();
+        };
 
-        wfDiaService.bindEvent(vm);
         refreshThemes();
         init();
-
+        var jobPosition = {x: 100, y: 100};
         vm.createJob = function () {
-            if (vm.jobStore.contains(vm.newJob.name)) {
-                $window.alert("任务名称已存在");
+            if (vm.paint.addJobNode(vm.newJob, jobPosition.x, jobPosition.y) == -1) {
+                window.hdispatch.alert("任务名称已存在");
                 return;
             }
-            vm.graphTool.createJobNode(vm.newJob);
             vm.newJob = angular.copy(vm.newJob);
             vm.resetWindow();
         };
 
         vm.deleteJob = function () {
-            vm.graphTool.deleteJobNode();
         };
-
         vm.save = function () {
             var workflow = {};
             workflow.workflowId = vm.workflow.workflowId;
-            workflow.themeId = vm.workflow.themeId;
-            workflow.layerId = vm.workflow.layerId;
+            workflow.themeId = Number(vm.workflow.themeId);
+            workflow.layerId = Number(vm.workflow.layerId);
             workflow.name = vm.workflow.workflowName;
             workflow.description = vm.workflow.description;
             workflow.jobs = [];
-            for (var jobName in vm.jobStore.jobs) {
-                var job = vm.jobStore.jobs[jobName];
+            for (var job of vm.paint.jobs.jobs.values()) {
                 var newJob = {};
+                newJob.workflowId = vm.workflow.workflowId;
                 newJob.workflowJobId = job.name;
-                newJob.workflowId = workflow.workflowId;
                 newJob.jobSource = job.jobSource;
-                newJob.parentsJobId = job.dept.join(',');
+                newJob.jobType = job.type || 'job';
+                newJob.parentsJobId = vm.paint.jobs.getDeptNameByName(job.name).join(',');
                 workflow.jobs.push(newJob);
             }
 
-            var graphJson = vm.graph.toJSON();
-            graphJson.jobStore = vm.jobStore;
+            var graphJson = vm.paint.toJSON();
             workflow.graph = JSON.stringify(graphJson);
             workflowService.updateWorkflow(workflow).then(function (data) {
                 window.hdispatch.confirm("保存成功，是否立刻生成任务流").accept(vm.generateWorkflow);
             }, function (data) {
-                $window.alert(data);
+                window.hdispatch.alert(data);
             });
         };
 
@@ -100,8 +100,47 @@
             this.themeId = new Number();
             this.layerId = 0;
             this.name = '';
+            this.type = 'job';
+            this.jobSource = new Number();
             this.dept = [];
         }
+
+        $('#blankMenu').kendoContextMenu({
+            orientation: 'vertical',
+            animation: {
+                open: {effects: "fadeIn"},
+                duration: 500
+            },
+            select: function (evt) {
+                if (evt.item.id == "createJob") {
+                    vm.jobWindow.center().open();
+                }
+            }
+        });
+
+        vm.paint._paper.on('cell:contextmenu', function (cellView, evt, x, y) {
+            $("#blankMenu").data('kendoContextMenu').close();
+        });
+
+        vm.paint._paper.on('cell:pointerdblclick', function (cellView) {
+            if (!cellView.model instanceof joint.shapes.node.flow) return;
+            if (cellView.model.prop('expanded')) {
+                cellView.model.collapseFlow(vm.paint._graph);
+            } else {
+                var workflowId = cellView.model.prop('workflowId');
+                workflowService.workflow(workflowId).then(function (data) {
+                    var paint = JSON.parse(data.graph);
+                    var graph = new joint.dia.Graph;
+                    graph.fromJSON(paint.graph);
+                    cellView.model.expandFlow(vm.paint._graph, graph);
+                });
+            }
+        });
+
+        vm.paint._paper.on('blank:contextmenu', function (evt, x, y) {
+            jobPosition.x = x;
+            jobPosition.y = y;
+        });
 
         return vm;
 
@@ -122,15 +161,13 @@
                 vm.workflow.description = data.description;
                 vm.workflow.graph = data.graph;
                 initGraph();
-                vm.jobStore.jobs = JSON.parse(vm.workflow.graph).jobStore.jobs;
-
             }, function (data) {
                 alert(data);
             })
         }
 
         function initGraph() {
-            vm.graph.fromJSON(JSON.parse(vm.workflow.graph));
+            vm.paint.parse(vm.workflow.graph);
         }
 
         function refreshThemes() {
@@ -151,6 +188,28 @@
                     vm[jobs] = data;
                 });
             }
+        }
+
+        function refreshFlows(jobs, themeId, layerId) {
+            workflowService.query({
+                themeId: themeId,
+                layerId: layerId,
+                workflowName: '',
+                description: '',
+                page: 1,
+                pageSize: 100
+            }).then(function (data) {
+                data = data.rows;
+                var flows = [];
+                if (data.length)
+                    data.forEach(function (flow) {
+                        var job = {};
+                        job.jobId = flow.workflowId;
+                        job.jobName = flow.name;
+                        flows.push(job);
+                    });
+                vm[jobs] = flows;
+            });
         }
     }
 })();

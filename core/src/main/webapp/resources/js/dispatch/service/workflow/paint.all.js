@@ -3,6 +3,9 @@
  */
 var Paint = (function (mode) {
     'use strict';
+    var padding = {top: 60, left: 20, bottom: 20, right: 20};
+    var layouting = false;
+
     function Paint(mode) {
         this._paper = null;
         this._graph = null;
@@ -86,50 +89,165 @@ var Paint = (function (mode) {
         });
     };
 
-    Paint.prototype.setNodeColor = function(name,color) {
+    Paint.prototype.setNodeColor = function (name, color) {
         name = name.split('.');
         for (var element of this._graph.getElements()) {
-            var index = name.length -1;
-            if(element.get('attrs').text.text != name[index]) continue;
-            var parentId = element.get('parent')
-            while(parentId) {
+            var index = name.length - 1;
+            if (element.get('attrs').text.text != name[index]) continue;
+            var parentId = element.get('parent');
+            while (parentId) {
                 index--;
                 if (this._graph.getCell(parentId).get('attrs').text.text != name[index]) continue;
                 parentId = this._graph.getCell(parentId).get('parent');
             }
             if (index == 0) {
-                element.attr('rect/fill',color);
+                element.attr('rect/fill', color);
                 return;
             }
         }
     };
 
-    Paint.prototype.format = function(opt) {
+    function transformer(paint) {
+        var _graph = paint._graph;
+        var flowNodes = [];
+        var flowLinks = new Set;
+        var tmpLinks = new Set;
+
+        function show() {
+            var sourceSet = new Set(_graph.getSources());
+            var sourceMap = new Map;
+            for (var source of sourceSet) {
+                var els = sourceMap.get(source.get('parent') || '');
+                els = els || [];
+                els.push(source);
+                sourceMap.set(source.get('parent') || '', els);
+            }
+            for (var sourceMapKey of sourceMap.keys()) {
+                if (sourceMapKey) {
+                    flowNodes.push(_graph.getCell(sourceMapKey));
+                }
+            }
+            var leafSet = new Set(_graph.getSinks());
+            var leafMap = new Map;
+            for (var leaf of leafSet) {
+                var els = leafMap.get(leaf.get('parent') || '');
+                els = els || [];
+                els.push(leaf);
+                leafMap.set(leaf.get('parent') || '', els);
+            }
+            flowNodes.forEach(function (node) {
+                var links = _graph.getConnectedLinks(node);
+                for (var link of links) {
+                    flowLinks.add(link);
+                }
+            });
+            for (var flowLink of flowLinks) {
+                var target = _graph.getCell(flowLink.getTargetElement().id);
+                var source = _graph.getCell(flowLink.getSourceElement().id);
+                if (source instanceof joint.shapes.basic.Rect && target instanceof joint.shapes.node.flow && target.prop('expanded')) {
+                    flowLink.remove();
+                    for (var node of sourceMap.get(target.id)) {
+                        tmpLinks.add(paint.linkNode(source.id, node.id, false));
+                    }
+                } else if (target instanceof joint.shapes.basic.Rect && source instanceof joint.shapes.node.flow && source.prop('expanded')) {
+                    flowLink.remove();
+                    for (var node of leafMap.get(source.id)) {
+                        tmpLinks.add(paint.linkNode(node.id, target.id, false));
+                    }
+                } else if (source instanceof joint.shapes.node.flow && target instanceof joint.shapes.node.flow) {
+                    if (source.prop('expanded')&&!target.prop('expanded')) {
+                        flowLink.remove();
+                        for (var node of leafMap.get(source.id)) {
+                            tmpLinks.add(paint.linkNode(node.id, target.id, false));
+                        }
+                    } else if (!source.prop('expanded')&&target.prop('expanded')) {
+                        flowLink.remove();
+                        for (var node of sourceMap.get(target.id)) {
+                            tmpLinks.add(paint.linkNode(source.id, node.id, false));
+                        }
+                    } else if (source.prop('expanded')&&target.prop('expanded')) {
+                        flowLink.remove();
+                        for (var sourceNode of leafMap.get(source.id)) {
+                            for (var targetNode of sourceMap.get(target.id)) {
+                                tmpLinks.add(paint.linkNode(sourceNode.id, targetNode.id, false));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function close() {
+            for (var link of tmpLinks) {
+                link.remove();
+            }
+            for (var link of flowLinks) {
+                link.addTo(_graph);
+            }
+        }
+
+        return {
+            show: show,
+            close: close
+        }
+    }
+
+    Paint.prototype.format = function (opt) {
+        layouting = true;
         opt = opt || {
                 nodeSep: 50,
                 edgeSep: 80,
-                rankDir: "TB"
+                rankSep: 100,
+                rankDir: "TB",
+                marginX: 200,
+                marginY: 200,
+                clusterPadding: padding
             };
-        for (var element of this._graph.getElements()) {
-            if (!element.get('parent') && element instanceof joint.shapes.node.flow) {
-                element.collapseFlow(this._graph);
-            }
-        }
+        var formatter = transformer(this);
+        formatter.show();
         joint.layout.DirectedGraph.layout(this._graph, opt);
+        formatter.close();
+        layouting = false;
     };
 
-    Paint.prototype.toJSON = function() {
+    function map2json(map) {
+        var json = {keys: [], values: []};
+        for (var key of map.keys()) {
+            json.keys.push(key);
+        }
+        for (var value of map.values()) {
+            json.values.push(value);
+        }
+        return json;
+    }
+
+    function json2map(json) {
+        var map = new Map;
+        var i = 0;
+        while (i < json.keys.length) {
+            map.set(json.keys[i], json.values[i]);
+            i++;
+        }
+        return map;
+    }
+
+    Paint.prototype.toJSON = function () {
         var json = {};
         json.graph = this._graph.toJSON();
-        json.jobs = this.jobs;
+        json.jobs = {};
+        json.jobs.jobs = map2json(this.jobs.jobs);
+        json.jobs.names = map2json(this.jobs.names);
+        json.jobs.depts = map2json(this.jobs.depts);
+        return json;
     };
 
-    Paint.prototype.parse = function(json) {
+    Paint.prototype.parse = function (json) {
         var object = JSON.parse(json);
+        this._graph.clear();
         this._graph.fromJSON(object.graph);
-        this.jobs.jobs = object.jobs.jobs;
-        this.jobs.names = object.jobs.names;
-        this.jobs.depts = object.jobs.depts;
+        this.jobs.jobs = json2map(object.jobs.jobs);
+        this.jobs.names = json2map(object.jobs.names);
+        this.jobs.depts = json2map(object.jobs.depts);
     };
 
     function Scroll(baseWidth, baseHeight) {
@@ -249,7 +367,6 @@ var Paint = (function (mode) {
         joint.shapes.node.flow = joint.shapes.basic.Generic.extend({
             markup: '<g class="rotatable"><g class="scalable"><rect/></g><image/><text/></g>',
             defaults: _.defaultsDeep({
-
                 type: 'node.flow',
                 attrs: {
                     rect: {
@@ -265,7 +382,7 @@ var Paint = (function (mode) {
                         y: 25,
                         x: 10,
                         'y-alignment': 'middle',
-                        'href': 'graph-icon.png'
+                        'href': '/resources/images/graph-icon.png'
                     },
                     text: {
                         ref: 'rect',
@@ -280,35 +397,66 @@ var Paint = (function (mode) {
         });
 
         joint.shapes.node.flow.prototype.expandFlow = function (sourceGraph, graph) {
+            this.prop('expanded', true);
             var $this = this;
             var offsetX = 10;
             var offsetY = 50;
             var position = this.get('position');
             var bbox = graph.getBBox();
-            this.resize(bbox.width + offsetX + 10, bbox.height + offsetY + 10);
+            var elementIds = new Map;
+            var oldIdMap = new Map;
             for (var element of graph.getElements()) {
-                element = element.clone();
+                var newElement = element.clone();
+                newElement.set('parent', element.get('parent'));
+                elementIds.set(element.id, newElement.id);
+                oldIdMap.set(element.id, newElement);
+                element = newElement;
                 var elPostion = element.get('position');
-                var x = elPostion.x - bbox.x + offsetX +position.x;
-                var y = elPostion.y - bbox.y + offsetY+position.y;
+                var x = elPostion.x - bbox.x + offsetX + position.x;
+                var y = elPostion.y - bbox.y + offsetY + position.y;
                 element.position(x, y);
-                $this.embed(element);
+                if (!element.get('parent'))
+                    $this.embed(element);
                 element.addTo(sourceGraph);
-                console.log(element);
                 element.toFront();
             }
-            sourceGraph.addCells(graph.getLinks());
+            for (var element of oldIdMap.values()) {
+                var parent = element.get('parent');
+                if (oldIdMap.get(parent))
+                    oldIdMap.get(parent).embed(element);
+            }
+            for (var link of graph.getLinks()) {
+                link = link.clone();
+                link.get('source').id = elementIds.get(link.get('source').id);
+                link.get('target').id = elementIds.get(link.get('target').id);
+                link.attr('.link-tools/display', 'none');
+                $this.embed(link);
+                link.addTo(sourceGraph);
+                link.toFront();
+            }
+            this.fitEmbeds({padding: padding});
+            var parent = sourceGraph.getCell(this.get('parent'));
+            while (parent) {
+                parent.fitEmbeds({padding: padding});
+                parent = sourceGraph.getCell(parent.get('parent'));
+            }
         };
 
         joint.shapes.node.flow.prototype.collapseFlow = function (graph) {
-            graph.removeCells(this.getEmbeddedCells({deep:true}));
+            this.prop('expanded', false);
+            graph.removeCells(this.getEmbeddedCells({deep: true}));
             var name = this.get('attrs').text.text;
             var width = name.length * 7 + 60 > 100 ? name.length * 7 + 60 : 100;
-            this.resize(width - width % 10 + (width % 10 ? 10 : 0),50);
+            this.resize(width - width % 10 + (width % 10 ? 10 : 0), 50);
+            var parent = graph.getCell(this.get('parent'));
+            while (parent) {
+                parent.fitEmbeds({padding: padding});
+                parent = graph.getCell(parent.get('parent'));
+            }
         };
 
         return function (name, x, y) {
-            var width = name.length * 7 + 60 > 100 ? name.length * 7 + 60 : 100;
+            var width = name.length * 8 + 60 > 100 ? name.length * 7 + 60 : 100;
             var node = new joint.shapes.node.flow({
                 position: {x: x, y: y},
                 attrs: {
@@ -354,6 +502,7 @@ var Paint = (function (mode) {
                 break;
             case 'flow':
                 node = new this.node.flow(job.name, x, y);
+                node.prop("workflowId", job.jobSource);
                 this._graph.addCell(node);
                 this.jobs.addJob(node.id, job);
                 break;
@@ -367,16 +516,23 @@ var Paint = (function (mode) {
         this._graph.getCell(id).remove();
 
     };
-    Paint.prototype.linkNode = function (sourceId, targetId) {
+    Paint.prototype.linkNode = function (sourceId, targetId, hasDept) {
         "use strict";
         if (!this.editable) return;
+        if (typeof hasDept != "boolean") {
+            hasDept = true;
+        }
         if (this._graph.getCell(sourceId) && this._graph.getCell(targetId)) {
-            this._graph.addCell(new joint.dia.Link({
+            var newLink = new joint.dia.Link({
                 source: {id: sourceId},
                 target: {id: targetId},
                 attrs: Paint._defaultLinkAttr
-            }));
+            });
+            this._graph.addCell(newLink);
+            if (hasDept)
+                this.jobs.addDept(targetId, sourceId);
         }
+        return newLink;
     };
 
     Paint.prototype.initEdit = function () {
@@ -396,7 +552,7 @@ var Paint = (function (mode) {
             if (event.button == 2 && cellView.model.isElement() && !cellView.model.get('parent')) {
                 linkMode = true;
                 cellView.model.on('change:position', resetPosition);
-                for (var cell of cellView.model.getEmbeddedCells({deep:true})) {
+                for (var cell of cellView.model.getEmbeddedCells({deep: true})) {
                     if (cell.isElement()) {
                         cell.on('change:position', resetPosition);
                     }
@@ -421,7 +577,7 @@ var Paint = (function (mode) {
             if (linkMode) {
                 var source = tempLink.getSourceElement();
                 source.off('change:position', resetPosition);
-                for (var cell of source.getEmbeddedCells({deep:true})) {
+                for (var cell of source.getEmbeddedCells({deep: true})) {
                     if (cell.isElement()) {
                         cell.off('change:position', resetPosition);
                     }
@@ -432,7 +588,7 @@ var Paint = (function (mode) {
                 var elements = $this._paper.findViewsFromPoint(targetPoint);
                 if (elements.length && elements[0] instanceof joint.dia.ElementView) {
                     if (elements[0].model.id != source.id) {
-                        if (!$this.jobs.hasDept(source.id, elements[0].model.id)) {
+                        if (!$this.jobs.hasDept(elements[0].model.id, source.id)) {
                             var target = elements[0].model;
                             $this.linkNode(source.id, target.id);
                         }
@@ -442,7 +598,7 @@ var Paint = (function (mode) {
             }
         });
 
-        paint._graph.on('change:position', (function (cell) {
+        this._graph.on('change:position', (function (cell) {
             var child = [];
             return function (cell) {
                 var parentId = cell.get('parent');
@@ -452,31 +608,22 @@ var Paint = (function (mode) {
                     });
                     return;
                 }
-                var parent = paint._graph.getCell(parentId);
+                var parent = $this._graph.getCell(parentId);
                 if (child.includes(cell.id)) {
-                    child.splice(child.indexOf(cell.id),1);
+                    child.splice(child.indexOf(cell.id), 1);
                     return;
                 }
                 cell.set('position', cell.previous('position'));
             };
         })());
 
-        this._graph.on('add', function (cell) {
-            if (cell instanceof joint.dia.Link && cell.getSourceElement() && cell.getTargetElement()) {
-                var sourceId = cell.getSourceElement().id;
-                var targetId = cell.getTargetElement().id;
-                if (sourceId && targetId) {
-                    $this.jobs.addDept(sourceId,targetId);
-                }
-            }
-        });
-
         this._graph.on('remove', function (cell) {
             if (cell.isLink() && cell.get('source') && cell.get('target')) {
+                if (layouting) return;
                 var sourceId = cell.get('source').id;
                 var targetId = cell.get('target').id;
                 if (sourceId && targetId) {
-                    $this.jobs.removeDept(sourceId,targetId);
+                    $this.jobs.removeDept(targetId, sourceId);
                 }
             }
         });
@@ -486,13 +633,14 @@ var Paint = (function (mode) {
         "use strict";
         var $this = this;
         if (this.editable) {
-            hotkeys('del',function(event, handler) {
+            hotkeys('del', function (event, handler) {
                 $this.selected.forEach(function (cell) {
                     $this.deleteNode(cell.id);
                 });
                 $this.selected = [];
             });
-        };
+        }
+        ;
     };
 
     function JobStorage() {
@@ -505,7 +653,7 @@ var Paint = (function (mode) {
     JobStorage.prototype.addJob = function (id, job) {
         "use strict";
         this.jobs.set(id, job);
-        this.names.set(job.name,id);
+        this.names.set(job.name, id);
     };
 
     JobStorage.prototype.getJob = function (id) {
@@ -550,6 +698,17 @@ var Paint = (function (mode) {
 
     JobStorage.prototype.getDepts = function (id) {
         return this.depts.get(id) || [];
+    };
+
+    JobStorage.prototype.getDeptNameByName = function (name) {
+        var $this = this;
+        var deptIds = this.depts.get(this.names.get(name));
+        var deptNames = [];
+        if (deptIds && deptIds.forEach)
+            deptIds.forEach(function (id) {
+                deptNames.push($this.getJob(id).name);
+            });
+        return deptNames;
     };
 
     return Paint;
