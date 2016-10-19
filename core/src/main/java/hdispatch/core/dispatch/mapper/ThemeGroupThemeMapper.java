@@ -12,19 +12,25 @@ import java.util.Map;
  */
 public interface ThemeGroupThemeMapper {
     /**
-     * 获取主题组下面的所有主题
-     * @param themeGroupId
+     * 模糊查询主题组下面的所有主题
+     * @param params Map里面的内容：(themeGroupId、themeName、themeDescription),
+     *               其中themeGroupId不可为null，其他两个字段可以为null
      * @return
      */
-    List<ThemeGroupTheme> selectInThemeGroup(Long themeGroupId);
+    List<ThemeGroupTheme> selectInThemeGroup(Map params);
 
     /**
      * 模糊查询不在当前主题组的所有主题
-     * Map里面的内容：(themeGroupId、themeName、themeDescription)
-     * 其中themeGroupId不可为null，其他两个字段可以为null
-     * @param params
+     * @param params Map里面的内容：(themeGroupId、themeName、themeDescription),
+     *               其中themeGroupId不可为null，其他两个字段可以为null
      * @return
      */
     List<ThemeGroupTheme> selectNotInThemeGroup(Map params);
 
+
+    /**
+     * 创建映射关系
+     * @param themeGroupTheme
+     */
+    void save(ThemeGroupTheme themeGroupTheme);
 }
