@@ -9,10 +9,6 @@
             list-style: none;
             padding-bottom: 1em;
         }
-
-        .k-combobox>.k-dropdown-wrap>.k-i-close {
-            top: 1em;
-        }
     </style>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
@@ -25,14 +21,13 @@
             <div class="panel">
                 <form name="flow" novalidate>
                     <div class="panel-body">
-
                         <div class="row form-horizontal">
                             <div class="panel-body col-sm-offset-0">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务组</label>
                                         <div class="col-sm-8 ">
-                                            <select class="col-sm-12" name="theme"
+                                            <select name="theme"
                                                     ng-model="vm.workflow.themeId"
                                                     kendo-combo-box
                                                     k-on-change="vm.themeChange(vm.workflow.themeId)"
@@ -43,11 +38,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">层级</label>
                                         <div class="col-sm-8 ">
-                                            <select name="layer" class="col-sm-12"
+                                            <select name="layer"
                                                     ng-model="vm.workflow.layerId"
                                                     kendo-combo-box
                                                     k-data-text-field="'layerName'"
@@ -57,21 +52,17 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row form-horizontal">
-                            <div class="panel-body col-sm-offset-0">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务流名称</label>
                                         <div class="col-sm-8 ">
-                                            <input class="col-sm-12 k-textbox" name="workflowName"
+                                            <input class="k-textbox" name="workflowName"
                                                    style="padding-left:0;padding-right:0;width:100%;"
                                                    ng-model="vm.workflow.workflowName" type="text"/>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务流描述</label>
                                         <div class="col-sm-8 ">
@@ -83,7 +74,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="panel-footer text-right">
 						<span class="btn btn-success" ng-click="vm.search()"

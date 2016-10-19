@@ -4,6 +4,8 @@ import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.service.WorkflowService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,7 @@ import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
 public class WorkflowController extends BaseController {
     @Autowired
     private WorkflowService workflowService;
+    private Logger logger = LoggerFactory.getLogger(WorkflowController.class);
 
     /**
      * 创建工作流，工作流的名称要唯一，工作流内的job名称不能重复
@@ -38,8 +41,10 @@ public class WorkflowController extends BaseController {
      */
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public ResponseData createWorkflow(@RequestBody Workflow workflow) {
+        logger.info("create workflow {}",workflow);
         ResponseData responseData;
         if (workflowService.getWorkflowByName(workflow.getName()) != null) {
+            logger.info("workflow {} exits", workflow.getName());
             responseData = new ResponseData(false);
             responseData.setMessage("工作流已存在");
             return responseData;
@@ -49,12 +54,13 @@ public class WorkflowController extends BaseController {
             jobs.add(job.getWorkflowJobId());
         });
         if (jobs.size() < workflow.getJobs().size()) {
+            logger.info("workflow {} has duplicated job",workflow);
             responseData = new ResponseData(false);
             responseData.setMessage("工作流中存在重复的job");
             return responseData;
         }
         Map<String, Object> result = workflowService.createWorkflow(workflow);
-        if (result.containsKey(RET_ERROR)) {
+         if (result.containsKey(RET_ERROR)) {
             responseData = new ResponseData(false);
             responseData.setMessage((String) result.get(RET_ERROR));
         } else {

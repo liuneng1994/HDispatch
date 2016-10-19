@@ -23,7 +23,6 @@
             }]
 
         }).data("kendoNotification");
-
         vm.selectedWorkflow = [];
         vm.workflow = {};
         vm.workflow.workflowName = '';
@@ -55,7 +54,7 @@
                 },
                 batch: true,
                 serverPaging: true,
-                pageSize: 5,
+                pageSize: 50,
                 schema: {
                     total: function () {
                         return vm.total;
@@ -69,7 +68,7 @@
             scrollable: true,
             editable: false,
             pageable: {
-                pageSizes: [5, 10, 20, 50],
+                pageSizes: [10, 20, 50, 100],
                 refresh: true,
                 buttonCount: 5,
                 messages: {
@@ -262,6 +261,14 @@
             vm.executeWindow.close();
         };
 
+        vm.paint = new Paint();
+        vm.paint.init({
+            el: '#graph',
+            elScroll: '#graphScroll',
+            height: 600,
+            width: $('#graphScroll').width()
+        });
+        vm.paint.initScroll();
         function loadSelectedWorkflow() {
             var idMap = new Map();
             for (var id of vm.selectedWorkflow) {

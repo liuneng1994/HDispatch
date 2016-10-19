@@ -26,7 +26,7 @@
                 },
                 batch: true,
                 serverPaging: true,
-                pageSize: 5,
+                pageSize: 50,
                 schema: {
                     total: function () {
                         return vm.total;
@@ -40,7 +40,7 @@
             scrollable: true,
             editable: false,
             pageable: {
-                pageSizes: [5, 10, 20, 50],
+                pageSizes: [10, 20, 50, 100],
                 refresh: true,
                 buttonCount: 5,
                 messages: {

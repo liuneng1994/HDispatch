@@ -1,15 +1,16 @@
 <#include "../../include/header.html">
     <link rel="stylesheet" href="../../lib/jointJS/joint.css"/>
+    <script src="${base.contextPath}/lib/jointJS/hotkeys.js"></script>
     <script src="${base.contextPath}/lib/jointJS/lodash.min.js"></script>
     <script src="${base.contextPath}/lib/jointJS/backbone-min.js"></script>
-    <script src="${base.contextPath}/lib/jointJS/dagre.min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/dagre.js"></script>
     <script src="${base.contextPath}/lib/jointJS/graphlib.min.js"></script>
     <script src="${base.contextPath}/lib/jointJS/joint.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/paint.all.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowUpdateController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
-    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowDiagramService.js"></script>
     <body ng-app="dispatch" ng-controller="workflowUpdateController as vm">
     <div id="content-container">
         <div kendo-window="vm.jobWindow" k-title="'添加任务'" k-modal="true" k-width="600" k-on-open="vm.jobWindow.visible = true"
@@ -24,6 +25,19 @@
                                    ng-pattern="'^[a-zA-Z][a-zA-z_0-9]{0,}$'"
                                    style="padding-left:0;padding-right:0;width:100%;" required/>
                             <span style="color:red;" ng-show="job.jobName.$error.pattern">名称必须以字母开始，只能包含字母数字和_</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">类型</label>
+                        <div class="col-sm-8 ">
+                            <select class="col-sm-12" name="theme"
+                                    ng-model="vm.newJob.type"
+                                    k-on-change="vm.jobLayerChange()"
+                                    kendo-drop-down-list
+                                    style="padding-left:0;padding-right:0;width:100%;">
+                                <option value="job">任务</option>
+                                <option value="flow">任务流</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -143,11 +157,11 @@
                     <a href="${base.contextPath}/dispatch/workflow/workflow_list.html" class="btn btn-danger">返回列表</a>
                 </div>
             </div>
-            <div id="graphHolder" class="hasMenu panel col-sm-offset-0" style="overflow: scroll; height:600px;">
-                <ul id="blankMenu" style="width: 100px">
-                    <li id="createJob">添加任务</li>
-                </ul>
+            <div id="graphScroll" class="panel col-sm-offset-0" style="overflow: scroll; height:600px;">
                 <div id="graph"></div>
+                <ul id="blankMenu">
+                    <li id="createJob">添加job</li>
+                </ul>
             </div>
         </div>
     </div>
