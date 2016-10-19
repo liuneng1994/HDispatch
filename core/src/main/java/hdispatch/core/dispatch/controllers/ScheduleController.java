@@ -225,6 +225,41 @@ public class ScheduleController extends BaseController {
 
     }
     /**
+     * 调度
+     * @param request
+     * @param projectName
+     * @param flow
+     * @param datetime
+     * @param isrecurring
+     * @return
+     * @throws ParseException 
+     */
+    @RequestMapping("/schedulecron")
+    @ResponseBody
+    public ResultObj schedulecron(HttpServletRequest request,
+                              @RequestParam String projectName,
+                              @RequestParam String flowId,
+                              @RequestParam String cronExpression
+    ) throws ParseException {
+    	ResultObj obj=scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
+    	Long projectId=exeFlowService.Fetchflows(projectName);
+        HdispatchSchedule hds=new HdispatchSchedule();
+        Map<String, Object> map = new HashMap<>();
+        map.put("projectId", projectId);
+        map.put("flowId", flowId);
+        Schedule s = scheduleFlowService.fetchschedule(map);
+        if(obj.getCode()==1)
+        {
+        hds.setSubmit_date(s.getFirstSchedTime());	
+        hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
+        hds.setFlow_id(flowId);
+        hds.setProject_name(projectName);
+        hdispatchScheduleService.insert(hds);
+        }
+        return scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
+
+    }
+    /**
      * 执行流
      * @param request
      * @param project

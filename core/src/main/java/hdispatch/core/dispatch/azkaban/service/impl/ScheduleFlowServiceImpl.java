@@ -168,5 +168,42 @@ public ResultObj slaInfo(Map<String, Object> map) {
 	obj.setMessage(response.getBody().getObject().toString());
 	return obj;
 }
+
+@Override
+public ResultObj scheduleCronFlow(String projectName,String flowName,String cronExpression) {
+	 ResultObj result = new ResultObj();
+     try {
+         response = RequestUtils.post(RequestUrl.SCHEDULE).field("ajax", "scheduleCronFlows")
+                 .field("projectName", projectName)
+                 .field("flowName", flowName)
+                 .field("cronExpression",cronExpression)
+                 .asJson();
+         if (response.getBody().getObject().getString("status").equals("success")) {
+            /* if(response.getBody().getObject().toString().contains("\"error\":"))
+             {
+                     result.setCode(0);
+                     result.setMessage("调度错误！");
+             }else
+             {
+
+             }*/
+             result.setCode(1);
+             result.setMessage("执行成功");
+
+         } else {
+             result.setCode(0);
+             result.setMessage("调度错误！");
+         }
+     } catch (UnirestException e) {
+         result.setCode(0);
+         result.setMessage("工程错误或调度时间错误");
+         logger.error("工程错误或调度时间错误");
+         throw new IllegalArgumentException("工程错误或调度时间错误", e);
+
+
+     }
+
+     return result;
+}
 }
 
