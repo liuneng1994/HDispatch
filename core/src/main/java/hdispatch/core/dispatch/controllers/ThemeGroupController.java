@@ -148,6 +148,7 @@ public class ThemeGroupController  extends BaseController {
 
         IRequest requestContext = createRequestContext(request);
         ThemeGroupTheme themeGroupTheme = new ThemeGroupTheme();
+        themeGroupTheme.setThemeGroupId(themeGroupId);
         themeName = themeName.trim();
         themeDescription = themeDescription.trim();
         if ("".equals(themeName)) {
@@ -190,6 +191,7 @@ public class ThemeGroupController  extends BaseController {
 
         IRequest requestContext = createRequestContext(request);
         ThemeGroupTheme themeGroupTheme = new ThemeGroupTheme();
+        themeGroupTheme.setThemeGroupId(themeGroupId);
         themeName = themeName.trim();
         themeDescription = themeDescription.trim();
         if ("".equals(themeName)) {
