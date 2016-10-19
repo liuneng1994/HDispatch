@@ -52,10 +52,14 @@
 						$('#themeListGrid').data('kendoGrid').dataSource.page(1);
 					},
 					resetForm : function(e) {
-						var formData = viewModel.model.toJSON();
-						for ( var k in formData) {
-							viewModel.model.set(k, null);
-						}
+                        var formData = viewModel.model.toJSON();
+                        for ( var k in formData) {
+                            if(k==="themeGroupId"){
+                                continue;
+                            }else {
+                                viewModel.model.set(k, null);
+                            }
+                        }
 					}
 				});
                 var themesNotInThemeGroup_viewModel;
@@ -67,7 +71,8 @@
 								title: '<@spring.message "hdispatch.theme.layer_manage_title"/>',
 								modal: true,
 								visible: false,
-								resizable: false,
+								resizable: true,
+                                actions : [ "Maximize", "Minimize", "Close"],
 								width: 800,
 								height:350
 							}).data("kendoWindow");
@@ -97,9 +102,11 @@
 									var datas = options.models;
 									if(operation =='create'){
 										datas = options.models.map(function(data){
-											data['__status'] = 'add';
-											data['themeGroupId'] = viewModel.model.themeGroupId;
-											return data;
+											if(data["themeId"]){
+                                                data['__status'] = 'add';
+                                                data['themeGroupId'] = viewModel.model.themeGroupId;
+                                                return data;
+                                            }
 										});
 									}
 									//暂时不考虑更新
@@ -140,9 +147,9 @@
 								fields: {
 									themeName: {
 										type: 'string',
-										editable:true
+                                        validation: { required: true, nullable: false }
 									},
-									themeDescription: { type: 'string',editable:false }
+									themeDescription: { type: 'string' }
 								}
 							},
 							errors: function(res){
@@ -198,17 +205,17 @@
 										'field': 'themeDescription',
 										'title':'<@spring.message "hdispatch.theme.theme_description"/>',
 										'width': "200px",
-										'height':"30px"
+                                        editor:themeDescEditor,
 									}
 								],
 						editable: true,
 						edit:function (e) {
 							//current row data: e.model
-							if(!e.model.themeId){
+							if(!e.model.themeGroupThemeId){
 								$("#grid_search_btn").on("click",function(){
                                     grid_button_click(e.model);
                                 });
-//                                $("#grid_search_btn").attr("onclick","grid_button_click(e.model)");
+                                $("#grid_search_btn.k-input.k-textbox").attr("readonly","readonly");
 							}
 
 //							$("#grid_search_btn").attr("onclick","grid_button_click()");
@@ -221,14 +228,19 @@
 					$('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" id="grid_search_btn" class="k-icon k-i-search">&nbsp;</a></span>')
 							.appendTo(container);
 				}
+				function themeDescEditor(container, options) {
+					$('<span class="k-textbox" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+							.appendTo(container);
+				}
+
 				function grid_button_click(rowData) {
 					//打开LOV窗口
 					//监听双击事件，回写
 //					rowData.set("themeName","测试。。。");
-                    showDetailLov();
+                    showDetailLov(rowData);
 				}
 
-				function showDetailLov() {
+				function showDetailLov(rowData) {
                     wnd.content(detailsTemplate);
                     wnd.center().open();
                     themesNotInThemeGroup_viewModel = kendo.observable({
@@ -238,12 +250,16 @@
                             themeGroupId:themeGroupId
                         },
                         queryFunction: function(e) {
-                            $('#themeListGrid').data('kendoGrid').dataSource.page(1);
+                            $('#themesNotInThemeGroup_grid').data('kendoGrid').dataSource.page(1);
                         },
                         resetForm : function(e) {
                             var formData = themesNotInThemeGroup_viewModel.model.toJSON();
                             for ( var k in formData) {
-                                viewModel.model.set(k, null);
+                                if(k==="themeGroupId"){
+                                    continue;
+                                }else {
+                                    themesNotInThemeGroup_viewModel.model.set(k, null);
+                                }
                             }
                         }
                     });
@@ -339,7 +355,15 @@
                                 ],
                         editable: false
                     });
-
+                    $("#themesNotInThemeGroup_grid").on("dblclick", "tr", function (e) {
+                        e.preventDefault();
+                        var firstRow = $("#themesNotInThemeGroup_grid").data("kendoGrid").selectedDataItems()[0];
+                        rowData.set("themeId",firstRow.themeId);
+                        rowData.set("themeName",firstRow.themeName);
+                        rowData.set("themeDescription",firstRow.themeDescription);
+                        console.log("("+firstRow.themeId+","+firstRow.themeName+","+firstRow.themeDescription+")");
+                        wnd.close();
+                    });
                     kendo.bind($('#selectTheme-content'),themesNotInThemeGroup_viewModel);
                 }
 
