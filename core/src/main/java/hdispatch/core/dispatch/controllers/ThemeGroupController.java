@@ -4,7 +4,9 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.authority.ThemeGroup;
+import hdispatch.core.dispatch.dto.authority.ThemeGroupTheme;
 import hdispatch.core.dispatch.service.ThemeGroupService;
+import hdispatch.core.dispatch.service.ThemeGroupThemeService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,6 +29,8 @@ public class ThemeGroupController  extends BaseController {
     private Logger logger = Logger.getLogger(ThemeGroupController.class);
     @Autowired
     private ThemeGroupService themeGroupService;
+    @Autowired
+    private ThemeGroupThemeService themeGroupThemeService;
 
     /**
      * 模糊查询主题组
@@ -127,7 +132,7 @@ public class ThemeGroupController  extends BaseController {
      * @param themeGroupId
      * @return
      */
-    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/query", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryNotInThemeGroup", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemesNotInThemeGroup(HttpServletRequest request,
                                        @RequestParam(defaultValue = DEFAULT_PAGE) int page,
@@ -142,7 +147,7 @@ public class ThemeGroupController  extends BaseController {
         }
 
         IRequest requestContext = createRequestContext(request);
-        ThemeGroup themeGroup = new ThemeGroup();
+        ThemeGroupTheme themeGroupTheme = new ThemeGroupTheme();
         themeName = themeName.trim();
         themeDescription = themeDescription.trim();
         if ("".equals(themeName)) {
@@ -151,7 +156,7 @@ public class ThemeGroupController  extends BaseController {
         if ("".equals(themeDescription)) {
             themeDescription = null;
         }
-        themeGroup.setThemeGroupName(themeName);
+        themeGroupTheme.setThemeName(themeName);
 
         themeGroupTheme.setThemeDescription(themeDescription);
         List<ThemeGroupTheme> themeList = themeGroupThemeService.selectThemesNotInThemeGroup(requestContext, themeGroupTheme, page, pageSize);
@@ -200,4 +205,35 @@ public class ThemeGroupController  extends BaseController {
         responseData = new ResponseData(themeList);
         return responseData;
     }
+
+
+    /**
+     * 主题组挂载主题
+     * @param themeGroupThemeList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/submit", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData mountThemes(@RequestBody List<ThemeGroupTheme> themeGroupThemeList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+
+        List<ThemeGroupTheme> filterList = new ArrayList<>();
+        for(ThemeGroupTheme temp : themeGroupThemeList){
+            if(null != temp.getThemeGroupThemeId() || null == temp.getThemeId()){
+                continue;
+            }else {
+                filterList.add(temp);
+            }
+        }
+
+        rd = new ResponseData(themeGroupThemeService.batchUpdate(requestContext, filterList));
+        return rd;
+    }
+
 }
