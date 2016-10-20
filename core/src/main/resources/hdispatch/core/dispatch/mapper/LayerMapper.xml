@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Created by yyz on 2016/9/11.
+yazheng.yang@hand-china.com
+-->
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -12,7 +16,7 @@
         <result column="display_sequence" property="layerSequence"/>
     </resultMap>
 
-    <insert id="save" parameterType="hdispatch.core.dispatch.dto.layer.Layer">
+    <insert id="save" useGeneratedKeys="true" keyProperty="layerId" parameterType="hdispatch.core.dispatch.dto.layer.Layer">
         INSERT INTO hdispatch_layer(name,description,display_sequence,theme_id)
         VALUES (#{layerName},#{layerDescription},#{layerSequence},#{themeId})
     </insert>
