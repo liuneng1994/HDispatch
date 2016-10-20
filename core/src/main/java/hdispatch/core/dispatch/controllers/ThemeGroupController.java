@@ -239,4 +239,75 @@ public class ThemeGroupController  extends BaseController {
         return rd;
     }
 
+
+    /**
+     * 获取主题组下的所有已经分配权限的用户
+     * @param request
+     * @param page
+     * @param pageSize
+     * @param userName 用户名称
+     * @param themeGroupId 主题组id
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryUnderThemeGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getUsersInThemeGroup(HttpServletRequest request,
+                                              @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                              @RequestParam(defaultValue = "") String userName,
+                                              @RequestParam(defaultValue = "-100") Long themeGroupId) {
+        ResponseData responseData = null;
+        if(null == themeGroupId || themeGroupId < 0){
+            responseData = new ResponseData(false);
+            return responseData;
+        }
+
+        IRequest requestContext = createRequestContext(request);
+        HdispatchAuthority hdispatchAuthority = new HdispatchAuthority();
+        hdispatchAuthority.setThemeGroupId(themeGroupId);
+        userName = userName.trim();
+        if ("".equals(userName)) {
+            userName = null;
+        }
+        hdispatchAuthority.setUserName(userName);
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectInThemeGroup(requestContext, hdispatchAuthority, page, pageSize);
+        responseData = new ResponseData(authorityList);
+        return responseData;
+    }
+
+    /**
+     * 获取不在主题组下的用户
+     * @param request
+     * @param page
+     * @param pageSize
+     * @param userName 用户名称
+     * @param themeGroupId 主题组id
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryNotInThemeGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getUsersNotInThemeGroup(HttpServletRequest request,
+                                             @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                             @RequestParam(defaultValue = "") String userName,
+                                             @RequestParam(defaultValue = "-100") Long themeGroupId) {
+        ResponseData responseData = null;
+        if(null == themeGroupId || themeGroupId < 0){
+            responseData = new ResponseData(false);
+            return responseData;
+        }
+
+        IRequest requestContext = createRequestContext(request);
+        HdispatchAuthority hdispatchAuthority = new HdispatchAuthority();
+        hdispatchAuthority.setThemeGroupId(themeGroupId);
+        userName = userName.trim();
+        if ("".equals(userName)) {
+            userName = null;
+        }
+        hdispatchAuthority.setUserName(userName);
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectNotInThemeGroup(requestContext, hdispatchAuthority, page, pageSize);
+        responseData = new ResponseData(authorityList);
+        return responseData;
+    }
+
 }
