@@ -3,8 +3,10 @@ package hdispatch.core.dispatch.controllers;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
+import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
 import hdispatch.core.dispatch.dto.authority.ThemeGroup;
 import hdispatch.core.dispatch.dto.authority.ThemeGroupTheme;
+import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeGroupService;
 import hdispatch.core.dispatch.service.ThemeGroupThemeService;
 import org.apache.log4j.Logger;
@@ -31,6 +33,8 @@ public class ThemeGroupController  extends BaseController {
     private ThemeGroupService themeGroupService;
     @Autowired
     private ThemeGroupThemeService themeGroupThemeService;
+    @Autowired
+    private HdispatchAuthorityService hdispatchAuthorityService;
 
     /**
      * 模糊查询主题组
@@ -227,7 +231,6 @@ public class ThemeGroupController  extends BaseController {
 
         List<ThemeGroupTheme> filterList = new ArrayList<>();
         for(ThemeGroupTheme temp : themeGroupThemeList){
-            if(null != temp.getThemeGroupThemeId() || null == temp.getThemeId()){
             if(null == temp.getThemeGroupThemeId() || null == temp.getThemeId()){
                 continue;
             }else {
@@ -308,6 +311,35 @@ public class ThemeGroupController  extends BaseController {
         List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectNotInThemeGroup(requestContext, hdispatchAuthority, page, pageSize);
         responseData = new ResponseData(authorityList);
         return responseData;
+    }
+
+    /**
+     * 主题组下批量添加、更新、删除用户
+     * @param authorityList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/submit_update_delete", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData addUsers(@RequestBody List<HdispatchAuthority> authorityList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+
+        List<HdispatchAuthority> filterList = new ArrayList<>();
+        for(HdispatchAuthority temp : authorityList){
+            if(null == temp.getThemeGroupId() || null == temp.getUserId()){
+                continue;
+            }else {
+                filterList.add(temp);
+            }
+        }
+
+        rd = new ResponseData(hdispatchAuthorityService.batchUpdate(requestContext, filterList));
+        return rd;
     }
 
 }
