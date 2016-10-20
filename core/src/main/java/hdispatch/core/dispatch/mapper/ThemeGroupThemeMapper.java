@@ -33,4 +33,10 @@ public interface ThemeGroupThemeMapper {
      * @param themeGroupTheme
      */
     void save(ThemeGroupTheme themeGroupTheme);
+
+    /**
+     * 从主题组中移除主题
+     * @param themeGroupTheme
+     */
+    void deleteTheme(ThemeGroupTheme themeGroupTheme);
 }
