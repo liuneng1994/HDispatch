@@ -228,6 +228,7 @@ public class ThemeGroupController  extends BaseController {
         List<ThemeGroupTheme> filterList = new ArrayList<>();
         for(ThemeGroupTheme temp : themeGroupThemeList){
             if(null != temp.getThemeGroupThemeId() || null == temp.getThemeId()){
+            if(null == temp.getThemeGroupThemeId() || null == temp.getThemeId()){
                 continue;
             }else {
                 filterList.add(temp);
