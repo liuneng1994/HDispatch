@@ -14,4 +14,5 @@ public interface ThemeGroupService {
     List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize);
 
     List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList);
+    void batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList);
 }
