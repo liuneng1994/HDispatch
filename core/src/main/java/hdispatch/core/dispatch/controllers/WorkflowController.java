@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static hdispatch.core.dispatch.utils.Constants.RET_ERROR;
 import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
@@ -32,7 +29,6 @@ public class WorkflowController extends BaseController {
     @Autowired
     private WorkflowService workflowService;
     private Logger logger = LoggerFactory.getLogger(WorkflowController.class);
-
     /**
      * 创建工作流，工作流的名称要唯一，工作流内的job名称不能重复
      *

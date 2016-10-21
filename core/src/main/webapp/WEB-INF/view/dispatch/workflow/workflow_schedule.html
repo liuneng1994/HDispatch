@@ -178,10 +178,14 @@
                         <div class="control-label col-sm-3">任务流</div>
                         <div class="col-sm-7">{{vm.executeInfo.name}}</div>
                     </div>
-                    <div class="form-group" ng-show="vm.showExecuteGraph">
+                    <div class="form-group" ng-show="vm.showExecuteGraph == true">
                         <div class="control-label col-sm-3">预览</div>
                         <div id="graphScroll" class="col-sm-7">
                             <div id="graph"></div>
+                            <ul id="cellMenu" style="width: 100px;">
+                                <li id="enable">启用</li>
+                                <li id="disable">禁用</li>
+                            </ul>
                         </div>
                     </div>
                 </div>

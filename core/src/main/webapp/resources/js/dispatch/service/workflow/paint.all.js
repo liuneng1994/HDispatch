@@ -89,22 +89,8 @@ var Paint = (function (mode) {
         });
     };
 
-    Paint.prototype.setNodeColor = function (name, color) {
-        name = name.split('.');
-        for (var element of this._graph.getElements()) {
-            var index = name.length - 1;
-            if (element.get('attrs').text.text != name[index]) continue;
-            var parentId = element.get('parent');
-            while (parentId) {
-                index--;
-                if (this._graph.getCell(parentId).get('attrs').text.text != name[index]) continue;
-                parentId = this._graph.getCell(parentId).get('parent');
-            }
-            if (index == 0) {
-                element.attr('rect/fill', color);
-                return;
-            }
-        }
+    Paint.prototype.setNodeColor = function (id, color) {
+        this._graph.getCell(id).attr('rect/fill', color);
     };
 
     function transformer(paint) {
@@ -155,17 +141,17 @@ var Paint = (function (mode) {
                         tmpLinks.add(paint.linkNode(node.id, target.id, false));
                     }
                 } else if (source instanceof joint.shapes.node.flow && target instanceof joint.shapes.node.flow) {
-                    if (source.prop('expanded')&&!target.prop('expanded')) {
+                    if (source.prop('expanded') && !target.prop('expanded')) {
                         flowLink.remove();
                         for (var node of leafMap.get(source.id)) {
                             tmpLinks.add(paint.linkNode(node.id, target.id, false));
                         }
-                    } else if (!source.prop('expanded')&&target.prop('expanded')) {
+                    } else if (!source.prop('expanded') && target.prop('expanded')) {
                         flowLink.remove();
                         for (var node of sourceMap.get(target.id)) {
                             tmpLinks.add(paint.linkNode(source.id, node.id, false));
                         }
-                    } else if (source.prop('expanded')&&target.prop('expanded')) {
+                    } else if (source.prop('expanded') && target.prop('expanded')) {
                         flowLink.remove();
                         for (var sourceNode of leafMap.get(source.id)) {
                             for (var targetNode of sourceMap.get(target.id)) {
@@ -194,15 +180,15 @@ var Paint = (function (mode) {
 
     Paint.prototype.format = function (opt) {
         layouting = true;
-        opt = opt || {
-                nodeSep: 50,
-                edgeSep: 80,
-                rankSep: 100,
-                rankDir: "TB",
-                marginX: 200,
-                marginY: 200,
-                clusterPadding: padding
-            };
+        opt = {
+            nodeSep: opt.nodeSep || 50,
+            edgeSep: opt.edgeSep || 80,
+            rankSep: opt.rankSep || 100,
+            rankDir: opt.rankDir || "LR",
+            marginX: opt.marginX || 200,
+            marginY: opt.marginY || 200,
+            clusterPadding: opt.clusterPadding || padding
+        };
         var formatter = transformer(this);
         formatter.show();
         joint.layout.DirectedGraph.layout(this._graph, opt);
@@ -248,6 +234,46 @@ var Paint = (function (mode) {
         this.jobs.jobs = json2map(object.jobs.jobs);
         this.jobs.names = json2map(object.jobs.names);
         this.jobs.depts = json2map(object.jobs.depts);
+    };
+
+    Paint.prototype.getElementByPath = function (path) {
+        var $this = this;
+        var paths = path.split('.');
+        paths.reverse();
+        var elements = this._graph.getElements();
+        var i = 0;
+        do {
+            elements = elements.filter(function (element) {
+                var name = null;
+                if (i == 0) {
+                    name = element.get('attrs').text.text;
+                } else {
+                    var rank = i;
+                    do {
+                        element = $this._graph.getCell(element.get("parent"));
+                        rank--;
+                    } while (rank > 0 && element);
+                    if (rank > 0 || !element) {
+                        name = null;
+                    } else {
+                        name = element.get('attrs').text.text;
+                    }
+                }
+                return name == paths[i];
+            });
+            i++;
+        } while (i < paths.length);
+        return elements[0];
+    };
+
+    Paint.prototype.resetColor = function () {
+        for (var element of this._graph.getElements()) {
+            if (element instanceof joint.shapes.basic.Rect) {
+                this.setNodeColor(element.id, "lightgray");
+            } else if (element instanceof joint.shapes.node.flow) {
+                this.setNodeColor(element.id, "white");
+            }
+        }
     };
 
     function Scroll(baseWidth, baseHeight) {
@@ -350,7 +376,7 @@ var Paint = (function (mode) {
                 },
                 text: {text: name, fill: 'black'}
             };
-            var width = name.length * 7 + 20 > 100 ? name.length * 7 + 20 : 100;
+            var width = name.length * 16 + 20 > 100 ? name.length * 16 + 20 : 100;
             return new joint.shapes.basic.Rect({
                 position: {x: x, y: y},
                 size: {
@@ -446,7 +472,7 @@ var Paint = (function (mode) {
             this.prop('expanded', false);
             graph.removeCells(this.getEmbeddedCells({deep: true}));
             var name = this.get('attrs').text.text;
-            var width = name.length * 7 + 60 > 100 ? name.length * 7 + 60 : 100;
+            var width = name.length * 16 + 60 > 100 ? name.length * 16 + 60 : 100;
             this.resize(width - width % 10 + (width % 10 ? 10 : 0), 50);
             var parent = graph.getCell(this.get('parent'));
             while (parent) {
@@ -518,7 +544,6 @@ var Paint = (function (mode) {
     };
     Paint.prototype.linkNode = function (sourceId, targetId, hasDept) {
         "use strict";
-        if (!this.editable) return;
         if (typeof hasDept != "boolean") {
             hasDept = true;
         }

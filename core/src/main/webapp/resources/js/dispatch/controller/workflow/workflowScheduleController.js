@@ -12,7 +12,7 @@
                 top: 30,
                 right: 30
             },
-            autoHideAfter: 0,
+            autoHideAfter: 5000,
             stacking: "down",
             templates: [{
                 type: "error",
@@ -126,7 +126,7 @@
         };
 
         vm.isChecked = function (id) {
-            vm.selectedWorkflow.indexOf(id) >= 0;
+            return vm.selectedWorkflow.indexOf(id) >= 0;
         };
 
         vm.updateSelected = function ($event, id) {
@@ -203,6 +203,7 @@
         };
 
         vm.execute = function () {
+            vm.showExecuteGraph = false;
             var selectedFlows = loadSelectedWorkflow();
             vm.executeInfo = {};
             vm.executeInfo.loading = selectedFlows.size;
@@ -212,14 +213,28 @@
             if (vm.executeInfo.loading == 0) {
                 return;
             }
-            vm.executeWindow.center().open();
+            vm.executeWindow.maximize().open();
+            if (selectedFlows.size == 1) vm.showExecuteGraph = true;
             for (var flow of selectedFlows.values()) {
                 workflowService.workflow(flow.workflowId).then(function (data) {
                     vm.executeInfo.loading--;
+                    if (vm.showExecuteGraph) {
+                        window.setTimeout(function () {
+                            vm.paint.parse(data.graph);
+                            vm.paint.format({
+                                rankDir: "TB",
+                                marginX: 50,
+                                marginY: 50
+                            });
+                            for (var link of vm.paint._graph.getLinks()) {
+                                link.attr('.link-tools/display', 'none');
+                            }
+                        }, 500);
+                    }
                     if (data.projectName && data.flowId) {
                         vm.executeInfo.flows[data.workflowId] = {};
                         vm.executeInfo.flows[data.workflowId].project = data.projectName;
-                        vm.executeInfo.flows[data.workflowId].flow = data.flowId;
+                        vm.executeInfo.flows[data.workflowId].flow = "_" + data.flowId;
                         vm.executeInfo.name += (data.name + '  ');
                     } else {
                         vm.notification.show({
@@ -268,7 +283,88 @@
             height: 600,
             width: $('#graphScroll').width()
         });
+        window.paint = vm.paint;
         vm.paint.initScroll();
+        vm.paint._paper.on('cell:pointerdblclick', function (cellView) {
+            if (!cellView.model instanceof joint.shapes.node.flow) return;
+            if (cellView.model.prop('expanded')) {
+                cellView.model.collapseFlow(vm.paint._graph);
+                vm.paint.format({
+                    rankDir: "TB",
+                    marginX: 50,
+                    marginY: 50
+                });
+                refreshColor();
+            } else {
+                var workflowId = cellView.model.prop('workflowId');
+                workflowService.workflow(workflowId).then(function (data) {
+                    var paint = JSON.parse(data.graph);
+                    var graph = new joint.dia.Graph;
+                    graph.fromJSON(paint.graph);
+                    cellView.model.expandFlow(vm.paint._graph, graph);
+                    vm.paint.format({
+                        rankDir: "TB",
+                        marginX: 50,
+                        marginY: 50
+                    });
+                    refreshColor();
+                });
+            }
+        });
+        vm.paint._paper.setInteractivity(false);
+        vm.showExecuteGraph = false;
+        vm.disabledEl = new Set;
+        $('#cellMenu').kendoContextMenu({
+            orientation: 'vertical',
+            target: '#graphScroll',
+            animation: {
+                open: {effects: "fadeIn"},
+                duration: 500
+            },
+            select: function (evt) {
+                if (!disabledElement) return;
+                var paths = [];
+                var parent = disabledElement;
+                do {
+                    paths.push(parent.get('attrs').text.text);
+                    parent = vm.paint._graph.getCell(parent.get('parent'));
+                } while (parent);
+                paths.reverse();
+                switch (evt.item.id) {
+                    case "enable":
+                        vm.disabledEl.delete(paths.join('.'));
+                        break;
+                    case "disable":
+                        var i = 0;
+                        var canDisable = true;
+                        do {
+                            if (vm.disabledEl.has(paths.slice(0, i).join("."))) {
+                                canDisable = false;
+                                break;
+                            }
+                        } while (i < paths.length - 1)
+                        if (canDisable)
+                            vm.disabledEl.add(paths.join('.'));
+                        break;
+                }
+                refreshColor();
+            }
+        });
+        function refreshColor() {
+            vm.paint.resetColor();
+            for (var elName of vm.disabledEl) {
+                if (vm.paint.getElementByPath(elName))
+                    vm.paint.setNodeColor(vm.paint.getElementByPath(elName).id, 'red');
+            }
+        }
+
+        var disabledElement = null;
+        vm.paint._paper.on('blank:contextmenu', function () {
+            $("#cellMenu").data('kendoContextMenu').open();
+        });
+        vm.paint._paper.on('cell:contextmenu', function (cellView) {
+            disabledElement = cellView.model;
+        });
         function loadSelectedWorkflow() {
             var idMap = new Map();
             for (var id of vm.selectedWorkflow) {
