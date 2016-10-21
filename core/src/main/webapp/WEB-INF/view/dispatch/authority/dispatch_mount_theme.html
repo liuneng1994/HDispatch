@@ -8,7 +8,8 @@
 					<div id="page-content" style="clear:both">
 						<div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
 							<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
-							<span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                            <span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
+                            <span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
 							<span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
 						</div>
 						<div class="pull-right" id="query-form" style="padding-bottom:10px;">
@@ -27,7 +28,6 @@
 			<script type="text/javascript">
 				var wnd, detailsTemplate;
 				var baseUrl_theme = "${base.contextPath}/dispatch/themeGroup/themeGroupTheme/";
-				var baseUrl_layer = "${base.contextPath}/dispatcher/layer/";
 				var themes_data;
 				var themesToSelect_data;
 				//获取传递过来的主题组id和名称
@@ -60,7 +60,27 @@
                                 viewModel.model.set(k, null);
                             }
                         }
-					}
+					},
+                    batchDeleteFunction: function (e) {
+                        var grid = $("#themeListGrid").data("kendoGrid");
+                        if (grid.selectedDataItems().length) {
+                            kendo.ui.showConfirmDialog({
+                                title: $l('hap.tip.info'),
+                                message: $l('hap.tip.delete_confirm')
+                            }).done(function (event) {
+                                if (event.button == 'OK') {
+                                    $.each(checkedIds, function (key,value) {
+                                        if(checkedIds[key])
+                                        {
+                                            grid.dataSource.remove(grid.dataSource.get(key));
+                                            checkedIds[key]=false;
+                                        }
+                                    });
+                                    grid.dataSource.sync();
+                                }
+                            })
+                        }
+                    }
 				});
                 var themesNotInThemeGroup_viewModel;
 				kendo.bind($('#query-form'), viewModel);
@@ -96,6 +116,12 @@
 								dataType: "json",
 								contentType:"application/json"
 							},
+                            destroy: {
+                                url: baseUrl_theme+'remove',
+                                type : 'POST',
+                                dataType: "json",
+                                contentType:"application/json"
+                            },
 							parameterMap: function(options, operation) {
 								//封装请求参数
 								if (operation !== "read" && options.models) {
@@ -109,13 +135,12 @@
                                             }
 										});
 									}
-									//暂时不考虑更新
-//									if(operation =='update'){
-//										datas = options.models.map(function(data){
-//											data['__status'] = 'update';
-//											return data;
-//										});
-//									}
+                                    if('destroy'==operation){
+                                        datas = options.models.map(function(data){
+                                            data['__status'] = 'delete';
+                                            return data;
+                                        });
+                                    }
 									var data_str = kendo.stringify(datas);
 									themes_data = data_str;
 									return data_str;
@@ -195,6 +220,13 @@
 										'field': 'themeId','hidden':true
 									},
 									{
+										title: '',
+										template: '<input class="checkbox" type="checkbox"/>',
+										width: '12px',
+										headerAttributes: {style: "text-align:center"},
+										attributes: {style: "text-align:center"}
+									},
+									{
 										'field': 'themeName',
 										'title':'<@spring.message "hdispatch.theme_name"/>',
 										'width': "100px",
@@ -223,6 +255,22 @@
 					});
 					kendo.bind($('#theme-content'),viewModel);
 				});
+                $("#themeListGrid").on("click", ".checkbox" , selectRow);
+                //只用采用这种方式才能避免checkbox选中，但是读取数据时却没有被传递到后台
+                var checkedIds = {};
+                function selectRow() {
+                    var checked = this.checked,
+                            row = $(this).closest("tr"),
+                            grid = $("#themeListGrid").data("kendoGrid"),
+                            dataItem = grid.dataItem(row);
+
+                    checkedIds[dataItem.themeGroupThemeId] = checked;
+                    if (checked) {
+                        row.addClass("k-state-selected");
+                    } else {
+                        row.removeClass("k-state-selected");
+                    }
+                }
 
 				function themeSelector(container, options) {
 					$('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" id="grid_search_btn" class="k-icon k-i-search">&nbsp;</a></span>')
