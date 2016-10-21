@@ -10,27 +10,30 @@ import com.hand.hap.system.dto.BaseDTO;
  * 存储权限信息
  */
 public class HdispatchAuthority extends BaseDTO{
-    private Long autorityId;
-    private Long themeGroupThemeId;
+    private Long authorityId;
+    private Long themeGroupId;
     private Long userId;
     private String authRead;
     private String authOperate;
 
-    public Long getAutorityId() {
-        return autorityId;
+    //冗余字段
+    private String userName;
+
+    public Long getAuthorityId() {
+        return authorityId;
     }
 
-    public HdispatchAuthority setAutorityId(Long autorityId) {
-        this.autorityId = autorityId;
+    public HdispatchAuthority setAuthorityId(Long authorityId) {
+        this.authorityId = authorityId;
         return this;
     }
 
-    public Long getThemeGroupThemeId() {
-        return themeGroupThemeId;
+    public Long getThemeGroupId() {
+        return themeGroupId;
     }
 
-    public HdispatchAuthority setThemeGroupThemeId(Long themeGroupThemeId) {
-        this.themeGroupThemeId = themeGroupThemeId;
+    public HdispatchAuthority setThemeGroupId(Long themeGroupId) {
+        this.themeGroupId = themeGroupId;
         return this;
     }
 
@@ -58,6 +61,15 @@ public class HdispatchAuthority extends BaseDTO{
 
     public HdispatchAuthority setAuthOperate(String authOperate) {
         this.authOperate = authOperate;
+        return this;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public HdispatchAuthority setUserName(String userName) {
+        this.userName = userName;
         return this;
     }
 }
