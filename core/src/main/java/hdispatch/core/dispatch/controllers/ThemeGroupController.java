@@ -127,6 +127,36 @@ public class ThemeGroupController  extends BaseController {
     }
 
     /**
+     * 删除主题组
+     * @param themeGroupList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData removeThemeGroups(@RequestBody List<ThemeGroup> themeGroupList, BindingResult result, HttpServletRequest request) {
+
+        //判断是否有用户或者主题挂载在这个主题组下面，若有，不允许删除
+        ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
+        List<ThemeGroup> cannotRemove = new ArrayList<>();
+        themeGroupService.batchDelete(requestContext,themeGroupList,cannotRemove);
+        if(0 == cannotRemove.size()){
+            rd = new ResponseData(true);
+            return rd;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("无法移除，挂载的主题或用户需要先移除掉：");
+        for(ThemeGroup group : cannotRemove){
+            stringBuilder.append(group.getThemeGroupName()+",");
+        }
+        rd = new ResponseData(false);
+        rd.setMessage(stringBuilder.toString());
+        return rd;
+    }
+
+    /**
      * 获取所有不在某个主题组的主题
      * @param request
      * @param page
@@ -231,7 +261,7 @@ public class ThemeGroupController  extends BaseController {
 
         List<ThemeGroupTheme> filterList = new ArrayList<>();
         for(ThemeGroupTheme temp : themeGroupThemeList){
-            if(null == temp.getThemeGroupThemeId() || null == temp.getThemeId()){
+            if(null == temp.getThemeGroupId() || null == temp.getThemeId()){
                 continue;
             }else {
                 filterList.add(temp);
@@ -239,6 +269,33 @@ public class ThemeGroupController  extends BaseController {
         }
 
         rd = new ResponseData(themeGroupThemeService.batchUpdate(requestContext, filterList));
+        return rd;
+    }
+
+    /**
+     * 从主题组移除主题
+     * @param themeGroupThemeList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData removeThemes(@RequestBody List<ThemeGroupTheme> themeGroupThemeList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
+
+        List<ThemeGroupTheme> filterList = new ArrayList<>();
+        for(ThemeGroupTheme temp : themeGroupThemeList){
+            if(null == temp.getThemeGroupThemeId()){
+                continue;
+            }else {
+                filterList.add(temp);
+            }
+        }
+        themeGroupThemeService.batchUpdate(requestContext, filterList);
+        rd = new ResponseData(true);
         return rd;
     }
 
@@ -322,7 +379,7 @@ public class ThemeGroupController  extends BaseController {
      */
     @RequestMapping(value = "/dispatch/themeGroup/authorityUser/submit_update_delete", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData addUsers(@RequestBody List<HdispatchAuthority> authorityList, BindingResult result, HttpServletRequest request) {
+    public ResponseData operateUsers(@RequestBody List<HdispatchAuthority> authorityList, BindingResult result, HttpServletRequest request) {
 
         ResponseData rd = null;
         IRequest requestContext = createRequestContext(request);

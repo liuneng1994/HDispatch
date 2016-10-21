@@ -31,6 +31,7 @@
                 <div id="page-content" style="clear:both">
                     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
                         <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                        <span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
                         <span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
                         <span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
                     </div>
@@ -61,6 +62,26 @@
                 },
                 queryFunction: function(e) {
                     $('#themeGroupListGrid').data('kendoGrid').dataSource.page(1);
+                },
+                batchDeleteFunction: function (e) {
+                    var grid = $("#themeGroupListGrid").data("kendoGrid");
+                    if (grid.selectedDataItems().length) {
+                        kendo.ui.showConfirmDialog({
+                            title: $l('hap.tip.info'),
+                            message: $l('hap.tip.delete_confirm')
+                        }).done(function (event) {
+                            if (event.button == 'OK') {
+                                $.each(checkedIds, function (key,value) {
+                                    if(checkedIds[key])
+                                    {
+                                        grid.dataSource.remove(grid.dataSource.get(key));
+                                        checkedIds[key]=false;
+                                    }
+                                });
+                                grid.dataSource.sync();
+                            }
+                        })
+                    }
                 }
             });
             kendo.bind($('#query-form'), viewModel);
@@ -86,6 +107,12 @@
                             dataType: "json",
                             contentType:"application/json"
                         },
+                        destroy: {
+                            url: baseUrl_themeGroup + "remove",
+                            type : 'POST',
+                            dataType: "application/json",
+                            contentType:"application/json"
+                        },
                         parameterMap: function(options, operation) {
                             //封装请求参数
                             if (operation !== "read" && options.models) {
@@ -93,6 +120,12 @@
                                 if(operation =='create' || operation =='update'){
                                     datas = options.models.map(function(data){
                                         data['__status'] = (operation =='create' ? 'add' : 'update');
+                                        return data;
+                                    });
+                                }
+                                if('destroy'==operation){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = 'delete';
                                         return data;
                                     });
                                 }
@@ -142,8 +175,14 @@
                             }
                         }
                     },
-                    error: function(e) {
-                        alert(e.errors)
+                    error: function(e){
+//                        console.log(e.sender);
+//                        console.log(e.status);
+//                        console.log(e.xhr);
+                        var responseText = eval("("+e.xhr.responseText+")");
+                        if(!responseText.success && responseText.message){
+                            alert(responseText.message);
+                        }
                     }
                 });
                 $("#themeGroupListGrid").kendoGrid({
@@ -171,6 +210,13 @@
                     },
                     columns:
                             [
+                                {
+                                    title: '',
+                                    template: '<input class="checkbox" type="checkbox"/>',
+                                    width: '12px',
+                                    headerAttributes: {style: "text-align:center"},
+                                    attributes: {style: "text-align:center"}
+                                },
                                 {
                                     'field': 'themeGroupId','hidden':true
                                 },
@@ -225,6 +271,22 @@
                 });
                 kendo.bind($('#theme-content'),viewModel);
             });
+            $("#themeGroupListGrid").on("click", ".checkbox" , selectRow);
+            //只用采用这种方式才能避免checkbox选中，但是读取数据时却没有被传递到后台
+            var checkedIds = {};
+            function selectRow() {
+                var checked = this.checked,
+                        row = $(this).closest("tr"),
+                        grid = $("#themeGroupListGrid").data("kendoGrid"),
+                        dataItem = grid.dataItem(row);
+
+                checkedIds[dataItem.themeGroupId] = checked;
+                if (checked) {
+                    row.addClass("k-state-selected");
+                } else {
+                    row.removeClass("k-state-selected");
+                }
+            }
 
             function showMountThemesDetails(themeGroupId_thisRow,themeGroupName_thisRow) {
                 $("#mountThemeDetails").kendoWindow(
@@ -258,8 +320,8 @@
     </div>
     </body>
     <style>
-        #themeGroupListGrid td{
-            padding:0px;
-        }
+        /*#themeGroupListGrid td{*/
+            /*padding:0px;*/
+        /*}*/
     </style>
 </html>
