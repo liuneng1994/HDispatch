@@ -88,7 +88,7 @@
 				$(document).ready(function () {
 					wnd = $("#selectThemeDetails")
 							.kendoWindow({
-								title: '<@spring.message "hdispatch.theme.layer_manage_title"/>',
+								title: '<@spring.message "hdispatch.themeGroup.select"/>',
 								modal: true,
 								visible: false,
 								resizable: true,
@@ -183,8 +183,15 @@
 								}
 							}
 						},
-						error: function(e) {
-							alert(e.errors)
+						error: function(e){
+							if(e.errors){
+								alert(e.errors);
+							}else {
+								var responseText = eval("("+e.xhr.responseText+")");
+								if(!responseText.success && responseText.message){
+									alert(responseText.message);
+								}
+							}
 						}
 					});
 
@@ -352,15 +359,22 @@
                                     themeDescription: { type: 'string' }
                                 }
                             },
-                            errors: function(res){
-                                if(!res.success && res.message) {
-                                    return res.message;
-                                }
-                            }
-                        },
-                        error: function(e) {
-                            alert(e.errors)
-                        }
+							errors: function(res){
+								if(!res.success && res.message) {
+									return res.message;
+								}
+							}
+						},
+						error: function(e){
+							if(e.errors){
+								alert(e.errors);
+							}else {
+								var responseText = eval("("+e.xhr.responseText+")");
+								if(!responseText.success && responseText.message){
+									alert(responseText.message);
+								}
+							}
+						}
                     });
                     $("#themesNotInThemeGroup_grid").kendoGrid({
                         dataSource: themesToSelect_data,
