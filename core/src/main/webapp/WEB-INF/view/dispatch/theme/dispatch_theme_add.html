@@ -57,13 +57,13 @@
                     $('#themeListGrid').data('kendoGrid').addRow();
                 },
                 saveFunction: function(){
-                    $('#themeListGrid').data('kendoGrid').saveChanges();
-//              $('#themeListGrid').data('kendoGrid').dataSource.sync();
-                    $('#themeListGrid').data('kendoGrid').dataSource.read();
-                    $('#themeListGrid').data('kendoGrid').dataSource.page(2147483647);
+                     $('#themeListGrid').data('kendoGrid').dataSource.sync();
                 },
                 cancelFunction: function(e){
                     $('#themeListGrid').data('kendoGrid').cancelChanges();
+                },
+                queryFunction: function (e) {
+                    $('#themeListGrid').data('kendoGrid').dataSource.page(1);
                 }
             });
             kendo.bind($('#query-form'), viewModel);
@@ -81,8 +81,6 @@
                         }).data("kendoWindow");
                 detailsTemplate = kendo.template($("#template").html());
                 //声明主窗口
-
-
                 themes_data = new kendo.data.DataSource({
                     transport: {
                         read:  {
@@ -153,15 +151,17 @@
                             }
                         }
                     },
-                    error: function(e) {
-                        alert(e.errors)
+                    error: function(e){
+                        if(e.errors){
+                            alert(e.errors);
+                        }else {
+                            var responseText = eval("("+e.xhr.responseText+")");
+                            if(!responseText.success && responseText.message){
+                                alert(responseText.message);
+                            }
+                        }
                     }
                 });
-                var showAlt = false;//grid中的行背景颜色交叉变化
-                var bg="";
-                var isFirstLine = true;
-                var themeDataLineCounter = 0;//grid中当前行行数
-                var totalLineNum = 0;//grid中总行数
                 $("#themeListGrid").kendoGrid({
                     dataSource: themes_data,
                     resizable: true,
@@ -194,69 +194,28 @@
                                     'field': 'themeName',
                                     'title':'<@spring.message "hdispatch.theme_name"/>',
                                     'width': "150px",
-                                    template:function (rowData) {
-//                                        console.log(arguments);
-                                        if(isFirstLine){
-                                            isFirstLine = false;
-                                            totalLineNum = $('#themeListGrid').data("kendoGrid").dataSource._data.length
-                                            showAlt = false;
-                                        }
-                                        themeDataLineCounter ++;
-                                        if(totalLineNum<=themeDataLineCounter){
-                                            isFirstLine = true;
-                                            themeDataLineCounter = 0;
-                                        }
-
-                                        if(showAlt){
-                                            bg = "background-color:#F9F9F9;";
-                                        }else {
-                                            bg="";
-                                        }
-                                        showAlt = !showAlt;
-
-                                        if(!rowData.themeId){
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeName" required="required" data-bind="value:themeName">';
-                                        }
-                                        else{
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeName" required="required" data-bind="value:themeName" readonly="readonly" value="'+rowData.themeName+'">';
-                                        }
-                                    }
+                                    editor:themeNameEditor,
+                                    template:"#=themeName#"
                                 },
                                 {
                                     'field': 'themeSequence',
                                     'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
                                     'width': "100px",
-                                    template:function (rowData) {
-                                        if(!rowData.themeId){
-                                            return '<input name="themeSequence" class="k-input k-textbox" type="number" min="0" step="1" style="width: 100%;padding: 0px;margin: 0px" data-bind="value:themeSequence" />';
-                                        }else{
-                                            if(null === rowData.themeSequence||'null' == rowData.themeSequence ||  "undefined"==rowData.themeSequence){
-                                                return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" data-bind="value:"/>';
-                                            }
-                                            return '<input name="themeSequence" class="k-input k-textbox" readonly="readonly" type="text" value="'+rowData.themeSequence+'" style="width: 100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" data-bind="value:themeSequence"/>';
-                                        }
-                                    }
+                                    editor:themeSequenceEditor,
+                                    template:"#=themeSequence#"
                                 },
                                 {
                                     'field': 'themeDescription',
                                     'title':'<@spring.message "hdispatch.theme.theme_description"/>',
                                     'width': "200px",
-                                    template:function (rowData) {
-                                        if(!rowData.themeId){
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeDescription" required="required" data-bind="value:themeDescription">';
-                                        }
-                                        else{
-                                            return '<input type="text" class="k-input k-textbox" style="width:100%;padding: 0px;margin: 0px;border: 0px;'+bg+'" name="themeDescription" required="required" data-bind="value:themeDescription" readonly="readonly" value="'+rowData.themeDescription+'">';
-                                        }
-                                    }
+                                    editor:themeDescEditor,
+                                    template:"#=themeDescription#"
                                 },
-//                            { command: { text: '<@spring.message "hdispatch.theme.theme_create.edict_layer"/>', click: showDetails ,class:'btn btn-info'}, title: '<@spring.message "hdispatch.theme.layer_operation"/>', width: "100px" }
                         {
                             attributes: {style: "text-align:center;padding:0px"},
                             field : "",
                             title : '<@spring.message "hdispatch.theme.layer_operation"/>',
                             width : 50,
-//                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.theme.theme_create.edict_layer'/></button>"
                             template : function(
                                     item) {
 
@@ -273,35 +232,34 @@
                             }
                         }
                     ],
-//          editable: true
-                    editable: "inline"
+                    editable: true,
+                    edit: function (e) {
+                        if(e.model.themeId){
+                            $("#themeName_grid_input").attr("readonly","readonly");
+                            $("#themeDesc_grid_input").attr("readonly","readonly");
+                            $("#themeSequence_grid_input").attr("readonly","readonly");
+                        }
+                    }
                 });
                 kendo.bind($('#theme-content'),viewModel);
-                $("#themeListGrid").on("click", "tr", function (e) {
-                    e.preventDefault();
-//            var index = $(this).index();
-//            var rowData = getEdictingRowData(index);
-//            if(!!rowData.themeId){
-//
-//            }
-                });
             });
+            function themeDescEditor(container, options) {
+                $('<span class="k-textbox" style="width: 100%;"><input id="themeDesc_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                        .appendTo(container);
+            }
+            function themeNameEditor(container, options) {
+                $('<span class="k-textbox" style="width: 100%;"><input id="themeName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                        .appendTo(container);
+            }
+            function themeSequenceEditor(container, options) {
+                $('<span class="k-textbox" style="width: 100%;"><input id="themeSequence_grid_input" type="number" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                        .appendTo(container);
+            }
+
             function getEdictingRowData(index)
             {
                 return $('#themeListGrid').data("kendoGrid")._data[index];
             }
-            //显示层详情页面
-            //      function showDetails(e) {
-            //        e.preventDefault();
-            //        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-            //        if(!dataItem.themeId || !dataItem.themeName){
-            //          alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
-            //          return;
-            //        }
-            //        wnd.content(detailsTemplate(dataItem));
-            //        wnd.center().open();
-            //        loadLayerGrid(dataItem);
-            //      }
             function showDetails(themeId_thisRow,themeName_thisRow) {
                 if(!themeId_thisRow || !themeName_thisRow){
                     alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
@@ -329,9 +287,7 @@
                         $('#layerListGrid').data('kendoGrid').addRow();
                     },
                     saveFunction: function(){
-                        $('#layerListGrid').data('kendoGrid').saveChanges();
-                        $('#layerListGrid').data('kendoGrid').dataSource.read();
-                        $('#layerListGrid').data('kendoGrid').dataSource.page(2147483647);
+                        $('#layerListGrid').data('kendoGrid').dataSource.sync();
                     },
                     cancelFunction: function(e){
                         $('#layerListGrid').data('kendoGrid').cancelChanges();
@@ -401,8 +357,8 @@
                             fields: {
                                 themeId: { type: 'number' },
                                 layerName: { type: 'string',validation: { required: true } },
-                                layerDescription: { type: 'string',validation: { required: true } },
-                                layerSequence: { type: 'number',validation: { required: true } }
+                                layerDescription: { type: 'string' },
+                                layerSequence: { type: 'number' }
                             }
                         },
                         errors: function(res){
@@ -411,8 +367,15 @@
                             }
                         }
                     },
-                    error: function(e) {
-                        alert(e.errors)
+                    error: function(e){
+                        if(e.errors){
+                            alert(e.errors);
+                        }else {
+                            var responseText = eval("("+e.xhr.responseText+")");
+                            if(!responseText.success && responseText.message){
+                                alert(responseText.message);
+                            }
+                        }
                     }
                 });
                 $("#layerListGrid").kendoGrid({
@@ -480,9 +443,4 @@
         </script>
     </div>
     </body>
-    <style>
-        #themeListGrid td{
-            padding:0px;
-        }
-    </style>
 </html>
