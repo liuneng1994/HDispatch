@@ -53,10 +53,10 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
                         themeGroupThemeMapper.save(themeGroupTheme);
                         break;
                     case DTOStatus.UPDATE:
-//                        themeGroupThemeMapper.updateById(themeGroup);
+
                         break;
                     case DTOStatus.DELETE:
-
+                        themeGroupThemeMapper.deleteTheme(themeGroupTheme);
                         break;
                     default:
                         break;
