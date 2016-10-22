@@ -149,21 +149,22 @@
 //                            jobs_data.sync();
 //                        }
                         var grid = $("#jobListGrid").data("kendoGrid");
-                        var checked = grid.selectedDataItems();
+//                        var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
                             kendo.ui.showConfirmDialog({
                                 title: $l('hap.tip.info'),
                                 message: $l('hap.tip.delete_confirm')
                             }).done(function (event) {
                                 if (event.button == 'OK') {
-                                    $.each(checked, function (key,value) {
-                                        grid.dataSource.remove(value);
-//                                        if(checkedIds[key])
-//                                        {
-//                                            grid.dataSource.remove(grid.dataSource.get(key));
-//                                            checkedIds[key]=false;
+//                                    $.each(checked, function (key,value) {
+                                    $.each(checkedIds, function (key,value) {
+//                                        grid.dataSource.remove(value);
+                                        if(checkedIds[key])
+                                        {
+                                            grid.dataSource.remove(grid.dataSource.get(key));
+                                            checkedIds[key]=false;
 //                                            console.log(key+","+value);
-//                                        }
+                                        }
                                     });
                                     grid.dataSource.sync();
                                 }
@@ -275,6 +276,21 @@
                                 layerName: { type: 'string',validation: { required: true } },
                                 jobName: { type: 'string',validation: { required: true } },
                                 jobSvn: { type: 'string',validation: { required: true } }
+                            }
+                        },
+                        errors: function(res){
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function(e){
+                        if(e.errors){
+                            alert(e.errors);
+                        }else {
+                            var responseText = eval("("+e.xhr.responseText+")");
+                            if(!responseText.success && responseText.message){
+                                alert(responseText.message);
                             }
                         }
                     }
@@ -1200,6 +1216,8 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
             #svn_li .k-checkbox-label {display: inline-block}
             #grid_svn_li .k-checkbox-label {display: inline-block}
             #batchCreateForm_input_svn .k-checkbox-wrapper {display: inline-block}
+            .k-checkbox-label:before {top:-5px;}
+            .k-checkbox:indeterminate+.k-checkbox-label:after {top:2px;}
         </style>
     </div>
 </body>
