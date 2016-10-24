@@ -92,6 +92,8 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                     case DTOStatus.ADD:
                         svnParameter.setCreationDate(new Date());
                         svnParameter.setLastUpdateDate(new Date());
+                        svnParameter.setEnableFlag("Y");
+                        svnParameter.setStartDateActive(new Date());
                         svnParameterMapper.create(svnParameter);
                         svnParameter.set__status("");
                         break;
@@ -158,7 +160,8 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                 boolean isFormatError = false;
                 String errorMsg = "";
                 if(null != cell_1){
-                    svnParameter.setParameterName(cell_1.toString());
+//                    svnParameter.setParameterName(cell_1.toString());
+                    svnParameter.setSubjectName(cell_1.toString());
                     if(cell_1.toString().trim().equals("")){
 //                        isFormatError = true;
 //                        errorMsg += "第"+(i+1)+"行，第1列数据缺失或格式有误\n";
@@ -171,7 +174,8 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                     errorMsg += "第"+(i+1)+"行，第1列数据缺失或格式有误\n";
                 }
                 if(null != cell_2){
-                    svnParameter.setSubjectName(cell_2.toString());
+//                    svnParameter.setSubjectName(cell_2.toString());
+                    svnParameter.setMappingName(cell_2.toString());
                     if(cell_2.toString().trim().equals("")){
                         isFormatError = true;
                         errorMsg += "第"+(i+1)+"行，第2列数据缺失或格式有误\n";
@@ -182,7 +186,8 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                     errorMsg += "第"+(i+1)+"行，第2列数据缺失或格式有误\n";
                 }
                 if(null != cell_3){
-                    svnParameter.setMappingName(cell_3.toString());
+//                    svnParameter.setMappingName(cell_3.toString());
+                    svnParameter.setSessionName(cell_3.toString());
                     if(cell_3.toString().trim().equals("")){
                         isFormatError = true;
                         errorMsg += "第"+(i+1)+"行，第3列数据缺失或格式有误\n";
@@ -193,7 +198,8 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                     errorMsg += "第"+(i+1)+"行，第3列数据缺失或格式有误\n";
                 }
                 if(null != cell_4){
-                    svnParameter.setSessionName(cell_4.toString());
+//                    svnParameter.setSessionName(cell_4.toString());
+                    svnParameter.setWorkFlowName(cell_4.toString());
                     if(cell_4.toString().trim().equals("")){
                         isFormatError = true;
                         errorMsg += "第"+(i+1)+"行，第4列数据缺失或格式有误\n";
@@ -204,7 +210,8 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                     errorMsg += "第"+(i+1)+"行，第4列数据缺失或格式有误\n";
                 }
                 if(null != cell_5){
-                    svnParameter.setWorkFlowName(cell_5.toString());
+//                    svnParameter.setWorkFlowName(cell_5.toString());
+                    svnParameter.setParameterName(cell_5.toString());
                     if(cell_5.toString().trim().equals("")){
                         isFormatError = true;
                         errorMsg += "第"+(i+1)+"行，第5列数据缺失或格式有误\n";
@@ -264,6 +271,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                 }
                 svnParameter.set__status(DTOStatus.ADD);
                 svnParameter.setEnableFlag("Y");
+                svnParameter.setStartDateActive(new Date());
                 list.add(svnParameter);
             }
 
