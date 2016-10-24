@@ -45,4 +45,12 @@ public interface HdispatchAuthorityMapper {
      * @param hdispatchAuthority
      */
     void deleteUser(HdispatchAuthority hdispatchAuthority);
+
+    /**
+     * 权限校验,查询对特定主题有相关权限的用户列表
+     * @param params Map里面的内容：（themeId、userId、authRead、authOperate），
+     *               其中，themeId、userId不为null，authRead、authOperate至多一个为null
+     * @return
+     */
+    List<HdispatchAuthority> selectAuthorityForValidate(Map params);
 }
