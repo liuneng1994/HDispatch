@@ -66,4 +66,21 @@ yazheng.yang@hand-china.com
         DELETE FROM hdispatch_authority
         WHERE authority_id = #{authorityId}
     </delete>
+
+    <!--权限校验-->
+    <select id="selectAuthorityForValidate" parameterType="java.util.Map" resultMap="baseMap">
+        SELECT
+        FROM hdispatch_themegroup_theme relation JOIN hdispatch_authority authority
+        ON relation.theme_group_id = authority.theme_group_id
+        <where>
+            AND user_id = #{userId}
+            AND theme_id = #{themeId}
+            <if test="authRead != null">
+                AND auth_read = "Y"
+            </if>
+            <if test="authOperate != null">
+                AND auth_operate = "Y"
+            </if>
+        </where>
+    </select>
 </mapper>
