@@ -279,7 +279,6 @@ public class ScheduleController extends BaseController {
     	String notifyFailureLast =request.getParameter("notifyFailureLast");
     	String failureAction=request.getParameter("failureAction");
     	String concurrentOption =request.getParameter("concurrentOption");
-
 		ResultObj obj = new ResultObj();
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("project",project.replaceAll("\"", ""));
@@ -301,7 +300,7 @@ public class ScheduleController extends BaseController {
 			if(concurrentOption!=null)
 			map.put("concurrentOption", concurrentOption.replaceAll("\"", ""));
 			if(disabled!=null)
-			map.put("disabled", disabled.replaceAll("\"", ""));
+			map.put("disabled", disabled);	
 			ExeFlow f = exeFlowService.ExecuteFlow(map);
 			if (f.isError()) {
 				obj.setMessage(f.getError());

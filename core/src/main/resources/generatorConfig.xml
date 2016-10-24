@@ -10,8 +10,8 @@
 			<property name="suppressAllComments" value="true" />
 		</commentGenerator>
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://localhost:3306/hap_dev" userId="root"
-			password="root">
+			connectionURL="jdbc:mysql://172.20.0.28:3306/azkaban" userId="root"
+			password="handhand">
 		</jdbcConnection>
 		<javaTypeResolver>
 			<property name="forceBigDecimals" value="false" />
@@ -29,7 +29,7 @@
 			targetPackage="hdispatch.core.dispatch.mapper" targetProject="core\src\main\java">
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
-		<table schema="" tableName="rep_concurrent_execute_b" enableCountByExample="false"
+		<table schema="" tableName="dep_flows" enableCountByExample="false"
 			enableUpdateByExample="false" enableDeleteByExample="false"
 			enableSelectByExample="false" selectByExampleQueryId="false">
 			<property name="useActualColumnNames" value="true" />

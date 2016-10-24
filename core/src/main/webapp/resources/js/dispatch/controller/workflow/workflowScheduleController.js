@@ -89,7 +89,7 @@
                 {
                     width: '20px',
                     template: function (item) {
-                        if (item.flowId&&item.project)
+                        if (item.flowId && item.project)
                             var html = "<input type='checkbox' ng-checked='vm.isChecked(" + item.workflowId + ")' ng-click='vm.updateSelected($event," + item.workflowId + ")'/>";
                         else
                             var html = '';
@@ -384,24 +384,24 @@
                             if (i < path.length - 1) {
                                 var preValue = value;
                                 for (var child of value.children) {
-                                    if (child.id == path[i]) {
+                                    if (child.id == path.slice(0, i + 1).join(".")) {
                                         value = child;
                                     }
                                 }
                                 if (value == preValue) {
-                                    var tmp = {id:path[i],children:[]};
+                                    var tmp = {id: path.slice(0, i + 1).join("."), children: []};
                                     value.children.push(tmp);
                                     value = tmp;
                                 }
                             } else {
-                                value.children.push(path[i]);
+                                value.children.push(path.slice(0, i + 1).join("."));
                             }
                         } else if (i == 0) {
-                            if (elements.has(path[i])) {
-                                value = elements.get(path[i]);
+                            if (elements.has(path.slice(0, i + 1).join("."))) {
+                                value = elements.get(path.slice(0, i + 1).join("."));
                             } else {
-                                value = {id:path[i],children:[]};
-                                elements.set(path[i],value);
+                                value = {id: path.slice(0, i + 1).join("."), children: []};
+                                elements.set(path.slice(0, i + 1).join("."), value);
                             }
                         }
                         i++;
@@ -449,4 +449,4 @@
             });
         }
     }]);
-})()
+})();

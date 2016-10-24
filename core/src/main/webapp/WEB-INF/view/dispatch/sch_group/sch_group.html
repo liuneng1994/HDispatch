@@ -15,7 +15,7 @@
 					<div class="panel-body">
 
 						<!-- roleCode -->
-						<div class="col-sm-4">
+						<div class="col-sm-6">
 							<div class="form-group">
 								<label class="col-sm-4 control-label"><@spring.message
 									"hdispatch.flowlist.flowname"/></label>
@@ -31,7 +31,7 @@
 
 						<!--   roleName  end -->
 
-						<div class="col-sm-4">
+						<!-- <div class="col-sm-4">
 							<div class="form-group">
 								<label class="col-sm-4 control-label"><@spring.message
 									"hdispatch.flowlist.projectname"/></label>
@@ -40,10 +40,10 @@
 										class="k-textbox">
 								</div>
 							</div>
-						</div>
+						</div> -->
 
 
-						<div class="col-sm-4">
+						<div class="col-sm-6">
 							<div class="form-group">
 								<label class="col-sm-4 control-label"><@spring.message
 									"hdispatch.flowlist.date"/></label>
@@ -131,6 +131,7 @@
 								actions : [ "Maximize", "Minimize", "Close" ],
 								width : 920,
 								height : 450,
+								modal: true,
 								title :' <@spring.message "hdispatch.flowlist.flowdetail"/>',
 								visible : false,
 								iframe : true,
@@ -216,11 +217,7 @@
 											data : 'rows',
 											total : 'total',
 											model : {
-												id : "exec_id",
 												fields : {
-													flow_id : {
-														type : "string"
-													},
 													project_name : {
 														type : "string"
 													},
@@ -315,16 +312,16 @@
 															title : '',
 															template : '<input class="checkbox" type="checkbox" />',
 															width : 50
-														},
+														}/* ,
 														{
 															field : "exec_id",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.exeid"/>',
-															width : 140
-														},
+															width : 50
+														} */,
 														{
 															field : "flow_id",
 															title : '<@spring.message "hdispatch.flowlist.flowname"/>',
-															width : 80,
+															width : 150,
 															template : function(
 																	item) {
 																var exec_id = item.exec_id;
@@ -335,21 +332,21 @@
 																		+ "\",\""
 																		+ exec_id
 																		+ "\")'>"
-																		+ flow_id
+																		+ item.project_name
 																		+ "</a>";
 																return html;
 															}
-														},
+														}/* ,
 														{
 															field : "project_name",
 															title : '<@spring.message "hdispatch.flowlist.projectname"/>',
-															width : 200
-														},
+															width : 150
+														} */,
 
 														{
 															field : "start_time",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
-															width : 180,
+															width : 150,
 															template : function(
 																	dataItem) {
 																var v = dataItem.start_time;
@@ -362,7 +359,7 @@
 														{
 															field : "end_time",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.enddate"/>',
-															width : 180,
+															width : 150,
 															template : function(
 																	dataItem) {
 																var v = dataItem.end_time;
@@ -380,7 +377,7 @@
 														{
 															field : "elapsed",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.rundate"/>',
-															width : 180,
+															width : 100,
 															template : function(
 																	dataItem) {
 																var v = dataItem.end_time
