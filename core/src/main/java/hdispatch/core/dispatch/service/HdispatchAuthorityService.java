@@ -1,7 +1,9 @@
 package hdispatch.core.dispatch.service;
 
+import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
+import hdispatch.core.dispatch.dto.theme.Theme;
 
 import java.util.List;
 
@@ -46,5 +48,59 @@ public interface HdispatchAuthorityService {
      */
     void deleteUser(HdispatchAuthority hdispatchAuthority);
 
+    /**
+     * 批量更新权限
+     * @param requestContext
+     * @param filterList
+     * @return
+     */
     List<HdispatchAuthority> batchUpdate(IRequest requestContext, List<HdispatchAuthority> filterList);
+
+    /**
+     * 是否对主题有：读权限
+     * @param theme
+     * @param user
+     * @return
+     */
+    boolean hasReadPermission(Theme theme, User user);
+
+    /**
+     * 是否对主题有：读权限
+     * @param themeId
+     * @param userId
+     * @return
+     */
+    boolean hasReadPermission(Long themeId, Long userId);
+
+    /**
+     * 是否对主题有：操作权限
+     * @param theme
+     * @param user
+     * @return
+     */
+    boolean hasOperatePermission(Theme theme, User user);
+
+    /**
+     * 是否对主题有：操作权限
+     * @param themeId
+     * @param userId
+     * @return
+     */
+    boolean hasOperatePermission(Long themeId, Long userId);
+
+    /**
+     * 是否对主题有：读和操作权限
+     * @param theme
+     * @param user
+     * @return
+     */
+    boolean hasReadAndOperatePermission(Theme theme, User user);
+
+    /**
+     * 是否对主题有：读和操作权限
+     * @param themeId
+     * @param userId
+     * @return
+     */
+    boolean hasReadAndOperatePermission(Long themeId, Long userId);
 }

@@ -1,9 +1,11 @@
 package hdispatch.core.dispatch.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
+import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.mapper.HdispatchAuthorityMapper;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import org.apache.log4j.Logger;
@@ -114,5 +116,108 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
             }
         }
         return filterList;
+    }
+
+    /**
+     * 是否对主题有：读权限
+     * @param theme
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean hasReadPermission(Theme theme, User user) {
+        return hasReadPermission(theme.getThemeId(),user.getUserId());
+    }
+
+    /**
+     * 是否对主题有：读权限
+     * @param themeId
+     * @param userId
+     * @return
+     */
+    @Override
+    public boolean hasReadPermission(Long themeId, Long userId) {
+        if(!checkNotNull(userId,themeId))
+            return false;
+        Map<String,Object> map = new HashMap();
+        map.put("userId",userId);
+        map.put("themeId",themeId);
+        map.put("authRead","Y");
+        map.put("authOperate",null);
+
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityMapper.selectAuthorityForValidate(map);
+
+        return (null != authorityList) && (authorityList.size() > 0);
+    }
+
+    /**
+     * 是否对主题有：操作权限
+     * @param theme
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean hasOperatePermission(Theme theme, User user) {
+        return hasOperatePermission(theme.getThemeId(),user.getUserId());
+    }
+
+    /**
+     * 是否对主题有：操作权限
+     * @param themeId
+     * @param userId
+     * @return
+     */
+    @Override
+    public boolean hasOperatePermission(Long themeId, Long userId) {
+        if(!checkNotNull(userId,themeId))
+            return false;
+        Map<String,Object> map = new HashMap();
+        map.put("userId",userId);
+        map.put("themeId",themeId);
+        map.put("authRead",null);
+        map.put("authOperate","Y");
+
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityMapper.selectAuthorityForValidate(map);
+
+        return (null != authorityList) && (authorityList.size() > 0);
+    }
+
+    /**
+     * 是否对主题有：读和操作权限
+     * @param theme
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean hasReadAndOperatePermission(Theme theme, User user) {
+        return hasReadAndOperatePermission(theme.getThemeId(),user.getUserId());
+    }
+
+    /**
+     * 是否对主题有：读和操作权限
+     * @param themeId
+     * @param userId
+     * @return
+     */
+    @Override
+    public boolean hasReadAndOperatePermission(Long themeId, Long userId) {
+        if(!checkNotNull(userId,themeId))
+            return false;
+        Map<String,Object> map = new HashMap();
+        map.put("userId",userId);
+        map.put("themeId",themeId);
+        map.put("authRead","Y");
+        map.put("authOperate","Y");
+
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityMapper.selectAuthorityForValidate(map);
+
+        return (null != authorityList) && (authorityList.size() > 0);
+    }
+
+    private boolean checkNotNull(Long userId, Long themeId){
+        if(null == userId || null == themeId){
+            return false;
+        }
+        return true;
     }
 }
