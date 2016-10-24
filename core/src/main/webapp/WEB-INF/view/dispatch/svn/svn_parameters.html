@@ -102,15 +102,18 @@
                          2.发送删除请求
                          */
                         var grid = $("#svnParametersListGrid").data("kendoGrid");
-                        var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
                             kendo.ui.showConfirmDialog({
                                 title: $l('hap.tip.info'),
                                 message: $l('hap.tip.delete_confirm')
                             }).done(function (event) {
                                 if (event.button == 'OK') {
-                                    $.each(checked, function (key,value) {
-                                        grid.dataSource.remove(value);
+                                    $.each(checkedIds, function (key,value) {
+                                        if(checkedIds[key])
+                                        {
+                                            grid.dataSource.remove(grid.dataSource.get(key));
+                                            checkedIds[key]=false;
+                                        }
                                     });
                                     grid.dataSource.sync();
                                 }
@@ -239,14 +242,18 @@
                             }
                         },
                         errors: function(res){
-                            if(!res.success) {
-                                if(res.message){
-                                    return res.message;
-                                }
-                            }else{
-                                if(res.message){
-                                    return res.message;
-                                }
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function(e){
+                        if(e.errors){
+                            alert(e.errors);
+                        }else {
+                            var responseText = eval("("+e.xhr.responseText+")");
+                            if(!responseText.success && responseText.message){
+                                alert(responseText.message);
                             }
                         }
                     }
@@ -278,7 +285,8 @@
                         {
                             name:"create",
                             text:'<@spring.message "hdispatch.create"/>',
-                            template : '<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
+//                            template : '<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
+                            template : '<span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
                         },
                         {
                             name:"importFromExcel",
@@ -320,23 +328,83 @@
                                     width: 30
                                 },
                                 { 'field': 'scheduleParaId','hidden':true },
-                                { 'field': 'subjectName','title':'<@spring.message "hdispatch.svn.svn_parameter.subject_name"/>', 'width': 100 },
-                                { 'field': 'mappingName','title':'<@spring.message "hdispatch.svn.svn_parameter.mapping_name"/>', 'width': 100 },
-                                { 'field': 'sessionName','title':'<@spring.message "hdispatch.svn.svn_parameter.session_name"/>', 'width': 100 },
-                                { 'field': 'workFlowName','title':'<@spring.message "hdispatch.svn.svn_parameter.workflow_name"/>', 'width': 100 },
-                                { 'field': 'parameterName','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_name"/>', 'width': 100 },
+                                {
+                                    'field': 'subjectName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.subject_name"/>',
+                                    'width': 100,
+                                    editor:subjectNameEditor,
+                                    template:"#=subjectName#"
+                                },
+                                {
+                                    'field': 'mappingName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.mapping_name"/>',
+                                    'width': 100,
+                                    editor:mappingNameEditor,
+                                    template:"#=mappingName#"
+                                },
+                                {
+                                    'field': 'sessionName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.session_name"/>',
+                                    'width': 100,
+                                    editor:sessionNameEditor,
+                                    template:"#=sessionName#"
+                                },
+                                {
+                                    'field': 'workFlowName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.workflow_name"/>',
+                                    'width': 100,
+                                    editor:workFlowNameEditor,
+                                    template:"#=workFlowName#"
+                                },
+                                {
+                                    'field': 'parameterName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_name"/>',
+                                    'width': 100,
+                                    editor:parameterNameEditor,
+                                    template:"#=parameterName#"
+                                },
                                 { 'field': 'parameterValue','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_value"/>', 'width': 100 },
                                 { 'field': 'formatMask','title':'<@spring.message "hdispatch.svn.svn_parameter.format_mask"/>', 'width': 100 },
                                 { 'field': 'paraOffset','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_offset"/>', 'width': 60 },
 //                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd HH:mm:ss}', 'width': "100px" },
-                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
-                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
+//                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
+//                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
                                 { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': 60 },
-                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': 70,editor:enableFlagEditor,template:"#=enableFlag#" }
+//                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': 70,editor:enableFlagEditor,template:"#=enableFlag#" }
 //                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
                     ],
-                    editable: true
+                    editable: true,
+                    edit: function (e) {
+                        if(e.model.scheduleParaId){
+                            $("#subjectName_grid_input").attr("readonly","readonly");
+                            $("#mappingName_grid_input").attr("readonly","readonly");
+                            $("#sessionName_grid_input").attr("readonly","readonly");
+                            $("#workFlowName_grid_input").attr("readonly","readonly");
+                            $("#parameterName_grid_input").attr("readonly","readonly");
+                        }
+                    }
                 });
+                function subjectNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="subjectName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+                function mappingNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="mappingName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+                function sessionNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="sessionName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+                function workFlowNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="workFlowName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+
+                function parameterNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="parameterName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
                 //自定义toolbar中的按钮
                 $(".k-grid-importFromExcel").click(function(e){
                     showImportFromExcelWindow(e);
@@ -383,6 +451,8 @@
                 kendo.bind($('#theme-content'),viewModel);
 
             });
+
+
             function showImportFromExcelWindow(e) {
                 e.preventDefault();
 
@@ -531,7 +601,7 @@
                     <div class="demo-section k-content">
                         <input name="excelFiles" type="file" />
                         <p style="padding-top: 1em; text-align: right">
-                            <button id="excelFormButton" disabled="disabled" class="k-button k-primary" onclick="submitImportFromExcelForm()"><@spring.message "hdispatch.create"/></button>
+                            <button id="excelFormButton" disabled="disabled" class="k-button k-primary" onclick="submitImportFromExcelForm()"><@spring.message "hdispatch.svn.import_excel.import"/></button>
                         </p>
                     </div>
                 </form>
