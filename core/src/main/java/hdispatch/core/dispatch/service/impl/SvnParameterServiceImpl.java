@@ -280,4 +280,24 @@ public class SvnParameterServiceImpl implements SvnParameterService {
 //        return batchUpdate(null,svnParameters);
         return batchUpdate(null,excelFileToList(files[0]));
     }
+
+    /**
+     * 根据subjectName、mappingName、parameterName判断是否已经存在,
+     * 如果已经存在，那个直接将add状态变为update状态
+     * @param svnParameterList
+     * @return
+     */
+    @Override
+    public void preAddHandle(List<SvnParameter> svnParameterList) {
+        for(SvnParameter parameter : svnParameterList){
+            SvnParameter temp = new SvnParameter();
+            temp.setSubjectName(parameter.getSubjectName()).
+                    setMappingName(parameter.getMappingName()).
+                    setParameterName(parameter.getParameterName());
+            List<SvnParameter> returnList = svnParameterMapper.selectForCheck_2(temp);
+            if(null != returnList && 0 < returnList.size()){
+                parameter.set__status(DTOStatus.UPDATE);
+            }
+        }
+    }
 }
