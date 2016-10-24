@@ -89,7 +89,10 @@
                 {
                     width: '20px',
                     template: function (item) {
-                        var html = "<input type='checkbox' ng-checked='vm.isChecked(" + item.workflowId + ")' ng-click='vm.updateSelected($event," + item.workflowId + ")'/>";
+                        if (item.flowId&&item.project)
+                            var html = "<input type='checkbox' ng-checked='vm.isChecked(" + item.workflowId + ")' ng-click='vm.updateSelected($event," + item.workflowId + ")'/>";
+                        else
+                            var html = '';
                         return html;
                     }
                 },
@@ -220,6 +223,7 @@
                     vm.executeInfo.loading--;
                     if (vm.showExecuteGraph) {
                         window.setTimeout(function () {
+                            vm.disabledEl = new Set;
                             vm.paint.parse(data.graph);
                             vm.paint.format({
                                 rankDir: "TB",
@@ -234,7 +238,7 @@
                     if (data.projectName && data.flowId) {
                         vm.executeInfo.flows[data.workflowId] = {};
                         vm.executeInfo.flows[data.workflowId].project = data.projectName;
-                        vm.executeInfo.flows[data.workflowId].flow = "_" + data.flowId;
+                        vm.executeInfo.flows[data.workflowId].flow = data.flowId;
                         vm.executeInfo.name += (data.name + '  ');
                     } else {
                         vm.notification.show({
@@ -249,6 +253,7 @@
             }
         };
         vm.executeSubmit = function () {
+            console.log(gatherDisableElements());
             if (vm.executeInfo.successEmails) {
                 vm.executeInfo.successEmailsOverride = true;
             }
@@ -256,6 +261,7 @@
                 vm.failureEmailsOverride = true;
             }
             for (var id in vm.executeInfo.flows) {
+                if (vm.showExecuteGraph) vm.executeInfo.disabled = JSON.stringify(gatherDisableElements());
                 vm.executeInfo.project = vm.executeInfo.flows[id].project;
                 vm.executeInfo.flow = vm.executeInfo.flows[id].flow;
                 var arg = angular.copy(vm.executeInfo);
@@ -335,16 +341,22 @@
                         vm.disabledEl.delete(paths.join('.'));
                         break;
                     case "disable":
-                        var i = 0;
+                        var i = 1;
                         var canDisable = true;
                         do {
                             if (vm.disabledEl.has(paths.slice(0, i).join("."))) {
                                 canDisable = false;
                                 break;
                             }
+                            i++;
                         } while (i < paths.length - 1)
-                        if (canDisable)
+                        if (canDisable) {
                             vm.disabledEl.add(paths.join('.'));
+                            for (var el of vm.disabledEl) {
+                                if (el.startsWith(paths.join('.') + "."))
+                                    vm.disabledEl.delete(el)
+                            }
+                        }
                         break;
                 }
                 refreshColor();
@@ -356,6 +368,51 @@
                 if (vm.paint.getElementByPath(elName))
                     vm.paint.setNodeColor(vm.paint.getElementByPath(elName).id, 'red');
             }
+        }
+
+        function gatherDisableElements() {
+            var elements = new Map;
+            vm.disabledEl.forEach(function (element) {
+                var path = element.split(".");
+                if (path.length == 1) {
+                    elements.set(element, element);
+                } else {
+                    var i = 0;
+                    var value = null;
+                    do {
+                        if (i > 0) {
+                            if (i < path.length - 1) {
+                                var preValue = value;
+                                for (var child of value.children) {
+                                    if (child.id == path[i]) {
+                                        value = child;
+                                    }
+                                }
+                                if (value == preValue) {
+                                    var tmp = {id:path[i],children:[]};
+                                    value.children.push(tmp);
+                                    value = tmp;
+                                }
+                            } else {
+                                value.children.push(path[i]);
+                            }
+                        } else if (i == 0) {
+                            if (elements.has(path[i])) {
+                                value = elements.get(path[i]);
+                            } else {
+                                value = {id:path[i],children:[]};
+                                elements.set(path[i],value);
+                            }
+                        }
+                        i++;
+                    } while (i < path.length);
+                }
+            });
+            var result = [];
+            for (var node of elements.values()) {
+                result.push(node);
+            }
+            return result;
         }
 
         var disabledElement = null;

@@ -131,7 +131,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         projectService.createProject(workflow.getName(), workflow.getDescription());
         Map<String, String> result = projectService.uploadProjectFile(workflow.getName(), projectFile);
         if (!result.containsKey("error")) {
-            workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), workflow.getName());
+            workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), "_"+workflow.getName());
         }
         return !result.containsKey("error");
     }

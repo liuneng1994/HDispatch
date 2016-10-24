@@ -100,6 +100,34 @@ var Paint = (function (mode) {
         var tmpLinks = new Set;
 
         function show() {
+            function getDeepSource(id) {
+                var deepSources = new Set;
+                for (var source of sourceMap.get(id)) {
+                    if (source instanceof joint.shapes.node.flow && source.prop('expanded')) {
+                        for (var deepSource of getDeepSource(source.id)) {
+                            deepSources.add(deepSource);
+                        }
+                    } else {
+                        deepSources.add(source);
+                    }
+                }
+                return deepSources;
+            }
+
+            function getDeepLeaf(id) {
+                var deepLeafs = new Set;
+                for (var leaf of leafMap.get(id)) {
+                    if (leaf instanceof joint.shapes.node.flow && leaf.prop('expanded')) {
+                        for (var deepLeaf of getDeepLeaf(leaf.id)) {
+                            deepLeafs.add(deepLeaf);
+                        }
+                    } else {
+                        deepLeafs.add(leaf);
+                    }
+                }
+                return deepLeafs;
+            }
+
             var sourceSet = new Set(_graph.getSources());
             var sourceMap = new Map;
             for (var source of sourceSet) {
@@ -132,29 +160,29 @@ var Paint = (function (mode) {
                 var source = _graph.getCell(flowLink.getSourceElement().id);
                 if (source instanceof joint.shapes.basic.Rect && target instanceof joint.shapes.node.flow && target.prop('expanded')) {
                     flowLink.remove();
-                    for (var node of sourceMap.get(target.id)) {
+                    for (var node of getDeepSource(target.id)) {
                         tmpLinks.add(paint.linkNode(source.id, node.id, false));
                     }
                 } else if (target instanceof joint.shapes.basic.Rect && source instanceof joint.shapes.node.flow && source.prop('expanded')) {
                     flowLink.remove();
-                    for (var node of leafMap.get(source.id)) {
+                    for (var node of getDeepLeaf(source.id)) {
                         tmpLinks.add(paint.linkNode(node.id, target.id, false));
                     }
                 } else if (source instanceof joint.shapes.node.flow && target instanceof joint.shapes.node.flow) {
                     if (source.prop('expanded') && !target.prop('expanded')) {
                         flowLink.remove();
-                        for (var node of leafMap.get(source.id)) {
+                        for (var node of getDeepLeaf(source.id)) {
                             tmpLinks.add(paint.linkNode(node.id, target.id, false));
                         }
                     } else if (!source.prop('expanded') && target.prop('expanded')) {
                         flowLink.remove();
-                        for (var node of sourceMap.get(target.id)) {
+                        for (var node of getDeepSource(target.id)) {
                             tmpLinks.add(paint.linkNode(source.id, node.id, false));
                         }
                     } else if (source.prop('expanded') && target.prop('expanded')) {
                         flowLink.remove();
-                        for (var sourceNode of leafMap.get(source.id)) {
-                            for (var targetNode of sourceMap.get(target.id)) {
+                        for (var sourceNode of getDeepLeaf(source.id)) {
+                            for (var targetNode of getDeepSource(target.id)) {
                                 tmpLinks.add(paint.linkNode(sourceNode.id, targetNode.id, false));
                             }
                         }
@@ -180,6 +208,7 @@ var Paint = (function (mode) {
 
     Paint.prototype.format = function (opt) {
         layouting = true;
+        opt = opt||{};
         opt = {
             nodeSep: opt.nodeSep || 50,
             edgeSep: opt.edgeSep || 80,

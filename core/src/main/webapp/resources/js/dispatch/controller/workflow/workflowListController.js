@@ -93,13 +93,13 @@
             $('#grid').data('kendoGrid').dataSource
                 .read();
         };
-        vm.create=function(url) {
+        vm.create = function (url) {
             window.location = url;
         }
 
         vm.edit = function (id) {
             $window.sessionStorage['workflowId'] = id;
-            location = '/dispatch/workflow/workflow_update.html';
+            location = _basePath + '/dispatch/workflow/workflow_update.html';
         };
 
         vm.themeChange = function (themeId) {
