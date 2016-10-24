@@ -61,6 +61,7 @@
 								actions : [ "Maximize", "Minimize", "Close" ],
 								width : 520,
 								height : 350,
+								modal: true,
 								title : job_id
 										+ ' <@spring.message "hdispatch.flowlist.jobgrid.logdetail"/>',
 								visible : false,
@@ -72,14 +73,14 @@
 		}
 
 		window.stateColor = {
-			"PAUSED" : "background-color:#FFCC00;",
-			"RUNNING" : "background-color:#00CC00;",
-			"SUCCESS" : "background-color:#33FF00;",
-			"FAILED" : "background-color:#FF3333;",
-			"SUCCESS" : "background-color:#5CB85C;",
-			"FAILED" : "background-color:#D9534F;",
-			"KILLED" : "background-color:#D9534F;",
-			"PREPARING" : "background-color:#DDDDDD;"
+				"PAUSED" : "background-color:#FFCC00;",
+				"RUNNING" : "background-color:#00CC00;",
+				"SUCCESS" : "background-color:#33FF00;",
+				"FAILED" : "background-color:#FF3333;",
+				"SUCCESS" : "background-color:#5CB85C;",
+				"FAILED" : "background-color:#D9534F;",
+				"KILLED" : "background-color:#D9534F;",
+				"PREPARING" : "background-color:#DDDDDD;"
 		};
 
 		$(document)
@@ -233,7 +234,19 @@
 																		.split(',')[1];
 																var length = status
 																		.split(',')[2];
-
+																var stausc='';
+																if (item.status == 50)
+																	stausc = '#5CB85C';
+																else if (item.status == 70)
+																	stausc = '#D9534F';
+																else if (item.status == 20)
+																	stausc = '#DDDDDD';
+																else if (item.status == 30)
+																	stausc = '#00CC00';
+																else if (item.status == 60)
+																	stausc = '#D9534F';
+																else if (item.status == 40)
+																	stausc = '#FFCC00';
 																var color1;
 																var color2;
 																var color3;
@@ -256,7 +269,7 @@
 																		r2=1;
 					
 																	r3 = 0;
-																	color1 = "#5CB85C";
+																	color1 = stausc;
 																	color2 = "#E6E6E6";
 																	color3 = "#E6E6E6";
 																} else if (end == length) {
@@ -279,7 +292,7 @@
 
 																	color1 = "#E6E6E6";
 																	color2 = "#E6E6E6";
-																	color3 = "#5CB85C";
+																	color3 = stausc;
 																} else {
 																	r1 = Math
 																			.floor((start - 0)
@@ -303,7 +316,7 @@
 																		r3=1;
 
 																	color1 = "#E6E6E6";
-																	color2 = "#5CB85C";
+																	color2 = stausc;
 																	color3 = "#E6E6E6";
 																}
 
@@ -452,6 +465,12 @@
 																	status = 'FAILED';
 																else if (item.status == 20)
 																	status = 'PREPARING';
+																else if (item.status == 30)
+																	status = 'RUNNING';
+																else if (item.status == 60)
+																	status = 'KILLED';
+																else if (item.status == 40)
+																	status = 'PAUSED';
 																var html = "<div "
 																		+ "style='text-align:center;width:80px;height:13px;text-decoration: none;border-radius:5px;"
 																		+ (stateColor[status])
