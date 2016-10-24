@@ -188,13 +188,43 @@ public class LayerController extends BaseController {
         try{
             rd = new ResponseData(layerService.batchUpdate(requestContext,layerList));
         }catch (Exception e){
+            rd = new ResponseData(false);
             if(LayerService.DUPLICATE_LAYER_NAME_UNDER_THEME.equals(e.getMessage())){
                 String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_duplicate_layer_under_theme",null,locale);
                 logger.error(errorMsg,e);
-                throw new Exception(errorMsg,e);
+                rd.setMessage(errorMsg);
+
+//                throw new Exception(errorMsg,e);
             }else {
-                throw e;
+//                throw e;
             }
+            return rd;
+        }
+        return rd;
+    }
+
+    /**
+     * 批量删除layer
+     */
+    @RequestMapping(value = "/dispatcher/layer/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData deleteJobs(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+        try {
+            layerService.batchUpdate(requestContext, layerList);
+            rd = new ResponseData(true);
+            rd.setMessage("success");
+        } catch (Exception e) {
+            String errorMsg = getMessageSource().getMessage("hdispatch.error_during_deleting", null, locale);
+            logger.error(errorMsg, e);
+            rd = new ResponseData(false);
+            rd.setMessage(errorMsg);
+            return rd;
         }
         return rd;
     }
