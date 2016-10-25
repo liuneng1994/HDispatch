@@ -25,4 +25,6 @@ public interface WorkflowMapper {
     String getGraph(Long workflowId);
 
     List<SimpleWorkflow> query(@Param("themeId") Long themeId, @Param("layerId") Long layerId, @Param("workflowName") String workflowName, @Param("description") String decription);
+
+    List<SimpleWorkflow> queryWorkflowUnderLayer(@Param("layerId") Long layerId);
 }

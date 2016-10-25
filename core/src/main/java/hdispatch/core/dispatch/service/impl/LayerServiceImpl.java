@@ -3,13 +3,18 @@ package hdispatch.core.dispatch.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
+import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.layer.Layer;
+import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
+import hdispatch.core.dispatch.mapper.JobMapper;
 import hdispatch.core.dispatch.mapper.LayerMapper;
+import hdispatch.core.dispatch.mapper.WorkflowMapper;
 import hdispatch.core.dispatch.service.LayerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +26,10 @@ public class LayerServiceImpl implements LayerService {
     private Logger logger = Logger.getLogger(LayerServiceImpl.class);
     @Autowired
     private LayerMapper layerMapper;
+    @Autowired
+    private JobMapper jobMapper;
+    @Autowired
+    private WorkflowMapper workflowMapper;
     /**
      * 创建层，同时创建层附带的流
      */
@@ -113,5 +122,24 @@ public class LayerServiceImpl implements LayerService {
     public List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext) {
         List<Layer> layerList = layerMapper.selectAllActiveLayers();
         return layerList;
+    }
+
+    @Override
+    public List<Layer> checkIsMountJobOrWorkflow(List<Layer> layerList) {
+        List<Layer> returnList = new ArrayList<>();
+        for(Layer layer : layerList){
+            Job job = new Job();
+            job.setLayerId(layer.getLayerId());
+            List<Job> jobs = jobMapper.selectByJob(job);
+            if(null != job && 0 < jobs.size()){
+                returnList.add(layer);
+            }else {
+                List<SimpleWorkflow> simpleWorkflows = workflowMapper.queryWorkflowUnderLayer(layer.getLayerId());
+                if(null != simpleWorkflows && 0 < simpleWorkflows.size()){
+                    returnList.add(layer);
+                }
+            }
+        }
+        return returnList;
     }
 }

@@ -54,4 +54,12 @@ public interface SvnParameterMapper {
      * @return
      */
     List<SvnParameter> selectForCheck(SvnParameter svnParameter);
+    /**
+     * 用于检测是否参数已经存在(2016.10.24需求变更，只需要检查SUBJECT_NAME、MAPPING_NAME、PARAMETER_NAME)
+     * 判定条件：subjectName,mappingName,parameterName
+     * @param svnParameter
+     * @return
+     */
+    List<SvnParameter> selectForCheck_2(SvnParameter svnParameter);
+
 }

@@ -20,4 +20,6 @@ public interface LayerService {
     List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext);
 
     public static final String DUPLICATE_LAYER_NAME_UNDER_THEME="duplicate layer name under same theme";
+
+    List<Layer> checkIsMountJobOrWorkflow(List<Layer> layerList);
 }
