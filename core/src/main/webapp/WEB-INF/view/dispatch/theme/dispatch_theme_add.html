@@ -76,6 +76,7 @@
                             modal: true,
                             visible: false,
                             resizable: false,
+                            actions : [ "Maximize", "Minimize", "Close"],
                             width: 800,
                             height:450
                         }).data("kendoWindow");
@@ -294,18 +295,15 @@
                     },
                     batchDeleteFunction: function (e) {
                         var grid = $("#layerListGrid").data("kendoGrid");
+                        var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
                             kendo.ui.showConfirmDialog({
                                 title: $l('hap.tip.info'),
                                 message: $l('hdispatch.theme.layer.delete_tips')
                             }).done(function (event) {
                                 if (event.button == 'OK') {
-                                    $.each(checkedIds, function (key,value) {
-                                        if(checkedIds[key])
-                                        {
-                                            grid.dataSource.remove(grid.dataSource.get(key));
-                                            checkedIds[key]=false;
-                                        }
+                                    $.each(checked, function (key,value) {
+                                        grid.dataSource.remove(value);
                                     });
                                     grid.dataSource.sync();
                                 }
@@ -342,16 +340,22 @@
                             //封装请求参数
                             if (operation !== "read" && options.models) {
                                 var layer_datas = options.models;
-                                if(operation =='create' || operation =='update'){
+                                if(operation =='create'){
                                     layer_datas = options.models.map(function(data){
-                                        data['__status'] = (operation =='create' ? 'add' : 'update');
+                                        data['__status'] = 'add';
+                                        return data;
+                                    });
+                                    for(var k in layer_datas){
+                                        layer_datas[k].themeId=layerHeaderData.themeId;
+                                    }
+                                }
+                                else if(operation =='update'){
+                                    layer_datas = options.models.map(function(data){
+                                        data['__status'] = 'update';
                                         return data;
                                     });
                                 }
-                                for(var k in layer_datas){
-                                    layer_datas[k].themeId=layerHeaderData.themeId;
-                                }
-                                if('destroy'==operation){
+                                else if('destroy'==operation){
                                     datas = options.models.map(function(data){
                                         data['__status'] = 'delete';
                                         return data;
@@ -414,7 +418,7 @@
                 $("#layerListGrid").kendoGrid({
                     dataSource: layers_data,
                     resizable: true,
-                    selectable: "multiple",
+                    selectable: "multiple,rowbox",
                     scrollable: false,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
@@ -436,36 +440,35 @@
                     },
                     columns:
                             [
-                                {
-                                    title: '',
-                                    template: '<input class="checkbox" type="checkbox"/>',
-                                    width: '12px',
-                                    headerAttributes: {style: "text-align:center"},
-                                    attributes: {style: "text-align:center"}
-                                },
                                 { 'field': 'layerName','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "140px" },
                                 { 'field': 'layerDescription','title':'<@spring.message "hdispatch.layer.layer_description"/>', 'width': "140px" },
-                                { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "140px" }
+                                { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "140px" },
+                                {
+                                    attributes: {style: "text-align:center;padding:0px"},
+                                    command : [{
+                                        name:'remove',
+                                        template : '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
+                                        click: function(e){
+                                            var th = this;
+                                            e.preventDefault();
+                                            kendo.ui.showConfirmDialog({
+                                                title:$l('hap.tip.info'),
+                                                message: $l('hap.tip.delete_confirm')
+                                            }).done(function(event){
+                                                if(event.button == 'OK'){
+                                                    var data = th.dataItem($(e.target).closest("tr"));
+                                                    th.dataSource.remove(data);
+                                                    th.dataSource.sync()
+                                                }
+                                            })
+                                        }
+                                    }],
+                                    width:"40px"
+                                }
                             ],
                     editable: true
                 });
                 kendo.bind($('#layer-content'),layerViewModel);
-                //只用采用这种方式才能避免checkbox选中，但是读取数据时却没有被传递到后台
-                $("#layerListGrid").on("click", ".checkbox" , selectRow);
-                var checkedIds = {};
-                function selectRow() {
-                    var checked = this.checked,
-                            row = $(this).closest("tr"),
-                            grid = $("#layerListGrid").data("kendoGrid"),
-                            dataItem = grid.dataItem(row);
-
-                    checkedIds[dataItem.layerId] = checked;
-                    if (checked) {
-                        row.addClass("k-state-selected");
-                    } else {
-                        row.removeClass("k-state-selected");
-                    }
-                }
             }
         </script>
         <script type="text/x-kendo-template" id="template">

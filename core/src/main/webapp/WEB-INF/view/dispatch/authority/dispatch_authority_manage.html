@@ -69,12 +69,8 @@
                                 message: $l('hap.tip.delete_confirm')
                             }).done(function (event) {
                                 if (event.button == 'OK') {
-                                    $.each(checkedIds, function (key,value) {
-                                        if(checkedIds[key])
-                                        {
-                                            grid.dataSource.remove(grid.dataSource.get(key));
-                                            checkedIds[key]=false;
-                                        }
+                                    $.each(checked, function (key,value) {
+										grid.dataSource.remove(value);
                                     });
                                     grid.dataSource.sync();
                                 }
@@ -207,7 +203,7 @@
                     $("#authorityListGrid").kendoGrid({
 						dataSource: authorities_data,
 						resizable: true,
-						selectable: "multiple",
+						selectable: "multiple,rowbox",
 						scrollable: true,
 						pageable: {
 							pageSizes:[10, 20, 50, 100],
@@ -229,13 +225,6 @@
 						},
 						columns:
 								[
-                                    {
-                                        title: '',
-                                        template: '<input class="checkbox" type="checkbox"/>',
-                                        width: '12px',
-                                        headerAttributes: {style: "text-align:center"},
-                                        attributes: {style: "text-align:center"}
-                                    },
 									{
 										'field': 'authorityId','hidden':true
 									},
@@ -445,22 +434,6 @@
                             dataItem = grid.dataItem(target.closest("tr"));
                     dataItem.set(target.context.name, this.checked ? 'Y' : 'N');
                 });
-                $("#authorityListGrid").on("click", ".checkbox" , selectRow);
-                //只用采用这种方式才能避免checkbox选中，但是读取数据时却没有被传递到后台
-                var checkedIds = {};
-                function selectRow() {
-                    var checked = this.checked,
-                            row = $(this).closest("tr"),
-                            grid = $("#authorityListGrid").data("kendoGrid"),
-                            dataItem = grid.dataItem(row);
-
-                    checkedIds[dataItem.authorityId] = checked;
-                    if (checked) {
-                        row.addClass("k-state-selected");
-                    } else {
-                        row.removeClass("k-state-selected");
-                    }
-                }
 
 			</script>
 			<script type="text/x-kendo-template" id="usersNotInThemeGroup_template">

@@ -3,6 +3,7 @@ package hdispatch.core.dispatch.controllers;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.annotation.StdWho;
 import com.hand.hap.system.controllers.BaseController;
+import com.hand.hap.system.dto.DTOStatus;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.service.SvnParameterService;
@@ -68,6 +69,9 @@ public class SvnParameterController extends BaseController{
      * 创建SVN 参数
      *
      * description:检查待插入的svnParameter是否已经存在；若存在，给出提示信息；若不存在，执行插入
+     *
+     * 修改：2016.10.24 by yazheng.yang@hand-china.com
+     *  ,根据subjectName、mappingName、parameterName判断是否已经存在，若存在，直接更新；若不存在，执行插入
      * @param svnParameterList
      * @param result
      * @param request
@@ -78,55 +82,60 @@ public class SvnParameterController extends BaseController{
     public ResponseData addSvnParameters(@RequestBody @StdWho List<SvnParameter> svnParameterList, BindingResult result, HttpServletRequest request) {
 
         ResponseData rd = null;
-        //后台验证
-        getValidator().validate(svnParameterList, result);
-        if (result.hasErrors()) {
-            rd = new ResponseData(false);
-            rd.setMessage(getErrorMessage(result, request));
-            return rd;
-        }
-
-        //从后台判断是否存在
-        boolean[] isExist = svnParameterService.checkIsExist(svnParameterList);
-        StringBuilder sb = new StringBuilder();
-        boolean flag = false;
-        for (int i = 0; i < svnParameterList.size(); i++) {
-            if (isExist[i]) {
-                if (!flag) {
-                    sb.append(svnParameterList.get(i).getParameterName());
-                } else {
-                    sb.append("," + svnParameterList.get(i).getParameterName());
-                }
-                flag = true;
-            }
-        }
+//        //后台验证
+//        getValidator().validate(svnParameterList, result);
+//        if (result.hasErrors()) {
+//            rd = new ResponseData(false);
+//            rd.setMessage(getErrorMessage(result, request));
+//            return rd;
+//        }
+//
+//        //从后台判断是否存在
+//        boolean[] isExist = svnParameterService.checkIsExist(svnParameterList);
+//        StringBuilder sb = new StringBuilder();
+//        boolean flag = false;
+//        for (int i = 0; i < svnParameterList.size(); i++) {
+//            if (isExist[i]) {
+//                if (!flag) {
+//                    sb.append(svnParameterList.get(i).getParameterName());
+//                } else {
+//                    sb.append("," + svnParameterList.get(i).getParameterName());
+//                }
+//                flag = true;
+//            }
+//        }
+//
+//        if (flag) {
+//            rd = new ResponseData(false);
+//            //以下任务已经存在
+//            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.job_name_already_exist", null, locale);
+//            rd.setMessage(errorMsg+":" + sb.toString());
+//            return rd;
+//        }
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
-        if (flag) {
-            rd = new ResponseData(false);
-            //以下任务已经存在
-            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.job_name_already_exist", null, locale);
-            rd.setMessage(errorMsg+":" + sb.toString());
-            return rd;
-        }
         IRequest requestContext = createRequestContext(request);
-
+        //数据是否存在过滤，如果已经存在，那么变为update
+        svnParameterService.preAddHandle(svnParameterList);
         try {
-            rd = new ResponseData(svnParameterService.batchUpdate(requestContext, svnParameterList));
+            List<SvnParameter> returnList = svnParameterService.batchUpdate(requestContext, svnParameterList);
+//            for(SvnParameter temp : returnList){
+//                temp.set__status(DTOStatus.ADD);
+//            }
+            rd = new ResponseData(returnList);
         } catch (Exception e) {
             //保存任务中途失败
             String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_saving", null, locale);
             logger.error(errorMsg, e);
             rd = new ResponseData(false);
             rd.setMessage(errorMsg);
-            e.printStackTrace();
             return rd;
         }
         return rd;
     }
 
     /**
-     * 批量删除job
+     * 批量删除 参数
      */
     @RequestMapping(value = "/dispatcher/svnParameter/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody

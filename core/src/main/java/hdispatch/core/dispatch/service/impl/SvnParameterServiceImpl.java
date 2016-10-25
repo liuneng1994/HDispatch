@@ -305,6 +305,10 @@ public class SvnParameterServiceImpl implements SvnParameterService {
             List<SvnParameter> returnList = svnParameterMapper.selectForCheck_2(temp);
             if(null != returnList && 0 < returnList.size()){
                 parameter.set__status(DTOStatus.UPDATE);
+                //id回写，防止页面中缺失id
+                if(null == parameter.getScheduleParaId()){
+                    parameter.setScheduleParaId(returnList.get(0).getScheduleParaId());
+                }
             }
         }
     }

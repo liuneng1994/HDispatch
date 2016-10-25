@@ -35,4 +35,12 @@ public interface SvnParameterService {
      * @return
      */
     List<SvnParameter> batchCreateFromExcel(CommonsMultipartFile[] excelFiles) throws Exception;
+
+    /**
+     * 根据subjectName、mappingName、parameterName判断是否已经存在,
+     * 如果已经存在，那个直接将add状态变为update状态
+     * @param svnParameterList
+     * @return
+     */
+    void preAddHandle(List<SvnParameter> svnParameterList);
 }

@@ -186,4 +186,12 @@
         AND hw.active=1
     </select>
 
+    <!--add by yazheng.yang@hand-china.com
+    2016.10.25
+    -->
+    <select id="queryWorkflowUnderLayer" resultMap="simpleWorkflow">
+        SELECT workflow_id
+        FROM hdispatch_workflow
+        WHERE layer_id = #{layerId}
+    </select>
 </mapper>
