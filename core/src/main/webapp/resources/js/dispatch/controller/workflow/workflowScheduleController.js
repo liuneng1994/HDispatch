@@ -23,7 +23,6 @@
             }]
 
         }).data("kendoNotification");
-        vm.selectedWorkflow = [];
         vm.workflow = {};
         vm.workflow.workflowName = '';
         vm.workflow.description = '';
@@ -61,7 +60,7 @@
                     }
                 }
             },
-            //width:500,
+            selectable: 'multiple, rowbox',
             navigatable: true,
             resizable: true,
             reorderable: true,
@@ -86,16 +85,7 @@
                 }
             },
             columns: [
-                {
-                    width: '20px',
-                    template: function (item) {
-                        if (item.flowId && item.project)
-                            var html = "<input type='checkbox' ng-checked='vm.isChecked(" + item.workflowId + ")' ng-click='vm.updateSelected($event," + item.workflowId + ")'/>";
-                        else
-                            var html = '';
-                        return html;
-                    }
-                },
+
                 {
                     field: "name",
                     title: '任务流',
@@ -119,8 +109,7 @@
         };
 
         vm.search = function () {
-            $('#grid').data('kendoGrid').dataSource
-                .read();
+            $('#grid').data('kendoGrid').dataSource.page(1);
         };
 
         vm.themeChange = function (themeId) {
@@ -128,20 +117,16 @@
             refreshLayers('layers', themeId);
         };
 
-        vm.isChecked = function (id) {
-            return vm.selectedWorkflow.indexOf(id) >= 0;
-        };
-
-        vm.updateSelected = function ($event, id) {
-            if ($event.target.checked) {
-                vm.selectedWorkflow.push(id);
-            } else {
-                var idx = vm.selectedWorkflow.indexOf(id);
-                vm.selectedWorkflow.splice(idx, 1);
-            }
-        };
+        function getSelectWorkflows() {
+            vm.selectedWorkflow = [];
+            var checked = $('#grid').data('kendoGrid').selectedDataItems();
+            checked.forEach(function(item) {
+                vm.selectedWorkflow.push(item.workflowId);
+            });
+        }
 
         vm.schedule = function () {
+            getSelectWorkflows();
             var selectedFlows = loadSelectedWorkflow();
             vm.scheduleFlow = {};
             vm.scheduleFlow.loading = selectedFlows.size;
@@ -206,6 +191,7 @@
         };
 
         vm.execute = function () {
+            getSelectWorkflows();
             vm.showExecuteGraph = false;
             var selectedFlows = loadSelectedWorkflow();
             vm.executeInfo = {};

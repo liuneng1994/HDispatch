@@ -86,9 +86,10 @@
 
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
-                        <div class="btn btn-success"
+                        <button class="btn btn-success"
                              ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
-                        </div>
+                        </button>
+                        <button class="btn btn-danger" ng-click="vm.deleteSelection()">删除</button>
                     </div>
                     <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
                 </div>

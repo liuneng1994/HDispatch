@@ -195,6 +195,12 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowMapper.query(themeId, layerId, workflowName, decription);
     }
 
+    @Override
+    public void deleteWorkflow(List<Integer> ids) {
+        Assert.notNull(ids,"Workflow ids can not be null");
+        workflowMapper.deleteByIds(ids);
+    }
+
     /**
      * 创建工作流的zip压缩文件
      *

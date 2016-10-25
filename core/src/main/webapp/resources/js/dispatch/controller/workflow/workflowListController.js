@@ -7,7 +7,6 @@
         vm.workflow = {};
         vm.workflow.workflowName = '';
         vm.workflow.description = '';
-        vm.total = 0;
         vm.themes = {};
         vm.layers = {};
         vm.gridOptions = {
@@ -19,24 +18,41 @@
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) vm.workflow.themeId = 0;
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) vm.workflow.layerId = 0;
                         workflowService.query(vm.workflow).then(function (data) {
-                            vm.total = data.total;
-                            options.success(data.rows);
+                            options.success(data);
+                        });
+                    },
+                    destroy: function(options) {
+                        "use strict";
+                        var ids = [];
+                        options.data.models.forEach(function(item) {
+                           ids.push(item.workflowId);
+                        });
+                        workflowService.deleteWorkflow(ids).then(function() {
+                           options.success();
                         });
                     }
                 },
                 batch: true,
                 serverPaging: true,
                 pageSize: 50,
-                schema: {
-                    total: function () {
-                        return vm.total;
+                schema:{
+                    data:"rows",
+                    total:"total",
+                    model: {
+                        id : 'workflowId',
+                        fields : {
+                            name : {},
+                            theme : {},
+                            layer : {},
+                            description: {}
+                        }
                     }
                 }
             },
             //width:500,
+            selectable:"multiple, rowbox",
             navigatable: true,
             resizable: true,
-            reorderable: true,
             scrollable: true,
             editable: false,
             pageable: {
@@ -83,15 +99,14 @@
                     title: '',
                     width: 150,
                     template: function (item) {
-                        var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>"
+                        var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
                         return html;
                     }
                 }]
         };
 
         vm.search = function () {
-            $('#grid').data('kendoGrid').dataSource
-                .read();
+            $('#grid').data('kendoGrid').dataSource.page(1);
         };
         vm.create = function (url) {
             window.location = url;
@@ -102,10 +117,15 @@
             location = _basePath + '/dispatch/workflow/workflow_update.html';
         };
 
+        vm.deleteSelection = function() {
+            "use strict";
+            Hap.deleteGridSelection({grid:$("#grid")});
+        }
+
         vm.themeChange = function (themeId) {
             vm.workflow.layerId = undefined;
             refreshLayers('layers', themeId);
-        }
+        };
 
 
         refreshThemes();
@@ -123,4 +143,4 @@
             });
         }
     }]);
-})()
+})();

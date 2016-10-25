@@ -95,7 +95,7 @@
                     defered.reject(scheduleInfo.projectName + '计划失败');
                 }
             });
-        }
+        };
 
         var executeWorkflow = function (executeInfo) {
             return httpService.postForm(_basePath + '/schedule/exeflow', executeInfo, function (data, defered) {
@@ -105,7 +105,14 @@
                     defered.reject(executeInfo.project + '执行失败');
                 }
             });
-        }
+        };
+
+        var deleteWorkflow = function (ids) {
+            "use strict";
+            return httpService.postJSON(_basePath + '/dispatcher/workflow/delete',ids, function (data, defered) {
+                defered.resolve("");
+            });
+        };
 
         return {
             themes: themes,
@@ -117,7 +124,8 @@
             query: query,
             workflow: workflow,
             scheduleWorkflow: scheduleWorkflow,
-            executeWorkflow: executeWorkflow
+            executeWorkflow: executeWorkflow,
+            deleteWorkflow: deleteWorkflow
         };
     }
 })();

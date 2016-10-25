@@ -171,4 +171,10 @@ public class WorkflowController extends BaseController {
         responseData.setMessage("更新成功");
         return responseData;
     }
+
+    @RequestMapping(path="/delete", method = RequestMethod.POST)
+    public ResponseData updateWorkflow(@RequestBody List<Integer> ids) {
+        workflowService.deleteWorkflow(ids);
+        return new ResponseData(true);
+    }
 }

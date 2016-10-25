@@ -16,6 +16,8 @@ public interface WorkflowMapper {
 
     int update(Workflow workflow);
 
+    int deleteByIds(List<Integer> ids);
+
     Workflow getById(Long workflowId);
 
     int updateProjectNameAndFlowIdById(@Param("workflowId") long workflowId,@Param("projectName") String projectName,@Param("flowId") String flowId);

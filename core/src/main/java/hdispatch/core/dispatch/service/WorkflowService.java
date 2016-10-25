@@ -25,4 +25,6 @@ public interface WorkflowService {
     String getGraph(long workflowId);
 
     List<SimpleWorkflow> queryWorkflow(Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
+
+    void deleteWorkflow(List<Integer> ids);
 }

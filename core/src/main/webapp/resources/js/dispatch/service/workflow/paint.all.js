@@ -208,7 +208,7 @@ var Paint = (function (mode) {
 
     Paint.prototype.format = function (opt) {
         layouting = true;
-        opt = opt||{};
+        opt = opt || {};
         opt = {
             nodeSep: opt.nodeSep || 50,
             edgeSep: opt.edgeSep || 80,
@@ -405,7 +405,7 @@ var Paint = (function (mode) {
                 },
                 text: {text: name, fill: 'black'}
             };
-            var width = name.length * 16 + 20 > 100 ? name.length * 16 + 20 : 100;
+            var width = name.length * 8 + 20 > 100 ? name.length * 8 + 20 : 100;
             return new joint.shapes.basic.Rect({
                 position: {x: x, y: y},
                 size: {
@@ -437,7 +437,7 @@ var Paint = (function (mode) {
                         y: 25,
                         x: 10,
                         'y-alignment': 'middle',
-                        'href': '/resources/images/graph-icon.png'
+                        'href': _basePath + '/resources/images/graph-icon.png'
                     },
                     text: {
                         ref: 'rect',
@@ -501,7 +501,7 @@ var Paint = (function (mode) {
             this.prop('expanded', false);
             graph.removeCells(this.getEmbeddedCells({deep: true}));
             var name = this.get('attrs').text.text;
-            var width = name.length * 16 + 60 > 100 ? name.length * 16 + 60 : 100;
+            var width = name.length * 8 + 60 > 100 ? name.length * 8 + 60 : 100;
             this.resize(width - width % 10 + (width % 10 ? 10 : 0), 50);
             var parent = graph.getCell(this.get('parent'));
             while (parent) {
@@ -511,7 +511,7 @@ var Paint = (function (mode) {
         };
 
         return function (name, x, y) {
-            var width = name.length * 8 + 60 > 100 ? name.length * 7 + 60 : 100;
+            var width = name.length * 8 + 60 > 100 ? name.length * 8 + 60 : 100;
             var node = new joint.shapes.node.flow({
                 position: {x: x, y: y},
                 attrs: {

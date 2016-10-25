@@ -123,6 +123,18 @@
             workflow_id=#{workflowId}
     </update>
 
+    <update id="deleteByIds" parameterType="list">
+        UPDATE
+            hdispatch_workflow
+        SET
+            active=0
+        WHERE
+            workflow_id IN
+            <foreach collection="list" open="(" index="index" item="id" separator="," close=")">
+                #{id}
+            </foreach>
+    </update>
+
     <update id="update" parameterType="hdispatch.core.dispatch.dto.workflow.Workflow">
         UPDATE
             hdispatch_workflow
@@ -132,7 +144,7 @@
             description=#{description},
             graph=#{graph}
         WHERE
-            workflow_id=#{workflowId}
+            workflow_id=#{workflowId} AND active=1
     </update>
     
     <select id="getGraph" resultType="string">
@@ -171,6 +183,7 @@
         <if test="layerId!=null">AND hw.layer_id = #{layerId}</if>
         AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
         AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')
+        AND hw.active=1
     </select>
 
 </mapper>
