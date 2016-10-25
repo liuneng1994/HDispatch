@@ -68,6 +68,14 @@ yazheng.yang@hand-china.com
         AND WORKFLOW_NAME = #{workFlowName}
     </select>
 
+    <!--2016.10.24需求变更，只需要检查SUBJECT_NAME、MAPPING_NAME、PARAMETER_NAME-->
+    <select id="selectForCheck_2" resultMap="baseMap">
+        SELECT * FROM hdispatch_fnd_schedule_parameter
+        WHERE PARAMETER_NAME=#{parameterName}
+        AND SUBJECT_NAME = #{subjectName}
+        AND MAPPING_NAME = #{mappingName}
+    </select>
+
     <insert id="create" useGeneratedKeys="true" keyProperty="scheduleParaId">
         INSERT INTO hdispatch_fnd_schedule_parameter (PARAMETER_NAME, PARAMETER_SORT, SUBJECT_NAME, MAPPING_NAME, SESSION_NAME, WORKFLOW_NAME, PARAMETER_VALUE, FORMAT_MASK, PARA_OFFSET, FREQUENCY, ENABLE_FLAG, START_DATE_ACTIVE, END_DATE_ACTIVE, CREATION_DATE, LAST_UPDATE_DATE)
         VALUES (#{parameterName},#{parameterSort},#{subjectName},#{mappingName},#{sessionName},#{workFlowName},#{parameterValue},#{formatMask},#{paraOffset},#{frequency},#{enableFlag},#{startDateActive},#{endDateActive},#{creationDate},#{lastUpdateDate})
