@@ -155,7 +155,8 @@ public class LayerController extends BaseController {
         if(flag){
             rd = new ResponseData(false);
             //以下层已经存在
-            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.layer_already_exist",null,locale);
+//            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.layer_already_exist",null,locale);
+            String errorMsg = getMessageSource().getMessage("hdispatch.server.error_tips.already_exist",null,locale);
             rd.setMessage(errorMsg+":"+sb.toString());
             return rd;
         }
@@ -215,6 +216,22 @@ public class LayerController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
+//        hdispatch.server.error_tips.already_exist  已经存在（多语言消息配置）
+        //检查是否层次的下面有任务或者任务流存在
+        List<Layer> layerListExist = layerService.checkIsMountJobOrWorkflow(layerList);
+        if(0 < layerListExist.size()){
+            String warningMsg = getMessageSource().getMessage("hdispatch.layer.delete.tips", null, locale);
+            StringBuilder sb = new StringBuilder(warningMsg+":");
+            for(Layer temp : layerListExist){
+                sb.append(temp.getLayerName()+",");
+            }
+
+            rd = new ResponseData(false);
+            rd.setMessage(sb.toString());
+
+            return rd;
+        }
+
         try {
             layerService.batchUpdate(requestContext, layerList);
             rd = new ResponseData(true);
