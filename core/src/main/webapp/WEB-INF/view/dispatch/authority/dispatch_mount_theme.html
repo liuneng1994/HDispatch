@@ -63,18 +63,15 @@
 					},
                     batchDeleteFunction: function (e) {
                         var grid = $("#themeListGrid").data("kendoGrid");
+						var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
                             kendo.ui.showConfirmDialog({
                                 title: $l('hap.tip.info'),
                                 message: $l('hap.tip.delete_confirm')
                             }).done(function (event) {
                                 if (event.button == 'OK') {
-                                    $.each(checkedIds, function (key,value) {
-                                        if(checkedIds[key])
-                                        {
-                                            grid.dataSource.remove(grid.dataSource.get(key));
-                                            checkedIds[key]=false;
-                                        }
+                                    $.each(checked, function (key,value) {
+                                        grid.dataSource.remove(value);
                                     });
                                     grid.dataSource.sync();
                                 }
@@ -198,7 +195,7 @@
                     $("#themeListGrid").kendoGrid({
 						dataSource: themes_data,
 						resizable: true,
-						selectable: "multiple",
+						selectable: "multiple,rowbox",
 						scrollable: true,
 						pageable: {
 							pageSizes:[10, 20, 50, 100],
@@ -225,13 +222,6 @@
 									},
 									{
 										'field': 'themeId','hidden':true
-									},
-									{
-										title: '',
-										template: '<input class="checkbox" type="checkbox"/>',
-										width: '12px',
-										headerAttributes: {style: "text-align:center"},
-										attributes: {style: "text-align:center"}
 									},
 									{
 										'field': 'themeName',
@@ -262,22 +252,6 @@
 					});
 					kendo.bind($('#theme-content'),viewModel);
 				});
-                $("#themeListGrid").on("click", ".checkbox" , selectRow);
-                //只用采用这种方式才能避免checkbox选中，但是读取数据时却没有被传递到后台
-                var checkedIds = {};
-                function selectRow() {
-                    var checked = this.checked,
-                            row = $(this).closest("tr"),
-                            grid = $("#themeListGrid").data("kendoGrid"),
-                            dataItem = grid.dataItem(row);
-
-                    checkedIds[dataItem.themeGroupThemeId] = checked;
-                    if (checked) {
-                        row.addClass("k-state-selected");
-                    } else {
-                        row.removeClass("k-state-selected");
-                    }
-                }
 
 				function themeSelector(container, options) {
 					$('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" id="grid_search_btn" class="k-icon k-i-search">&nbsp;</a></span>')

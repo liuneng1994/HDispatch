@@ -102,34 +102,20 @@
                          2.发送删除请求
                          */
                         var grid = $("#svnParametersListGrid").data("kendoGrid");
+                        var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
                             kendo.ui.showConfirmDialog({
                                 title: $l('hap.tip.info'),
                                 message: $l('hap.tip.delete_confirm')
                             }).done(function (event) {
                                 if (event.button == 'OK') {
-                                    $.each(checkedIds, function (key,value) {
-                                        if(checkedIds[key])
-                                        {
-                                            grid.dataSource.remove(grid.dataSource.get(key));
-                                            checkedIds[key]=false;
-                                        }
+                                    $.each(checked, function (key,value) {
+                                        grid.dataSource.remove(value);
                                     });
                                     grid.dataSource.sync();
                                 }
                             })
                         }
-//                        var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
-//                        if(confirmResult){
-//                            $.each(checkedIds,function(key,value){
-//                                if(checkedIds[key])
-//                                {
-//                                    svn_parameter_data.remove(svn_parameter_data.get(key));
-//                                    checkedIds[key]=false;
-//                                }
-//                            });
-//                            svn_parameter_data.sync();
-//                        }
                     },
                     exportToExcelFunction: function (e) {
                         e.preventDefault();
@@ -261,7 +247,7 @@
                 var svnParametersListGrid_kendo = $("#svnParametersListGrid").kendoGrid({
                     dataSource: svn_parameter_data,
                     resizable: true,
-                    selectable: "multiple",
+                    selectable: "multiple,rowbox",
                     scrollable: true,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
@@ -322,11 +308,6 @@
                     format:"{0:yyyy-MM-dd}",
                     columns:
                             [
-                                {
-                                    title: '',
-                                    template: '<input class="checkbox" type="checkbox"/>',
-                                    width: 30
-                                },
                                 { 'field': 'scheduleParaId','hidden':true },
                                 {
                                     'field': 'subjectName',
@@ -408,25 +389,6 @@
                 //自定义toolbar中的按钮
                 $(".k-grid-importFromExcel").click(function(e){
                     showImportFromExcelWindow(e);
-                });
-                $(".k-grid-batchDelete").click(function(e){
-                    /*
-                     确认是否批量删除
-                     进行删除
-                     1.从grid中移除数据
-                     2.发送删除请求
-                     */
-                    var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
-                    if(confirmResult){
-                        $.each(checkedIds,function(key,value){
-                            if(checkedIds[key])
-                            {
-                                svn_parameter_data.remove(svn_parameter_data.get(key));
-                                checkedIds[key]=false;
-                            }
-                        });
-                        svn_parameter_data.sync();
-                    }
                 });
 
                 //设置grid中enableFlag选择框
@@ -530,23 +492,6 @@
                 $("#excelFilesForm").resetForm(true);
                 //设置提交按钮不可用
                 $("#excelFormButton").attr("disabled",true);
-            }
-
-            //为grid中的checkBox绑定选中事件
-            $("#svnParametersListGrid").on("click", ".checkbox" , selectRow);
-            var checkedIds = {};
-            function selectRow() {
-                var checked = this.checked,
-                        row = $(this).closest("tr"),
-                        grid = $("#svnParametersListGrid").data("kendoGrid"),
-                        dataItem = grid.dataItem(row);
-
-                checkedIds[dataItem.scheduleParaId] = checked;
-                if (checked) {
-                    row.addClass("k-state-selected");
-                } else {
-                    row.removeClass("k-state-selected");
-                }
             }
 
             //获取当前行的数据

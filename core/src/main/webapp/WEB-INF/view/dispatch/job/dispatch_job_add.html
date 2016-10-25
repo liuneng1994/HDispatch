@@ -100,15 +100,6 @@
                         }).data("kendoWindow");
                 grid_svn_template = kendo.template($("#grid_svn_treeView_template").html());
 
-                //声明主窗口
-//                var viewModel = kendo.observable({
-//                    model:{themeId:'',layerId:'',jobName:'',page:''},
-//                    queryResource: function(e) {
-//                        viewModel.model.page=1;
-//                        $('#jobListGrid').data('kendoGrid').dataSource.read();
-//                    },
-//
-//                });
 
                 var viewModel = kendo.observable({
                     model:{themeId:'',layerId:'',jobName:'',page:''},
@@ -129,42 +120,16 @@
                         $('#jobListGrid').data('kendoGrid').dataSource.page(1);
                     },
                     batchDeleteFunction: function(e) {
-                        /*
-                         确认是否批量删除
-                         进行删除
-                         1.从grid中移除数据
-                         2.发送删除请求
-                         */
-//                        var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
-//                        if(confirmResult){
-//                            console.log("开始输出key");
-//                            $.each(checkedIds,function(key,value){
-//                                if(checkedIds[key])
-//                                {
-//                                    jobs_data.remove(jobs_data.get(key));
-//                                    checkedIds[key]=false;
-//                                    console.log(key);
-//                                }
-//                            });
-//                            jobs_data.sync();
-//                        }
                         var grid = $("#jobListGrid").data("kendoGrid");
-//                        var checked = grid.selectedDataItems();
+                        var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
                             kendo.ui.showConfirmDialog({
                                 title: $l('hap.tip.info'),
                                 message: $l('hap.tip.delete_confirm')
                             }).done(function (event) {
                                 if (event.button == 'OK') {
-//                                    $.each(checked, function (key,value) {
-                                    $.each(checkedIds, function (key,value) {
-//                                        grid.dataSource.remove(value);
-                                        if(checkedIds[key])
-                                        {
-                                            grid.dataSource.remove(grid.dataSource.get(key));
-                                            checkedIds[key]=false;
-//                                            console.log(key+","+value);
-                                        }
+                                    $.each(checked, function (key,value) {
+                                        grid.dataSource.remove(value);
                                     });
                                     grid.dataSource.sync();
                                 }
@@ -298,8 +263,7 @@
                 var jobListGrid_kendo = $("#jobListGrid").kendoGrid({
                     dataSource: jobs_data,
                     resizable: true,
-//                    selectable: "single",
-                    selectable: "multiple",
+                    selectable: "multiple,rowbox",
                     scrollable: true,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
@@ -319,111 +283,38 @@
                             refresh: '<@spring.message "hdispatch.grid_refresh"/>'
                         }
                     },
-//                    toolbar: [
-//                        {
-//                            name:"create",
-//                            text:'<@spring.message "hdispatch.create"/>'
-////                            template : '<span class="btn btn-primary"><@spring.message "hdispatch.create"/></span>'
-//                        },
-//                        {
-//                            name:"save",
-//                            text:'<@spring.message "hdispatch.save"/>'
-//                        },
-//                        {
-//                            name:"cancel",
-//                            text:'<@spring.message "hdispatch.cancel"/>'
-//                        },
-//                        {
-//                            name:"batchCreateJob",
-//                            text:'<@spring.message "hdispatch.job.batch_create"/>'
-//                        },
-//                        {
-//                            name:"batchDeleteJob",
-//                            text:'<@spring.message "hdispatch.job.batch_delete"/>'
-//                        }
-//                    ],
                     columns:
                         [
-                            {
-                                title: '',
-                                template: '<input class="checkbox" type="checkbox"/>',
-                                width: '16px'
-                            },
                             { 'field': 'jobId','hidden':true },
                             { 'field': 'themeId','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "70px", editor: themeDropDownEditor, template: "#=themeName#" },
                             { 'field': 'layerId','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "70px", editor: layerDropDownEditor, template: "#=layerName#" },
                             { 'field': 'jobSvn','title':'<@spring.message "hdispatch.job.svn.svn_file"/>', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
                             { 'field': 'jobName','title':'<@spring.message "hdispatch.job.job_name"/>', 'width': "150px" },
-//                            { command: ["edit"], text:{edit:"编辑",update:"保存",cancel:"取消"}, title: "&nbsp;", width: "200px" },
-//                            { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, spriteCssClass:'btn btn-danger k-grid-remove',title: "&nbsp;", width: "80px" }
-//                        {
-//                            field : "",
-//                            title : '',
-//                            width : 100,
-////                                template : "<button  class='btn btn-info'onclick='showDetails()'><@spring.message 'hdispatch.delete'/></button>"
-//                            template : function(
-//                                    item) {
-//                                var html = "<button  class='btn btn-info'onclick='doDeleteJob(\""+item.jobId+"\")'"
-//                                        + "><@spring.message 'hdispatch.delete'/>"
-//                                        + "</button>";
-//                                return html;
-//                            }
-//                        }
-                        {
-                            attributes: {style: "text-align:center;padding:0px"},
-                            command : [{
-                                name:'remove',
-                                template : '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
-                                click: function(e){
-                                    var th = this;
-                                    e.preventDefault();
-                                    kendo.ui.showConfirmDialog({
-                                        title:$l('hap.tip.info'),
-                                        message: $l('hap.tip.delete_confirm')
-                                    }).done(function(event){
-                                        if(event.button == 'OK'){
-                                            var data = th.dataItem($(e.target).closest("tr"));
-                                            th.dataSource.remove(data);
-                                            th.dataSource.sync()
-                                        }
-                                    })
-                                }
-                            }],
-                            width:"40px"
-                        }
+                            {
+                                attributes: {style: "text-align:center;padding:0px"},
+                                command : [{
+                                    name:'remove',
+                                    template : '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
+                                    click: function(e){
+                                        var th = this;
+                                        e.preventDefault();
+                                        kendo.ui.showConfirmDialog({
+                                            title:$l('hap.tip.info'),
+                                            message: $l('hap.tip.delete_confirm')
+                                        }).done(function(event){
+                                            if(event.button == 'OK'){
+                                                var data = th.dataItem($(e.target).closest("tr"));
+                                                th.dataSource.remove(data);
+                                                th.dataSource.sync()
+                                            }
+                                        })
+                                    }
+                                }],
+                                width:"40px"
+                            }
                         ],
-//                    editable: "inline"
                     editable: true
                 });
-
-                //自定义toolbar中的按钮
-//                $(".k-grid-batchCreateJob").click(function(e){
-//                    showBatchCreateJobWindow(e);
-//                });
-//                $(".k-grid-batchDeleteJob").click(function(e){
-//                    /*
-//                     确认是否批量删除
-//                     进行删除
-//                        1.从grid中移除数据
-//                        2.发送删除请求
-//                     */
-//                    var confirmResult = confirm('<@spring.message "hdispatch.job.delete.is_sure_batch_delete"/>');
-//                    if(confirmResult){
-//                        console.log("开始输出key");
-//                        $.each(checkedIds,function(key,value){
-//                            if(checkedIds[key])
-//                            {
-//                                jobs_data.remove(jobs_data.get(key));
-//                                checkedIds[key]=false;
-//                                console.log(key);
-//                            }
-//                        });
-////                        jobListGrid_kendo.dataSource.sync();
-//                        jobs_data.sync();
-////                        jobListGrid_kendo.refresh();
-////                        jobs_data.delete();
-//                    }
-//                });
                 //声明grid中的下拉框
                 var grid_themeDropDown_dataSource=new kendo.data.DataSource({
                     transport: {
@@ -606,28 +497,8 @@
                 });
 
                 function svnTreeEditor(container, options) {
-//                    $('<div required name="' + options.field + '"/>')
-//                            .appendTo(container)
-//                            .kendoTreeView({
-//                                checkboxes: {
-//                                    checkChildren: true
-//                                },
-//                                dataSource: homogeneous,
-//                                dataTextField: "nodeName",
-//                                check: onCheck
-//                    });
-//                    $('<button onclick="grid_button_click()">选择</button>')
-//                            .appendTo(container);
-//                    $('<div style="display:inline-block;margin:0%;padding:0px"><input id="grid_jobSvn_input" readonly="readonly" style="width:60%;"/><button onclick="grid_button_click()" style="width:30%;">选择</button></div>')
-//                            .appendTo(container);
-//$('<input id="grid_jobSvn_input" name="' + options.field + '" readonly="readonly" class="k-input k-textbox" style="width:60%;"/><button onclick="grid_button_click()" class="k-i-insert-n">...</button>')
-//                            .appendTo(container);
-
-$('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
+                    $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
                             .appendTo(container);
-
-
-
                 };
 
                 //声明两个查询用的下拉框
@@ -926,29 +797,6 @@ $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jo
             $("#jobListGrid").on("click", "tr", function (e) {
                 rowIndex_grid_edicting = $(this).index();
             });
-            //为grid中的checkBox绑定选中事件
-            $("#jobListGrid").on("click", ".checkbox" , selectRow);
-            //为grid中的TreeView中的每个k-item类型绑定双击事件
-            //移动到下面每次初始化之后进行设置
-//            $('#grid_svn_treeView_div.k-widget.k-treeview').unbind("dblclick");
-//            $("#grid_svn_treeView_div.k-widget.k-treeview").dblclick(function(e){
-//                e.stopPropagation();
-//                getSelectedSvn();
-//            });
-            var checkedIds = {};
-            function selectRow() {
-                var checked = this.checked,
-                        row = $(this).closest("tr"),
-                        grid = $("#jobListGrid").data("kendoGrid"),
-                        dataItem = grid.dataItem(row);
-
-                checkedIds[dataItem.jobId] = checked;
-                if (checked) {
-                    row.addClass("k-state-selected");
-                } else {
-                    row.removeClass("k-state-selected");
-                }
-            }
             var serviceRoot = "${base.contextPath}/dispatcher/job/svnTree/query";
             var grid_treeView_dataSource = new kendo.data.HierarchicalDataSource({
                 transport: {
