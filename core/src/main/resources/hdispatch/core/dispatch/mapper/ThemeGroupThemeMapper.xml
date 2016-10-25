@@ -11,12 +11,13 @@ yazheng.yang@hand-china.com
         <id column="themegroup_theme_id" property="themeGroupThemeId"/>
         <result column="theme_group_id" property="themeGroupId"/>
         <result column="theme_id" property="themeId"/>
-        <!--冗余-->
+        <!--冗余数据-->
         <result column="theme_group_name" property="themeGroupName"/>
         <result column="name" property="themeName"/>
         <result column="description" property="themeDescription"/>
     </resultMap>
 
+    <!--查询主题组下挂载的主题-->
 	<!--使用Map类型传入参数-->
     <select id="selectInThemeGroup" parameterType="java.util.Map" resultMap="baseMap">
         SELECT themegroup_theme_id,theme_group_id,groupRelation.theme_id,theme.name,theme.description
@@ -35,7 +36,8 @@ yazheng.yang@hand-china.com
 			AND theme.active=1
 		</where>
     </select>
-
+    <!--查询不在主题组下的主题-->
+    <!--使用Map类型传入参数-->
     <select id="selectNotInThemeGroup" parameterType="java.util.Map" resultMap="baseMap">
 		SELECT theme.theme_id,theme.name,theme.description
         FROM hdispatch_theme theme
@@ -56,8 +58,15 @@ yazheng.yang@hand-china.com
 		</where>
     </select>
 
+    <!--创建主题组和主题的映射-->
 	<insert id="save" useGeneratedKeys="true" keyProperty="themeGroupThemeId">
 		INSERT INTO hdispatch_themegroup_theme(theme_group_id,theme_id)
 		VALUES (#{themeGroupId},#{themeId})
 	</insert>
+
+    <!--移除主题组下的主题-->
+	<delete id="deleteTheme">
+		DELETE FROM hdispatch_themegroup_theme
+		WHERE themegroup_theme_id = #{themeGroupThemeId}
+	</delete>
 </mapper>

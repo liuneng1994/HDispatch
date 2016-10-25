@@ -552,6 +552,7 @@ var Paint = (function (mode) {
         switch (job.type) {
             case 'job':
                 node = new this.node.job(job.name, x, y);
+                node.prop("jobId",job.jobSource);
                 this._graph.addCell(node);
                 this.jobs.addJob(node.id, job);
                 break;

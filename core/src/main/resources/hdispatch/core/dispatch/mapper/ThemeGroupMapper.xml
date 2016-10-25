@@ -45,4 +45,8 @@ yazheng.yang@hand-china.com
         WHERE theme_group_id=#{themeGroupId}
     </update>
 
+    <delete id="deleteThemeGroup">
+        DELETE FROM hdispatch_themegroup
+        WHERE theme_group_id=#{themeGroupId}
+    </delete>
 </mapper>

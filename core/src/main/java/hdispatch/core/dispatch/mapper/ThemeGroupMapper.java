@@ -20,4 +20,9 @@ public interface ThemeGroupMapper {
      */
     void updateById(ThemeGroup themeGroup);
 
+    /**
+     * 删除主题组
+     * @param themeGroup
+     */
+    void deleteThemeGroup(ThemeGroup themeGroup);
 }

@@ -3,8 +3,10 @@ package hdispatch.core.dispatch.controllers;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
+import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
 import hdispatch.core.dispatch.dto.authority.ThemeGroup;
 import hdispatch.core.dispatch.dto.authority.ThemeGroupTheme;
+import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeGroupService;
 import hdispatch.core.dispatch.service.ThemeGroupThemeService;
 import org.apache.log4j.Logger;
@@ -31,6 +33,8 @@ public class ThemeGroupController  extends BaseController {
     private ThemeGroupService themeGroupService;
     @Autowired
     private ThemeGroupThemeService themeGroupThemeService;
+    @Autowired
+    private HdispatchAuthorityService hdispatchAuthorityService;
 
     /**
      * 模糊查询主题组
@@ -123,6 +127,36 @@ public class ThemeGroupController  extends BaseController {
     }
 
     /**
+     * 删除主题组
+     * @param themeGroupList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData removeThemeGroups(@RequestBody List<ThemeGroup> themeGroupList, BindingResult result, HttpServletRequest request) {
+
+        //判断是否有用户或者主题挂载在这个主题组下面，若有，不允许删除
+        ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
+        List<ThemeGroup> cannotRemove = new ArrayList<>();
+        themeGroupService.batchDelete(requestContext,themeGroupList,cannotRemove);
+        if(0 == cannotRemove.size()){
+            rd = new ResponseData(true);
+            return rd;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("无法移除，挂载的主题或用户需要先移除掉：");
+        for(ThemeGroup group : cannotRemove){
+            stringBuilder.append(group.getThemeGroupName()+",");
+        }
+        rd = new ResponseData(false);
+        rd.setMessage(stringBuilder.toString());
+        return rd;
+    }
+
+    /**
      * 获取所有不在某个主题组的主题
      * @param request
      * @param page
@@ -148,6 +182,7 @@ public class ThemeGroupController  extends BaseController {
 
         IRequest requestContext = createRequestContext(request);
         ThemeGroupTheme themeGroupTheme = new ThemeGroupTheme();
+        themeGroupTheme.setThemeGroupId(themeGroupId);
         themeName = themeName.trim();
         themeDescription = themeDescription.trim();
         if ("".equals(themeName)) {
@@ -190,6 +225,7 @@ public class ThemeGroupController  extends BaseController {
 
         IRequest requestContext = createRequestContext(request);
         ThemeGroupTheme themeGroupTheme = new ThemeGroupTheme();
+        themeGroupTheme.setThemeGroupId(themeGroupId);
         themeName = themeName.trim();
         themeDescription = themeDescription.trim();
         if ("".equals(themeName)) {
@@ -225,7 +261,7 @@ public class ThemeGroupController  extends BaseController {
 
         List<ThemeGroupTheme> filterList = new ArrayList<>();
         for(ThemeGroupTheme temp : themeGroupThemeList){
-            if(null != temp.getThemeGroupThemeId() || null == temp.getThemeId()){
+            if(null == temp.getThemeGroupId() || null == temp.getThemeId()){
                 continue;
             }else {
                 filterList.add(temp);
@@ -233,6 +269,133 @@ public class ThemeGroupController  extends BaseController {
         }
 
         rd = new ResponseData(themeGroupThemeService.batchUpdate(requestContext, filterList));
+        return rd;
+    }
+
+    /**
+     * 从主题组移除主题
+     * @param themeGroupThemeList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData removeThemes(@RequestBody List<ThemeGroupTheme> themeGroupThemeList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
+
+        List<ThemeGroupTheme> filterList = new ArrayList<>();
+        for(ThemeGroupTheme temp : themeGroupThemeList){
+            if(null == temp.getThemeGroupThemeId()){
+                continue;
+            }else {
+                filterList.add(temp);
+            }
+        }
+        themeGroupThemeService.batchUpdate(requestContext, filterList);
+        rd = new ResponseData(true);
+        return rd;
+    }
+
+
+    /**
+     * 获取主题组下的所有已经分配权限的用户
+     * @param request
+     * @param page
+     * @param pageSize
+     * @param userName 用户名称
+     * @param themeGroupId 主题组id
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryUnderThemeGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getUsersInThemeGroup(HttpServletRequest request,
+                                              @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                              @RequestParam(defaultValue = "") String userName,
+                                              @RequestParam(defaultValue = "-100") Long themeGroupId) {
+        ResponseData responseData = null;
+        if(null == themeGroupId || themeGroupId < 0){
+            responseData = new ResponseData(false);
+            return responseData;
+        }
+
+        IRequest requestContext = createRequestContext(request);
+        HdispatchAuthority hdispatchAuthority = new HdispatchAuthority();
+        hdispatchAuthority.setThemeGroupId(themeGroupId);
+        userName = userName.trim();
+        if ("".equals(userName)) {
+            userName = null;
+        }
+        hdispatchAuthority.setUserName(userName);
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectInThemeGroup(requestContext, hdispatchAuthority, page, pageSize);
+        responseData = new ResponseData(authorityList);
+        return responseData;
+    }
+
+    /**
+     * 获取不在主题组下的用户
+     * @param request
+     * @param page
+     * @param pageSize
+     * @param userName 用户名称
+     * @param themeGroupId 主题组id
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryNotInThemeGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getUsersNotInThemeGroup(HttpServletRequest request,
+                                             @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+                                             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                             @RequestParam(defaultValue = "") String userName,
+                                             @RequestParam(defaultValue = "-100") Long themeGroupId) {
+        ResponseData responseData = null;
+        if(null == themeGroupId || themeGroupId < 0){
+            responseData = new ResponseData(false);
+            return responseData;
+        }
+
+        IRequest requestContext = createRequestContext(request);
+        HdispatchAuthority hdispatchAuthority = new HdispatchAuthority();
+        hdispatchAuthority.setThemeGroupId(themeGroupId);
+        userName = userName.trim();
+        if ("".equals(userName)) {
+            userName = null;
+        }
+        hdispatchAuthority.setUserName(userName);
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectNotInThemeGroup(requestContext, hdispatchAuthority, page, pageSize);
+        responseData = new ResponseData(authorityList);
+        return responseData;
+    }
+
+    /**
+     * 主题组下批量添加、更新、删除用户
+     * @param authorityList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/submit_update_delete", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData operateUsers(@RequestBody List<HdispatchAuthority> authorityList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+
+        List<HdispatchAuthority> filterList = new ArrayList<>();
+        for(HdispatchAuthority temp : authorityList){
+            if(null == temp.getThemeGroupId() || null == temp.getUserId()){
+                continue;
+            }else {
+                filterList.add(temp);
+            }
+        }
+
+        rd = new ResponseData(hdispatchAuthorityService.batchUpdate(requestContext, filterList));
         return rd;
     }
 

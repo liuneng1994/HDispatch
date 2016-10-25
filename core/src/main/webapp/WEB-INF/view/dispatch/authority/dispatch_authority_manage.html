@@ -1,5 +1,5 @@
 <#include "../../include/header.html">
-	<#-- * description: 主题组中挂载主题界面 * version: 1.0 *author:yazheng.yang@hand-china.com
+	<#-- * description: 主题组中管理用户权限界面 * version: 1.0 *author:yazheng.yang@hand-china.com
 			* #{copyright}# * -->
 		<body>
 		<div>
@@ -13,43 +13,42 @@
 							<span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
 						</div>
 						<div class="pull-right" id="query-form" style="padding-bottom:10px;">
-							<input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "hdispatch.theme_name"/>' data-bind="value:model.themeName" class="k-textbox">
+							<input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "user.username"/>' data-bind="value:model.themeName" class="k-textbox">
 							<span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;" data-bind="click:queryFunction" type="submit"><@spring.message "hap.query"/></span>
 							<span class="btn btn-default" style="float:left;width:70px"  data-bind="click:resetForm" type="button"><@spring.message "hap.reset"/></span>
 							<div style="clear:both"></div>
 						</div>
 						<div style="clear:both">
-							<div id="themeListGrid" style="clear: both"></div>
+							<div id="authorityListGrid" style="clear: both"></div>
 						</div>
 					</div>
 				</div>
-				<div id="selectThemeDetails"></div>
+				<div id="selectUserDetails"></div>
 			</div>
 			<script type="text/javascript">
 				var wnd, detailsTemplate;
-				var baseUrl_theme = "${base.contextPath}/dispatch/themeGroup/themeGroupTheme/";
-				var themes_data;
-				var themesToSelect_data;
+				var baseUrl = "${base.contextPath}/dispatch/themeGroup/authorityUser/";
+				var authorities_data;
+				var usersToSelect_data;
 				//获取传递过来的主题组id和名称
 				var themeGroupId = "${RequestParameters.themeGroupId}";
 				var themeGroupName = "${RequestParameters.themeGroupName}";
 				var viewModel = kendo.observable({
 					model : {
-						themeName:'',
-						themeDescription:'',
+						userName:'',
 						themeGroupId:themeGroupId
 					},
 					createFunction: function(){
-						$('#themeListGrid').data('kendoGrid').addRow();
+						$('#authorityListGrid').data('kendoGrid').addRow();
 					},
 					saveFunction: function(){
-						$('#themeListGrid').data('kendoGrid').dataSource.sync();
+						$('#authorityListGrid').data('kendoGrid').dataSource.sync();
 					},
 					cancelFunction: function(e){
-						$('#themeListGrid').data('kendoGrid').cancelChanges();
+						$('#authorityListGrid').data('kendoGrid').cancelChanges();
 					},
 					queryFunction: function(e) {
-						$('#themeListGrid').data('kendoGrid').dataSource.page(1);
+						$('#authorityListGrid').data('kendoGrid').dataSource.page(1);
 					},
 					resetForm : function(e) {
                         var formData = viewModel.model.toJSON();
@@ -62,7 +61,8 @@
                         }
 					},
                     batchDeleteFunction: function (e) {
-                        var grid = $("#themeListGrid").data("kendoGrid");
+                        var grid = $("#authorityListGrid").data("kendoGrid");
+                        var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
                             kendo.ui.showConfirmDialog({
                                 title: $l('hap.tip.info'),
@@ -82,11 +82,11 @@
                         }
                     }
 				});
-                var themesNotInThemeGroup_viewModel;
+                var usersNotInThemeGroup_viewModel;
 				kendo.bind($('#query-form'), viewModel);
 				kendo.bind($('#toolbar-btn'), viewModel);
 				$(document).ready(function () {
-					wnd = $("#selectThemeDetails")
+					wnd = $("#selectUserDetails")
 							.kendoWindow({
 								title: '<@spring.message "hdispatch.themeGroup.select"/>',
 								modal: true,
@@ -96,28 +96,28 @@
 								width: 800,
 								height:350
 							}).data("kendoWindow");
-					detailsTemplate = kendo.template($("#themesNotInThemeGroup_template").html());
-					themes_data = new kendo.data.DataSource({
+					detailsTemplate = kendo.template($("#usersNotInThemeGroup_template").html());
+					authorities_data = new kendo.data.DataSource({
 						transport: {
 							read:  {
-								url: baseUrl_theme+"queryUnderThemeGroup",
+								url: baseUrl+"queryUnderThemeGroup",
 								type : 'GET',
 								dataType: "json"
 							},
 							update: {
-								url: baseUrl_theme + "update",
+								url: baseUrl + "submit_update_delete",
 								type : 'POST',
 								dataType: "json",
 								contentType:"application/json"
 							},
 							create: {
-								url: baseUrl_theme+'submit',
+								url: baseUrl+'submit_update_delete',
 								type : 'POST',
 								dataType: "json",
 								contentType:"application/json"
 							},
                             destroy: {
-                                url: baseUrl_theme+'remove',
+                                url: baseUrl+'submit_update_delete',
                                 type : 'POST',
                                 dataType: "json",
                                 contentType:"application/json"
@@ -128,11 +128,17 @@
 									var datas = options.models;
 									if(operation =='create'){
 										datas = options.models.map(function(data){
-											if(data["themeId"]){
+											if(data["userId"]){
                                                 data['__status'] = 'add';
                                                 data['themeGroupId'] = viewModel.model.themeGroupId;
                                                 return data;
                                             }
+										});
+									}
+									if(operation =='update'){
+										datas = options.models.map(function(data){
+											data['__status'] = 'update';
+											return data;
 										});
 									}
                                     if('destroy'==operation){
@@ -142,14 +148,14 @@
                                         });
                                     }
 									var data_str = kendo.stringify(datas);
-									themes_data = data_str;
+									authorities_data = data_str;
 									return data_str;
 								} else if (operation === "read") {
 									var model = viewModel.model;
-									if(!model.themeName){
-										model.themeName='';
+									if(!model.userName){
+										model.userName='';
 									}
-									var map = {themeGroupId:model.themeGroupId,themeName: model.themeName,themeDescription:model.themeDescription};
+									var map = {themeGroupId:model.themeGroupId,userName: model.userName};
 									if (options.page)
 										map.page = options.page;
 									if (options.pageSize)
@@ -168,13 +174,16 @@
 							data:'rows',
 							total:'total',
 							model: {
-								id: 'themeGroupThemeId',
+								id: 'authorityId',
 								fields: {
-									themeName: {
+									userName: {
 										type: 'string',
                                         validation: { required: true, nullable: false }
 									},
-									themeDescription: { type: 'string' }
+                                    themeGroupId: { type: 'number' },
+                                    userId: { type: 'number' },
+                                    authRead: { type: 'string' },
+                                    authOperate: { type: 'string' }
 								}
 							},
 							errors: function(res){
@@ -195,8 +204,8 @@
 						}
 					});
 
-                    $("#themeListGrid").kendoGrid({
-						dataSource: themes_data,
+                    $("#authorityListGrid").kendoGrid({
+						dataSource: authorities_data,
 						resizable: true,
 						selectable: "multiple",
 						scrollable: true,
@@ -220,41 +229,65 @@
 						},
 						columns:
 								[
+                                    {
+                                        title: '',
+                                        template: '<input class="checkbox" type="checkbox"/>',
+                                        width: '12px',
+                                        headerAttributes: {style: "text-align:center"},
+                                        attributes: {style: "text-align:center"}
+                                    },
 									{
-										'field': 'themeGroupThemeId','hidden':true
+										'field': 'authorityId','hidden':true
 									},
 									{
-										'field': 'themeId','hidden':true
+										'field': 'userId','hidden':true
 									},
 									{
-										title: '',
-										template: '<input class="checkbox" type="checkbox"/>',
-										width: '12px',
-										headerAttributes: {style: "text-align:center"},
-										attributes: {style: "text-align:center"}
-									},
-									{
-										'field': 'themeName',
-										'title':'<@spring.message "hdispatch.theme_name"/>',
+									    'field': "userName",
+										'title': '<@spring.message "user.username"/>',
 										'width': "100px",
-										editor:themeSelector,
-										template:"#=themeName#"
+										editor:userSelector,
+										template:"#=userName#"
 									},
-									{
-										'field': 'themeDescription',
-										'title':'<@spring.message "hdispatch.theme.theme_description"/>',
-										'width': "200px",
-                                        editor:themeDescEditor,
-									}
+                                    {
+                                        title: '读权限',
+                                        'field':'authRead',
+                                        width: "40px",
+                                        headerAttributes: {style: "text-align:center"},
+                                        attributes: {style: "text-align:center"},
+                                        template: function (rowData) {
+                                            if("N"==rowData.authRead){
+                                                return  '<input type="checkbox" class="gridCheckbox_authRead" id="authRead"  name="authRead"/>';
+                                            }else {
+												rowData.set("authRead","Y");
+                                                return '<input type="checkbox" class="gridCheckbox_authRead" checked="checked" id="authRead"  name="authRead"/>';
+                                            }
+                                        }
+                                    },
+                                    {
+                                        title: '操作权限',
+                                        'field':'authOperate',
+                                        width: "40px",
+                                        headerAttributes: {style: "text-align:center"},
+                                        attributes: {style: "text-align:center"},
+                                        template: function (rowData) {
+                                            if("Y"==rowData.authOperate){
+                                                return '<input type="checkbox" class="gridCheckbox_authOperate" checked="checked" id="authOperate"  name="authOperate"/>';
+                                            }else {
+												rowData.set("authOperate","N");
+                                                return  '<input type="checkbox" class="gridCheckbox_authOperate" id="authOperate"  name="authOperate"/>'
+                                            }
+                                        }
+                                    }
 								],
 						editable: true,
 						edit:function (e) {
 							//current row data: e.model
-							if(!e.model.themeGroupThemeId){
+							if(!e.model.authorityId){
 								$("#grid_search_btn").on("click",function(){
                                     grid_button_click(e.model);
                                 });
-                                $("#grid_search_btn.k-input.k-textbox").attr("readonly","readonly");
+//                                $("#grid_search_btn.k-input.k-textbox").attr("readonly","readonly");
 							}
 
 //							$("#grid_search_btn").attr("onclick","grid_button_click()");
@@ -262,29 +295,9 @@
 					});
 					kendo.bind($('#theme-content'),viewModel);
 				});
-                $("#themeListGrid").on("click", ".checkbox" , selectRow);
-                //只用采用这种方式才能避免checkbox选中，但是读取数据时却没有被传递到后台
-                var checkedIds = {};
-                function selectRow() {
-                    var checked = this.checked,
-                            row = $(this).closest("tr"),
-                            grid = $("#themeListGrid").data("kendoGrid"),
-                            dataItem = grid.dataItem(row);
 
-                    checkedIds[dataItem.themeGroupThemeId] = checked;
-                    if (checked) {
-                        row.addClass("k-state-selected");
-                    } else {
-                        row.removeClass("k-state-selected");
-                    }
-                }
-
-				function themeSelector(container, options) {
+				function userSelector(container, options) {
 					$('<span class="k-textbox k-space-right" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" id="grid_search_btn" class="k-icon k-i-search">&nbsp;</a></span>')
-							.appendTo(container);
-				}
-				function themeDescEditor(container, options) {
-					$('<span class="k-textbox" style="width: 100%;"><input readonly="readonly" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
 							.appendTo(container);
 				}
 
@@ -298,41 +311,40 @@
 				function showDetailLov(rowData) {
                     wnd.content(detailsTemplate);
                     wnd.center().open();
-                    themesNotInThemeGroup_viewModel = kendo.observable({
+                    usersNotInThemeGroup_viewModel = kendo.observable({
                         model : {
-                            themeName:'',
-                            themeDescription:'',
+                            userName:'',
                             themeGroupId:themeGroupId
                         },
                         queryFunction: function(e) {
-                            $('#themesNotInThemeGroup_grid').data('kendoGrid').dataSource.page(1);
+                            $('#usersNotInThemeGroup_grid').data('kendoGrid').dataSource.page(1);
                         },
                         resetForm : function(e) {
-                            var formData = themesNotInThemeGroup_viewModel.model.toJSON();
+                            var formData = usersNotInThemeGroup_viewModel.model.toJSON();
                             for ( var k in formData) {
                                 if(k==="themeGroupId"){
                                     continue;
                                 }else {
-                                    themesNotInThemeGroup_viewModel.model.set(k, null);
+                                    usersNotInThemeGroup_viewModel.model.set(k, null);
                                 }
                             }
                         }
                     });
-                    themesToSelect_data = new kendo.data.DataSource({
+                    usersToSelect_data = new kendo.data.DataSource({
                         transport: {
                             read:  {
-                                url: baseUrl_theme+"queryNotInThemeGroup",
+                                url: baseUrl+"queryNotInThemeGroup",
                                 type : 'GET',
                                 dataType: "json"
                             },
                             parameterMap: function(options, operation) {
                                 //封装请求参数
                                 if (operation === "read") {
-                                    var model = themesNotInThemeGroup_viewModel.model;
-                                    if(!model.themeName){
-                                        model.themeName='';
+                                    var model = usersNotInThemeGroup_viewModel.model;
+                                    if(!model.userName){
+                                        model.userName='';
                                     }
-                                    var map = {themeGroupId:model.themeGroupId,themeName: model.themeName,themeDescription:model.themeDescription};
+                                    var map = {themeGroupId:model.themeGroupId,userName: model.userName};
                                     if (options.page)
                                         map.page = options.page;
                                     if (options.pageSize)
@@ -351,12 +363,11 @@
                             data:'rows',
                             total:'total',
                             model: {
-                                id: 'themeId',
+                                id: 'userId',
                                 fields: {
-                                    themeName: {
+                                    userName: {
                                         type: 'string'
-                                    },
-                                    themeDescription: { type: 'string' }
+                                    }
                                 }
                             },
 							errors: function(res){
@@ -376,8 +387,8 @@
 							}
 						}
                     });
-                    $("#themesNotInThemeGroup_grid").kendoGrid({
-                        dataSource: themesToSelect_data,
+                    $("#usersNotInThemeGroup_grid").kendoGrid({
+                        dataSource: usersToSelect_data,
                         resizable: true,
                         selectable: "multiple",
                         scrollable: true,
@@ -402,45 +413,67 @@
                         columns:
                                 [
                                     {
-                                        'field': 'themeId','hidden':true
+                                        'field': 'userId','hidden':true
                                     },
                                     {
-                                        'field': 'themeName',
-                                        'title':'<@spring.message "hdispatch.theme_name"/>',
+                                        'field': 'userName',
+                                        'title':'<@spring.message "user.username"/>',
                                         'width': "100px"
-                                    },
-                                    {
-                                        'field': 'themeDescription',
-                                        'title':'<@spring.message "hdispatch.theme.theme_description"/>',
-                                        'width': "200px"
                                     }
                                 ],
                         editable: false
                     });
-                    $("#themesNotInThemeGroup_grid").on("dblclick", "tr", function (e) {
+                    $("#usersNotInThemeGroup_grid").on("dblclick", "tr", function (e) {
                         e.preventDefault();
-                        var firstRow = $("#themesNotInThemeGroup_grid").data("kendoGrid").selectedDataItems()[0];
-                        rowData.set("themeId",firstRow.themeId);
-                        rowData.set("themeName",firstRow.themeName);
-                        rowData.set("themeDescription",firstRow.themeDescription);
-                        console.log("("+firstRow.themeId+","+firstRow.themeName+","+firstRow.themeDescription+")");
+                        var firstRow = $("#usersNotInThemeGroup_grid").data("kendoGrid").selectedDataItems()[0];
+                        rowData.set("userId",firstRow.userId);
+                        rowData.set("userName",firstRow.userName);
+                        console.log("("+firstRow.userId+","+firstRow.userName+")");
                         wnd.close();
                     });
-                    kendo.bind($('#selectTheme-content'),themesNotInThemeGroup_viewModel);
+                    kendo.bind($('#selectTheme-content'),usersNotInThemeGroup_viewModel);
+                }
+
+                //checkbox event
+                $("#authorityListGrid").on("change", "input.gridCheckbox_authRead", function (e) {
+                    var target = $(e.target), grid = $("#authorityListGrid").data("kendoGrid"),
+                            dataItem = grid.dataItem(target.closest("tr"));
+                    dataItem.set(target.context.name, this.checked ? 'Y' : 'N');
+                });
+                $("#authorityListGrid").on("change", "input.gridCheckbox_authOperate", function (e) {
+                    var target = $(e.target), grid = $("#authorityListGrid").data("kendoGrid"),
+                            dataItem = grid.dataItem(target.closest("tr"));
+                    dataItem.set(target.context.name, this.checked ? 'Y' : 'N');
+                });
+                $("#authorityListGrid").on("click", ".checkbox" , selectRow);
+                //只用采用这种方式才能避免checkbox选中，但是读取数据时却没有被传递到后台
+                var checkedIds = {};
+                function selectRow() {
+                    var checked = this.checked,
+                            row = $(this).closest("tr"),
+                            grid = $("#authorityListGrid").data("kendoGrid"),
+                            dataItem = grid.dataItem(row);
+
+                    checkedIds[dataItem.authorityId] = checked;
+                    if (checked) {
+                        row.addClass("k-state-selected");
+                    } else {
+                        row.removeClass("k-state-selected");
+                    }
                 }
 
 			</script>
-			<script type="text/x-kendo-template" id="themesNotInThemeGroup_template">
+			<script type="text/x-kendo-template" id="usersNotInThemeGroup_template">
 				<div id="details-container">
 					<div id="selectTheme-content">
                         <div class="pull-right" id="themesNotInThemeGroup_form" style="padding-bottom:10px;">
-                            <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "hdispatch.theme_name"/>' data-bind="value:model.themeName" class="k-textbox">
+                            <input type="text"   style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "user.username"/>' data-bind="value:model.userName" class="k-textbox">
                             <span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;" data-bind="click:queryFunction" type="submit"><@spring.message "hap.query"/></span>
                             <span class="btn btn-default" style="float:left;width:70px"  data-bind="click:resetForm" type="button"><@spring.message "hap.reset"/></span>
                             <div style="clear:both"></div>
                         </div>
                         <div style="clear:both">
-                            <div id="themesNotInThemeGroup_grid" style="clear: both"></div>
+                            <div id="usersNotInThemeGroup_grid" style="clear: both"></div>
                         </div>
 					</div>
 				</div>

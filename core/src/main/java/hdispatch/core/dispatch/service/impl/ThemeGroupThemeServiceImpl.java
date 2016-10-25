@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.ThemeGroupTheme;
@@ -25,6 +26,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
     private ThemeGroupThemeMapper themeGroupThemeMapper;
     @Override
     public List<ThemeGroupTheme> selectThemesNotInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
+        PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
         map.put("themeGroupId",themeGroupTheme.getThemeGroupId());
         map.put("themeName",themeGroupTheme.getThemeName());
@@ -34,6 +36,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
 
     @Override
     public List<ThemeGroupTheme> selectThemesInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
+        PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
         map.put("themeGroupId",themeGroupTheme.getThemeGroupId());
         map.put("themeName",themeGroupTheme.getThemeName());
@@ -50,10 +53,10 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
                         themeGroupThemeMapper.save(themeGroupTheme);
                         break;
                     case DTOStatus.UPDATE:
-//                        themeGroupThemeMapper.updateById(themeGroup);
+
                         break;
                     case DTOStatus.DELETE:
-
+                        themeGroupThemeMapper.deleteTheme(themeGroupTheme);
                         break;
                     default:
                         break;
