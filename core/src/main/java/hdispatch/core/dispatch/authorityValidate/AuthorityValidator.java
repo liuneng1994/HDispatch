@@ -7,11 +7,11 @@ import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * 权限核心验证器,这个类暂时由PermissionHandler代替
+ *
  * Created by yyz on 2016/10/21.
  *
  * @author yazheng.yang@hand-china.com
- *
- * 权限验证器
  */
 public class AuthorityValidator {
     //权限类型——读权限
