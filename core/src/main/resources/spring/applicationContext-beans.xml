@@ -2,48 +2,60 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 
 
 
-                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-  <!--  <context:property-placeholder location="classpath:azkabanConfig.properties"></context:property-placeholder>
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--  <context:property-placeholder location="classpath:azkabanConfig.properties"></context:property-placeholder>
 
-    <bean id="azkabanDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-      <property name="driverClass" value="${azkaban.db.driverClass}"></property>
-      <property name="jdbcUrl" value="${azkaban.db.jdbcUrl}"></property>
-      <property name="user" value="${azkaban.db.username}"></property>
-      <property name="password" value="${azkaban.db.password}"></property>
+      <bean id="azkabanDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${azkaban.db.driverClass}"></property>
+        <property name="jdbcUrl" value="${azkaban.db.jdbcUrl}"></property>
+        <property name="user" value="${azkaban.db.username}"></property>
+        <property name="password" value="${azkaban.db.password}"></property>
+      </bean>
+      <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="hdispatch.azkaban.mappers"></property>
+        <property name="sqlSessionTemplateBeanName" value="azkabanSqlSession"></property>
+      </bean>
+
+      <bean id="azkabanSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="azkabanDataSource"/>
+        <property name="mapperLocations" value="classpath*:hdispatch/azkaban/mappers/*Mapper.xml"/>
+      </bean>
+
+
+      <bean id="azkabanSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" name="sqlSessionFactory" ref="sqlSessionFactory"/>
+      </bean>-->
+
+    <!--配置SVN服务器-->
+    <!--<context:property-placeholder location="classpath:svnFileSys.properties"/>-->
+    <bean id="svnConfig" class="hdispatch.core.dispatch.dto.job.SvnConfig" scope="singleton">
+        <property name="ip" value="172.20.0.203"/>
+        <property name="port" value="22"/>
+        <property name="userName" value="hive"/>
+        <property name="password" value="handoracle"/>
+        <property name="rootPath" value="/home/ETL"/>
     </bean>
-    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-      <property name="basePackage" value="hdispatch.azkaban.mappers"></property>
-      <property name="sqlSessionTemplateBeanName" value="azkabanSqlSession"></property>
+
+    <!--文件上传设置-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="maxInMemorySize" value="4098"/>
+        <property name="maxUploadSize" value="10485760000"/>
     </bean>
 
-    <bean id="azkabanSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-      <property name="dataSource" ref="azkabanDataSource"/>
-      <property name="mapperLocations" value="classpath*:hdispatch/azkaban/mappers/*Mapper.xml"/>
-    </bean>
+    <!--&lt;!&ndash;权限拦截切面设置&ndash;&gt;-->
+    <!--<aop:config>-->
+        <!--<aop:aspect id="hdispatch_permission_aspect" ref="permissionHandler">-->
+            <!--<aop:pointcut id="hdispatch_permission_pointcut"-->
+                          <!--expression="execution(* hdispatch.core.dispatch.service..*.*(..))"/>-->
+            <!--<aop:before method="checkPermission" pointcut-ref="hdispatch_permission_pointcut"/>-->
+        <!--</aop:aspect>-->
+    <!--</aop:config>-->
+    <!--<bean id="permissionHandler" class="hdispatch.core.dispatch.authorityValidate.PermissionHandler"/>-->
 
-
-    <bean id="azkabanSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-      <constructor-arg index="0" name="sqlSessionFactory" ref="sqlSessionFactory"/>
-    </bean>-->
-
-  <!--配置SVN服务器-->
-  <!--<context:property-placeholder location="classpath:svnFileSys.properties"/>-->
-  <bean id="svnConfig" class="hdispatch.core.dispatch.dto.job.SvnConfig" scope="singleton">
-    <property name="ip" value="172.20.0.203"/>
-    <property name="port" value="22"/>
-    <property name="userName" value="hive"/>
-    <property name="password" value="handoracle"/>
-    <property name="rootPath" value="/home/ETL"/>
-  </bean>
-
-  <!--文件上传设置-->
-  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-    <property name="defaultEncoding" value="UTF-8"/>
-    <property name="maxInMemorySize" value="4098"/>
-    <property name="maxUploadSize" value="10485760000"/>
-  </bean>
 </beans>
