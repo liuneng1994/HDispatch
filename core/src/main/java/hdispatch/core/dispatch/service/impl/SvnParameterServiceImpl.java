@@ -286,7 +286,9 @@ public class SvnParameterServiceImpl implements SvnParameterService {
 //            svnParameters.addAll(parameterList);
 //        }
 //        return batchUpdate(null,svnParameters);
-        return batchUpdate(null,excelFileToList(files[0]));
+        List<SvnParameter> list = excelFileToList(files[0]);
+        preAddHandle(list);
+        return batchUpdate(null,list);
     }
 
     /**
