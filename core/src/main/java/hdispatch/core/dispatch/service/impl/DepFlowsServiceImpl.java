@@ -66,4 +66,9 @@ public int isExitMut(DepFlows record) {
 	return mapper.isExitMut(record);
 }
 
+	@Override
+	public int selectIdByName(String project_name) {
+		return mapper.selectIdByName(project_name);
+	}
+
 }

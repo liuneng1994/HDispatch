@@ -103,7 +103,7 @@
 		}
 		function openSetSLAPage(schId,flowId,project) {
 			var dialog = $("#dialog").kendoWindow({
-				actions : [ "Maximize", "Minimize", "Close" ],
+				//actions : [ "Maximize", "Minimize", "Close" ],
 				width : 920,
 				height : 450,
 				modal: true,
@@ -112,7 +112,7 @@
 				iframe : true,
 				content : 'setsla.html?schId=' + schId+'&flowId='+flowId+'&project='+project
 			}).data("kendoWindow");
-			dialog.center().open();
+			dialog.maximize().open();
 		}
 
 		$(document)

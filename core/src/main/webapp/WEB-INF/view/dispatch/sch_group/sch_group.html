@@ -124,11 +124,11 @@
 			});
 		}
 		function openFlowDetailPage(flow_id, exec_id) {
-			console.log(flow_id);
+
 			var dialog = $("#dialog")
 					.kendoWindow(
 							{
-								actions : [ "Maximize", "Minimize", "Close" ],
+								//actions : [ "Maximize", "Minimize", "Close" ],
 								width : 920,
 								height : 450,
 								modal: true,
@@ -138,7 +138,7 @@
 								content : 'flow_infodetail.html?flow_id='
 										+ flow_id + '&exec_id=' + exec_id
 							}).data("kendoWindow");
-			dialog.center().open();
+			dialog.maximize().open();
 		}
 		window.stateColor = {
 			"PAUSED" : "background-color:#FFCC00;",

@@ -44,11 +44,13 @@ public class DepFlowsController extends BaseController {
 	 */
 	@RequestMapping("/insertDep")
 	@ResponseBody
-	public ResultObj insertDep(HttpServletRequest request, @RequestBody List<DepFlows>flows)
+	public ResponseData insertDep(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
-		ResultObj obj=new ResultObj();
+		ResponseData result = null;
+		result = new ResponseData(true);
 		String message="";
 		for (DepFlows flow:flows) {
+			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			if(service.isExitDep(flow)>0)
 			{
 				message+=flow.getFlow_id()+"设置依赖重复  ";
@@ -58,8 +60,8 @@ public class DepFlowsController extends BaseController {
 			message+=flow.getFlow_id()+"设置成功  ";
 			}
 		}
-		obj.setMessage(message);
-		return obj;
+		result.setMessage(message);
+		return result;
 	}
 	/**
 	 * 设置互斥流
@@ -69,11 +71,13 @@ public class DepFlowsController extends BaseController {
 	 */
 	@RequestMapping("/insertMut")
 	@ResponseBody
-	public ResultObj insertMut(HttpServletRequest request, @RequestBody List<DepFlows>flows)
+	public ResponseData insertMut(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
-		ResultObj obj=new ResultObj();
+		ResponseData obj= null;
+		obj = new ResponseData(true);
 		String message="";
 		for (DepFlows flow:flows) {
+			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			if(service.isExitMut(flow)>0)
 			{
 				message+=flow.getFlow_id()+"设置互斥重复  ";
@@ -94,13 +98,15 @@ public class DepFlowsController extends BaseController {
 	 */
 	@RequestMapping("/deleteDep")
 	@ResponseBody
-	public ResultObj deleteDep(HttpServletRequest request, @RequestBody List<DepFlows>flows)
+	public ResponseData deleteDep(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
-		ResultObj obj=new ResultObj();
+		ResponseData obj= null;
 		String message="";
 		for (DepFlows flow:flows) {
+			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			service.deleteDep(flow);
 			message+=flow.getFlow_id()+"刪除成功  ";
+			obj=new ResponseData(true);
 		}
 		obj.setMessage(message);
 		return obj;
@@ -113,14 +119,15 @@ public class DepFlowsController extends BaseController {
 	 */
 	@RequestMapping("/deleteMut")
 	@ResponseBody
-	public ResultObj deleteMut(HttpServletRequest request, @RequestBody List<DepFlows>flows)
+	public ResponseData deleteMut(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
-		ResultObj obj=new ResultObj();
+		ResponseData obj= null;
 		String message="";
 		for (DepFlows flow:flows) {
-
+			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			service.deleteMut(flow);
 			message+=flow.getFlow_id()+"刪除成功  ";
+			obj=new ResponseData(true);
 		}
 		obj.setMessage(message);
 		return obj;
@@ -129,32 +136,33 @@ public class DepFlowsController extends BaseController {
 	 * 查询依赖流
 	 * @param request
 	 * @param flow_id
-	 * @param project_id
+	 * @param project_name
 	 * @return
 	 */
 	@RequestMapping("/queryDep")
 	@ResponseBody
 	public List<DepFlows> queryDep(HttpServletRequest request,
 			@RequestParam String flow_id,
-			@RequestParam Integer project_id
+			@RequestParam String project_name
 			)
 	{
-		return service.selectDepWithId(flow_id, project_id);
+
+		return service.selectDepWithId(flow_id,service.selectIdByName(project_name));
 	}
 	/**
 	 * 查询互斥流
 	 * @param request
 	 * @param flow_id
-	 * @param project_id
+	 * @param project_name
 	 * @return
 	 */
 	@RequestMapping("/queryMut")
 	@ResponseBody
 	public List<DepFlows> queryMut(HttpServletRequest request,
 			@RequestParam String flow_id,
-			@RequestParam Integer project_id
+			@RequestParam String project_name
 			)
 	{
-		return service.selectMutWithId(flow_id, project_id);
+		return service.selectMutWithId(flow_id, service.selectIdByName(project_name));
 	}
 }
