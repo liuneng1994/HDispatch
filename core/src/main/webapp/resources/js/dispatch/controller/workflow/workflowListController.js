@@ -21,36 +21,36 @@
                             options.success(data);
                         });
                     },
-                    destroy: function(options) {
+                    destroy: function (options) {
                         "use strict";
                         var ids = [];
-                        options.data.models.forEach(function(item) {
-                           ids.push(item.workflowId);
+                        options.data.models.forEach(function (item) {
+                            ids.push(item.workflowId);
                         });
-                        workflowService.deleteWorkflow(ids).then(function() {
-                           options.success();
+                        workflowService.deleteWorkflow(ids).then(function () {
+                            options.success();
                         });
                     }
                 },
                 batch: true,
                 serverPaging: true,
                 pageSize: 50,
-                schema:{
-                    data:"rows",
-                    total:"total",
+                schema: {
+                    data: "rows",
+                    total: "total",
                     model: {
-                        id : 'workflowId',
-                        fields : {
-                            name : {},
-                            theme : {},
-                            layer : {},
+                        id: 'workflowId',
+                        fields: {
+                            name: {},
+                            theme: {},
+                            layer: {},
                             description: {}
                         }
                     }
                 }
             },
             //width:500,
-            selectable:"multiple, rowbox",
+            selectable: "multiple, rowbox",
             navigatable: true,
             resizable: true,
             scrollable: true,
@@ -100,6 +100,7 @@
                     width: 150,
                     template: function (item) {
                         var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
+                        html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
                         return html;
                     }
                 }]
@@ -117,15 +118,22 @@
             location = _basePath + '/dispatch/workflow/workflow_update.html';
         };
 
-        vm.deleteSelection = function() {
+        vm.deleteSelection = function () {
             "use strict";
-            Hap.deleteGridSelection({grid:$("#grid")});
+            Hap.deleteGridSelection({grid: $("#grid")});
         }
 
         vm.themeChange = function (themeId) {
             vm.workflow.layerId = undefined;
             refreshLayers('layers', themeId);
         };
+
+        vm.dependency = function (id) {
+            "use strict";
+            var item = $('#grid').data('kendoGrid').dataSource.get(id);
+            $('#dependencyFrame').attr('src', _basePath+'/dispatch/workflow/mutex_workflow_list.html?workflowId='+item.workflowId+"&projectName="+item.project+"&flowId="+item.flowId);
+            vm.dependencyWindow.center().open();
+        }
 
 
         refreshThemes();

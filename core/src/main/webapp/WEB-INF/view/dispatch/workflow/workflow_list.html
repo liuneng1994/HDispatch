@@ -16,6 +16,16 @@
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <script src="${base.contextPath}/lib/moment.min.js"></script>
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
+    <div kendo-window="vm.dependencyWindow"
+         k-title="'依赖管理'"
+         k-actions="['Maximize', 'Close']"
+         k-modal="true"
+         k-width="700"
+         k-on-open="vm.dependencyWindow.visible = true"
+         k-on-close="vm.dependencyWindow.visible = false"
+         k-visible="false">
+        <iframe id="dependencyFrame" src="#" style="height:100%;width: 100%;" frameborder="0"></iframe>
+    </div>
     <div id="content-container">
         <div id="page-content">
             <div class="panel">
@@ -87,7 +97,7 @@
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
                         <button class="btn btn-success"
-                             ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
+                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
                         </button>
                         <button class="btn btn-danger" ng-click="vm.deleteSelection()">删除</button>
                     </div>

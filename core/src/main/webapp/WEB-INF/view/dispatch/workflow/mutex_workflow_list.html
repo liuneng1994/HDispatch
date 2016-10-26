@@ -1,0 +1,21 @@
+<#include "../../include/header.html">
+    <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowMutexController.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
+    <body ng-app="dispatch" ng-controller="workflowMutexController as vm">
+    <div id="content-container">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="row" style="margin-bottom:1em;">
+                    <button class="btn btn-success" ng-click="">创建
+                    </button>
+                    <button class="btn btn-danger" ng-click="">删除</button>
+                    <button class="btn btn-primary" ng-click="">取消</button>
+                </div>
+                <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
