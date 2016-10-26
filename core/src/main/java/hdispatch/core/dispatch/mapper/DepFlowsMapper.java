@@ -20,4 +20,6 @@ public interface DepFlowsMapper {
     int isExitDep(DepFlows record);
     
     int isExitMut(DepFlows record);
+
+    int selectIdByName(String project_name);
 }

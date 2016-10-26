@@ -17,7 +17,16 @@ public class DepFlows {
     
     private Integer mut_project_id;
     
-    
+    private String project_name;
+
+    public String getProject_name() {
+        return project_name;
+    }
+
+    public void setProject_name(String project_name) {
+        this.project_name = project_name;
+    }
+
     public String getMut_flow_id() {
 		return mut_flow_id;
 	}

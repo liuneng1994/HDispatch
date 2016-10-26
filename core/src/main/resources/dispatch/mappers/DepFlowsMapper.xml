@@ -36,6 +36,10 @@
         and project_id=#{project_id,jdbcType=INTEGER}
         and mut_project_id=#{mut_project_id,jdbcType=INTEGER}
   </select>
+
+    <select id="selectIdByName">
+        select id from projects where name=#{param1}
+    </select>
   <delete id="deleteDep" parameterType="hdispatch.core.dispatch.dto.DepFlows">
   delete from dep_flows where flow_id=#{flow_id,jdbcType=VARCHAR}
         and dep_flow_id=#{dep_flow_id,jdbcType=VARCHAR}

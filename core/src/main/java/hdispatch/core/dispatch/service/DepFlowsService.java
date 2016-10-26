@@ -23,4 +23,5 @@ public interface DepFlowsService{
     
     int isExitMut(DepFlows record);
 
+    int selectIdByName(String project_name);
 }

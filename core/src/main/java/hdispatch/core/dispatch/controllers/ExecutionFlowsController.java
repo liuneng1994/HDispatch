@@ -77,7 +77,6 @@ public class ExecutionFlowsController extends BaseController {
 			else
 			d=0;
 			e.setRunning((new Double(d)).intValue()*100);
-			System.out.println(count+"----"+list2.size()+"-----"+d+"------------"+e.getRunning());
 		}
 		return new ResponseData(list);
 	}

@@ -58,7 +58,7 @@
 			var dialog = $("#dialog")
 					.kendoWindow(
 							{
-								actions : [ "Maximize", "Minimize", "Close" ],
+								//actions : [ "Maximize", "Minimize", "Close" ],
 								width : 520,
 								height : 350,
 								modal: true,
@@ -69,7 +69,7 @@
 								content : 'job_logdetail.html?job_id=' + job_id
 										+ '&exec_id=' + exec_id
 							}).data("kendoWindow");
-			dialog.center().open();
+			dialog.maximize().open();
 		}
 
 		window.stateColor = {
@@ -213,7 +213,11 @@
 														{
 															field : "flow_id",
 															title : '<@spring.message "hdispatch.flowlist.flowname"/>',
-															width : 80
+															width : 80,
+															template:function(item)
+															{
+																return item.flow_id.replace('_','').split(',')[0];
+															}
 														},
 														{
 															field : "job_id",
