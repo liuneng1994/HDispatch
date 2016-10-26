@@ -3,16 +3,18 @@ package hdispatch.core.dispatch.service;
 import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
+import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
 
 import java.util.List;
 
 /**
+ * 任务调度权限服务接口类
+ *
  * Created by yyz on 2016/10/20.
  *
  * @author yazheng.yang@hand-china.com
  *
- * 任务调度权限服务接口类
  */
 public interface HdispatchAuthorityService {
     /**
@@ -103,4 +105,25 @@ public interface HdispatchAuthorityService {
      * @return
      */
     boolean hasReadAndOperatePermission(Long themeId, Long userId);
+
+    /**
+     * 用户可以访问(读)的主题
+     * @param userId
+     * @return
+     */
+    List<Theme> themesReadByUser(Long userId, PermissionParameter permissionParameter);
+
+    /**
+     * 用户可以操作的主题
+     * @param userId
+     * @return
+     */
+    List<Theme> themesOperateByUser(Long userId);
+
+    /**
+     * 用户可读、可操作的主题
+     * @param userId
+     * @return
+     */
+    List<Theme> themesReadAndOperateByUser(Long userId);
 }

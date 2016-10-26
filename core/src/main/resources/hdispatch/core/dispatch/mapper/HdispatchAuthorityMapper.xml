@@ -16,6 +16,10 @@ yazheng.yang@hand-china.com
         <!--冗余信息-->
         <result column="user_name" property="userName"/>
     </resultMap>
+    <resultMap id="themeMap" type="hdispatch.core.dispatch.dto.theme.Theme" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="theme_id" property="themeId"/>
+        <result column="name" property="themeName"/>
+    </resultMap>
 
     <!--使用Map类型传入参数
     获取主题组下已经分配权限的用户
@@ -75,6 +79,21 @@ yazheng.yang@hand-china.com
         <where>
             AND user_id = #{userId}
             AND theme_id = #{themeId}
+            <if test="authRead != null">
+                AND auth_read = "Y"
+            </if>
+            <if test="authOperate != null">
+                AND auth_operate = "Y"
+            </if>
+        </where>
+    </select>
+
+    <select id="selectThemesUnderUser" parameterType="java.util.Map" resultMap="themeMap">
+        SELECT theme_id
+        FROM hdispatch_authority auth JOIN hdispatch_themegroup_theme relation
+        ON auth.theme_group_id = relation.theme_group_id
+        <where>
+            AND user_id = #{userId}
             <if test="authRead != null">
                 AND auth_read = "Y"
             </if>
