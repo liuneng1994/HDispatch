@@ -3,7 +3,10 @@ package hdispatch.core.dispatch.controllers;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
+import hdispatch.core.dispatch.authorityValidate.PermissionType;
+import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
+import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by yyz on 2016/9/6.
@@ -25,6 +28,8 @@ public class ThemeController extends BaseController {
     private Logger logger = Logger.getLogger(ThemeController.class);
     @Autowired
     private ThemeService themeService;
+    @Autowired
+    private HdispatchAuthorityService hdispatchAuthorityService;
 
     @RequestMapping(value = "/dispatcher/theme/query", method = RequestMethod.GET)
     @ResponseBody
@@ -43,10 +48,20 @@ public class ThemeController extends BaseController {
         if ("".equals(themeDescription)) {
             themeDescription = null;
         }
+        PermissionParameter permissionParameter = new PermissionParameter(requestContext.getUserId(),-100L,new HashSet<PermissionType>(){{add(PermissionType.DELAY_CHECK);}});
         theme.setThemeName(themeName);
         theme.setThemeDescription(themeDescription);
-        List<Theme> themeList = themeService.selectByTheme(requestContext, theme, page, pageSize);
-        ResponseData responseData = new ResponseData(themeList);
+        List<Theme> themeList = themeService.selectByTheme(requestContext, theme, page, pageSize,permissionParameter);
+
+//        对搜索后的结果进行过滤
+        List<Theme> themesCanReadList = hdispatchAuthorityService.themesReadByUser(requestContext.getUserId(), permissionParameter);
+        Set<Long> idSet = new LinkedHashSet<>();
+        themesCanReadList.forEach(item -> idSet.add(item.getThemeId()));
+        List<Theme> resultList = themeList.parallelStream().filter(temp -> idSet.contains(temp.getThemeId())).collect(Collectors.toList());
+
+
+//        ResponseData responseData = new ResponseData(themeList);
+        ResponseData responseData = new ResponseData(resultList);
         return responseData;
     }
 
