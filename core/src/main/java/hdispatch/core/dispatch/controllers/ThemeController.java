@@ -31,6 +31,15 @@ public class ThemeController extends BaseController {
     @Autowired
     private HdispatchAuthorityService hdispatchAuthorityService;
 
+    /**
+     * 带分页功能的主题搜索（支持themeName、themeDescription模糊搜索）
+     * @param request
+     * @param page 第几页
+     * @param pageSize 分页条数
+     * @param themeName 主题名称
+     * @param themeDescription 主题的描述
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/theme/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemes(HttpServletRequest request,
@@ -48,20 +57,10 @@ public class ThemeController extends BaseController {
         if ("".equals(themeDescription)) {
             themeDescription = null;
         }
-        PermissionParameter permissionParameter = new PermissionParameter(requestContext.getUserId(),-100L,new HashSet<PermissionType>(){{add(PermissionType.DELAY_CHECK);}});
         theme.setThemeName(themeName);
         theme.setThemeDescription(themeDescription);
-        List<Theme> themeList = themeService.selectByTheme(requestContext, theme, page, pageSize,permissionParameter);
-
-//        对搜索后的结果进行过滤
-        List<Theme> themesCanReadList = hdispatchAuthorityService.themesReadByUser(requestContext.getUserId(), permissionParameter);
-        Set<Long> idSet = new LinkedHashSet<>();
-        themesCanReadList.forEach(item -> idSet.add(item.getThemeId()));
-        List<Theme> resultList = themeList.parallelStream().filter(temp -> idSet.contains(temp.getThemeId())).collect(Collectors.toList());
-
-
-//        ResponseData responseData = new ResponseData(themeList);
-        ResponseData responseData = new ResponseData(resultList);
+        List<Theme> themeList = themeService.selectByTheme(requestContext, theme, page, pageSize);
+        ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }
 
