@@ -26,12 +26,16 @@
 				   if(data.message.length<50)
 					   document.getElementById("text").value="NO LOG!!";
 				   else
-		    	   document.getElementById("text").value=data.message;
-		    	   
+		    	   document.getElementById("text").value=htmlDecode(data.message);
 		       },  
 		        error:function(){}  
 		  }); 
 	 }
+	 function htmlDecode ( str ) {
+			var ele = document.createElement('span');
+			ele.innerHTML = str;
+			return ele.textContent;
+		}
 	</script>
 </body>
 </html>
