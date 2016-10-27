@@ -1,6 +1,7 @@
 package hdispatch.core.dispatch.mapper;
 
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
+import hdispatch.core.dispatch.dto.theme.Theme;
 
 import java.util.List;
 import java.util.Map;
@@ -53,4 +54,12 @@ public interface HdispatchAuthorityMapper {
      * @return
      */
     List<HdispatchAuthority> selectAuthorityForValidate(Map params);
+
+    /**
+     * 获取用户可以读、操作的主题列表,
+     * @param params Map里面的内容：（userId、authRead、authOperate），
+     *               其中，userId不为null，authRead、authOperate至多一个为null
+     * @return
+     */
+    List<Theme> selectThemesUnderUser(Map params);
 }

@@ -5,6 +5,7 @@ import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
+import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.mapper.HdispatchAuthorityMapper;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
@@ -212,6 +213,57 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
         List<HdispatchAuthority> authorityList = hdispatchAuthorityMapper.selectAuthorityForValidate(map);
 
         return (null != authorityList) && (authorityList.size() > 0);
+    }
+
+    /**
+     * 用户可以访问(读)的主题
+     * @param userId
+     * @return 返回的只是主题id（themeId）列表
+     */
+    @Override
+    public List<Theme> themesReadByUser(Long userId, PermissionParameter permissionParameter) {
+        if(null == userId)
+            return null;
+        Map<String,Object> map = new HashMap();
+        map.put("userId",userId);
+        map.put("authRead","Y");
+        map.put("authOperate",null);
+
+        return hdispatchAuthorityMapper.selectThemesUnderUser(map);
+    }
+
+    /**
+     * 用户可以操作的主题
+     * @param userId
+     * @return 返回的只是主题id（themeId）列表
+     */
+    @Override
+    public List<Theme> themesOperateByUser(Long userId) {
+        if(null == userId)
+            return null;
+        Map<String,Object> map = new HashMap();
+        map.put("userId",userId);
+        map.put("authRead",null);
+        map.put("authOperate","Y");
+
+        return hdispatchAuthorityMapper.selectThemesUnderUser(map);
+    }
+
+    /**
+     * 用户可读、可操作的主题
+     * @param userId
+     * @return 返回的只是主题id（themeId）列表
+     */
+    @Override
+    public List<Theme> themesReadAndOperateByUser(Long userId) {
+        if(null == userId)
+            return null;
+        Map<String,Object> map = new HashMap();
+        map.put("userId",userId);
+        map.put("authRead","Y");
+        map.put("authOperate","Y");
+
+        return hdispatchAuthorityMapper.selectThemesUnderUser(map);
     }
 
     private boolean checkNotNull(Long userId, Long themeId){
