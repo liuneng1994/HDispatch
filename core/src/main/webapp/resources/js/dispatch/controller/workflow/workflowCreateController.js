@@ -26,12 +26,11 @@
             vm.workflow.layerId = null;
             refreshLayers('layers', vm.workflow.themeId);
         };
-        vm.jobThemeChange = function () {
-            vm.newJob.layerId = null;
-            refreshLayers('jobLayers', vm.newJob.themeId);
-        };
-        vm.jobLayerChange = function () {
-            console.log(vm.newJob.type);
+        // vm.jobThemeChange = function () {
+        //     vm.newJob.layerId = null;
+        //     refreshLayers('jobLayers', vm.newJob.themeId);
+        // };
+        vm.layerChange = function () {
             vm.newJob.jobSource = null;
             if (vm.newJob.type == 'job')
                 refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);

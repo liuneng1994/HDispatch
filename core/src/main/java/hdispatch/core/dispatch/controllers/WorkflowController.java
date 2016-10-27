@@ -95,7 +95,7 @@ public class WorkflowController extends BaseController {
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
     public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId) {
         ResponseData responseData;
-        String result = workflowService.generateWorkflow(workflowId)
+        String result = workflowService.generateWorkflow(workflowId);
         if (StringUtils.isEmpty(result)) {
             responseData = new ResponseData(true);
             responseData.setMessage("工作流生成成功");

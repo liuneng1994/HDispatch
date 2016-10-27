@@ -40,7 +40,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <!--<div class="form-group">
                         <label class="col-sm-2 control-label">任务组</label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="theme"
@@ -65,7 +65,7 @@
                                     k-data-source="vm.jobLayers"
                                     style="padding-left:0;padding-right:0;width:100%;"></select>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="form-group">
                         <label class="col-sm-2 control-label">源任务</label>
                         <div class="col-sm-8 ">
@@ -80,7 +80,7 @@
                     </div>
                     <div class="form-group">
                         <div class="text-center">
-                            <button class="btn btn-primary" ng-click="vm.createJob()" ng-disabled="job.$invalid||!vm.newJob.jobSource||!vm.newJob.layerId||!vm.newJob.themeId">确认</button>
+                            <button class="btn btn-primary" ng-click="vm.createJob()" ng-disabled="job.$invalid||!vm.newJob.jobSource">确认</button>
                             <button class="btn btn-danger" ng-click="vm.resetWindow()">取消</button>
                         </div>
                     </div>
@@ -119,6 +119,7 @@
                                                 k-value-primitive="true"
                                                 k-data-text-field="'layerName'"
                                                 k-data-value-field="'layerId'"
+                                                k-on-change="vm.layerChange()";
                                                 k-data-source="vm.layers" style="padding-left:0;padding-right:0;width:100%;"></select>
                                         <span style="color:red;" ng-show="flow.layer.$dirty&&!vm.workflow.layerId">请选择层级</span>
                                     </div>
