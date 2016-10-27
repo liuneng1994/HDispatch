@@ -19,8 +19,18 @@ public class ExecutionJobs extends ExecutionJobsKey {
     private String lang;
     
     private String meaning;
-    
-    
+
+    private String nestedId;
+
+    private Integer parentId;
+    public String getNestedId() {
+        return nestedId;
+    }
+
+    public void setNestedId(String nestedId) {
+        this.nestedId = nestedId;
+    }
+
     public String getLang() {
 		return lang;
 	}
@@ -91,5 +101,31 @@ public class ExecutionJobs extends ExecutionJobsKey {
 
     public void setStatus(Byte status) {
         this.status = status;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
+    }
+
+    @Override
+    public String toString() {
+        return "ExecutionJobs{" +
+                "project_id=" + project_id +
+                ", version=" + version +
+                ", parentId=" + parentId  +
+                ", flow_id='" + flow_id + '\'' +
+                ", start_time=" + start_time +
+                ", end_time=" + end_time +
+                ", status=" + status +
+                ", running='" + running + '\'' +
+                ", lang='" + lang + '\'' +
+                ", meaning='" + meaning + '\'' +
+                ", nestedId='" + nestedId + '\'' +
+
+                '}';
     }
 }

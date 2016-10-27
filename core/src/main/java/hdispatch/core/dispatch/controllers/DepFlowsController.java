@@ -126,13 +126,13 @@ public class DepFlowsController extends BaseController {
 	 */
 	@RequestMapping("/queryDep")
 	@ResponseBody
-	public List<DepFlows> queryDep(HttpServletRequest request,
+	public ResponseData queryDep(HttpServletRequest request,
 			@RequestParam String flow_id,
 			@RequestParam String project_name
 			)
 	{
 
-		return service.selectDepWithId(flow_id,service.selectIdByName(project_name));
+		return new ResponseData(service.selectDepWithId(flow_id,service.selectIdByName(project_name)));
 	}
 	/**
 	 * 查询互斥流
@@ -143,12 +143,11 @@ public class DepFlowsController extends BaseController {
 	 */
 	@RequestMapping("/queryMut")
 	@ResponseBody
-	public List<DepFlows> queryMut(HttpServletRequest request,
+	public ResponseData queryMut(HttpServletRequest request,
 			@RequestParam String flow_id,
 			@RequestParam String project_name
 			)
 	{
-
-		return service.selectMutWithId(flow_id, service.selectIdByName(project_name));
+		return new ResponseData(service.selectMutWithId(flow_id, service.selectIdByName(project_name)));
 	}
 }

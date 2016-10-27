@@ -4,15 +4,21 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hdispatch.core.dispatch.azkaban.entity.flow.ExeFlow;
+import hdispatch.core.dispatch.azkaban.entity.flow.exejob;
 import hdispatch.core.dispatch.azkaban.service.ExeFlowService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
+import hdispatch.core.dispatch.dto.ExecutionJobs;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,7 +29,9 @@ import java.util.Map;
 public class ExeFlowServiceImpl implements ExeFlowService {
 	private static Logger logger = Logger.getLogger(ExeFlowService.class);
 	private HttpResponse<JsonNode> response;
-
+	private static List<ExecutionJobs> list;
+	private static Integer parentId;
+	private static Integer version;
 	@Override
 	public Long Fetchflows(String projectName) {
 		try {
@@ -168,11 +176,56 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		obj.setMessage((String)response.getBody().getObject().get("error"));
 		return obj;
 	}
-public static void main(String[] args) {
-	Map<String, Object>map=new HashMap<>();
-	map.put("project", "TestWorkflow");
-	map.put("flow", "TestWorkflow");
-	System.out.println(map);
-	new ExeFlowServiceImpl().ExecuteFlow(map);
-}
+
+	@Override
+	public List<ExecutionJobs> getJobsOfFlow(Map<String, Object> map) {
+		ResultObj obj=new ResultObj();
+		try {
+			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "fetchexecflow").queryString(map)
+					.asJson();
+		} catch (UnirestException e) {
+			logger.error("当前execid不存在");
+		}
+		list=new ArrayList<>();
+		parentId=0;
+		version=0;
+		return parseJSON(response.getBody().getObject(),parentId);
+	}
+
+	public static List<ExecutionJobs> parseJSON(JSONObject obj,Integer parentId)
+	{
+		if(new exejob(obj).hasNodes())
+		{
+			ExecutionJobs job=new ExecutionJobs();
+			job.setVersion(version++);
+			job.setParentId(parentId);
+			job.setFlow_id(new exejob(obj).getProject());
+			job.setNestedId(new exejob(obj).getNestedId());
+			job.setJob_id(new exejob(obj).getId());
+			job.setEnd_time(new exejob(obj).getEndTime());
+			job.setStart_time(new exejob(obj).getStartTime());
+			job.setStatus((byte)new exejob(obj).getStatus());
+			if(new exejob(obj).getStartTime()!=-1)
+			list.add(job);
+			JSONArray array=new exejob(obj).getNodes();
+			for (int i=0;i<array.length();i++)
+			{
+				parseJSON((JSONObject)array.get(i),job.getVersion());
+			}
+		}else
+		{
+			ExecutionJobs job=new ExecutionJobs();
+			job.setFlow_id(new exejob(obj).getProject());
+			job.setParentId(parentId);
+			job.setVersion(version++);
+			job.setNestedId(new exejob(obj).getNestedId());
+			job.setJob_id(new exejob(obj).getId());
+			job.setEnd_time(new exejob(obj).getEndTime());
+			job.setStart_time(new exejob(obj).getStartTime());
+			job.setStatus((byte)new exejob(obj).getStatus());
+			if(new exejob(obj).getStartTime()!=-1)
+			list.add(job);
+		}
+		return list;
+	}
 }

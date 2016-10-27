@@ -141,14 +141,21 @@
 			dialog.maximize().open();
 		}
 		window.stateColor = {
-			"PAUSED" : "background-color:#FFCC00;",
-			"RUNNING" : "background-color:#00CC00;",
-			"SUCCESS" : "background-color:#33FF00;",
-			"FAILED" : "background-color:#FF3333;",
-			"SUCCESS" : "background-color:#5CB85C;",
-			"FAILED" : "background-color:#D9534F;",
-			"KILLED" : "background-color:#D9534F;",
-			"PREPARING" : "background-color:#DDDDDD;"
+				"READY" : "background-color:#1AE6E6;",
+				"PAUSED" : "background-color:#FFCC00;",
+				"RUNNING" : "background-color:#00CC00;",
+				"SUCCESS" : "background-color:#33FF00;",
+				"FAILED" : "background-color:#FF3333;",
+				"SUCCESS" : "background-color:#5CB85C;",
+				"FAILED" : "background-color:#D9534F;",
+				"KILLED" : "background-color:#D9534F;",
+				"PREPARING" : "background-color:#DDDDDD;",
+					"FAILED_FINISHING" : "background-color:#EE9611;",
+						"SKIPPED" : "background-color:#66FF00;",
+						"DISABLED" : "background-color:#F70909;",
+						"QUEUED" : "background-color:#FFFF00;",
+						"FAILED_SUCCEEDED" : "background-color:#FF0066;",
+						"CANCELLED" : "background-color:#6F8391;"
 		};
 
 		$(document)
@@ -464,7 +471,21 @@
 																else if (item.status == 60)
 																	status = 'KILLED';
 																else if (item.status == 40)
-																	status = 'PAUSED';
+																	status = 'PAUSED';				
+																else if (item.status == 10)
+																	status = 'READY';	
+																else if (item.status == 80)
+																	status = 'FAILED_FINISHING';
+																else if (item.status == 90)
+																	status = 'SKIPPED';
+																else if (item.status == 100)
+																	status = 'DISABLED';
+																else if (item.status == 110)
+																	status = 'QUEUED';
+																else if (item.status == 120)
+																	status = 'FAILED_SUCCEEDED';
+																else if (item.status == 130)
+																	status = 'CANCELLED';
 																var html = "<div "
 																		+ "style='text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
 																		+ (stateColor[status])
