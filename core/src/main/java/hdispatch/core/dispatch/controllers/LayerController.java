@@ -209,7 +209,7 @@ public class LayerController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/layer/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData deleteJobs(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) {
+    public ResponseData deleteLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) {
 
         ResponseData rd = null;
 

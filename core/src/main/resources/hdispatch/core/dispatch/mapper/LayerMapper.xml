@@ -43,7 +43,7 @@ yazheng.yang@hand-china.com
     </select>
     <update id="update">
         UPDATE hdispatch_layer
-        <set >
+        <set>
             <if test="layerName != null" >
                 name = #{layerName,jdbcType=VARCHAR},
             </if>
