@@ -92,7 +92,7 @@
                 if (data.code == 1) {
                     defered.resolve(scheduleInfo.projectName + '计划成功');
                 } else {
-                    defered.reject(scheduleInfo.projectName + '计划失败');
+                    defered.reject(data.message);
                 }
             });
         };
@@ -102,7 +102,7 @@
                 if (data.code == 1) {
                     defered.resolve(executeInfo.project + '执行成功');
                 } else {
-                    defered.reject(executeInfo.project + '执行失败');
+                    defered.reject(data.message);
                 }
             });
         };
