@@ -37,8 +37,10 @@ yazheng.yang@hand-china.com
                 AND description like #{pattern_themeDescription}
             </if>
             AND active=1
+            AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
         </where>
     </select>
+
     <select id="selectByNameAndActive" resultMap="baseMap">
         SELECT * FROM hdispatch_theme
         WHERE name=#{themeName,jdbcType=VARCHAR} AND active=1
@@ -51,5 +53,65 @@ yazheng.yang@hand-china.com
     <select id="selectById" resultMap="baseMap">
         SELECT * FROM hdispatch_theme
         WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+    </select>
+
+    <!--
+        权限验证下：查询所有主题
+    -->
+    <select id="selectAll_validated" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme WHERE active=1
+        AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
+    </select>
+
+    <!--
+    权限验证下：主题模糊搜索，
+    根据权限，过滤掉不可见的主题
+    -->
+    <select id="selectByTheme_validated" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        <where>
+            <if test="themeId != null and themeId>0">
+                and theme_id = #{themeId,jdbcType=DECIMAL}
+            </if>
+            <if test="themeName != null">
+                <bind name="pattern_themeName" value="'%' + _parameter.themeName + '%'" />
+                AND name like #{pattern_themeName}
+            </if>
+            <if test="themeDescription != null">
+                <bind name="pattern_themeDescription" value="'%' + _parameter.themeDescription + '%'" />
+                AND description like #{pattern_themeDescription}
+            </if>
+            AND active=1
+            AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
+        </where>
+    </select>
+
+    <!--
+    权限验证下：主题搜索(根据themeName选择active的主题)，
+    根据权限，过滤掉不可见的主题
+    -->
+    <select id="selectByNameAndActive_validated" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE name=#{themeName,jdbcType=VARCHAR} AND active=1
+        AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
+    </select>
+
+    <!--
+    权限验证下：删除主题
+    逻辑删除
+    -->
+    <update id="deleteInLogic_validated">
+        UPDATE hdispatch_theme SET active=0
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+        AND 'Y'=hasPermission(#{themeId},#{request.userId},NULL,'Y')
+    </update>
+
+    <!--
+   权限验证下：根据id查询主题
+   -->
+    <select id="selectById_validated" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+        AND 'Y'=hasPermission(#{themeId},#{request.userId},'Y',NULL)
     </select>
 </mapper>
