@@ -319,7 +319,7 @@
                 var grid_themeDropDown_dataSource=new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: themeBaseUrl+"queryAll",
+                            url: themeBaseUrl+"queryAll_opt",
                             type : 'GET',
                             dataType: "json"
                         },
@@ -505,7 +505,7 @@
                 var input_themeId_dataSource = new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: themeBaseUrl+"queryAll",
+                            url: themeBaseUrl+"queryAll_read",
                             type : 'GET',
                             dataType: "json"
                         },
@@ -606,7 +606,7 @@
             var batchCreateJob_themeId_dataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
-                        url: themeBaseUrl+"queryAll",
+                        url: themeBaseUrl+"queryAll_opt",
                         type : 'GET',
                         dataType: "json"
                     },
