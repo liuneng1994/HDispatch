@@ -12,7 +12,7 @@
                 top: 30,
                 right: 30
             },
-            autoHideAfter: 5000,
+            autoHideAfter: 3000,
             stacking: "down",
             templates: [{
                 type: "error",

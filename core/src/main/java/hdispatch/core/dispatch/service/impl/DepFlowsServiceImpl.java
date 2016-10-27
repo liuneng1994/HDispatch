@@ -20,49 +20,41 @@ DepFlowsMapper mapper;
 
 @Override
 public int insertDep(DepFlows record) {
-	// TODO Auto-generated method stub
 	return mapper.insertDep(record);
 }
 
 @Override
 public int insertMut(DepFlows record) {
-	// TODO Auto-generated method stub
 	return mapper.insertMut(record);
 }
 
 @Override
 public List<DepFlows> selectDepWithId(String flow_id,Integer project_id) {
-	// TODO Auto-generated method stub
 	return mapper.selectDepWithId(flow_id,project_id);
 }
 
 @Override
 public List<DepFlows> selectMutWithId(String flow_id,Integer project_id) {
-	// TODO Auto-generated method stub
 	return mapper.selectMutWithId(flow_id,project_id);
 }
 
 @Override
 public int deleteDep(DepFlows record) {
-	// TODO Auto-generated method stub
 	return mapper.deleteDep(record);
 }
 
 @Override
 public int deleteMut(DepFlows record) {
-	// TODO Auto-generated method stub
 	return mapper.deleteMut(record);
 }
 
 @Override
 public int isExitDep(DepFlows record) {
-	// TODO Auto-generated method stub
 	return mapper.isExitDep(record);
 }
 
 @Override
 public int isExitMut(DepFlows record) {
-	// TODO Auto-generated method stub
 	return mapper.isExitMut(record);
 }
 

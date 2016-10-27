@@ -182,7 +182,7 @@
         <if test="themeId!=null">AND hw.theme_id = #{themeId}</if>
         <if test="layerId!=null">AND hw.layer_id = #{layerId}</if>
         AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
-        AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')
+        <if test='description != "" and description != null'>AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')</if>
         AND hw.active=1
     </select>
 

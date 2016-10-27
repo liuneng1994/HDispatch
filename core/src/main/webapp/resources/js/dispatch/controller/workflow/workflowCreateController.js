@@ -58,7 +58,7 @@
             workflow.themeId = Number(vm.workflow.themeId);
             workflow.layerId = Number(vm.workflow.layerId);
             workflow.name = vm.workflow.workflowName;
-            workflow.description = vm.workflow.description;
+            workflow.description = vm.workflow.description||" ";
             workflow.jobs = [];
             for (var job of vm.paint.jobs.jobs.values()) {
                 var newJob = {};

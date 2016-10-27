@@ -26,6 +26,16 @@
          k-visible="false">
         <iframe id="dependencyFrame" src="#" style="height:100%;width: 100%;" frameborder="0"></iframe>
     </div>
+    <div kendo-window="vm.mutexWindow"
+         k-title="'互斥管理'"
+         k-actions="['Maximize', 'Close']"
+         k-modal="true"
+         k-width="700"
+         k-on-open="vm.mutexWindow.visible = true"
+         k-on-close="vm.mutexWindow.visible = false"
+         k-visible="false">
+        <iframe id="mutexFrame" src="#" style="height:100%;width: 100%;" frameborder="0"></iframe>
+    </div>
     <div id="content-container">
         <div id="page-content">
             <div class="panel">
@@ -44,6 +54,7 @@
                                                     k-data-text-field="'themeName'"
                                                     k-data-value-field="'themeId'"
                                                     k-data-source="vm.themes"
+                                                    k-option-label="'请选择任务流'"
                                                     style="padding-left:0;padding-right:0;width:100%;padding-bottom:2px"></select>
                                         </div>
                                     </div>
@@ -58,6 +69,7 @@
                                                     k-data-text-field="'layerName'"
                                                     k-data-value-field="'layerId'"
                                                     k-data-source="vm.layers"
+                                                    k-option-label="'请选择层级'"
                                                     style="padding-left:0;padding-right:0;width:100%;;padding-bottom:2px">123123</select>
                                         </div>
                                     </div>

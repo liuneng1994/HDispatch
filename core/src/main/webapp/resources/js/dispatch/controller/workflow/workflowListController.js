@@ -101,6 +101,7 @@
                     template: function (item) {
                         var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
                         html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
+                        html += "<button class='btn btn-danger' ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
                         return html;
                     }
                 }]
@@ -111,7 +112,7 @@
         };
         vm.create = function (url) {
             window.location = url;
-        }
+        };
 
         vm.edit = function (id) {
             $window.sessionStorage['workflowId'] = id;
@@ -121,7 +122,7 @@
         vm.deleteSelection = function () {
             "use strict";
             Hap.deleteGridSelection({grid: $("#grid")});
-        }
+        };
 
         vm.themeChange = function (themeId) {
             vm.workflow.layerId = undefined;
@@ -131,9 +132,16 @@
         vm.dependency = function (id) {
             "use strict";
             var item = $('#grid').data('kendoGrid').dataSource.get(id);
-            $('#dependencyFrame').attr('src', _basePath+'/dispatch/workflow/mutex_workflow_list.html?workflowId='+item.workflowId+"&projectName="+item.project+"&flowId="+item.flowId);
-            vm.dependencyWindow.center().open();
-        }
+            $('#dependencyFrame').attr('src', _basePath+'/dispatch/workflow/dept_workflow_list.html?workflowId='+item.workflowId+"&projectName="+item.project+"&flowId="+item.flowId);
+            vm.dependencyWindow.maximize().open();
+        };
+
+        vm.mutex = function (id) {
+            "use strict";
+            var item = $('#grid').data('kendoGrid').dataSource.get(id);
+            $('#mutexFrame').attr('src', _basePath+'/dispatch/workflow/mutex_workflow_list.html?workflowId='+item.workflowId+"&projectName="+item.project+"&flowId="+item.flowId);
+            vm.mutexWindow.maximize().open();
+        };
 
 
         refreshThemes();

@@ -109,8 +109,64 @@
 
         var deleteWorkflow = function (ids) {
             "use strict";
-            return httpService.postJSON(_basePath + '/dispatcher/workflow/delete',ids, function (data, defered) {
+            return httpService.postJSON(_basePath + '/dispatcher/workflow/delete', ids, function (data, defered) {
                 defered.resolve("");
+            });
+        };
+
+        var queryWorkflowDependency = function (workflowName, page, pageSize) {
+            "use strict";
+            var params = {
+                projectName: workflowName,
+                page: page,
+                pageSize: pageSize
+            };
+            return httpService.get(_basePath + '/dispatcher/workflow_dependency/query', params, function (data, defered) {
+                if (data.success) {
+                    defered.resolve(data);
+                }
+            });
+        };
+
+        var createWorkflowDependency = function (dependencies) {
+            "use strict";
+            return httpService.postJSON(_basePath + "/dispatcher/workflow_dependency/insert", dependencies, function (data, defered) {
+                defered.resolve('');
+            });
+        };
+
+        var deleteWorkflowDependency = function (dependencies) {
+            "use strict";
+            return httpService.postJSON(_basePath + "/dispatcher/workflow_dependency/delete", dependencies, function (data, defered) {
+                defered.resolve('');
+            });
+        };
+
+        var queryWorkflowMutex = function (workflowName, page, pageSize) {
+            "use strict";
+            var params = {
+                projectName: workflowName,
+                page: page,
+                pageSize: pageSize
+            };
+            return httpService.get(_basePath + '/dispatcher/workflow_mutex/query', params, function (data, defered) {
+                if (data.success) {
+                    defered.resolve(data);
+                }
+            });
+        };
+
+        var createWorkflowMutex = function (mutexList) {
+            "use strict";
+            return httpService.postJSON(_basePath + "/dispatcher/workflow_mutex/insert", mutexList, function (data, defered) {
+                defered.resolve('');
+            });
+        };
+
+        var deleteWorkflowMutex = function (mutexList) {
+            "use strict";
+            return httpService.postJSON(_basePath + "/dispatcher/workflow_mutex/delete", mutexList, function (data, defered) {
+                defered.resolve('');
             });
         };
 
@@ -125,7 +181,13 @@
             workflow: workflow,
             scheduleWorkflow: scheduleWorkflow,
             executeWorkflow: executeWorkflow,
-            deleteWorkflow: deleteWorkflow
+            deleteWorkflow: deleteWorkflow,
+            queryWorkflowDependency: queryWorkflowDependency,
+            createWorkflowDependency: createWorkflowDependency,
+            deleteWorkflowDependency: deleteWorkflowDependency,
+            queryWorkflowMutex: queryWorkflowMutex,
+            createWorkflowMutex: createWorkflowMutex,
+            deleteWorkflowMutex: deleteWorkflowMutex
         };
     }
 })();

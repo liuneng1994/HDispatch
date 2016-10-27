@@ -3,7 +3,7 @@
  */
 (function () {
     "use strict";
-    angular.module('dispatch').controller('workflowMutexController',
+    angular.module('dispatch').controller('workflowDeptController',
         ['workflowService', function (workflowService) {
             var vm = this;
 
@@ -25,35 +25,35 @@
                     dataSource: {
                         transport: {
                             read: function (options) {
-                                workflowService.queryWorkflowMutex(vm.projectName, options.data.page, options.data.pageSize).then(function (data) {
+                                workflowService.queryWorkflowDependency(vm.projectName, options.data.page, options.data.pageSize).then(function (data) {
                                     options.success(data);
                                 });
                             },
                             create: function (options) {
-                                var mutexList = [];
+                                var dependencies = [];
                                 options.data.models.forEach(function (item) {
-                                    mutexList.push({
+                                    dependencies.push({
                                         projectName: vm.projectName,
                                         flowId: vm.flowId,
-                                        mutexProjectName: item.mutexProjectName,
-                                        mutexFlowId: item.mutexFlowId
+                                        deptProjectName: item.deptProjectName,
+                                        deptFlowId: item.deptFlowId
                                     });
                                 });
-                                workflowService.createWorkflowMutex(mutexList).then(function () {
+                                workflowService.createWorkflowDependency(dependencies).then(function () {
                                     options.success('');
                                 });
                             },
                             destroy: function (options) {
-                                var mutexList = [];
+                                var dependencies = [];
                                 options.data.models.forEach(function (item) {
-                                    mutexList.push({
+                                    dependencies.push({
                                         projectName: vm.projectName,
                                         flowId: vm.flowId,
-                                        mutexProjectName: item.mutexProjectName,
-                                        mutexFlowId: item.mutexFlowId
+                                        deptProjectName: item.deptProjectName,
+                                        deptFlowId: item.deptFlowId
                                     });
                                 });
-                                workflowService.deleteWorkflowMutex(mutexList).then(function () {
+                                workflowService.deleteWorkflowDependency(dependencies).then(function () {
                                     options.success('');
                                 });
                             }
@@ -95,17 +95,17 @@
                     },
                     columns: [
                         {
-                            field: "mutexWorkflowName",
+                            field: "deptWorkflowName",
                             title: '任务流',
                             width: 100
                         },
                         {
-                            field: "mutexTheme",
+                            field: "deptTheme",
                             title: '任务组',
                             width: 100
                         },
                         {
-                            field: "mutexLayer",
+                            field: "deptLayer",
                             title: '层级',
                             width: 100
                         }]
@@ -164,41 +164,41 @@
                                     page: 1,
                                     pageSize: 2147483647
                                 }).then(function (data) {
-                                    options.success(options.success(data.rows.filter(function (item) {
+                                    options.success(data.rows.filter(function(item) {
                                         return item.workflowId != vm.workflowId;
-                                    })));
+                                    }));
                                 });
                             }
                         }
                     }
                 };
-                vm.createMutexWorkflow = function () {
+                vm.createDeptWorkflow = function () {
                     $('#grid').data('kendoGrid').dataSource.add({
-                        mutexProjectName: vm.mutexWorkflow.project,
-                        mutexFlowId: vm.mutexWorkflow.flowId
+                        deptProjectName: vm.deptWorkflow.project,
+                        deptFlowId: vm.deptWorkflow.flowId
                     });
-                    $('#grid').data('kendoGrid').dataSource.sync().then(function () {
+                    $('#grid').data('kendoGrid').dataSource.sync().then(function() {
                         $('#grid').data('kendoGrid').dataSource.page(1);
                     });
-                    vm.resetMutexWindow();
+                    vm.resetDeptWindow();
                 };
-                vm.resetMutexWindow = function () {
-                    vm.mutexWorkflow = null;
-                    vm.createMutexWindow.close();
+                vm.resetDeptWindow = function () {
+                    vm.deptWorkflow = null;
+                    vm.createDependencyWindow.close();
                 };
-                vm.deleteMutexWorkflow = function () {
-                    Hap.deleteGridSelection({grid: $("#grid")});
+                vm.deleteDeptWorkflow = function() {
+                    Hap.deleteGridSelection({grid:$("#grid")});
                 };
                 vm.themeChange = function () {
                     vm.layer = null;
                     $("#layer").data('kendoDropDownList').dataSource.read();
                 };
                 vm.layerChange = function () {
-                    vm.mutexWorkflow = null;
-                    $("#mutexWorkflow").data('kendoDropDownList').dataSource.read();
+                    vm.deptWorkflow = null;
+                    $("#deptWorkflow").data('kendoDropDownList').dataSource.read();
                 };
-                vm.openMutexWindow = function () {
-                    vm.createMutexWindow.center().open();
+                vm.openDeptWindow = function () {
+                    vm.createDependencyWindow.center().open();
                 }
             }
         }]);
