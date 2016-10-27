@@ -4,6 +4,7 @@ import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.service.WorkflowService;
+import hdispatch.core.dispatch.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,12 +95,13 @@ public class WorkflowController extends BaseController {
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
     public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId) {
         ResponseData responseData;
-        if (workflowService.generateWorkflow(workflowId)) {
+        String result = workflowService.generateWorkflow(workflowId)
+        if (StringUtils.isEmpty(result)) {
             responseData = new ResponseData(true);
             responseData.setMessage("工作流生成成功");
         } else {
             responseData = new ResponseData(false);
-            responseData.setMessage("工作流生成失败");
+            responseData.setMessage(result);
         }
         return responseData;
     }

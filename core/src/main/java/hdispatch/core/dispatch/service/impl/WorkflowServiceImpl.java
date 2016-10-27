@@ -118,9 +118,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Override
     @Transactional
-    public boolean generateWorkflow(long workflowId) {
+    public String generateWorkflow(long workflowId) {
         Workflow workflow = workflowMapper.getById(workflowId);
-        if (workflow == null || workflow.getJobs() == null) return false;
+        if (workflow == null || workflow.getJobs() == null) return "";
         logger.info("generate workflow " + workflow);
         Set<Long> ids = new HashSet<>();
         workflow.getJobs().forEach(job -> ids.add(job.getJobSource()));
@@ -133,7 +133,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         if (!result.containsKey("error")) {
             workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), "_"+workflow.getName());
         }
-        return !result.containsKey("error");
+        return result.get("error");
     }
 
     private class WorkflowResolver {
