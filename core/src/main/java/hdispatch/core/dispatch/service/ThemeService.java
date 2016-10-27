@@ -29,14 +29,10 @@ public interface ThemeService extends ProxySelf<ThemeService> {
      * @param pageSize
      * @return
      */
-    List<Theme> selectAll(IRequest requestContext, int page, int pageSize);
+    List<Theme> selectAll_read();
 
-    /**
-     * 查询所有主题（无分页）
-     * @param requestContext
-     * @return
-     */
-    List<Theme> selectAllWithoutPaging(IRequest requestContext);
+    List<Theme> selectAll_opt();
+
 
     /**
      * 批量编辑（目前只是新增）
@@ -67,69 +63,4 @@ public interface ThemeService extends ProxySelf<ThemeService> {
      * @return
      */
     Theme selectActiveThemeById(Theme theme);
-
-    /**
-     * -------------------下面是经过权限的方法--------------------------
-     */
-
-    /**
-     * 模糊查询主题列表（经过权限验证）,
-     * 需要读权限
-     * @param requestContext
-     * @param theme
-     * @param page
-     * @param pageSize
-     * @return
-     */
-    List<Theme> selectByTheme_validated(IRequest requestContext, Theme theme, int page, int pageSize);
-
-    /**
-     * 获取所有主题（带分页并且经过权限验证）
-     * @param requestContext
-     * @param page
-     * @param pageSize
-     * @return
-     */
-    List<Theme> selectAll_validated(IRequest requestContext, int page, int pageSize);
-
-    /**
-     * 获取所有主题（无分页、经过权限验证）
-     * @param requestContext
-     * @return
-     */
-    List<Theme> selectAllWithoutPaging_validated(IRequest requestContext);
-
-    /**
-     * 批量编辑主题(经过权限验证,新增没有验证权限，删除需验证权限)
-     * @param requestContext
-     * @param themeList
-     * @return
-     * @throws Exception
-     */
-    List<Theme> batchUpdate_validated(IRequest requestContext, List<Theme> themeList) throws Exception;
-
-    /**
-     * 检查数据库中是否存在处于生效(active)状态，主题名称相同
-     * checkIsExist方法是用于检测是否在数据库中已经存在，防止重名。
-     * 因此在本方法中调用的是不经过权限验证的
-     * @see ThemeMapper#selectByNameAndActive(Theme) selectByNameAndActive
-     * @param themeList 需要查重的主题列表
-     * @return
-     */
-    boolean[] checkIsExist_validated(List<Theme> themeList);
-
-    /**
-     * 逻辑删除主题(经过权限验证)
-     * @param requestContext
-     * @param theme
-     */
-    void deleteInLogic_validated(IRequest requestContext,Theme theme);
-
-    /**
-     * 根据themeId获取主题(经过权限验证)
-     * @param requestContext
-     * @param theme
-     * @return
-     */
-    Theme selectActiveThemeById_validated(IRequest requestContext,Theme theme);
 }

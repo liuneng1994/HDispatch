@@ -64,12 +64,32 @@ public class ThemeController extends BaseController {
         return responseData;
     }
 
-    @RequestMapping(value = "/dispatcher/theme/queryAll", method = RequestMethod.GET)
+    /**
+     * 本方法用于提供具有操作权限的主题列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatcher/theme/queryAll_opt", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseData getAllThemes(HttpServletRequest request) {
+    public ResponseData getAllThemes_operate(HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
 
-        List<Theme> themeList = themeService.selectAllWithoutPaging(requestContext);
+        List<Theme> themeList = themeService.selectAll_opt();
+        ResponseData responseData = new ResponseData(themeList);
+        return responseData;
+    }
+
+    /**
+     * 本方法用于提供具有操作权限或者读权限的主题列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatcher/theme/queryAll_read", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getAllThemes_read(HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+
+        List<Theme> themeList = themeService.selectAll_read();
         ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }
