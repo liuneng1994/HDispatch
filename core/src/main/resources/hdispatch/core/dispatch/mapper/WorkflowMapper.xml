@@ -30,7 +30,6 @@
         </collection>
         <collection property="jobs" column="workflow_id" select="getJobs" javaType="java.util.List"
                     ofType="hdispatch.core.dispatch.dto.workflow.WorkflowJob">
-
         </collection>
     </resultMap>
 
@@ -184,8 +183,39 @@
         AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
         <if test='description != "" and description != null'>AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')</if>
         AND hw.active=1
+        AND ('Y'=hasPermission(hw.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hw.theme_id,#{request.userId},NULL,'Y'))
     </select>
 
+    <select id="queryOperate" resultMap="simpleWorkflow">
+        SELECT
+        hw.workflow_id,
+        ht.`name` AS theme,
+        ht.`theme_id`,
+        hl.`name` AS layer,
+        hl.`layer_id`,
+        hw.`name` AS workflow_name,
+        hw.`project_name`,
+        hw.`flow_id`,
+        hw.`description` AS workflow_description
+        FROM
+        hdispatch_workflow hw
+        LEFT JOIN
+        hdispatch_theme ht
+        ON
+        hw.theme_id = ht.theme_id
+        LEFT JOIN
+        hdispatch_layer hl
+        ON
+        hw.layer_id = hl.layer_id
+        WHERE
+        1 = 1
+        <if test="themeId!=null">AND hw.theme_id = #{themeId}</if>
+        <if test="layerId!=null">AND hw.layer_id = #{layerId}</if>
+        AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
+        <if test='description != "" and description != null'>AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')</if>
+        AND hw.active=1
+        AND ('Y'=hasPermission(hw.theme_id,#{request.userId},NULL,'Y'))
+    </select>
     <!--add by yazheng.yang@hand-china.com
     2016.10.25
     -->

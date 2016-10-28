@@ -28,5 +28,7 @@ public interface WorkflowMapper {
 
     List<SimpleWorkflow> query(@Param("themeId") Long themeId, @Param("layerId") Long layerId, @Param("workflowName") String workflowName, @Param("description") String decription);
 
+    List<SimpleWorkflow> queryOperate(@Param("themeId") Long themeId, @Param("layerId") Long layerId, @Param("workflowName") String workflowName, @Param("description") String decription);
+
     List<SimpleWorkflow> queryWorkflowUnderLayer(@Param("layerId") Long layerId);
 }

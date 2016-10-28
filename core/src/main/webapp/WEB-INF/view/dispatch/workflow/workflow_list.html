@@ -10,11 +10,30 @@
             padding-bottom: 1em;
         }
     </style>
+    <script type="text/javascript">
+        $.ajax({
+            type: 'GET',
+            url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function (data) {
+                window.filter_to_operate_themeIds = [];
+                $.each(data.rows, function (key,value) {
+                    filter_to_operate_themeIds.push(value.themeId);
+                });
+            },
+            async:false,
+            dataType: "json"
+        });
+    </script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <script src="${base.contextPath}/lib/moment.min.js"></script>
+
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
     <div kendo-window="vm.dependencyWindow"
          k-title="'依赖管理'"
