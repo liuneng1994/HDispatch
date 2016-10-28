@@ -10,7 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by liuneng on 16-8-30.
@@ -30,12 +34,28 @@ public class RequestUtils {
     private static String host;
     private static String username;
     private static String password;
+    private static String period;
+
+    private static Timer timer = new Timer();
 
     static {
-        // 需要添加从配置文件读取的逻辑
-        host = "http://172.20.0.28:12320";
-        username = "azkaban";
-        password = username;
+        Properties properties = new Properties();
+        try {
+            properties.load(RequestUtils.class.getClassLoader().getResourceAsStream("config.properties"));
+            host = properties.getProperty("azkaban.address");
+            username = properties.getProperty("azkaban.user");
+            password = properties.getProperty("azkaban.password");
+            period = properties.getProperty("azkaban.period", String.valueOf(20 * 60 * 1000));
+
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    getter.setActive(false);
+                }
+            }, Integer.valueOf(period), Integer.valueOf(period));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static HttpRequest get(String uri) {
@@ -49,8 +69,9 @@ public class RequestUtils {
 
     private static class SessionIdGetter {
         private String sessionId;
+        private boolean active = false;
 
-        public String getSessionId() {
+        public synchronized String getSessionId() {
             if (StringUtils.isEmpty(sessionId) || !isActive()) {
                 String response;
                 try {
@@ -69,12 +90,18 @@ public class RequestUtils {
                 } else {
                     sessionId = result.get("session.id");
                 }
+                active = true;
             }
             return sessionId;
         }
 
-        private boolean isActive() {
-            return true;
+        public synchronized SessionIdGetter setActive(boolean active) {
+            this.active = active;
+            return this;
+        }
+
+        private synchronized boolean isActive() {
+            return active;
         }
     }
 

@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.utils;
 
+import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.dto.workflow.WorkflowJob;
@@ -14,9 +15,19 @@ import java.util.regex.Pattern;
  * Created by 刘能 on 2016/9/12.
  */
 public class WorkflowUtils {
-    private static String COMMAND_TEMPLATE = "%s";
+    private static String COMMAND_TEMPLATE;
     private static final String JOB_SUFFIX = ".job";
     private static final String FLOW_PREFIX = "_";
+
+    static {
+        Properties properties = new Properties();
+        try {
+            properties.load(RequestUtils.class.getClassLoader().getResourceAsStream("config.properties"));
+            COMMAND_TEMPLATE = properties.getProperty("workflow.command.template", "%s");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 创建job文件
