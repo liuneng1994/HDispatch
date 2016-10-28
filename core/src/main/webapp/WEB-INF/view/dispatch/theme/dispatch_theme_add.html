@@ -1,5 +1,25 @@
 <#include "../../include/header.html">
     <body>
+    <script>
+        $.ajax({
+            type: 'GET',
+            url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function (data) {
+                filter_to_operate_themeIds = [];
+                $.each(data.rows, function (key,value) {
+                    filter_to_operate_themeIds.push(value.themeId);
+                });
+                console.log(filter_to_operate_themeIds);
+            },
+            async:false,
+            dataType: "json"
+        });
+        console.log("加载权限验证数组完毕");
+    </script>
     <div>
         <div id="content-container">
             <div id="theme-content">
@@ -35,6 +55,7 @@
                 <div id="page-content" style="clear:both">
                     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
                         <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                        <span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
                         <span class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
                         <span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
                         <!--<span  onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>-->
@@ -64,6 +85,9 @@
                 },
                 queryFunction: function (e) {
                     $('#themeListGrid').data('kendoGrid').dataSource.page(1);
+                },
+                batchDeleteFunction: function(e) {
+                    grid_batchDelete_btn_click("themeListGrid");
                 }
             });
             kendo.bind($('#query-form'), viewModel);
@@ -95,6 +119,12 @@
                             dataType: "json",
                             contentType:"application/json"
                         },
+                        destroy: {
+                            url: baseUrl_theme + "remove",
+                            type : 'POST',
+                            dataType: "application/json",
+                            contentType:"application/json"
+                        },
                         parameterMap: function(options, operation) {
                             //封装请求参数
                             if (operation !== "read" && options.models) {
@@ -102,6 +132,12 @@
                                 if(operation =='create' || operation =='update'){
                                     datas = options.models.map(function(data){
                                         data['__status'] = (operation =='create' ? 'add' : 'update');
+                                        return data;
+                                    });
+                                }
+                                if('destroy'==operation){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = 'delete';
                                         return data;
                                     });
                                 }
@@ -166,7 +202,7 @@
                 $("#themeListGrid").kendoGrid({
                     dataSource: themes_data,
                     resizable: true,
-                    selectable: "multiple",
+                    selectable: "multiple,rowbox",
                     scrollable: true,
                     pageable: {
                         pageSizes:[5, 10, 20, 50],
@@ -187,31 +223,31 @@
                         }
                     },
                     columns:
-                            [
-                                {
-                                    'field': 'themeId','hidden':true
-                                },
-                                {
-                                    'field': 'themeName',
-                                    'title':'<@spring.message "hdispatch.theme_name"/>',
-                                    'width': "150px",
-                                    editor:themeNameEditor,
-                                    template:"#=themeName#"
-                                },
-                                {
-                                    'field': 'themeSequence',
-                                    'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
-                                    'width': "100px",
-                                    editor:themeSequenceEditor,
-                                    template:"#=themeSequence#"
-                                },
-                                {
-                                    'field': 'themeDescription',
-                                    'title':'<@spring.message "hdispatch.theme.theme_description"/>',
-                                    'width': "200px",
-                                    editor:themeDescEditor,
-                                    template:"#=themeDescription#"
-                                },
+                    [
+                        {
+                            'field': 'themeId','hidden':true
+                        },
+                        {
+                            'field': 'themeName',
+                            'title':'<@spring.message "hdispatch.theme_name"/>',
+                            'width': "150px",
+                            editor:themeNameEditor,
+                            template:"#=themeName#"
+                        },
+                        {
+                            'field': 'themeSequence',
+                            'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
+                            'width': "100px",
+                            editor:themeSequenceEditor,
+                            template:"#=themeSequence#"
+                        },
+                        {
+                            'field': 'themeDescription',
+                            'title':'<@spring.message "hdispatch.theme.theme_description"/>',
+                            'width': "200px",
+                            editor:themeDescEditor,
+                            template:"#=themeDescription#"
+                        },
                         {
                             attributes: {style: "text-align:center;padding:0px"},
                             field : "",
@@ -230,6 +266,20 @@
                                 }else{
                                     return '';
                                 }
+                            }
+                        },
+                        {
+                            attributes: {style: "text-align:center;padding:0px"},
+                            'field' : "",
+                            'title' : '',
+                            'width' : 50,
+                            template: function (rowData) {
+                                if(hasOperatePermission(rowData.themeId)){
+                                    parameter = "themeListGrid";
+                                    return '<a class="btn btn-danger" onclick="grid_del_btn_click('+parameter+')"><@spring.message "hap.delete"/></a>';
+                                }
+                                return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
+
                             }
                         }
                     ],
