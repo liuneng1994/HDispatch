@@ -1,316 +1,315 @@
 <#-- * description: 角色界面 * version: 1.0
-*author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
-"../../include/header.html">
-<body>
-<script src="${base.contextPath}/lib/flatpickr.min.js"></script>
-<link rel="stylesheet" type="text/css" href="${base.contextPath}/lib/flatpickr.min.css">
-	<script src="${base.contextPath}/common/language?var=languageData"
-		type="text/javascript"></script>
-	<div id="tipDelete"></div>
-	<div id="dialog"></div>
-	<div id="content-container">
-		<div id="page-content">
-			<div class="panel">
-				<form class="form-horizontal">
-					<div class="panel-body">
+        *author:zhilong.deng@hand-china.com * #{copyright}# * -->
+    <#include
+            "../../include/header.html">
+        <body>
+        <script src="${base.contextPath}/lib/flatpickr.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="${base.contextPath}/lib/flatpickr.min.css">
+        <script src="${base.contextPath}/common/language?var=languageData"
+                type="text/javascript"></script>
+        <div id="tipDelete"></div>
+        <div id="dialog"></div>
+        <div id="content-container">
+            <div id="page-content">
+                <div class="panel">
+                    <form class="form-horizontal">
+                        <div class="panel-body">
 
-						<!-- roleCode -->
-						<div class="col-sm-4">
-							<div class="form-group">
-								<label class="col-sm-4 control-label"><@spring.message
-									"hdispatch.flowlist.flowname"/></label>
-								<div class="col-sm-6">
-									<input type="text" data-bind="value:model.flowName"
-										class="k-textbox">
-								</div>
-							</div>
-						</div>
-						<!-- roleCode  end-->
+                            <!-- roleCode -->
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label"><@spring.message
+                                        "hdispatch.flowlist.flowname"/></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" data-bind="value:model.flowName"
+                                               class="k-textbox">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- roleCode  end-->
 
-						<div class="col-sm-4">
-							<div class="form-group">
-								<label class="col-sm-4 control-label"><@spring.message
-									"hdispatch.flowlist.projectname"/></label>
-								<div class="col-sm-6">
-									<input type="text" data-bind="value:model.projectName"
-										class="k-textbox">
-								</div>
-							</div>
-						</div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label"><@spring.message
+                                        "hdispatch.flowlist.projectname"/></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" data-bind="value:model.projectName"
+                                               class="k-textbox">
+                                    </div>
+                                </div>
+                            </div>
 
 
-						<div class="col-sm-4">
-							<div class="form-group">
-								<label class="col-sm-4 control-label"><@spring.message
-									"hdispatch.flowlist.date"/></label>
-								<div class="col-sm-6">
-									<input id="picker" data-enable-time="true" data-time_24hr="true" data-bind="value:model.date"
-										class="k-textbox">
-								</div>
-							</div>
-						</div>
-					</div>
-					<!--  panel body end -->
-					<!-- -  panel-footer -->
-					<div class="panel-footer text-right">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label"><@spring.message
+                                        "hdispatch.flowlist.date"/></label>
+                                    <div class="col-sm-6">
+                                        <input id="picker" data-enable-time="true" data-time_24hr="true"
+                                               data-bind="value:model.date"
+                                               class="k-textbox">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--  panel body end -->
+                        <!-- -  panel-footer -->
+                        <div class="panel-footer text-right">
 						<span class="btn btn-success" data-bind="click:queryResource"
-							type="submit"><@spring.message "hap.query"/></span>
-					</div>
-					<!-- end panel-footer -->
-				</form>
-			</div>
-			<div class="panel">
-				<div class="panel-body">
-					<div id="flowGrid" class="table"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+                              type="submit"><@spring.message "hap.query"/></span>
+                        </div>
+                        <!-- end panel-footer -->
+                    </form>
+                </div>
+                <div class="panel">
+                    <div class="panel-body">
+                        <div id="flowGrid" class="table"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	<script src="${base.contextPath}/lib/dateformat.js"></script>
-	<script type="text/javascript">
-	document.getElementById("picker").flatpickr();
-		var grid;
-		function removesch(id,fid,pid) {
-			if (confirm("确定取消调度？")) {
-				flowoperation_ajax(id,fid,pid,
-						'${base.contextPath}/schedule/unschedule');
-				$('#flowGrid').data('kendoGrid').dataSource.read();
-			} else {
-				$('#flowGrid').data('kendoGrid').dataSource.read();
-				return;
-			}
+        <script src="${base.contextPath}/lib/dateformat.js"></script>
+        <script type="text/javascript">
+            document.getElementById("picker").flatpickr();
+            var grid;
+            function removesch(id, fid, pid) {
+                if (confirm("确定取消调度？")) {
+                    flowoperation_ajax(id, fid, pid,
+                            '${base.contextPath}/schedule/unschedule');
+                    $('#flowGrid').data('kendoGrid').dataSource.read();
+                } else {
+                    $('#flowGrid').data('kendoGrid').dataSource.read();
+                    return;
+                }
 
-		}
-		function flowoperation_ajax(id,fid,pid, url) {
-			$.ajax({
-				url : url,
-				type : "GET",
-				dataType : "json",
-				contentType : "application/json",
-				data : {
-					schId : id,
-					fid:fid,
-					pid:pid
-				},
-				success : function(json) {
-					alert(json.message);
-				},
-				error : function() {
-					grid.refresh();
-				}
-			});
-		}
-		function openSetSLAPage(schId,flowId,project) {
-			var dialog = $("#dialog").kendoWindow({
-				//actions : [ "Maximize", "Minimize", "Close" ],
-				width : 920,
-				height : 450,
-				modal: true,
-				title : schId + ' Scheduled Detail',
-				visible : false,
-				iframe : true,
-				content : 'setsla.html?schId=' + schId+'&flowId='+flowId+'&project='+project
-			}).data("kendoWindow");
-			dialog.maximize().open();
-		}
+            }
+            function flowoperation_ajax(id, fid, pid, url) {
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: {
+                        schId: id,
+                        fid: fid,
+                        pid: pid
+                    },
+                    success: function (json) {
+                        alert(json.message);
+                    },
+                    error: function () {
+                        grid.refresh();
+                    }
+                });
+            }
+            function openSetSLAPage(schId, flowId, project) {
+                var dialog = $("#dialog").kendoWindow({
+                    //actions : [ "Maximize", "Minimize", "Close" ],
+                    width: 920,
+                    height: 450,
+                    modal: true,
+                    title: schId + ' Scheduled Detail',
+                    visible: false,
+                    iframe: true,
+                    content: 'setsla.html?schId=' + schId + '&flowId=' + flowId + '&project=' + project
+                }).data("kendoWindow");
+                dialog.maximize().open();
+            }
 
-		$(document)
-				.ready(
-						function() {
+            $(document)
+                    .ready(
+                            function () {
 
-							var viewModel = kendo.observable({
-								model : {},
-								queryResource : function(e) {
-									$('#flowGrid').data('kendoGrid').dataSource
-											.read();
-								}
-							});
+                                var viewModel = kendo.observable({
+                                    model: {},
+                                    queryResource: function (e) {
+                                        $('#flowGrid').data('kendoGrid').dataSource
+                                                .read();
+                                    }
+                                });
 
-							kendo.bind($('#page-content'), viewModel);
+                                kendo.bind($('#page-content'), viewModel);
 
-							var crudServiceBaseUrl = '${base.contextPath}/schedule', dataSource = new kendo.data.DataSource(
-									{
-										transport : {
-											read : {
-												url : crudServiceBaseUrl
-														+ "/queryschedule",
-												contentType : "application/json",
-												type : "GET"
-											},
-											parameterMap : function(options,
-													type) {
-												if (type === "read") {
-													var model = viewModel.model;
-													var map = {};
-													if (model.flowName) {
-														map.flow_id = model.flowName;
-													}
-													if (model.projectName) {
-														map.project_name = model.projectName;
-													}
-													if (document.getElementById("picker").value!='') {
-														 map.submitdate = new Date(document.getElementById("picker").value).getTime(); 
-													}
-													if (options.page) {
-														map.page = options.page;
-													}
-													if (options.pageSize) {
-														map.pagesize = options.pageSize;
-													}
-													return map;
-												} else {
-													var datas = options.models;
-													return kendo
-															.stringify(datas);
-												}
-											}
-										},
-										batch : true,
-										serverPaging : true,
-										pageSize : 20,
-										schema : {
-											data : 'rows',
-											total : 'total',
-											model : {
-												id : "scheduleId",
-												fields : {
-													flowId : {
-														type : "string"
-													},
-													projectName : {
-														type : "string"
-													},
-													firstSchedTime : {
-														type : "string"
-													},
-													nextExecTime : {
-														type : "String"
-													},
-													period : {
-														type : "string"
-													},
-													hasSla : {
-														type : "string"
-													}
+                                var crudServiceBaseUrl = '${base.contextPath}/schedule', dataSource = new kendo.data.DataSource(
+                                        {
+                                            transport: {
+                                                read: {
+                                                    url: crudServiceBaseUrl
+                                                    + "/queryschedule",
+                                                    contentType: "application/json",
+                                                    type: "GET"
+                                                },
+                                                parameterMap: function (options,
+                                                                        type) {
+                                                    if (type === "read") {
+                                                        var model = viewModel.model;
+                                                        var map = {};
+                                                        if (model.flowName) {
+                                                            map.flow_id = model.flowName;
+                                                        }
+                                                        if (model.projectName) {
+                                                            map.project_name = model.projectName;
+                                                        }
+                                                        if (document.getElementById("picker").value != '') {
+                                                            map.submitdate = new Date(document.getElementById("picker").value).getTime();
+                                                        }
+                                                        if (options.page) {
+                                                            map.page = options.page;
+                                                        }
+                                                        if (options.pageSize) {
+                                                            map.pagesize = options.pageSize;
+                                                        }
+                                                        return map;
+                                                    } else {
+                                                        var datas = options.models;
+                                                        return kendo
+                                                                .stringify(datas);
+                                                    }
+                                                }
+                                            },
+                                            batch: true,
+                                            serverPaging: true,
+                                            pageSize: 20,
+                                            schema: {
+                                                data: 'rows',
+                                                total: 'total',
+                                                model: {
+                                                    id: "scheduleId",
+                                                    fields: {
+                                                        flowId: {
+                                                            type: "string"
+                                                        },
+                                                        projectName: {
+                                                            type: "string"
+                                                        },
+                                                        firstSchedTime: {
+                                                            type: "string"
+                                                        },
+                                                        nextExecTime: {
+                                                            type: "String"
+                                                        },
+                                                        period: {
+                                                            type: "string"
+                                                        },
+                                                        hasSla: {
+                                                            type: "string"
+                                                        }
 
-												}
-											},
-											errors : function(res) {
-												if (!res.success && res.message) {
-													return res.message;
-												}
-											}
-										},
-										error : function(e) {
+                                                    }
+                                                },
+                                                errors: function (res) {
+                                                    if (!res.success && res.message) {
+                                                        return res.message;
+                                                    }
+                                                }
+                                            },
+                                            error: function (e) {
 
-										}
-									});
+                                            }
+                                        });
 
-							grid = $("#flowGrid")
-									.kendoGrid(
-											{
-												dataSource : dataSource,
-												//width:500,  
-												navigatable : true,
-												resizable : true,
-												reorderable : true,
-												scrollable : true,
-												editable : false,
-												sortable : true,
-												pageable : {
-													pageSizes : [ 5, 10, 20, 50 ],
-													refresh : true,
-													buttonCount : 5,
-													messages : {
-														noRecords : "未找到任何数据",
-														display : "{0} - {1} 共 {2} 条数据",
-														empty : "没有数据",
-														page : "页",
-														of : "/ {0}",
-														itemsPerPage : "条每页",
-														first : "第一页",
-														previous : "前一页",
-														next : "下一页",
-														last : "最后一页",
-														refresh : "刷新"
-													}
-												},
-												columns : [
-														{
-															field : "scheduleId",
-															title : '<@spring.message "hdispatch.schedule.schlist.scheduleid"/>',
-															width : 140
-														},
-														{
-															field : "flowId",
-															title : '<@spring.message "hdispatch.flowlist.flowname"/>',
-															width : 80
-														},
-														{
-															field : "projectName",
-															title : '<@spring.message "hdispatch.flowlist.projectname"/>',
-															width : 200
-														},
-														{
-															field : "firstSchedTime",
-															title : '<@spring.message "hdispatch.schedule.schlist.firstschtime"/>',
-															width : 200
-														},
-														{
-															field : "nextExecTime",
-															title : '<@spring.message "hdispatch.schedule.schlist.nextexextime"/>',
-															width : 200
-														},
-														{
-															field : "period",
-															title : '<@spring.message "hdispatch.schedule.schlist.period"/>',
-															width : 180,
-															template : function(
-																	item) {
-																var html=item.period;
-																if(item.period=="null")
-																	html="--";
-																return html;
-															}
-														},
-														{
-															field : "hasSla",
-															title : '<@spring.message "hdispatch.schedule.schlist.hassla"/>',
-															width : 180
-														},
-														{
-															field : "",
-															title : '<@spring.message "hdispatch.schedule.schlist.removesla"/>',
-															width : 100,
-															template : function(
-																	item) {
-																var html = "<button class='btn btn-danger'"
-																		+ "onclick=removesch('"
-																		+ item.scheduleId
-																		+ "','"+item.flowId+"','"+item.projectId+"')"
-																		+ "><@spring.message 'schflows.removesch'/>"
-																		+ "</button>";
-																return html;
-															}
-														},
-														{
-															field : "",
-															title : '<@spring.message "schflows.setsla"/>',
-															width : 100,
-															template : function(
-																	item) {
-																var html = "<button  class='btn btn-info'onclick='openSetSLAPage(\""
-																		+ item.scheduleId
-																		+ "\",\""+item.flowId+"\",\""+item.projectName+"\")'"
-																		+ "><@spring.message 'schflows.setsla'/>"
-																		+ "</button>";
-																return html;
-															}
-														} ]
-											}).data("kendoGrid");
+                                grid = $("#flowGrid")
+                                        .kendoGrid(
+                                                {
+                                                    dataSource: dataSource,
+                                                    //width:500,
+                                                    navigatable: true,
+                                                    resizable: true,
+                                                    reorderable: true,
+                                                    scrollable: true,
+                                                    editable: false,
+                                                    sortable: true,
+                                                    pageable: {
+                                                        pageSizes: [5, 10, 20, 50],
+                                                        refresh: true,
+                                                        buttonCount: 5,
+                                                        messages: {
+                                                            noRecords: "未找到任何数据",
+                                                            display: "{0} - {1} 共 {2} 条数据",
+                                                            empty: "没有数据",
+                                                            page: "页",
+                                                            of: "/ {0}",
+                                                            itemsPerPage: "条每页",
+                                                            first: "第一页",
+                                                            previous: "前一页",
+                                                            next: "下一页",
+                                                            last: "最后一页",
+                                                            refresh: "刷新"
+                                                        }
+                                                    },
+                                                    columns: [
+                                                        {
+                                                            field: "scheduleId",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.scheduleid"/>',
+                                                            width: 140
+                                                        },
+                                                        {
+                                                            field: "flowId",
+                                                            title: '<@spring.message "hdispatch.flowlist.flowname"/>',
+                                                            width: 80
+                                                        },
+                                                        {
+                                                            field: "projectName",
+                                                            title: '<@spring.message "hdispatch.flowlist.projectname"/>',
+                                                            width: 200
+                                                        },
+                                                        {
+                                                            field: "firstSchedTime",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.firstschtime"/>',
+                                                            width: 200
+                                                        },
+                                                        {
+                                                            field: "nextExecTime",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.nextexextime"/>',
+                                                            width: 200
+                                                        },
+                                                        {
+                                                            field: "period",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.period"/>',
+                                                            width: 180,
+                                                            template: function (item) {
+                                                                var html = item.period;
+                                                                if (item.period == "null")
+                                                                    html = "--";
+                                                                return html;
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "hasSla",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.hassla"/>',
+                                                            width: 180
+                                                        },
+                                                        {
+                                                            field: "",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.removesla"/>',
+                                                            width: 100,
+                                                            template: function (item) {
+                                                                var html = "<button class='btn btn-danger'"
+                                                                        + "onclick=removesch('"
+                                                                        + item.scheduleId
+                                                                        + "','" + item.flowId + "','" + item.projectId + "')"
+                                                                        + "><@spring.message 'schflows.removesch'/>"
+                                                                        + "</button>";
+                                                                return html;
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "",
+                                                            title: '<@spring.message "schflows.setsla"/>',
+                                                            width: 100,
+                                                            template: function (item) {
+                                                                var html = "<button  class='btn btn-info'onclick='openSetSLAPage(\""
+                                                                        + item.scheduleId
+                                                                        + "\",\"" + item.flowId + "\",\"" + item.projectName + "\")'"
+                                                                        + "><@spring.message 'schflows.setsla'/>"
+                                                                        + "</button>";
+                                                                return html;
+                                                            }
+                                                        }]
+                                                }).data("kendoGrid");
 
-						});
-	</script>
-</body>
-</html>
+                            });
+        </script>
+        </body>
+        </html>
