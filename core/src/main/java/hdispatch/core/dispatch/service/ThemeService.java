@@ -63,4 +63,12 @@ public interface ThemeService extends ProxySelf<ThemeService> {
      * @return
      */
     Theme selectActiveThemeById(Theme theme);
+
+    /**
+     * 获取传入的列表中没有挂载层次的主题
+     * @param requestContext
+     * @param themeList
+     * @return
+     */
+    List<Theme> checkIsMountThemes(IRequest requestContext, List<Theme> themeList);
 }

@@ -3,10 +3,13 @@ package hdispatch.core.dispatch.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
+import hdispatch.core.dispatch.dto.layer.Layer;
 import hdispatch.core.dispatch.dto.theme.Theme;
+import hdispatch.core.dispatch.mapper.LayerMapper;
 import hdispatch.core.dispatch.mapper.ThemeMapper;
 import hdispatch.core.dispatch.service.ThemeService;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,8 @@ public class ThemeServiceImpl implements ThemeService {
     @Autowired
     private ThemeMapper themeMapper;
     private Logger logger = Logger.getLogger(ThemeServiceImpl.class);
+    @Autowired
+    private LayerMapper layerMapper;
 
     /**
      * 根据主题模糊选择主题列表
@@ -52,7 +57,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return
      */
     @Override
-    public List<Theme> selectAll_read() {
+    public List<Theme> selectAll_read(IRequest requestContext) {
         List<Theme> list;
         if(null == themeMapper){
             list = new ArrayList<>();
@@ -69,7 +74,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return
      */
     @Override
-    public List<Theme> selectAll_opt() {
+    public List<Theme> selectAll_opt(IRequest requestContext) {
         List<Theme> list;
         if(null == themeMapper){
             list = new ArrayList<>();
@@ -101,7 +106,7 @@ public class ThemeServiceImpl implements ThemeService {
 
                         break;
                     case DTOStatus.DELETE:
-
+                        deleteInLogic(theme);
                         break;
                     default:
                         break;
@@ -150,5 +155,25 @@ public class ThemeServiceImpl implements ThemeService {
     public Theme selectActiveThemeById(Theme theme) {
         Theme themeReturn = themeMapper.selectById(theme);
         return themeReturn;
+    }
+
+    /**
+     * 获取传入的列表中没有挂载层次的主题
+     * @param requestContext
+     * @param themeList
+     * @return
+     */
+    @Override
+    public List<Theme> checkIsMountThemes(IRequest requestContext, List<Theme> themeList) {
+        List<Theme> listFiltered = new ArrayList<>();
+        for(Theme temp : themeList){
+            Layer layer = new Layer();
+            layer.setThemeId(temp.getThemeId());
+            List<Layer> layersUnderTheme = layerMapper.selectActiveLayersUnderTheme(layer);
+            if(0 < layersUnderTheme.size()){
+                listFiltered.add(temp);
+            }
+        }
+        return listFiltered;
     }
 }
