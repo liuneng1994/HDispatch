@@ -9,6 +9,7 @@ import hdispatch.core.dispatch.utils.StringUtils;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
     @Autowired
     private WorkflowMutexMapper workflowMutexMapper;
 
+    @Transactional
     @Override
     public List<WorkflowMutex> query(String projectName) {
         List<WorkflowMutex> mutexList = new ArrayList<>();
@@ -35,6 +37,7 @@ public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
         return mutexList;
     }
 
+    @Transactional
     @Override
     public int batchInsert(List<AzkabanFlowMutex> mutexList) {
         if (mutexList.isEmpty()) return 0;
@@ -51,6 +54,7 @@ public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
         return workflowMutexMapper.batchInsert(filteredDependencies);
     }
 
+    @Transactional
     @Override
     public int batchDelete(List<AzkabanFlowMutex> mutexList) {
         mutexList.forEach(mutex -> workflowMutexMapper.delete(mutex));

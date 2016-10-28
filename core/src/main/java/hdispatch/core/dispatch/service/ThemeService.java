@@ -2,8 +2,8 @@ package hdispatch.core.dispatch.service;
 
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.ProxySelf;
-import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
+import hdispatch.core.dispatch.mapper.ThemeMapper;
 
 import java.util.List;
 
@@ -12,12 +12,63 @@ import java.util.List;
  * yazheng.yang@hand-china.com
  */
 public interface ThemeService extends ProxySelf<ThemeService> {
-    List<Theme> selectByTheme(IRequest requestContext, Theme theme, int page, int pageSize, PermissionParameter permissionParameter);
-    List<Theme> selectAll(IRequest requestContext, int page, int pageSize);
-    List<Theme> selectAllWithoutPaging(IRequest requestContext);
+    /**
+     * 根据主题模糊选择主题列表
+     * @param requestContext
+     * @param theme
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    List<Theme> selectByTheme(IRequest requestContext, Theme theme, int page, int pageSize);
+
+    /**
+     * 获取所有主题（带分页）
+     * @param requestContext
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    List<Theme> selectAll_read(IRequest requestContext);
+
+    List<Theme> selectAll_opt(IRequest requestContext);
+
+
+    /**
+     * 批量编辑（目前只是新增）
+     * @param requestContext
+     * @param themeList
+     * @return
+     * @throws Exception
+     */
     List<Theme> batchUpdate(IRequest requestContext,List<Theme> themeList) throws Exception;
+
+    /**
+     * 检查数据库中是否存在处于生效(active)状态，主题名称相同，
+     * 用于新增主题之前检测是否已经有同名的主题存在
+     * @param themeList
+     * @return
+     */
     boolean[] checkIsExist(List<Theme> themeList);
 
+    /**
+     * 逻辑删除主题
+     * @param theme
+     */
     void deleteInLogic(Theme theme);
+
+    /**
+     * 根据id查找active(没被删除)的主题
+     * @param theme
+     * @return
+     */
     Theme selectActiveThemeById(Theme theme);
+
+    /**
+     * 获取传入的列表中没有挂载层次的主题
+     * @param requestContext
+     * @param themeList
+     * @return
+     */
+    List<Theme> checkIsMountThemes(IRequest requestContext, List<Theme> themeList);
 }

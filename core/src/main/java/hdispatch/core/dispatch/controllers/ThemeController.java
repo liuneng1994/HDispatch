@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,15 @@ public class ThemeController extends BaseController {
     @Autowired
     private HdispatchAuthorityService hdispatchAuthorityService;
 
+    /**
+     * 带分页功能的主题搜索（支持themeName、themeDescription模糊搜索）
+     * @param request
+     * @param page 第几页
+     * @param pageSize 分页条数
+     * @param themeName 主题名称
+     * @param themeDescription 主题的描述
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/theme/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemes(HttpServletRequest request,
@@ -48,29 +60,39 @@ public class ThemeController extends BaseController {
         if ("".equals(themeDescription)) {
             themeDescription = null;
         }
-        PermissionParameter permissionParameter = new PermissionParameter(requestContext.getUserId(),-100L,new HashSet<PermissionType>(){{add(PermissionType.DELAY_CHECK);}});
         theme.setThemeName(themeName);
         theme.setThemeDescription(themeDescription);
-        List<Theme> themeList = themeService.selectByTheme(requestContext, theme, page, pageSize,permissionParameter);
-
-//        对搜索后的结果进行过滤
-        List<Theme> themesCanReadList = hdispatchAuthorityService.themesReadByUser(requestContext.getUserId(), permissionParameter);
-        Set<Long> idSet = new LinkedHashSet<>();
-        themesCanReadList.forEach(item -> idSet.add(item.getThemeId()));
-        List<Theme> resultList = themeList.parallelStream().filter(temp -> idSet.contains(temp.getThemeId())).collect(Collectors.toList());
-
-
-//        ResponseData responseData = new ResponseData(themeList);
-        ResponseData responseData = new ResponseData(resultList);
+        List<Theme> themeList = themeService.selectByTheme(requestContext, theme, page, pageSize);
+        ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }
 
-    @RequestMapping(value = "/dispatcher/theme/queryAll", method = RequestMethod.GET)
+    /**
+     * 本方法用于提供具有操作权限的主题列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatcher/theme/queryAll_opt", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseData getAllThemes(HttpServletRequest request) {
+    public ResponseData getAllThemes_operate(HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        Long userId = requestContext.getUserId();
+        List<Theme> themeList = themeService.selectAll_opt(requestContext);
+        ResponseData responseData = new ResponseData(themeList);
+        return responseData;
+    }
+
+    /**
+     * 本方法用于提供具有操作权限或者读权限的主题列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatcher/theme/queryAll_read", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData getAllThemes_read(HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
 
-        List<Theme> themeList = themeService.selectAllWithoutPaging(requestContext);
+        List<Theme> themeList = themeService.selectAll_read(requestContext);
         ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }
@@ -118,6 +140,45 @@ public class ThemeController extends BaseController {
             //保存主题中途失败
             String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.error_during_saving", null, locale);
             logger.error(errorMsg, e);
+        }
+        return rd;
+    }
+
+    @RequestMapping(value = "/dispatcher/theme/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+//        hdispatch.server.error_tips.already_exist  已经存在（多语言消息配置）
+        //检查是否主题的下面有层次存在
+        List<Theme> themeListExist = themeService.checkIsMountThemes(requestContext,themeList);
+        if(0 < themeListExist.size()){
+            String warningMsg = getMessageSource().getMessage("hdispatch.theme.delete.tips", null, locale);
+            StringBuilder sb = new StringBuilder(warningMsg+":");
+            for(Theme temp : themeListExist){
+                sb.append(temp.getThemeName()+",");
+            }
+
+            rd = new ResponseData(false);
+            rd.setMessage(sb.toString());
+
+            return rd;
+        }
+
+        try {
+            themeService.batchUpdate(requestContext, themeList);
+            rd = new ResponseData(true);
+            rd.setMessage("success");
+        } catch (Exception e) {
+            String errorMsg = getMessageSource().getMessage("hdispatch.error_during_deleting", null, locale);
+            logger.error(errorMsg, e);
+            rd = new ResponseData(false);
+            rd.setMessage(errorMsg);
+            return rd;
         }
         return rd;
     }

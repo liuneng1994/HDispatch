@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.service;
 
+import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 
@@ -24,7 +25,7 @@ public interface WorkflowService {
 
     String getGraph(long workflowId);
 
-    List<SimpleWorkflow> queryWorkflow(Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
+    List<SimpleWorkflow> queryWorkflow(IRequest request,Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
 
     void deleteWorkflow(List<Integer> ids);
 }
