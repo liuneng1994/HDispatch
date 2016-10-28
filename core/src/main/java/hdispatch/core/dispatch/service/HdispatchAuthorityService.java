@@ -111,7 +111,7 @@ public interface HdispatchAuthorityService {
      * @param userId
      * @return
      */
-    List<Theme> themesReadByUser(Long userId, PermissionParameter permissionParameter);
+    List<Theme> themesReadByUser(Long userId);
 
     /**
      * 用户可以操作的主题

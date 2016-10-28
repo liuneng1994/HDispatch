@@ -1,5 +1,27 @@
 <#include "../../include/header.html">
 <body>
+<script type="text/javascript">
+    $.ajax({
+        type: 'GET',
+        url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
+        success: function (data) {
+            filter_to_operate_themeIds = [];
+//            console.log(data);
+            $.each(data.rows, function (key,value) {
+                filter_to_operate_themeIds.push(value.themeId);
+//                console.log(key+"-------"+value);
+            });
+            console.log(filter_to_operate_themeIds);
+        },
+        async:false,
+        dataType: "json"
+    });
+    console.log("加载权限验证数组完毕");
+</script>
     <div>
         <div id="content-container">
             <div id="theme-content">
@@ -34,12 +56,12 @@
                 </div>
                 <div id="page-content" style="clear:both">
                     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-                        <span class="btn btn-primary k-grid-add" data-bind="click:createFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.create"/></span>
-                        <span class="btn btn-primary k-grid-add" data-bind="click:batchCreateFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_create"/></span>
+                        <span class="btn btn-primary" data-bind="click:createFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.create"/></span>
+                        <span class="btn btn-primary" data-bind="click:batchCreateFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_create"/></span>
                         <!--<span class="btn btn-warning" onclick="" style="float:left;margin-right:5px;"><@spring.message "hap.pause"/></span>-->
                         <span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
-                        <span class="btn btn-success k-grid-save-changes" data-bind="click:saveFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.save"/></span>
-                        <span class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
+                        <span class="btn btn-success" data-bind="click:saveFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.save"/></span>
+                        <span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
                     </div>
                     <div style="clear:both">
                         <div id="jobListGrid" style="clear:both"></div>
@@ -53,16 +75,17 @@
         <script type="text/javascript">
             var wnd, batchCreateJobWindowTemplate;
             var grid_svn_wnd, grid_svn_template;
-
             var jobs_data;
 
             var themeBaseUrl = "${base.contextPath}/dispatcher/theme/";
             var layerBaseUrl = "${base.contextPath}/dispatcher/layer/";
             var jobBaseUrl = "${base.contextPath}/dispatcher/job/";
+
             function grid_button_click(e) {
                 //触发TreeView窗口
                 showGridSvnTreeViewWindow(e);
             };
+
             $(document).ready(function () {
                 //声明批量创建job窗口
                 wnd = $("#batchCreateJobWindow_div")
@@ -120,21 +143,7 @@
                         $('#jobListGrid').data('kendoGrid').dataSource.page(1);
                     },
                     batchDeleteFunction: function(e) {
-                        var grid = $("#jobListGrid").data("kendoGrid");
-                        var checked = grid.selectedDataItems();
-                        if (grid.selectedDataItems().length) {
-                            kendo.ui.showConfirmDialog({
-                                title: $l('hap.tip.info'),
-                                message: $l('hap.tip.delete_confirm')
-                            }).done(function (event) {
-                                if (event.button == 'OK') {
-                                    $.each(checked, function (key,value) {
-                                        grid.dataSource.remove(value);
-                                    });
-                                    grid.dataSource.sync();
-                                }
-                            })
-                        }
+                        grid_batchDelete_btn_click("jobListGrid");
                     },
                     batchCreateFunction: function (e) {
                         showBatchCreateJobWindow(e);
@@ -260,6 +269,7 @@
                         }
                     }
                 });
+
                 var jobListGrid_kendo = $("#jobListGrid").kendoGrid({
                     dataSource: jobs_data,
                     resizable: true,
@@ -289,37 +299,30 @@
                             { 'field': 'themeId','title':'<@spring.message "hdispatch.theme_name"/>', 'width': "70px", editor: themeDropDownEditor, template: "#=themeName#" },
                             { 'field': 'layerId','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "70px", editor: layerDropDownEditor, template: "#=layerName#" },
                             { 'field': 'jobSvn','title':'<@spring.message "hdispatch.job.svn.svn_file"/>', 'width': "200px",editor:svnTreeEditor,template:"#=jobSvn#" },
-                            { 'field': 'jobName','title':'<@spring.message "hdispatch.job.job_name"/>', 'width': "150px" },
+                            { 'field': 'jobName','title':'<@spring.message "hdispatch.job.job_name"/>', 'width': "150px",editor:jobNameEditor,template:"#=jobName#" },
                             {
                                 attributes: {style: "text-align:center;padding:0px"},
-                                command : [{
-                                    name:'remove',
-                                    template : '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
-                                    click: function(e){
-                                        var th = this;
-                                        e.preventDefault();
-                                        kendo.ui.showConfirmDialog({
-                                            title:$l('hap.tip.info'),
-                                            message: $l('hap.tip.delete_confirm')
-                                        }).done(function(event){
-                                            if(event.button == 'OK'){
-                                                var data = th.dataItem($(e.target).closest("tr"));
-                                                th.dataSource.remove(data);
-                                                th.dataSource.sync()
-                                            }
-                                        })
+                                field : "",
+                                title : '',
+                                width : 50,
+                                template: function (rowData) {
+                                    if(hasOperatePermission(rowData.themeId)){
+                                        parameter = "jobListGrid";
+                                        return '<a class="btn btn-danger" onclick="grid_del_btn_click('+parameter+')"><@spring.message "hap.delete"/></a>';
                                     }
-                                }],
-                                width:"40px"
-                            }
+                                        return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
+
+                                }
+                            },
                         ],
                     editable: true
                 });
+
                 //声明grid中的下拉框
                 var grid_themeDropDown_dataSource=new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: themeBaseUrl+"queryAll",
+                            url: themeBaseUrl+"queryAll_opt",
                             type : 'GET',
                             dataType: "json"
                         },
@@ -346,19 +349,25 @@
                     }
                 });
                 var grid_themeDropDownList;
+
                 function themeDropDownEditor(container, options) {
-                    grid_themeDropDownList = $('<input id="grid_dropdown_theme_input" required name="' + options.field + '"/>')
-                        .appendTo(container)
-                        .kendoDropDownList({
-                            autoBind: true,
-                            dataTextField: "themeName",
-                            dataValueField: "themeId",
-                            dataBound:onGridThemeDataBound,
-                            change: onGridThemeChange,
-                            select:onGridThemeSelect,
-                            close:onGridThemeClose,
-                            dataSource:grid_themeDropDown_dataSource
-                        });
+                    if(hasOperatePermission(options.model.themeId) || !options.model.jobId){
+                        grid_themeDropDownList = $('<input id="grid_dropdown_theme_input" required name="' + options.field + '"/>')
+                                .appendTo(container)
+                                .kendoDropDownList({
+                                    autoBind: true,
+                                    dataTextField: "themeName",
+                                    dataValueField: "themeId",
+                                    dataBound:onGridThemeDataBound,
+                                    change: onGridThemeChange,
+                                    select:onGridThemeSelect,
+                                    close:onGridThemeClose,
+                                    dataSource:grid_themeDropDown_dataSource
+                                });
+                    }else {
+                        grid_themeDropDownList = $('<span class="k-textbox" style="width: 100%;"><input readonly="readonly" value="' + options.model.themeName + '"/></span>')
+                                .appendTo(container);
+                    }
                 };
                 var grid_layerDropDown_dataSource =  new kendo.data.DataSource({
                     transport: {
@@ -396,18 +405,24 @@
                 });
                 var grid_layerDropDownList;
                 function layerDropDownEditor(container, options) {
-                    grid_layerDropDownList = $('<input id="grid_dropdown_layer_input" required name="' + options.field + '"/>')
-                        .appendTo(container)
-                        .kendoDropDownList({
-                            autoBind: true,
-                            dataTextField: "layerName",
-                            dataValueField: "layerId",
-                            dataBound:onGridLayerDataBound,
-                            open:onGridLayerChange,
-                            select:onGridLayerSelect,
-                            close:onGridLayerClose,
-                            dataSource:grid_layerDropDown_dataSource
-                    });
+                    if(hasOperatePermission(options.model.themeId) || !options.model.jobId){
+                        grid_layerDropDownList = $('<input id="grid_dropdown_layer_input" required name="' + options.field + '"/>')
+                                .appendTo(container)
+                                .kendoDropDownList({
+                                    autoBind: true,
+                                    dataTextField: "layerName",
+                                    dataValueField: "layerId",
+                                    dataBound:onGridLayerDataBound,
+                                    open:onGridLayerChange,
+                                    select:onGridLayerSelect,
+                                    close:onGridLayerClose,
+                                    dataSource:grid_layerDropDown_dataSource
+                                });
+                    }else {
+                        grid_themeDropDownList = $('<span class="k-textbox" style="width: 100%;"><input readonly="readonly" value="' + options.model.layerName + '"/></span>')
+                                .appendTo(container);
+                    }
+
                 };
                 function onGridThemeDataBound(e) {
                     grid_dropdown_themeId = $("#grid_dropdown_theme_input").val();
@@ -497,15 +512,30 @@
                 });
 
                 function svnTreeEditor(container, options) {
-                    $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
-                            .appendTo(container);
+                    if(hasOperatePermission(options.model.themeId) || !options.model.jobId){
+                        $('<span class="k-textbox k-space-right" style="width: 100%;"><input id="grid_jobSvn_input" type="text" name="' + options.field + '" class="k-input k-textbox"/><a href="#" onclick="grid_button_click()" class="k-icon k-i-search">&nbsp;</a></span>')
+                                .appendTo(container);
+                    }else {
+                        $('<span class="k-textbox" style="width: 100%;"><input type="text" readonly="readonly" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                                .appendTo(container);
+                    }
+                };
+
+                function jobNameEditor(container, options) {
+                    if(hasOperatePermission(options.model.themeId) || !options.model.jobId){
+                        $('<span class="k-textbox" style="width: 100%;"><input type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                                .appendTo(container);
+                    }else {
+                        $('<span class="k-textbox" style="width: 100%;"><input type="text" readonly="readonly" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                                .appendTo(container);
+                    }
                 };
 
                 //声明两个查询用的下拉框
                 var input_themeId_dataSource = new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: themeBaseUrl+"queryAll",
+                            url: themeBaseUrl+"queryAll_read",
                             type : 'GET',
                             dataType: "json"
                         },
@@ -606,7 +636,7 @@
             var batchCreateJob_themeId_dataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
-                        url: themeBaseUrl+"queryAll",
+                        url: themeBaseUrl+"queryAll_opt",
                         type : 'GET',
                         dataType: "json"
                     },
@@ -790,7 +820,6 @@
             function onLayerIdClose_batchCreateForm(e) {
                 batchCreateJobViewModel.model.layerId=$("#batchCreateForm_input_layerId").val();
             }
-
             //显示grid中TreeView窗口
             var rowIndex_grid_edicting;
             //为grid中的每一行绑定点击事件
