@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.controllers;
 
+import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static hdispatch.core.dispatch.utils.Constants.RET_ERROR;
@@ -135,9 +137,25 @@ public class WorkflowController extends BaseController {
                                       @RequestParam(name = "workflowName", required = false) String workflowName,
                                       @RequestParam(name = "description", required = false) String description,
                                       @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-                                      @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
+                                      @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,
+                                      HttpServletRequest servletRequest) {
         ResponseData responseData = null;
-        responseData = new ResponseData(workflowService.queryWorkflow(themeId, layerId, workflowName, description, page, pageSize));
+        IRequest request = createRequestContext(servletRequest);
+        responseData = new ResponseData(workflowService.queryWorkflow(request, themeId, layerId, workflowName, description, page, pageSize));
+        return responseData;
+    }
+
+    @RequestMapping(path = "/query_operate", method = RequestMethod.GET)
+    public ResponseData queryOperateWorkflow(@RequestParam(name = "themeId", required = false) Long themeId,
+                                      @RequestParam(name = "layerId", required = false) Long layerId,
+                                      @RequestParam(name = "workflowName", required = false) String workflowName,
+                                      @RequestParam(name = "description", required = false) String description,
+                                      @RequestParam(name = "page", required = false, defaultValue = "1") int page,
+                                      @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,
+                                      HttpServletRequest servletRequest) {
+        ResponseData responseData = null;
+        IRequest request = createRequestContext(servletRequest);
+        responseData = new ResponseData(workflowService.queryOperateWorkflow(request, themeId, layerId, workflowName, description, page, pageSize));
         return responseData;
     }
 
@@ -149,6 +167,7 @@ public class WorkflowController extends BaseController {
     @RequestMapping(path = "/get", method = RequestMethod.GET)
     public ResponseData getWorkflow(@RequestParam(name = "workflowId") long workflowId) {
         ResponseData responseData = null;
+
         Workflow workflow = workflowService.getWorkflowById(workflowId);
         if (workflow == null) {
             responseData = new ResponseData(false);

@@ -3,7 +3,7 @@
     angular.module('dispatch').factory('workflowService', ['httpService', workflowService]);
     function workflowService(httpService) {
         var themes = function () {
-            return httpService.get(_basePath + '/dispatcher/theme/queryAll', {},
+            return httpService.get(_basePath + '/dispatcher/theme/queryAll_read', {},
                 function (data, defered) {
                     if (data.success) {
                         defered.resolve(data.rows);
@@ -60,6 +60,18 @@
                 if (queryInfo.hasOwnProperty(name) && queryInfo[name] != undefined) params[name] = queryInfo[name];
             }
             return httpService.get(_basePath + '/dispatcher/workflow/query', params, function (data, defered) {
+                if (data.success) {
+                    defered.resolve(data);
+                }
+            });
+        };
+
+        var queryOperate = function (queryInfo) {
+            var params = {};
+            for (var name in queryInfo) {
+                if (queryInfo.hasOwnProperty(name) && queryInfo[name] != undefined) params[name] = queryInfo[name];
+            }
+            return httpService.get(_basePath + '/dispatcher/workflow/query_operate', params, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data);
                 }
@@ -178,6 +190,7 @@
             updateWorkflow: updateWorkflow,
             generateWorkflow: generateWorkflow,
             query: query,
+            queryOperate: queryOperate,
             workflow: workflow,
             scheduleWorkflow: scheduleWorkflow,
             executeWorkflow: executeWorkflow,

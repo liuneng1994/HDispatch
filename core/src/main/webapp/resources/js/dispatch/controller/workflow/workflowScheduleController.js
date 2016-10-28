@@ -44,7 +44,7 @@
                         vm.workflow.pageSize = options.data.pageSize;
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) vm.workflow.themeId = 0;
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) vm.workflow.layerId = 0;
-                        workflowService.query(vm.workflow).then(function (data) {
+                        workflowService.queryOperate(vm.workflow).then(function (data) {
                             vm.total = data.total;
                             vm.currentWorklfows = data.rows;
                             options.success(data.rows);

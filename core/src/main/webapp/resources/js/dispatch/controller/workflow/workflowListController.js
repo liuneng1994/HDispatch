@@ -99,9 +99,12 @@
                     title: '',
                     width: 150,
                     template: function (item) {
-                        var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
-                        html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
-                        html += "<button class='btn btn-danger' ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
+                        var html = '';
+                        if  (hasOperatePermission(item.themeId)) {
+                            var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
+                            html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
+                            html += "<button class='btn btn-danger' ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
+                        }
                         return html;
                     }
                 }]
@@ -121,7 +124,7 @@
 
         vm.deleteSelection = function () {
             "use strict";
-            Hap.deleteGridSelection({grid: $("#grid")});
+            grid_batchDelete_btn_click('grid');
         };
 
         vm.themeChange = function (themeId) {
