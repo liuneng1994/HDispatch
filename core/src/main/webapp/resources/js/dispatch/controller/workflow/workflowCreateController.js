@@ -26,17 +26,29 @@
             vm.workflow.layerId = null;
             refreshLayers('layers', vm.workflow.themeId);
         };
+
+        vm.layerChange = function () {
+            if (vm.newJob.type == 'job') {
+                vm.newJob.jobSource = null;
+                refreshJobs('jobSources', vm.workflow.themeId, vm.workflow.layerId);
+            }
+        };
+
+        vm.jobTypeChange = function () {
+            vm.jobSources = [];
+            vm.layerChange();
+            vm.jobLayerChange();
+        };
         vm.jobThemeChange = function () {
             vm.newJob.layerId = null;
             refreshLayers('jobLayers', vm.newJob.themeId);
         };
+
         vm.jobLayerChange = function () {
-            console.log(vm.newJob.type);
-            vm.newJob.jobSource = null;
-            if (vm.newJob.type == 'job')
-                refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
-            else if (vm.newJob.type == 'flow')
+            if (vm.newJob.type == 'flow') {
+                vm.newJob.jobSource = null;
                 refreshFlows('jobSources', vm.newJob.themeId, vm.newJob.layerId);
+            }
         };
 
         var jobPosition = {x: 100, y: 100};
@@ -58,7 +70,7 @@
             workflow.themeId = Number(vm.workflow.themeId);
             workflow.layerId = Number(vm.workflow.layerId);
             workflow.name = vm.workflow.workflowName;
-            workflow.description = vm.workflow.description||" ";
+            workflow.description = vm.workflow.description || " ";
             workflow.jobs = [];
             for (var job of vm.paint.jobs.jobs.values()) {
                 var newJob = {};

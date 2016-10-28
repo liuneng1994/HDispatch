@@ -32,7 +32,7 @@
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="theme"
                                     ng-model="vm.newJob.type"
-                                    k-on-change="vm.jobLayerChange()"
+                                    k-on-change="vm.jobTypeChange()"
                                     kendo-drop-down-list
                                     style="padding-left:0;padding-right:0;width:100%;">
                                 <option value="job">任务</option>
@@ -40,7 +40,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-show="vm.newJob.type=='flow'">
                         <label class="col-sm-2 control-label">任务组</label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="theme"
@@ -49,21 +49,19 @@
                                     k-on-change="vm.jobThemeChange()"
                                     k-data-text-field="'themeName'"
                                     k-data-value-field="'themeId'"
-                                    k-data-source="vm.themes"
-                                    style="padding-left:0;padding-right:0;width:100%;"></select>
+                                    k-data-source="vm.themes" style="padding-left:0;padding-right:0;width:100%;"></select>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-show="vm.newJob.type=='flow'">
                         <label class="col-sm-2 control-label">层次</label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="layer"
                                     ng-model="vm.newJob.layerId"
                                     kendo-drop-down-list
-                                    k-on-change="vm.jobLayerChange()";
+                                    k-on-change="vm.jobLayerChange()"
                                     k-data-text-field="'layerName'"
                                     k-data-value-field="'layerId'"
-                                    k-data-source="vm.jobLayers"
-                                    style="padding-left:0;padding-right:0;width:100%;"></select>
+                                    k-data-source="vm.jobLayers" style="padding-left:0;padding-right:0;width:100%;"></select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -80,7 +78,7 @@
                     </div>
                     <div class="form-group">
                         <div class="text-center">
-                            <button class="btn btn-primary" ng-click="vm.createJob()" ng-disabled="job.$invalid||!vm.newJob.jobSource||!vm.newJob.layerId||!vm.newJob.themeId">确认</button>
+                            <button class="btn btn-primary" ng-click="vm.createJob()" ng-disabled="job.$invalid||!vm.newJob.jobSource">确认</button>
                             <button class="btn btn-danger" ng-click="vm.resetWindow()">取消</button>
                         </div>
                     </div>
@@ -119,6 +117,7 @@
                                                 k-value-primitive="true"
                                                 k-data-text-field="'layerName'"
                                                 k-data-value-field="'layerId'"
+                                                k-on-change="vm.layerChange()";
                                                 k-data-source="vm.layers" style="padding-left:0;padding-right:0;width:100%;"></select>
                                         <span style="color:red;" ng-show="flow.layer.$dirty&&!vm.workflow.layerId">请选择层级</span>
                                     </div>

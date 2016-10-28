@@ -23,24 +23,35 @@
         vm.paint.initScroll();
         vm.paint.initEdit();
         vm.paint.initHotKey();
-        vm.themeChange = function (themeId) {
+        vm.themeChange = function () {
             vm.workflow.layerId = null;
-            refreshLayers('layers', themeId);
+            refreshLayers('layers', vm.workflow.themeId);
+        };
+
+        vm.layerChange = function () {
+            if (vm.newJob.type == 'job') {
+                vm.newJob.jobSource = null;
+                refreshJobs('jobSources', vm.workflow.themeId, vm.workflow.layerId);
+            }
+        };
+
+        vm.jobTypeChange = function() {
+            vm.jobSources = [];
+            vm.layerChange();
+            vm.jobLayerChange();
         };
         vm.jobThemeChange = function () {
             vm.newJob.layerId = null;
             refreshLayers('jobLayers', vm.newJob.themeId);
         };
+
         vm.jobLayerChange = function () {
-            vm.newJob.jobSource = null;
-            if (vm.newJob.type == 'job')
-                refreshJobs('jobSources', vm.newJob.themeId, vm.newJob.layerId);
-            else if (vm.newJob.type == 'flow')
+            if (vm.newJob.type == 'flow') {
+                vm.newJob.jobSource = null;
                 refreshFlows('jobSources', vm.newJob.themeId, vm.newJob.layerId);
+            }
         };
-        vm.format = function () {
-            vm.paint.format();
-        };
+
 
         refreshThemes();
         init();
@@ -155,6 +166,7 @@
                 vm.workflow.themeId = data.themeId;
                 $timeout(function () {
                     vm.workflow.layerId = data.layerId;
+                    vm.layerChange();
                 }, 200);
 
                 vm.workflow.workflowName = data.name;
