@@ -268,14 +268,19 @@
                 }
                 var dataItem = {
                     themeId:themeId_thisRow,
-                    themeName:themeName_thisRow
+                    themeName:themeName_thisRow,
+                    disabledFlag:''
                 };
+                if(!hasOperatePermission(themeId_thisRow)){
+                    dataItem.disabledFlag = 'disabled';
+                }
                 wnd.content(detailsTemplate(dataItem));
                 wnd.center().open();
                 loadLayerGrid(dataItem);
             }
 
             function loadLayerGrid(layerHeaderData) {
+                var isOperate = 'disabled'==layerHeaderData.disabledFlag? false:true;
                 if(!layerHeaderData.themeId){
                     alert('<@spring.message "hdispatch.theme.theme_create.illegal_access_edict_layer"/>');
                     return;
@@ -285,15 +290,24 @@
                         themeId:layerHeaderData.themeId
                     },
                     createFunction: function(){
-                        $('#layerListGrid').data('kendoGrid').addRow();
+                        if(isOperate){
+                            $('#layerListGrid').data('kendoGrid').addRow();
+                        }
                     },
                     saveFunction: function(){
-                        $('#layerListGrid').data('kendoGrid').dataSource.sync();
+                        if(isOperate){
+                            $('#layerListGrid').data('kendoGrid').dataSource.sync();
+                        }
                     },
                     cancelFunction: function(e){
-                        $('#layerListGrid').data('kendoGrid').cancelChanges();
+                        if(isOperate){
+                            $('#layerListGrid').data('kendoGrid').cancelChanges();
+                        }
                     },
                     batchDeleteFunction: function (e) {
+                        if(!isOperate){
+                            return;
+                        }
                         var grid = $("#layerListGrid").data("kendoGrid");
                         var checked = grid.selectedDataItems();
                         if (grid.selectedDataItems().length) {
@@ -311,7 +325,7 @@
                         }
                     }
                 });
-                kendo.bind($('#layerGrid_toolbar-btn'), viewModel);
+                kendo.bind($('#layerGrid_toolbar-btn'), layerViewModel);
                 var layers_data = new kendo.data.DataSource({
                     transport: {
                         read:  {
@@ -447,8 +461,16 @@
                                     attributes: {style: "text-align:center;padding:0px"},
                                     command : [{
                                         name:'remove',
-                                        template : '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
+                                        template : function (rowData) {
+                                            if(isOperate){
+                                                return '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>';
+                                            }
+                                            return '<a class="btn btn-danger k-grid-remove" disabled="disabled"><@spring.message "hap.delete"/></a>';
+                                        },
                                         click: function(e){
+                                            if(!isOperate){
+                                                return;
+                                            }
                                             var th = this;
                                             e.preventDefault();
                                             kendo.ui.showConfirmDialog({
@@ -466,7 +488,7 @@
                                     width:"40px"
                                 }
                             ],
-                    editable: true
+                    editable: isOperate
                 });
                 kendo.bind($('#layer-content'),layerViewModel);
             }
@@ -489,10 +511,10 @@
                     </div>
                     <div style="clear:both">
                         <div class="pull-left" id="layerGrid_toolbar-btn" style="padding-bottom:10px;">
-                            <span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
-                            <span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
-                            <span class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
-                            <span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
+                            <span class="btn btn-primary" #= disabledFlag # style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                            <span class="btn btn-danger" #= disabledFlag # data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
+                            <span class="btn btn-success" #= disabledFlag # style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                            <span class="btn btn-default" #= disabledFlag # data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
                         </div>
                         <div style="clear:both">
                             <div id="layerListGrid" style="clear: both"></div>
