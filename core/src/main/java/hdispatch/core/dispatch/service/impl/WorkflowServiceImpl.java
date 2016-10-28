@@ -1,6 +1,7 @@
 package hdispatch.core.dispatch.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
@@ -190,7 +191,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Override
     @Transactional
-    public List<SimpleWorkflow> queryWorkflow(Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
+    public List<SimpleWorkflow> queryWorkflow(IRequest request,Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         return workflowMapper.query(themeId, layerId, workflowName, decription);
     }
