@@ -140,4 +140,43 @@ public class ThemeController extends BaseController {
         }
         return rd;
     }
+
+    @RequestMapping(value = "/dispatcher/theme/remove", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
+
+        ResponseData rd = null;
+
+        IRequest requestContext = createRequestContext(request);
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+//        hdispatch.server.error_tips.already_exist  已经存在（多语言消息配置）
+        //检查是否主题的下面有层次存在
+        List<Theme> themeListExist = themeService.checkIsMountThemes(requestContext,themeList);
+        if(0 < themeListExist.size()){
+            String warningMsg = getMessageSource().getMessage("hdispatch.theme.delete.tips", null, locale);
+            StringBuilder sb = new StringBuilder(warningMsg+":");
+            for(Theme temp : themeListExist){
+                sb.append(temp.getThemeName()+",");
+            }
+
+            rd = new ResponseData(false);
+            rd.setMessage(sb.toString());
+
+            return rd;
+        }
+
+        try {
+            themeService.batchUpdate(requestContext, themeList);
+            rd = new ResponseData(true);
+            rd.setMessage("success");
+        } catch (Exception e) {
+            String errorMsg = getMessageSource().getMessage("hdispatch.error_during_deleting", null, locale);
+            logger.error(errorMsg, e);
+            rd = new ResponseData(false);
+            rd.setMessage(errorMsg);
+            return rd;
+        }
+        return rd;
+    }
 }
