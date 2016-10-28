@@ -7,8 +7,12 @@
     <resultMap id="simpleWorkflow" type="hdispatch.core.dispatch.dto.workflow.SimpleWorkflow">
         <id property="workflowId" column="workflow_id"></id>
         <result property="theme" column="theme"></result>
+        <result property="themeId" column="theme_id"></result>
         <result property="layer" column="layer"></result>
+        <result property="layerId" column="layer_id"></result>
         <result property="name" column="workflow_name"></result>
+        <result property="project" column="project_name"></result>
+        <result property="flowId" column="flow_id"></result>
         <result property="description" column="workflow_description"></result>
     </resultMap>
 
@@ -119,6 +123,18 @@
             workflow_id=#{workflowId}
     </update>
 
+    <update id="deleteByIds" parameterType="list">
+        UPDATE
+            hdispatch_workflow
+        SET
+            active=0
+        WHERE
+            workflow_id IN
+            <foreach collection="list" open="(" index="index" item="id" separator="," close=")">
+                #{id}
+            </foreach>
+    </update>
+
     <update id="update" parameterType="hdispatch.core.dispatch.dto.workflow.Workflow">
         UPDATE
             hdispatch_workflow
@@ -128,7 +144,7 @@
             description=#{description},
             graph=#{graph}
         WHERE
-            workflow_id=#{workflowId}
+            workflow_id=#{workflowId} AND active=1
     </update>
     
     <select id="getGraph" resultType="string">
@@ -144,8 +160,12 @@
         SELECT
             hw.workflow_id,
             ht.`name` AS theme,
+            ht.`theme_id`,
             hl.`name` AS layer,
+            hl.`layer_id`,
             hw.`name` AS workflow_name,
+            hw.`project_name`,
+            hw.`flow_id`,
             hw.`description` AS workflow_description
         FROM
             hdispatch_workflow hw
@@ -162,7 +182,8 @@
         <if test="themeId!=null">AND hw.theme_id = #{themeId}</if>
         <if test="layerId!=null">AND hw.layer_id = #{layerId}</if>
         AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
-        AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')
+        <if test='description != "" and description != null'>AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')</if>
+        AND hw.active=1
     </select>
 
     <!--add by yazheng.yang@hand-china.com

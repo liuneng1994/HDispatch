@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,13 +70,11 @@ public class ExecutionFlowsController extends BaseController {
 			ex.setExec_id(e.getExec_id());
 			ex.setFlow_id(e.getFlow_id());
 			ex.setLang(irequest.getLocale());
-			PageHelper.startPage(page, pagesize);
 			List<ExecutionJobs> list2 = exeJobsService.selectJobsByFlow(ex);
 			for (ExecutionJobs job : list2) {
 				if(job.getStatus()==50)
 					count++;
 			}
-			System.out.println(count);
 			if(list2.size()!=0)
 			d=Math.ceil(count/list2.size());
 			else
@@ -129,12 +130,56 @@ public class ExecutionFlowsController extends BaseController {
 		}
 		return new ResponseData(list);
 	}
-	
+	@RequestMapping("/queryjobs2")
+	@ResponseBody
+	public List<ExecutionJobs> queryjobs2(HttpServletRequest request)
+	{
+		String exec_id = request.getParameter("exec_id");
+		System.out.println(exec_id);
+		Map<String,Object>map=new HashMap<>();
+		map.put("execid",Integer.parseInt(exec_id));
+		List<ExecutionJobs> list =exeFlowservice.getJobsOfFlow(map);
+		/**
+		 * 计算每个job运行占得时间比
+		 */
+		Long endtime=1L;
+		Long starttime=0L;
+		if(list.size()>0)
+		{
+			endtime=list.get(0).getEnd_time();
+			starttime=list.get(0).getStart_time();
+		}
+		for (ExecutionJobs job : list) {
+			job.setExec_id(Integer.parseInt(exec_id));
+			job.setFlow_id(list.get(0).getFlow_id());
+			if(job.getParentId()==0)
+				job.setParentId(null);
+			if(job.getEnd_time()<0)
+				job.setRunning((job.getStart_time()-starttime)+",0,"+(endtime-starttime));
+			else
+				job.setRunning((job.getStart_time()-starttime)+","+(job.getEnd_time()-starttime)+","+(endtime-starttime));
+			//System.out.println(job.toString());
+		}
+		list.remove(0);
+		 Collections.sort(list,new Comparator<ExecutionJobs>(){
+
+			@Override
+			public int compare(ExecutionJobs o1, ExecutionJobs o2) {
+				 if(o1.getStart_time() > o2.getStart_time()){  
+	                    return 1;  
+	                }  
+	                if(o1.getStart_time() == o2.getStart_time()){  
+	                    return 0;  
+	                }  
+	                return -1;  
+			} 
+		 });
+		
+		return list;
+	}
 	/**
 	 * 获取flow的job日志
 	 * @param request
-	 * @param page
-	 * @param pagesize
 	 * @return
 	 */
 	@RequestMapping("/getjoblog")
@@ -167,7 +212,7 @@ public class ExecutionFlowsController extends BaseController {
 	 * 执行
 	 * 
 	 * @param request
-	 * @param id
+	 * @param list
 	 * @return
 	 */
 	@RequestMapping("/startflow")
@@ -196,7 +241,7 @@ public class ExecutionFlowsController extends BaseController {
 	 * 恢复执行group
 	 * 
 	 * @param request
-	 * @param id
+	 * @param list
 	 * @return
 	 */
 	@RequestMapping("/resumeflow")
@@ -222,7 +267,7 @@ public class ExecutionFlowsController extends BaseController {
 	 * 暂停group
 	 * 
 	 * @param request
-	 * @param id
+	 * @param list
 	 * @return
 	 */
 	@RequestMapping("/pauseflow")
@@ -248,7 +293,7 @@ public class ExecutionFlowsController extends BaseController {
 	 * 停止group
 	 * 
 	 * @param request
-	 * @param id
+	 * @param list
 	 * @return
 	 */
 	@RequestMapping("/stopflow")
@@ -274,7 +319,7 @@ public class ExecutionFlowsController extends BaseController {
 	 * 重跑group
 	 * 
 	 * @param request
-	 * @param id
+	 * @param list
 	 * @return
 	 */
 	@RequestMapping("/freshflow")

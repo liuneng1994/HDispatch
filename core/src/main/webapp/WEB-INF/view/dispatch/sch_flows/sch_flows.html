@@ -2,8 +2,8 @@
 *author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 "../../include/header.html">
 <body>
-<script src="../../../../lib/flatpickr.min.js"></script>
-<link rel="stylesheet" type="text/css" href="../../../../lib/flatpickr.min.css">
+<script src="${base.contextPath}/lib/flatpickr.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${base.contextPath}/lib/flatpickr.min.css">
 	<script src="${base.contextPath}/common/language?var=languageData"
 		type="text/javascript"></script>
 	<div id="tipDelete"></div>
@@ -67,7 +67,7 @@
 		</div>
 	</div>
 
-	<script src="../../../../lib/dateformat.js"></script>
+	<script src="${base.contextPath}/lib/dateformat.js"></script>
 	<script type="text/javascript">
 	document.getElementById("picker").flatpickr();
 		var grid;
@@ -103,15 +103,16 @@
 		}
 		function openSetSLAPage(schId,flowId,project) {
 			var dialog = $("#dialog").kendoWindow({
-				actions : [ "Maximize", "Minimize", "Close" ],
+				//actions : [ "Maximize", "Minimize", "Close" ],
 				width : 920,
 				height : 450,
+				modal: true,
 				title : schId + ' Scheduled Detail',
 				visible : false,
 				iframe : true,
 				content : 'setsla.html?schId=' + schId+'&flowId='+flowId+'&project='+project
 			}).data("kendoWindow");
-			dialog.center().open();
+			dialog.maximize().open();
 		}
 
 		$(document)
@@ -146,10 +147,10 @@
 														map.flow_id = model.flowName;
 													}
 													if (model.projectName) {
-														map.project_id = model.projectName;
+														map.project_name = model.projectName;
 													}
 													if (document.getElementById("picker").value!='') {
-														 map.date = new Date(document.getElementById("picker").value).getTime(); 
+														 map.submitdate = new Date(document.getElementById("picker").value).getTime(); 
 													}
 													if (options.page) {
 														map.page = options.page;
@@ -216,6 +217,7 @@
 												reorderable : true,
 												scrollable : true,
 												editable : false,
+												sortable : true,
 												pageable : {
 													pageSizes : [ 5, 10, 20, 50 ],
 													refresh : true,
@@ -263,7 +265,14 @@
 														{
 															field : "period",
 															title : '<@spring.message "hdispatch.schedule.schlist.period"/>',
-															width : 180
+															width : 180,
+															template : function(
+																	item) {
+																var html=item.period;
+																if(item.period=="null")
+																	html="--";
+																return html;
+															}
 														},
 														{
 															field : "hasSla",

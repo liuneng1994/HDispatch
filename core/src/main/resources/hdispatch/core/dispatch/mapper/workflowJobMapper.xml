@@ -6,10 +6,10 @@
 
   <insert id="batchInsert" parameterType="java.util.List">
     INSERT INTO
-    hdispatch_workflow_job(workflow_job_id,workflow_id,job_source_id,parents_job_id)
+    hdispatch_workflow_job(workflow_job_id,workflow_id,job_source_id,parents_job_id,job_type)
     VALUES
     <foreach collection="list" index="index" item="job" separator=",">
-      (#{job.workflowJobId},#{job.workflowId},#{job.jobSource},#{job.parentsJobId})
+      (#{job.workflowJobId},#{job.workflowId},#{job.jobSource},#{job.parentsJobId},#{job.jobType})
     </foreach>
   </insert>
 

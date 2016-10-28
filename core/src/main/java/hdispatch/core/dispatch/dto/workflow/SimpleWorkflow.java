@@ -5,8 +5,12 @@ package hdispatch.core.dispatch.dto.workflow;
  */
 public class SimpleWorkflow {
     private String theme;
+    private String themeId;
     private String layer;
+    private String layerId;
     private Long workflowId;
+    private String project;
+    private String flowId;
     private String name;
     private String description;
 
@@ -16,6 +20,42 @@ public class SimpleWorkflow {
 
     public SimpleWorkflow setTheme(String theme) {
         this.theme = theme;
+        return this;
+    }
+
+    public String getThemeId() {
+        return themeId;
+    }
+
+    public SimpleWorkflow setThemeId(String themeId) {
+        this.themeId = themeId;
+        return this;
+    }
+
+    public String getLayerId() {
+        return layerId;
+    }
+
+    public SimpleWorkflow setLayerId(String layerId) {
+        this.layerId = layerId;
+        return this;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public SimpleWorkflow setProject(String project) {
+        this.project = project;
+        return this;
+    }
+
+    public String getFlowId() {
+        return flowId;
+    }
+
+    public SimpleWorkflow setFlowId(String flowId) {
+        this.flowId = flowId;
         return this;
     }
 

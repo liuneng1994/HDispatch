@@ -57,8 +57,6 @@ public class ScheduleController extends BaseController {
                               HttpServletResponse response) {
 
         IRequest i = createRequestContext(request);
-        System.out.println(i.getLocale() + "---" + i.getCompanyId() + "---" + i.getRoleId() + "---");
-
         String submitdate = request.getParameter("submitdate");
         String project_name = request.getParameter("project_name");
         String flow_id = request.getParameter("flow_id");
@@ -220,8 +218,45 @@ public class ScheduleController extends BaseController {
 
 		sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         hds.setSubmit_date(sdf.format(d));
-        hdispatchScheduleService.insert(hds);
+       
+        int i=hdispatchScheduleService.insert(hds);
+        System.out.println("-----------------------------"+i);
         return scheduleFlowService.scheduleFlow(obj);
+
+    }
+    /**
+     * 调度
+     * @param request
+     * @param projectName
+     * @param flow
+     * @param datetime
+     * @param isrecurring
+     * @return
+     * @throws ParseException 
+     */
+    @RequestMapping("/schedulecron")
+    @ResponseBody
+    public ResultObj schedulecron(HttpServletRequest request,
+                              @RequestParam String projectName,
+                              @RequestParam String flowId,
+                              @RequestParam String cronExpression
+    ) throws ParseException {
+    	ResultObj obj=scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
+    	Long projectId=exeFlowService.Fetchflows(projectName);
+        HdispatchSchedule hds=new HdispatchSchedule();
+        Map<String, Object> map = new HashMap<>();
+        map.put("projectId", projectId);
+        map.put("flowId", flowId);
+        Schedule s = scheduleFlowService.fetchschedule(map);
+        if(obj.getCode()==1)
+        {
+        hds.setSubmit_date(s.getFirstSchedTime());	
+        hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
+        hds.setFlow_id(flowId);
+        hds.setProject_name(projectName);
+        hdispatchScheduleService.insert(hds);
+        }
+        return scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
 
     }
     /**
@@ -244,7 +279,6 @@ public class ScheduleController extends BaseController {
     	String notifyFailureLast =request.getParameter("notifyFailureLast");
     	String failureAction=request.getParameter("failureAction");
     	String concurrentOption =request.getParameter("concurrentOption");
-
 		ResultObj obj = new ResultObj();
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("project",project.replaceAll("\"", ""));
@@ -266,7 +300,7 @@ public class ScheduleController extends BaseController {
 			if(concurrentOption!=null)
 			map.put("concurrentOption", concurrentOption.replaceAll("\"", ""));
 			if(disabled!=null)
-			map.put("disabled", disabled.replaceAll("\"", ""));
+			map.put("disabled", disabled);	
 			ExeFlow f = exeFlowService.ExecuteFlow(map);
 			if (f.isError()) {
 				obj.setMessage(f.getError());

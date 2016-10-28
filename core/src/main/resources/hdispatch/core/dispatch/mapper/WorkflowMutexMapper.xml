@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mapper.WorkflowMutexMapper">
+    <resultMap id="workflowMutex" type="hdispatch.core.dispatch.dto.workflow.WorkflowMutex">
+        <id property="workflowId" column="workflow_id"></id>
+        <result property="mutexWorkflowId" column="mutex_workflow_id"></result>
+        <result property="mutexWorkflowName" column="mutex_workflow_name"></result>
+        <result property="mutexTheme" column="mutex_theme"></result>
+        <result property="mutexLayer" column="mutex_layer"></result>
+        <result property="mutexProjectName" column="mutex_project_name"></result>
+        <result property="mutexFlowId" column="mutex_flow_id"></result>
+        <result property="workflowName" column="workflow_name"></result>
+    </resultMap>
+    <select id="queryMutex" resultMap="workflowMutex">
+        SELECT
+            dhw.workflow_id     AS mutex_workflow_id,
+            dhw.name            AS mutex_workflow_name,
+            dht.name            AS mutex_theme,
+            dht.name            AS mutex_layer,
+            df.mut_project_name AS mutex_project_name,
+            df.mut_flow_id      AS mutex_flow_id,
+            hw.name             AS workflow_name,
+            hw.workflow_id      AS workflow_id
+        FROM
+            mut_flows df
+            LEFT JOIN
+            hdispatch_workflow dhw
+                ON
+                    df.mut_project_name = dhw.name
+            LEFT JOIN
+            hdispatch_workflow hw
+                ON
+                    df.project_name = hw.name
+            LEFT JOIN
+            hdispatch_theme dht
+                ON
+                    dhw.theme_id = dht.theme_id
+            LEFT JOIN
+            hdispatch_layer dhl
+                ON
+                    dhw.layer_id = dhl.layer_id
+        WHERE
+            df.project_name = #{projectName}
+    </select>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO
+        mut_flows(project_name,project_id,flow_id,mut_project_name,mut_project_id,mut_flow_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.projectName},#{item.projectId},#{item.flowId},#{item.mutexProjectName},#{item.mutexProjectId},#{item.mutexFlowId})
+        </foreach>
+    </insert>
+
+    <delete id="delete" parameterType="hdispatch.core.dispatch.dto.workflow.AzkabanFlowMutex">
+        DELETE FROM
+            mut_flows
+        WHERE
+            mut_project_name = #{mutexProjectName}
+            AND project_name = #{projectName}
+    </delete>
+</mapper>

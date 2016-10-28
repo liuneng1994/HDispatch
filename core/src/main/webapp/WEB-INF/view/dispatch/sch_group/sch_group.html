@@ -1,9 +1,9 @@
 <#-- * description: 角色界面 * version: 1.0 *author:hailin.xu@hand-china.com
 * #{copyright}# * --> <#include "../../include/header.html">
 <body>
-	<script src="../../../../lib/flatpickr.min.js"></script>
+	<script src="${base.contextPath}/lib/flatpickr.min.js"></script>
 	<link rel="stylesheet" type="text/css"
-		href="../../../../lib/flatpickr.min.css">
+		href="${base.contextPath}/lib/flatpickr.min.css">
 	<script src="${base.contextPath}/common/language?var=languageData"
 		type="text/javascript"></script>
 	<div id="tipDelete"></div>
@@ -15,7 +15,7 @@
 					<div class="panel-body">
 
 						<!-- roleCode -->
-						<div class="col-sm-4">
+						<div class="col-sm-6">
 							<div class="form-group">
 								<label class="col-sm-4 control-label"><@spring.message
 									"hdispatch.flowlist.flowname"/></label>
@@ -31,7 +31,7 @@
 
 						<!--   roleName  end -->
 
-						<div class="col-sm-4">
+						<!-- <div class="col-sm-4">
 							<div class="form-group">
 								<label class="col-sm-4 control-label"><@spring.message
 									"hdispatch.flowlist.projectname"/></label>
@@ -40,10 +40,10 @@
 										class="k-textbox">
 								</div>
 							</div>
-						</div>
+						</div> -->
 
 
-						<div class="col-sm-4">
+						<div class="col-sm-6">
 							<div class="form-group">
 								<label class="col-sm-4 control-label"><@spring.message
 									"hdispatch.flowlist.date"/></label>
@@ -72,7 +72,7 @@
 			</div>
 		</div>
 	</div>
-	<script src="../../../../lib/dateformat.js"></script>
+	<script src="${base.contextPath}/lib/dateformat.js"></script>
 	<script type="text/javascript">
 		document.getElementById("picker").flatpickr();
 		var checkedIds = {};
@@ -124,30 +124,38 @@
 			});
 		}
 		function openFlowDetailPage(flow_id, exec_id) {
+
 			var dialog = $("#dialog")
 					.kendoWindow(
 							{
-								actions : [ "Maximize", "Minimize", "Close" ],
+								//actions : [ "Maximize", "Minimize", "Close" ],
 								width : 920,
 								height : 450,
-								title : flow_id
-										+ ' <@spring.message "hdispatch.flowlist.flowdetail"/>',
+								modal: true,
+								title :' <@spring.message "hdispatch.flowlist.flowdetail"/>',
 								visible : false,
 								iframe : true,
 								content : 'flow_infodetail.html?flow_id='
 										+ flow_id + '&exec_id=' + exec_id
 							}).data("kendoWindow");
-			dialog.center().open();
+			dialog.maximize().open();
 		}
 		window.stateColor = {
-			"PAUSED" : "background-color:#FFCC00;",
-			"RUNNING" : "background-color:#00CC00;",
-			"SUCCESS" : "background-color:#33FF00;",
-			"FAILED" : "background-color:#FF3333;",
-			"SUCCESS" : "background-color:#5CB85C;",
-			"FAILED" : "background-color:#D9534F;",
-			"KILLED" : "background-color:#D9534F;",
-			"PREPARING" : "background-color:#DDDDDD;"
+				"READY" : "background-color:#1AE6E6;",
+				"PAUSED" : "background-color:#FFCC00;",
+				"RUNNING" : "background-color:#00CC00;",
+				"SUCCESS" : "background-color:#33FF00;",
+				"FAILED" : "background-color:#FF3333;",
+				"SUCCESS" : "background-color:#5CB85C;",
+				"FAILED" : "background-color:#D9534F;",
+				"KILLED" : "background-color:#D9534F;",
+				"PREPARING" : "background-color:#DDDDDD;",
+					"FAILED_FINISHING" : "background-color:#EE9611;",
+						"SKIPPED" : "background-color:#66FF00;",
+						"DISABLED" : "background-color:#F70909;",
+						"QUEUED" : "background-color:#FFFF00;",
+						"FAILED_SUCCEEDED" : "background-color:#FF0066;",
+						"CANCELLED" : "background-color:#6F8391;"
 		};
 
 		$(document)
@@ -216,11 +224,7 @@
 											data : 'rows',
 											total : 'total',
 											model : {
-												id : "exec_id",
 												fields : {
-													flow_id : {
-														type : "string"
-													},
 													project_name : {
 														type : "string"
 													},
@@ -315,16 +319,16 @@
 															title : '',
 															template : '<input class="checkbox" type="checkbox" />',
 															width : 50
-														},
+														}/* ,
 														{
 															field : "exec_id",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.exeid"/>',
-															width : 140
-														},
+															width : 50
+														} */,
 														{
 															field : "flow_id",
 															title : '<@spring.message "hdispatch.flowlist.flowname"/>',
-															width : 80,
+															width : 150,
 															template : function(
 																	item) {
 																var exec_id = item.exec_id;
@@ -335,21 +339,21 @@
 																		+ "\",\""
 																		+ exec_id
 																		+ "\")'>"
-																		+ flow_id
+																		+ item.project_name
 																		+ "</a>";
 																return html;
 															}
-														},
+														}/* ,
 														{
 															field : "project_name",
 															title : '<@spring.message "hdispatch.flowlist.projectname"/>',
-															width : 200
-														},
+															width : 150
+														} */,
 
 														{
 															field : "start_time",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
-															width : 180,
+															width : 150,
 															template : function(
 																	dataItem) {
 																var v = dataItem.start_time;
@@ -362,7 +366,7 @@
 														{
 															field : "end_time",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.enddate"/>',
-															width : 180,
+															width : 150,
 															template : function(
 																	dataItem) {
 																var v = dataItem.end_time;
@@ -380,7 +384,7 @@
 														{
 															field : "elapsed",
 															title : '<@spring.message "hdispatch.flowlist.flowgrid.rundate"/>',
-															width : 180,
+															width : 100,
 															template : function(
 																	dataItem) {
 																var v = dataItem.end_time
@@ -467,7 +471,21 @@
 																else if (item.status == 60)
 																	status = 'KILLED';
 																else if (item.status == 40)
-																	status = 'PAUSED';
+																	status = 'PAUSED';				
+																else if (item.status == 10)
+																	status = 'READY';	
+																else if (item.status == 80)
+																	status = 'FAILED_FINISHING';
+																else if (item.status == 90)
+																	status = 'SKIPPED';
+																else if (item.status == 100)
+																	status = 'DISABLED';
+																else if (item.status == 110)
+																	status = 'QUEUED';
+																else if (item.status == 120)
+																	status = 'FAILED_SUCCEEDED';
+																else if (item.status == 130)
+																	status = 'CANCELLED';
 																var html = "<div "
 																		+ "style='text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
 																		+ (stateColor[status])

@@ -69,8 +69,8 @@ public class WorkflowServiceImplTest extends AbstractTransactionalJUnit4SpringCo
     @Test
     public void testGenerateWorkflow() throws Exception {
         Map<String, Object> result1 = workflowService.createWorkflow(workflow);
-        boolean result = workflowService.generateWorkflow(17);
-        Assert.assertTrue(result);
+        String result = workflowService.generateWorkflow(17);
+        Assert.assertEquals(result,"");
     }
 
 

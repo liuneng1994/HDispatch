@@ -9,10 +9,6 @@
             list-style: none;
             padding-bottom: 1em;
         }
-
-        .k-combobox>.k-dropdown-wrap>.k-i-close {
-            top: 1em;
-        }
     </style>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
@@ -20,58 +16,75 @@
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <script src="${base.contextPath}/lib/moment.min.js"></script>
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
+    <div kendo-window="vm.dependencyWindow"
+         k-title="'依赖管理'"
+         k-actions="['Maximize', 'Close']"
+         k-modal="true"
+         k-width="700"
+         k-on-open="vm.dependencyWindow.visible = true"
+         k-on-close="vm.dependencyWindow.visible = false"
+         k-visible="false">
+        <iframe id="dependencyFrame" src="#" style="height:100%;width: 100%;" frameborder="0"></iframe>
+    </div>
+    <div kendo-window="vm.mutexWindow"
+         k-title="'互斥管理'"
+         k-actions="['Maximize', 'Close']"
+         k-modal="true"
+         k-width="700"
+         k-on-open="vm.mutexWindow.visible = true"
+         k-on-close="vm.mutexWindow.visible = false"
+         k-visible="false">
+        <iframe id="mutexFrame" src="#" style="height:100%;width: 100%;" frameborder="0"></iframe>
+    </div>
     <div id="content-container">
         <div id="page-content">
             <div class="panel">
                 <form name="flow" novalidate>
                     <div class="panel-body">
-
                         <div class="row form-horizontal">
                             <div class="panel-body col-sm-offset-0">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务组</label>
                                         <div class="col-sm-8 ">
-                                            <select class="col-sm-12" name="theme"
+                                            <select name="theme"
                                                     ng-model="vm.workflow.themeId"
                                                     kendo-combo-box
                                                     k-on-change="vm.themeChange(vm.workflow.themeId)"
                                                     k-data-text-field="'themeName'"
                                                     k-data-value-field="'themeId'"
                                                     k-data-source="vm.themes"
+                                                    k-option-label="'请选择任务流'"
                                                     style="padding-left:0;padding-right:0;width:100%;padding-bottom:2px"></select>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">层级</label>
                                         <div class="col-sm-8 ">
-                                            <select name="layer" class="col-sm-12"
+                                            <select name="layer"
                                                     ng-model="vm.workflow.layerId"
                                                     kendo-combo-box
                                                     k-data-text-field="'layerName'"
                                                     k-data-value-field="'layerId'"
                                                     k-data-source="vm.layers"
+                                                    k-option-label="'请选择层级'"
                                                     style="padding-left:0;padding-right:0;width:100%;;padding-bottom:2px">123123</select>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row form-horizontal">
-                            <div class="panel-body col-sm-offset-0">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务流名称</label>
                                         <div class="col-sm-8 ">
-                                            <input class="col-sm-12 k-textbox" name="workflowName"
+                                            <input class="k-textbox" name="workflowName"
                                                    style="padding-left:0;padding-right:0;width:100%;"
                                                    ng-model="vm.workflow.workflowName" type="text"/>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label">任务流描述</label>
                                         <div class="col-sm-8 ">
@@ -83,7 +96,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="panel-footer text-right">
 						<span class="btn btn-success" ng-click="vm.search()"
@@ -96,9 +108,10 @@
 
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
-                        <div class="btn btn-success"
-                             ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
-                        </div>
+                        <button class="btn btn-success"
+                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
+                        </button>
+                        <button class="btn btn-danger" ng-click="vm.deleteSelection()">删除</button>
                     </div>
                     <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
                 </div>

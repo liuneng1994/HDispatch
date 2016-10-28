@@ -1,0 +1,71 @@
+<#include "../../include/header.html">
+    <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowMutexController.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
+    <body ng-app="dispatch" ng-controller="workflowMutexController as vm">
+    <div kendo-window="vm.createMutexWindow"
+         k-title="'增加互斥流'"
+         k-actions="['Close']"
+         k-modal="true"
+         k-width="600"
+         k-on-open="vm.createMutexWindow.visible = true"
+         k-on-close="vm.createMutexWindow.visible = false"
+         k-visible="false">
+        <form name="job" class="form-horizontal" style="width:100%" novalidate>
+            <div class="col-sm-10">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">任务组</label>
+                    <div class="col-sm-8 ">
+                        <select class="col-sm-12" id="theme"
+                                k-ng-model="vm.theme"
+                                k-on-change="vm.themeChange()"
+                                k-value-primitive = "true"
+                                kendo-drop-down-list
+                                k-options="vm.themeOptions" style="padding-left:0;padding-right:0;width:100%;"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">层次</label>
+                    <div class="col-sm-8 ">
+                        <select class="col-sm-12" id="layer"
+                                k-ng-model="vm.layer"
+                                k-on-change="vm.layerChange"
+                                k-value-primitive = "true"
+                                kendo-drop-down-list
+                                k-options="vm.layerOptions" style="padding-left:0;padding-right:0;width:100%;"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">任务流</label>
+                    <div class="col-sm-8 ">
+                        <select class="col-sm-12" id="mutexWorkflow"
+                                kendo-drop-down-list
+                                k-ng-model="vm.mutexWorkflow"
+                                k-value-primitive = "false"
+                                k-options="vm.workflowOptions" style="padding-left:0;padding-right:0;width:100%;"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="text-center">
+                        <button class="btn btn-primary" ng-click="vm.createMutexWorkflow()" ng-disabled="!vm.mutexWorkflow">确认</button>
+                        <button class="btn btn-danger" ng-click="vm.resetMutexWindow()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="content-container">
+        <div class="panel">
+            <div class="panel-body">
+                <h3>{{vm.projectName}}互斥流</h3>
+                <div class="row" style="margin-bottom:1em;">
+                    <button class="btn btn-success" ng-click="vm.openMutexWindow()">增加</button>
+                    <button class="btn btn-danger" ng-click="vm.deleteMutexWorkflow()">删除</button>
+                </div>
+                <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>

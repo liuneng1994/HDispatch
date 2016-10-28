@@ -1,8 +1,12 @@
 package hdispatch.core.dispatch.azkaban.service;
 
 import hdispatch.core.dispatch.azkaban.entity.flow.ExeFlow;
+import hdispatch.core.dispatch.azkaban.entity.flow.exejob;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
+import hdispatch.core.dispatch.dto.ExecutionJobs;
+import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,4 +32,6 @@ public interface ExeFlowService {
 	ResultObj fetchJobLogs(Map<String, Object> map);
 	
 	ResultObj retryFlow(Map<String, Object> map);
+
+	List<ExecutionJobs> getJobsOfFlow(Map<String, Object> map);
 }

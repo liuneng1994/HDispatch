@@ -22,4 +22,5 @@ public interface ScheduleFlowService {
 
 	ResultObj slaInfo(Map<String, Object> map);
 
+	ResultObj scheduleCronFlow(String projectName,String flowName,String cronExpression);
 }

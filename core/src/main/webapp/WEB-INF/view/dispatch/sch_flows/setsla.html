@@ -3,9 +3,9 @@ author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 "../../include/header.html">
 
 <body>
-	<script src="../../../../lib/flatpickr.min.js"></script>
+	<script src="${base.contextPath}/lib/flatpickr.min.js"></script>
 	<link rel="stylesheet" type="text/css"
-		href="../../../../lib/flatpickr.min.css">
+		href="${base.contextPath}/lib/flatpickr.min.css">
 	<script src="${base.contextPath}/common/language?var=languageData"
 		type="text/javascript"></script>
 	<div class="container">
@@ -26,6 +26,7 @@ author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 							<th><@spring.message
 								'hdispatch.schedule.setsla.emailaction'/></th>
 							<th><@spring.message 'hdispatch.schedule.setsla.kilaction'/></th>
+							<th><@spring.message 'hap.action'/></th>
 						</tr>
 					</thead>
 					<tbody id="tbody">
@@ -181,7 +182,7 @@ author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 
 								}
 							}
-							document.getElementById("duration").flatpickr();
+							
 
 						},
 						error : function() {
@@ -195,10 +196,11 @@ author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 		var count = 0;
 		function addrow() {
 			var tr = document.createElement("tr");
+			tr.className="tr"+count;
 			tr.innerHTML = "<td><select class='form-control' id='flow"+count+"'>"
 					+ "</select></td><td><select class='form-control'><option value='SUCCESS'>SUCCESS</option><option value='FINISH'>FINISH</option></select></td><td>"
-					+ "<input id='flatpickr"+count+"'class='form-control' data-enable-time='true' data-enable-seconds='false' data-no-calendar='true'>"
-					+ "</td><td><input type='checkbox'></td><td><input type='checkbox'></td>";
+					+ "<input id='flatpickr"+count+"'class='form-control' data-default-date='' data-enable-time='true' value='00:01' data-enable-seconds='false' data-no-calendar='true'>"
+					+ "</td><td><input type='checkbox'></td><td><input type='checkbox'></td><td><button class='btn btn-danger' onclick='removetr("+count+")'><@spring.message 'hap.delete'/></button></td>";
 			document.getElementById("tbody").appendChild(tr);
 			document.getElementById("flatpickr" + count).flatpickr();
 			var flow = document.getElementById("flow" + count);
@@ -210,6 +212,13 @@ author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
 			}
 
 			count++;
+		}
+		function removetr(id)
+		{
+			var aEle=document.getElementsByClassName('tr'+id);
+			  for(var i=0;i<aEle.length;i++){
+			            aEle[i].remove();
+			    }
 		}
 		function getData() {
 			var sch_id = "${RequestParameters.schId}";

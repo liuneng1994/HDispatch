@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hdispatch.core.dispatch.mapper.DepFlowsMapper" >
+  <resultMap id="BaseResultMap" type="hdispatch.core.dispatch.dto.DepFlows" >
+    <result column="flow_id" property="flow_id" jdbcType="VARCHAR" />
+    <result column="dep_flow_id" property="dep_flow_id" jdbcType="VARCHAR" />
+     <result column="mut_flow_id" property="mut_flow_id" jdbcType="VARCHAR" />
+    <result column="submit_date" property="submit_date" jdbcType="DATE" />
+    <result column="project_id" property="project_id" jdbcType="INTEGER" />
+    <result column="dep_project_id" property="dep_project_id" jdbcType="INTEGER" />
+     <result column="mut_project_id" property="mut_project_id" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="selectDepWithId" resultMap="BaseResultMap">
+  		select flow_id, dep_flow_id, submit_date, 
+      project_id, dep_project_id from dep_flows where flow_id=#{param1}
+      and project_id=#{param2}
+      and TO_DAYS(submit_date)=TO_DAYS(now())
+  </select>
+ <select id="selectMutWithId" resultMap="BaseResultMap">
+  		select flow_id, mut_flow_id, submit_date, 
+      project_id, mut_project_id from mut_flows where flow_id=#{param1}
+      and project_id=#{param2}
+      and TO_DAYS(submit_date)=TO_DAYS(now())
+  </select>
+  <select id="isExitDep" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  select count(*)from dep_flows where flow_id=#{flow_id,jdbcType=VARCHAR}
+        and dep_flow_id=#{dep_flow_id,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{project_id,jdbcType=INTEGER}
+        and dep_project_id=#{dep_project_id,jdbcType=INTEGER}
+  </select>
+   <select id="isExitMut" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  select count(*)from mut_flows where flow_id=#{flow_id,jdbcType=VARCHAR}
+        and mut_flow_id=#{mut_flow_id,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{project_id,jdbcType=INTEGER}
+        and mut_project_id=#{mut_project_id,jdbcType=INTEGER}
+  </select>
+
+    <select id="selectIdByName">
+        select id from projects where name=#{param1}
+    </select>
+  <delete id="deleteDep" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  delete from dep_flows where flow_id=#{flow_id,jdbcType=VARCHAR}
+        and dep_flow_id=#{dep_flow_id,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{project_id,jdbcType=INTEGER}
+        and dep_project_id=#{dep_project_id,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteMut" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  delete from mut_flows where  flow_id=#{flow_id,jdbcType=VARCHAR}
+        and mut_flow_id=#{mut_flow_id,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{project_id,jdbcType=INTEGER}
+        and mut_project_id=#{mut_project_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertDep" parameterType="hdispatch.core.dispatch.dto.DepFlows" >
+    insert into dep_flows (flow_id, dep_flow_id, submit_date, 
+      project_id, dep_project_id)
+    values (#{flow_id,jdbcType=VARCHAR}, #{dep_flow_id,jdbcType=VARCHAR}, now(), 
+      #{project_id,jdbcType=INTEGER}, #{dep_project_id,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertMut" parameterType="hdispatch.core.dispatch.dto.DepFlows" >
+    insert into mut_flows (flow_id, mut_flow_id, submit_date, 
+      project_id, mut_project_id)
+    values (#{flow_id,jdbcType=VARCHAR}, #{mut_flow_id,jdbcType=VARCHAR}, now(), 
+      #{project_id,jdbcType=INTEGER}, #{mut_project_id,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="hdispatch.core.dispatch.dto.DepFlows" >
+    insert into dep_flows
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="flow_id != null" >
+        flow_id,
+      </if>
+      <if test="dep_flow_id != null" >
+        dep_flow_id,
+      </if>
+      <if test="submit_date != null" >
+        submit_date,
+      </if>
+      <if test="project_id != null" >
+        project_id,
+      </if>
+      <if test="dep_project_id != null" >
+        dep_project_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="flow_id != null" >
+        #{flow_id,jdbcType=VARCHAR},
+      </if>
+      <if test="dep_flow_id != null" >
+        #{dep_flow_id,jdbcType=VARCHAR},
+      </if>
+      <if test="submit_date != null" >
+        #{submit_date,jdbcType=DATE},
+      </if>
+      <if test="project_id != null" >
+        #{project_id,jdbcType=INTEGER},
+      </if>
+      <if test="dep_project_id != null" >
+        #{dep_project_id,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>

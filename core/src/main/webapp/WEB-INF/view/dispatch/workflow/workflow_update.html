@@ -1,13 +1,16 @@
 <#include "../../include/header.html">
     <link rel="stylesheet" href="../../lib/jointJS/joint.css"/>
+    <script src="${base.contextPath}/lib/jointJS/hotkeys.js"></script>
     <script src="${base.contextPath}/lib/jointJS/lodash.min.js"></script>
     <script src="${base.contextPath}/lib/jointJS/backbone-min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/dagre.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/graphlib.min.js"></script>
     <script src="${base.contextPath}/lib/jointJS/joint.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/paint.all.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowUpdateController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
-    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowDiagramService.js"></script>
     <body ng-app="dispatch" ng-controller="workflowUpdateController as vm">
     <div id="content-container">
         <div kendo-window="vm.jobWindow" k-title="'添加任务'" k-modal="true" k-width="600" k-on-open="vm.jobWindow.visible = true"
@@ -25,6 +28,19 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-sm-2 control-label">类型</label>
+                        <div class="col-sm-8 ">
+                            <select class="col-sm-12" name="theme"
+                                    ng-model="vm.newJob.type"
+                                    k-on-change="vm.jobLayerChange()"
+                                    kendo-drop-down-list
+                                    style="padding-left:0;padding-right:0;width:100%;">
+                                <option value="job">任务</option>
+                                <option value="flow">任务流</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!--<div class="form-group">
                         <label class="col-sm-2 control-label">任务组</label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="theme"
@@ -49,7 +65,7 @@
                                     k-data-source="vm.jobLayers"
                                     style="padding-left:0;padding-right:0;width:100%;"></select>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="form-group">
                         <label class="col-sm-2 control-label">源任务</label>
                         <div class="col-sm-8 ">
@@ -64,7 +80,7 @@
                     </div>
                     <div class="form-group">
                         <div class="text-center">
-                            <button class="btn btn-primary" ng-click="vm.createJob()" ng-disabled="job.$invalid||!vm.newJob.jobSource||!vm.newJob.layerId||!vm.newJob.themeId">确认</button>
+                            <button class="btn btn-primary" ng-click="vm.createJob()" ng-disabled="job.$invalid||!vm.newJob.jobSource">确认</button>
                             <button class="btn btn-danger" ng-click="vm.resetWindow()">取消</button>
                         </div>
                     </div>
@@ -103,6 +119,7 @@
                                                 k-value-primitive="true"
                                                 k-data-text-field="'layerName'"
                                                 k-data-value-field="'layerId'"
+                                                k-on-change="vm.layerChange()";
                                                 k-data-source="vm.layers" style="padding-left:0;padding-right:0;width:100%;"></select>
                                         <span style="color:red;" ng-show="flow.layer.$dirty&&!vm.workflow.layerId">请选择层级</span>
                                     </div>
@@ -134,17 +151,17 @@
                 </form>
                 <div class="row">
                     <button class="btn btn-info" ng-click="vm.jobWindow.center().open()">添加任务</button>
-                    <button class="btn btn-danger" ng-click="vm.deleteJob()">删除</button>
+                    <button class="btn btn-success" ng-click="vm.format()">格式化</button>
                     <button class="btn btn-primary" ng-click="vm.save()" ng-disabled="flow.$invalid||!vm.workflow.themeId||!vm.workflow.layerId">保存</button>
                     <button class="btn btn-info" ng-click="vm.generateWorkflow()" ng-disabled="!vm.workflow.workflowId">生成</button>
                     <a href="${base.contextPath}/dispatch/workflow/workflow_list.html" class="btn btn-danger">返回列表</a>
                 </div>
             </div>
-            <div id="graphHolder" class="hasMenu panel col-sm-offset-0" style="overflow: scroll; height:600px;">
-                <ul id="blankMenu" style="width: 100px">
-                    <li id="createJob">添加任务</li>
-                </ul>
+            <div id="graphScroll" class="panel col-sm-offset-0" style="overflow: scroll; height:600px;">
                 <div id="graph"></div>
+                <ul id="blankMenu">
+                    <li id="createJob">添加job</li>
+                </ul>
             </div>
         </div>
     </div>
