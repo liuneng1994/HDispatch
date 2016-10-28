@@ -10,13 +10,13 @@
                         <div class="panel-body col-sm-offset-0">
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label style="width: 30%;">主题组名称</label>
+                                    <label style="width: 30%;"><@spring.message "hdispatch.themeGroup.theme_group_name"/></label>
                                     <input id="input1" type="text" style="width: 60%" data-bind="value:model.themeGroupName" class="k-textbox">
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label style="width: 30%;">主题组描述</label>
+                                    <label style="width: 30%;"><@spring.message "hdispatch.themeGroup.theme_group_desc"/></label>
                                     <input type="text" style="width:60%" data-bind="value:model.themeGroupDesc" class="k-textbox">
                                 </div>
                             </div>
@@ -213,12 +213,12 @@
                                 },
                                 {
                                     'field': 'themeGroupName',
-                                    'title':'主题组名称',
+                                    'title':'<@spring.message "hdispatch.themeGroup.theme_group_name"/>',
                                     'width': "150px"
                                 },
                                 {
                                     'field': 'themeGroupDesc',
-                                    'title':'主题组描述',
+                                    'title':'<@spring.message "hdispatch.themeGroup.theme_group_desc"/>',
                                     'width': "100px"
                                 },
                                 {
@@ -231,11 +231,11 @@
                                             var html = "<button  class='btn btn-info'onclick='showMountThemesDetails(\""
                                                     + item.themeGroupId
                                                     + "\",\""+item.themeGroupName+"\")'"
-                                                    + ">主题挂载"
+                                                    + "><@spring.message 'hdispatch.themeGroup.theme_group_create.mount_theme'/>"
                                                     + "</button>";
                                             return html;
                                         }else{
-                                            return "<button  class='btn btn-info' disabled='disabled'>主题挂载</button>";
+                                            return "<button  class='btn btn-info' disabled='disabled'><@spring.message 'hdispatch.themeGroup.theme_group_create.mount_theme'/></button>";
                                         }
                                     }
                                 },
@@ -249,11 +249,11 @@
                                             var html = "<button  class='btn btn-info'onclick='showAuthorityManagementDetails(\""
                                                     + item.themeGroupId
                                                     + "\",\""+item.themeGroupName+"\")'"
-                                                    + ">权限分配"
+                                                    + "><@spring.message 'hdispatch.themeGroup.theme_group_create.authority_manage'/>"
                                                     + "</button>";
                                             return html;
                                         }else{
-                                            return "<button  class='btn btn-info' disabled='disabled'>权限分配</button>";
+                                            return "<button  class='btn btn-info' disabled='disabled'><@spring.message 'hdispatch.themeGroup.theme_group_create.authority_manage'/></button>";
                                         }
                                     }
                                 }
