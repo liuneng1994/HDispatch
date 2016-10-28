@@ -65,8 +65,62 @@
         window.confirm.accept = function (func) {
             window.confirm.successCallback = func;
         }
+        var filter_to_operate_themeIds = [];
 
+        //判断是否有操作权限
+        function hasOperatePermission(themeId_this_row) {
+            var flag = false;
+            $.each(filter_to_operate_themeIds,function (key, value) {
+                if(themeId_this_row==value){
+                    flag = true;
+                    return false;
+                }
+            });
+            if(flag){
+                return true;
+            }
+            return false;
+        }
 
+        //权限验证中的Grid行中的删除事件处理函数
+        //参数：grid_div_id是kendoGrid那个div的id值
+        function grid_del_btn_click(grid_div_id){
+            var e = window.event;
+            e.preventDefault();
+            kendo.ui.showConfirmDialog({
+                title:$l('hap.tip.info'),
+                message: $l('hap.tip.delete_confirm')
+            }).done(function(event){
+                if(event.button == 'OK'){
+                    var data = $("#"+grid_div_id).data("kendoGrid").dataItem($(e.target).closest("tr"));
+                    $("#"+grid_div_id).data("kendoGrid").dataSource.remove(data);
+                    $("#"+grid_div_id).data("kendoGrid").dataSource.sync();
+                }
+            });
+        }
+
+        //权限验证中的批量删除事件处理函数
+        //参数：grid_div_id是kendoGrid那个div的id值
+        function grid_batchDelete_btn_click(grid_div_id) {
+            var grid = $("#"+grid_div_id).data("kendoGrid");
+            var checked = grid.selectedDataItems();
+            if (grid.selectedDataItems().length) {
+                kendo.ui.showConfirmDialog({
+                    title: $l('hap.tip.info'),
+                    message: $l('hap.tip.delete_confirm')
+                }).done(function (event) {
+                    if (event.button == 'OK') {
+                        $.each(checked, function (key,value) {
+                            //对于具有操作权限的才能删除
+                            if(hasOperatePermission(value.themeId)){
+                                grid.dataSource.remove(value);
+                            }
+                        });
+                        grid.dataSource.sync();
+                    }
+                })
+            }
+        }
     </script>
 </head>
 <#macro lov lovid>${lovProvider.getLov(base.contextPath,base.locale,lovid)}</#macro>

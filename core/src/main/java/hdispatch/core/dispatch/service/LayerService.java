@@ -21,5 +21,13 @@ public interface LayerService {
 
     public static final String DUPLICATE_LAYER_NAME_UNDER_THEME="duplicate layer name under same theme";
 
+    /**
+     * 获取传入的列表中挂载任务或任务流的层次列表，
+     * 层次下面没有任务或任务流的层次将被过滤掉
+     * @param layerList 挂载任务或任务流的层次列表
+     * @return
+     */
     List<Layer> checkIsMountJobOrWorkflow(List<Layer> layerList);
+
+
 }

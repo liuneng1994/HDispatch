@@ -19,9 +19,19 @@ yazheng.yang@hand-china.com
         INSERT INTO hdispatch_theme(name,description,display_sequence)
         VALUES (#{themeName},#{themeDescription},#{themeSequence})
     </insert>
-    <select id="selectAll" resultMap="baseMap">
+
+    <!--获取全部可以操作的主题-->
+    <select id="selectAll_opt" resultMap="baseMap">
         SELECT * FROM hdispatch_theme WHERE active=1
+        AND 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y')
     </select>
+
+    <!--获取全部可以读(具有读、操作权限)的主题-->
+    <select id="selectAll_read" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme WHERE active=1
+        AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
+    </select>
+    <!--模糊查询可以读(具有读、操作权限)的主题-->
     <select id="selectByTheme" resultMap="baseMap">
         SELECT * FROM hdispatch_theme
         <where>
@@ -37,16 +47,21 @@ yazheng.yang@hand-china.com
                 AND description like #{pattern_themeDescription}
             </if>
             AND active=1
+            AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
         </where>
     </select>
+
+    <!--用于查重，不需要权限验证-->
     <select id="selectByNameAndActive" resultMap="baseMap">
         SELECT * FROM hdispatch_theme
         WHERE name=#{themeName,jdbcType=VARCHAR} AND active=1
     </select>
 
+    <!--逻辑删除-->
     <update id="deleteInLogic">
         UPDATE hdispatch_theme SET active=0
         WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+        AND 'Y'=hasPermission(#{themeId},#{request.userId},NULL,'Y')
     </update>
     <select id="selectById" resultMap="baseMap">
         SELECT * FROM hdispatch_theme

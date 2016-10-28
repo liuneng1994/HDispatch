@@ -46,6 +46,7 @@
         AND job.name like #{pattern}
       </if>
       AND job.active=1
+      AND ('Y'=hasPermission(job.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(job.theme_id,#{request.userId},NULL,'Y'))
     </where>
   </select>
   <update id="deleteInLogic">

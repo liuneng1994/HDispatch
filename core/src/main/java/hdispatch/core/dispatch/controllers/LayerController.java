@@ -52,18 +52,6 @@ public class LayerController extends BaseController {
             logger.info(errorMsg);
             return rd;
         }
-        //检查主题是否被删除
-        Theme themeTemp = new Theme();
-        themeTemp.setThemeId(themeId);
-        Theme themeReturn = themeService.selectActiveThemeById(themeTemp);
-        if(null == themeReturn){
-            rd = new ResponseData(false);
-            //主题已删除
-            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.theme_not_exist",null,locale);
-            rd.setMessage(errorMsg);
-            logger.info(errorMsg);
-            return rd;
-        }
         //读取主题下面没有被删除的层
         Layer layer = new Layer();
         layer.setThemeId(themeId);
@@ -95,18 +83,6 @@ public class LayerController extends BaseController {
             return rd;
         }
 
-        //检查主题是否被删除
-        Theme themeTemp = new Theme();
-        themeTemp.setThemeId(themeId);
-        Theme themeReturn = themeService.selectActiveThemeById(themeTemp);
-        if(null == themeReturn){
-            rd = new ResponseData(false);
-            //主题已删除
-            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.theme_not_exist",null,locale);
-            rd.setMessage(errorMsg);
-            logger.info(errorMsg);
-            return rd;
-        }
         //读取主题下面没有被删除的层
         Layer layer = new Layer();
         layer.setThemeId(themeId);
@@ -209,7 +185,7 @@ public class LayerController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/layer/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData deleteJobs(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) {
+    public ResponseData deleteLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) {
 
         ResponseData rd = null;
 

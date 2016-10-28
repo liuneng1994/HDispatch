@@ -221,7 +221,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return 返回的只是主题id（themeId）列表
      */
     @Override
-    public List<Theme> themesReadByUser(Long userId, PermissionParameter permissionParameter) {
+    public List<Theme> themesReadByUser(Long userId) {
         if(null == userId)
             return null;
         Map<String,Object> map = new HashMap();
