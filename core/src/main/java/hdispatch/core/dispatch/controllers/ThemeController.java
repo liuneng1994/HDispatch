@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -73,8 +76,8 @@ public class ThemeController extends BaseController {
     @ResponseBody
     public ResponseData getAllThemes_operate(HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
-
-        List<Theme> themeList = themeService.selectAll_opt();
+        Long userId = requestContext.getUserId();
+        List<Theme> themeList = themeService.selectAll_opt(requestContext);
         ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }
@@ -89,7 +92,7 @@ public class ThemeController extends BaseController {
     public ResponseData getAllThemes_read(HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
 
-        List<Theme> themeList = themeService.selectAll_read();
+        List<Theme> themeList = themeService.selectAll_read(requestContext);
         ResponseData responseData = new ResponseData(themeList);
         return responseData;
     }

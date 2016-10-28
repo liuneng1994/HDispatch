@@ -29,9 +29,9 @@ public interface ThemeService extends ProxySelf<ThemeService> {
      * @param pageSize
      * @return
      */
-    List<Theme> selectAll_read();
+    List<Theme> selectAll_read(IRequest requestContext);
 
-    List<Theme> selectAll_opt();
+    List<Theme> selectAll_opt(IRequest requestContext);
 
 
     /**
