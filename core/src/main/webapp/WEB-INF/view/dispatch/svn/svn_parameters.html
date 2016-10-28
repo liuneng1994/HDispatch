@@ -449,6 +449,8 @@
                         }else{
                             alert('<@spring.message "hdispatch.create_success"/>');
                             wnd.close();
+                            //刷新Grid
+                            $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
                         }
                     },
                     showFileList: true,
