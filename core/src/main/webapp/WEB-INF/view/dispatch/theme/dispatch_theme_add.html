@@ -166,7 +166,7 @@
                     },
                     batch: true,
                     serverPaging : true,
-                    pageSize: 5,
+                    pageSize: 10,
                     schema: {
                         data:'rows',
                         total:'total',
@@ -205,9 +205,9 @@
                     selectable: "multiple,rowbox",
                     scrollable: true,
                     pageable: {
-                        pageSizes:[5, 10, 20, 50],
+                        pageSizes:[10, 20, 50, 100],
                         refresh:true,
-                        buttonCount:5,
+                        buttonCount:10,
                         messages: {
                             noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
                             display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
@@ -449,7 +449,7 @@
                     },
                     batch: true,
                     serverPaging : true,
-                    pageSize: 5,
+                    pageSize: 10,
                     schema: {
                         data:'rows',
                         total:'total',
@@ -485,9 +485,9 @@
                     selectable: "multiple,rowbox",
                     scrollable: false,
                     pageable: {
-                        pageSizes:[5, 10, 20, 50],
+                        pageSizes:[10, 20, 50, 100],
                         refresh:true,
-                        buttonCount:5,
+                        buttonCount:10,
                         messages: {
                             noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
                             display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
