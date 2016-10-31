@@ -174,6 +174,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			throw new IllegalArgumentException("当前流已经运行完，无法重跑！", e);
 		}
 		obj.setMessage((String)response.getBody().getObject().get("error"));
+		System.out.println(response.getBody().getObject());
 		return obj;
 	}
 

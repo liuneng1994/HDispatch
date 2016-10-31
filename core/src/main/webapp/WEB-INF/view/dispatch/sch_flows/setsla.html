@@ -1,259 +1,263 @@
 <#-- * description: 角色界面 * version: 1.0 *
-author:zhilong.deng@hand-china.com * #{copyright}# * --> <#include
-"../../include/header.html">
+        author:zhilong.deng@hand-china.com * #{copyright}# * -->
+    <#include
+            "../../include/header.html">
 
-<body>
-	<script src="${base.contextPath}/lib/flatpickr.min.js"></script>
-	<link rel="stylesheet" type="text/css"
-		href="${base.contextPath}/lib/flatpickr.min.css">
-	<script src="${base.contextPath}/common/language?var=languageData"
-		type="text/javascript"></script>
-	<div class="container">
-		<div class="row clearfix">
-			<div class="col-md-12 column">
-				<h4><@spring.message 'hdispatch.schedule.setsla.setsla'/></h4>
-				<div class="form-group">
-					<h4 for="name"><@spring.message
-						'hdispatch.schedule.setsla.setalertemail'/></h4>
-					<textarea class="form-control" rows="3" id="slaEmails"></textarea>
-				</div>
-				<table class="table">
-					<thead>
-						<tr>
-							<th><@spring.message 'hdispatch.schedule.setsla.floworjob'/></th>
-							<th><@spring.message 'hdispatch.schedule.setsla.slarule'/></th>
-							<th><@spring.message 'hdispatch.schedule.setsla.duration'/></th>
-							<th><@spring.message
-								'hdispatch.schedule.setsla.emailaction'/></th>
-							<th><@spring.message 'hdispatch.schedule.setsla.kilaction'/></th>
-							<th><@spring.message 'hap.action'/></th>
-						</tr>
-					</thead>
-					<tbody id="tbody">
+        <body>
+        <script src="${base.contextPath}/lib/flatpickr.min.js"></script>
+        <link rel="stylesheet" type="text/css"
+              href="${base.contextPath}/lib/flatpickr.min.css">
+        <script src="${base.contextPath}/common/language?var=languageData"
+                type="text/javascript"></script>
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <h4><@spring.message 'hdispatch.schedule.setsla.setsla'/></h4>
+                    <div class="form-group">
+                        <h4 for="name"><@spring.message
+                            'hdispatch.schedule.setsla.setalertemail'/></h4>
+                        <textarea class="form-control" rows="3" id="slaEmails"></textarea>
+                    </div>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th><@spring.message 'hdispatch.schedule.setsla.floworjob'/></th>
+                            <th><@spring.message 'hdispatch.schedule.setsla.slarule'/></th>
+                            <th><@spring.message 'hdispatch.schedule.setsla.duration'/></th>
+                            <th><@spring.message
+                                'hdispatch.schedule.setsla.emailaction'/>
+                            </th>
+                            <th><@spring.message 'hdispatch.schedule.setsla.kilaction'/></th>
+                            <th><@spring.message 'hap.action'/></th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody">
 
-					</tbody>
-				</table>
-				<button type="button" class="btn btn-default" onclick="addrow()"><@spring.message 'hdispatch.schedule.setsla.addrow'/></button>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-default" onclick="addrow()"><@spring.message
+                        'hdispatch.schedule.setsla.addrow'/>
+                    </button>
 
-			</div>
-			<button type="button" style="float: right;" class="btn btn-default"
-				onclick="getData()">设置SLA</button>
-		</div>
-	</div>
+                </div>
+                <button type="button" style="float: right;" class="btn btn-default"
+                        onclick="getData()">设置SLA
+                </button>
+            </div>
+        </div>
 
-	<!-- delete template end -->
+        <!-- delete template end -->
 
-	<script type="text/javascript">
-		var indexToName = {};
-		var nameToIndex = {};
-		var indexToText = {};
-		var ruleBoxOptions = [ "SUCCESS", "FINISH" ];
-		var jobs = [];
-		var data = {};
-		function ajax(url) {
-			$.ajax({
-				url : url,
-				type : "GET",
-				dataType : "json",
-				async : false,
-				contentType : "application/json",
+        <script type="text/javascript">
+            var indexToName = {};
+            var nameToIndex = {};
+            var indexToText = {};
+            var ruleBoxOptions = ["SUCCESS", "FINISH"];
+            var jobs = [];
+            var data = {};
+            function ajax(url) {
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    async: false,
+                    contentType: "application/json",
 
-				success : function(json) {
-					jobs = json;
-				},
-				error : function() {
+                    success: function (json) {
+                        jobs = json;
+                    },
+                    error: function () {
 
-				}
-			});
-		}
-		function ajax_sla() {
-			$
-					.ajax({
-						url : '${base.contextPath}/schedule/slaInfo?scheduleId=${RequestParameters.schId}',
-						type : "GET",
-						dataType : "json",
-						async : false,
-						contentType : "application/json",
+                    }
+                });
+            }
+            function ajax_sla() {
+                $
+                        .ajax({
+                            url: '${base.contextPath}/schedule/slaInfo?scheduleId=${RequestParameters.schId}',
+                            type: "GET",
+                            dataType: "json",
+                            async: false,
+                            contentType: "application/json",
 
-						success : function(json) {
+                            success: function (json) {
 
-							data = JSON.parse(json.message);
-							if (data.error) {
-								alert(data.error);
-								return;
-							}
-							if (data.slaEmails) {
-								$('#slaEmails').val(data.slaEmails.join());
-							}
+                                data = JSON.parse(json.message);
+                                if (data.error) {
+                                    alert(data.error);
+                                    return;
+                                }
+                                if (data.slaEmails) {
+                                    $('#slaEmails').val(data.slaEmails.join());
+                                }
 
-							var allJobNames = data.allJobNames;
+                                var allJobNames = data.allJobNames;
 
-							indexToName[0] = "";
-							var flowName = "${RequestParameters.flowId}";
-							nameToIndex[flowName] = 0;
-							indexToText[0] = "flow " + flowName;
-							console.log(data.allJobNames);
-							for (var i = 1; i <= allJobNames.length; i++) {
-								indexToName[i] = allJobNames[i - 1];
-								nameToIndex[allJobNames[i - 1]] = i;
-								indexToText[i] = "job " + allJobNames[i - 1];
-							}
+                                indexToName[0] = "";
+                                var flowName = "${RequestParameters.flowId}";
+                                nameToIndex[flowName] = 0;
+                                indexToText[0] = "flow " + flowName;
+                                console.log(data.allJobNames);
+                                for (var i = 1; i <= allJobNames.length; i++) {
+                                    indexToName[i] = allJobNames[i - 1];
+                                    nameToIndex[allJobNames[i - 1]] = i;
+                                    indexToText[i] = "job " + allJobNames[i - 1];
+                                }
 
-							// populate with existing settings
-							if (data.settings) {
-								var tFlowRules = document
-										.getElementById("tbody");
-								for ( var setting in data.settings) {
-									var rFlowRule = tFlowRules.insertRow(0);
+                                // populate with existing settings
+                                if (data.settings) {
+                                    var tFlowRules = document
+                                            .getElementById("tbody");
+                                    for (var setting in data.settings) {
+                                        var rFlowRule = tFlowRules.insertRow(0);
 
-									var cId = rFlowRule.insertCell(-1);
-									var idSelect = document
-											.createElement("select");
-									idSelect.setAttribute("class",
-											"form-control");
-									for ( var i in indexToName) {
-										idSelect.options[i] = new Option(
-												indexToText[i], indexToName[i]);
-										if (data.settings[setting].id == indexToName[i]) {
-											idSelect.options[i].selected = true;
-										}
-									}
-									cId.appendChild(idSelect);
+                                        var cId = rFlowRule.insertCell(-1);
+                                        var idSelect = document
+                                                .createElement("select");
+                                        idSelect.setAttribute("class",
+                                                "form-control");
+                                        for (var i in indexToName) {
+                                            idSelect.options[i] = new Option(
+                                                    indexToText[i], indexToName[i]);
+                                            if (data.settings[setting].id == indexToName[i]) {
+                                                idSelect.options[i].selected = true;
+                                            }
+                                        }
+                                        cId.appendChild(idSelect);
 
-									var cRule = rFlowRule.insertCell(-1);
-									var ruleSelect = document
-											.createElement("select");
-									ruleSelect.setAttribute("class",
-											"form-control");
-									for ( var i in ruleBoxOptions) {
-										ruleSelect.options[i] = new Option(
-												ruleBoxOptions[i],
-												ruleBoxOptions[i]);
-										if (data.settings[setting].rule == ruleBoxOptions[i]) {
-											ruleSelect.options[i].selected = true;
-										}
-									}
-									cRule.appendChild(ruleSelect);
+                                        var cRule = rFlowRule.insertCell(-1);
+                                        var ruleSelect = document
+                                                .createElement("select");
+                                        ruleSelect.setAttribute("class",
+                                                "form-control");
+                                        for (var i in ruleBoxOptions) {
+                                            ruleSelect.options[i] = new Option(
+                                                    ruleBoxOptions[i],
+                                                    ruleBoxOptions[i]);
+                                            if (data.settings[setting].rule == ruleBoxOptions[i]) {
+                                                ruleSelect.options[i].selected = true;
+                                            }
+                                        }
+                                        cRule.appendChild(ruleSelect);
 
-									var cDuration = rFlowRule.insertCell(-1);
-									var duration = document
-											.createElement("input");
-									duration.type = "text";
-									duration.setAttribute("class",
-											"form-control");
-									duration.setAttribute("data-enable-time",
-											"true");
-									duration.setAttribute(
-											"data-enable-seconds", "false");
-									duration.setAttribute("data-no-calendar",
-											"true");
-									duration.setAttribute("id", "duration");
+                                        var cDuration = rFlowRule.insertCell(-1);
+                                        var duration = document
+                                                .createElement("input");
+                                        duration.type = "text";
+                                        duration.setAttribute("class",
+                                                "form-control");
+                                        duration.setAttribute("data-enable-time",
+                                                "true");
+                                        duration.setAttribute(
+                                                "data-enable-seconds", "false");
+                                        duration.setAttribute("data-no-calendar",
+                                                "true");
+                                        duration.setAttribute("id", "duration");
 
-									var rawMinutes = data.settings[setting].duration;
-									var intMinutes = rawMinutes.substring(0,
-											rawMinutes.length - 1);
-									var minutes = parseInt(intMinutes);
-									var hours = Math.floor(minutes / 60);
-									minutes = minutes % 60;
-									duration.value = hours + ":" + minutes;
-									cDuration.appendChild(duration);
+                                        var rawMinutes = data.settings[setting].duration;
+                                        var intMinutes = rawMinutes.substring(0,
+                                                rawMinutes.length - 1);
+                                        var minutes = parseInt(intMinutes);
+                                        var hours = Math.floor(minutes / 60);
+                                        minutes = minutes % 60;
+                                        duration.value = hours + ":" + minutes;
+                                        cDuration.appendChild(duration);
 
-									var cEmail = rFlowRule.insertCell(-1);
-									var emailCheck = document
-											.createElement("input");
-									emailCheck.type = "checkbox";
-									for ( var act in data.settings[setting].actions) {
-										if (data.settings[setting].actions[act] == "EMAIL") {
-											emailCheck.checked = true;
-										}
-									}
-									cEmail.appendChild(emailCheck);
+                                        var cEmail = rFlowRule.insertCell(-1);
+                                        var emailCheck = document
+                                                .createElement("input");
+                                        emailCheck.type = "checkbox";
+                                        for (var act in data.settings[setting].actions) {
+                                            if (data.settings[setting].actions[act] == "EMAIL") {
+                                                emailCheck.checked = true;
+                                            }
+                                        }
+                                        cEmail.appendChild(emailCheck);
 
-									var cKill = rFlowRule.insertCell(-1);
-																var killCheck = document
-											.createElement("input");
-									killCheck.type = "checkbox";
-									for ( var act in data.settings[setting].actions) {
-										if (data.settings[setting].actions[act] == "KILL") {
-											killCheck.checked = true;
-										}
-									}
-									cKill.appendChild(killCheck);
+                                        var cKill = rFlowRule.insertCell(-1);
+                                        var killCheck = document
+                                                .createElement("input");
+                                        killCheck.type = "checkbox";
+                                        for (var act in data.settings[setting].actions) {
+                                            if (data.settings[setting].actions[act] == "KILL") {
+                                                killCheck.checked = true;
+                                            }
+                                        }
+                                        cKill.appendChild(killCheck);
 
-								}
-							}
-							
+                                    }
+                                }
 
-						},
-						error : function() {
 
-						}
-					});
-		}
-		ajax("${base.contextPath}/schedule/getjoblist?flow_id=${RequestParameters.flowId}&project=${RequestParameters.project}");
-		ajax_sla();
+                            },
+                            error: function () {
 
-		var count = 0;
-		function addrow() {
-			var tr = document.createElement("tr");
-			tr.className="tr"+count;
-			tr.innerHTML = "<td><select class='form-control' id='flow"+count+"'>"
-					+ "</select></td><td><select class='form-control'><option value='SUCCESS'>SUCCESS</option><option value='FINISH'>FINISH</option></select></td><td>"
-					+ "<input id='flatpickr"+count+"'class='form-control' data-default-date='' data-enable-time='true' value='00:01' data-enable-seconds='false' data-no-calendar='true'>"
-					+ "</td><td><input type='checkbox'></td><td><input type='checkbox'></td><td><button class='btn btn-danger' onclick='removetr("+count+")'><@spring.message 'hap.delete'/></button></td>";
-			document.getElementById("tbody").appendChild(tr);
-			document.getElementById("flatpickr" + count).flatpickr();
-			var flow = document.getElementById("flow" + count);
-			flow.innerHTML += "<option value=''>flow ${RequestParameters.flowId}</option>";
+                            }
+                        });
+            }
+            ajax("${base.contextPath}/schedule/getjoblist?flow_id=${RequestParameters.flowId}&project=${RequestParameters.project}");
+            ajax_sla();
 
-			for (var i = 0; i < jobs.length; i++) {
-				flow.innerHTML += "<option value='"+jobs[i].job_id+"'>job "
-						+ jobs[i].job_id + "</option>";
-			}
+            var count = 0;
+            function addrow() {
+                var tr = document.createElement("tr");
+                tr.className = "tr" + count;
+                tr.innerHTML = "<td><select class='form-control' id='flow" + count + "'>"
+                        + "</select></td><td><select class='form-control'><option value='SUCCESS'>SUCCESS</option><option value='FINISH'>FINISH</option></select></td><td>"
+                        + "<input id='flatpickr" + count + "'class='form-control' data-default-date='' data-enable-time='true' value='00:01' data-enable-seconds='false' data-no-calendar='true'>"
+                        + "</td><td><input type='checkbox'></td><td><input type='checkbox'></td><td><button class='btn btn-danger' onclick='removetr(" + count + ")'><@spring.message 'hap.delete'/></button></td>";
+                document.getElementById("tbody").appendChild(tr);
+                document.getElementById("flatpickr" + count).flatpickr();
+                var flow = document.getElementById("flow" + count);
+                flow.innerHTML += "<option value=''>flow ${RequestParameters.flowId}</option>";
 
-			count++;
-		}
-		function removetr(id)
-		{
-			var aEle=document.getElementsByClassName('tr'+id);
-			  for(var i=0;i<aEle.length;i++){
-			            aEle[i].remove();
-			    }
-		}
-		function getData() {
-			var sch_id = "${RequestParameters.schId}";
-			var slaEmails = $('#slaEmails').val();
-			var settings = {};
-			var tFlowRules = document.getElementById("tbody");
-			for (var row = 0; row < tFlowRules.rows.length; row++) {
-				var rFlowRule = tFlowRules.rows[row];
-				var id = rFlowRule.cells[0].firstChild.value;
-				var rule = rFlowRule.cells[1].firstChild.value;
-				var duration = rFlowRule.cells[2].firstChild.value;
-				var email = rFlowRule.cells[3].firstChild.checked;
-				var kill = rFlowRule.cells[4].firstChild.checked;
-				settings[row] = id + "," + rule + "," + duration + "," + email
-						+ "," + kill;
-			}
-			$.ajax({
-				url : "${base.contextPath}/schedule/setsla?settings="
-						+ JSON.stringify(settings),
-				type : "GET",
-				dataType : "json",
-				contentType : "application/json",
-				data : {
-					scheduleId : sch_id,
-					slaEmails : slaEmails
-				},
-				success : function(json) {
-					alert(json.message);
-					window.close();
-				},
-				error : function() {
+                for (var i = 0; i < jobs.length; i++) {
+                    flow.innerHTML += "<option value='" + jobs[i].job_id + "'>job "
+                            + jobs[i].job_id + "</option>";
+                }
 
-				}
-			});
-		}
-	</script>
-</body>
-</html>
+                count++;
+            }
+            function removetr(id) {
+                var aEle = document.getElementsByClassName('tr' + id);
+                for (var i = 0; i < aEle.length; i++) {
+                    aEle[i].remove();
+                }
+            }
+            function getData() {
+                var sch_id = "${RequestParameters.schId}";
+                var slaEmails = $('#slaEmails').val();
+                var settings = {};
+                var tFlowRules = document.getElementById("tbody");
+                for (var row = 0; row < tFlowRules.rows.length; row++) {
+                    var rFlowRule = tFlowRules.rows[row];
+                    var id = rFlowRule.cells[0].firstChild.value;
+                    var rule = rFlowRule.cells[1].firstChild.value;
+                    var duration = rFlowRule.cells[2].firstChild.value;
+                    var email = rFlowRule.cells[3].firstChild.checked;
+                    var kill = rFlowRule.cells[4].firstChild.checked;
+                    settings[row] = id + "," + rule + "," + duration + "," + email
+                            + "," + kill;
+                }
+                $.ajax({
+                    url: "${base.contextPath}/schedule/setsla?settings="
+                    + JSON.stringify(settings),
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: {
+                        scheduleId: sch_id,
+                        slaEmails: slaEmails
+                    },
+                    success: function (json) {
+                        alert(json.message);
+                        window.close();
+                    },
+                    error: function () {
+
+                    }
+                });
+            }
+        </script>
+        </body>
+        </html>
