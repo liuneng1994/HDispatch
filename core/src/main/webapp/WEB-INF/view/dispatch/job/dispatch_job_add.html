@@ -140,6 +140,7 @@
                         $('#jobListGrid').data('kendoGrid').cancelChanges();
                     },
                     queryResource: function(e) {
+                        $('#jobListGrid').data('kendoGrid').dataSource.read();
                         $('#jobListGrid').data('kendoGrid').dataSource.page(1);
                     },
                     batchDeleteFunction: function(e) {
@@ -990,6 +991,8 @@
                         }else{
                             alert('<@spring.message "hdispatch.create_success"/>');
                             wnd.close();
+                            //刷新Grid
+                            $('#jobListGrid').data('kendoGrid').dataSource.read();
                         }
                     },
                     dataType: "json"
