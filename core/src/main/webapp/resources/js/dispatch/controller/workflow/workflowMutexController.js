@@ -156,7 +156,7 @@
                                     options.success('');
                                     return;
                                 }
-                                workflowService.query({
+                                workflowService.queryOperate({
                                     themeId: vm.theme,
                                     layerId: vm.layer,
                                     workflowName: '',
@@ -164,9 +164,9 @@
                                     page: 1,
                                     pageSize: 2147483647
                                 }).then(function (data) {
-                                    options.success(options.success(data.rows.filter(function (item) {
+                                    options.success(data.rows.filter(function (item) {
                                         return item.workflowId != vm.workflowId;
-                                    })));
+                                    }));
                                 });
                             }
                         }
