@@ -10,9 +10,16 @@ public class ScheduleFlow {
 	 private String flowId;
 	 private String projectName;
 	 private Integer projectId;
-	 
-	 
-	 
+	 private Long themeId;
+
+	public Long getThemeId() {
+		return themeId;
+	}
+
+	public void setThemeId(Long themeId) {
+		this.themeId = themeId;
+	}
+
 	public Integer getProjectId() {
 		return projectId;
 	}

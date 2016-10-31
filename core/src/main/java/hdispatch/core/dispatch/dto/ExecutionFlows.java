@@ -19,6 +19,9 @@ public class ExecutionFlows extends BaseDTO{
 
     private Long update_time;
 
+    private Long theme_id;
+
+
     private Long start_time;
 
     private Long end_time;
@@ -39,10 +42,17 @@ public class ExecutionFlows extends BaseDTO{
     private String meaning;
     
     private String lang;
-    
-    
-    
-	public String getMeaning() {
+
+
+    public Long getTheme_id() {
+        return theme_id;
+    }
+
+    public void setTheme_id(Long theme_id) {
+        this.theme_id = theme_id;
+    }
+
+    public String getMeaning() {
 		return meaning;
 	}
 

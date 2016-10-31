@@ -15,6 +15,7 @@
     <result column="submit_time" property="submit_time" jdbcType="BIGINT" />
     <result column="update_time" property="update_time" jdbcType="BIGINT" />
     <result column="start_time" property="start_time" jdbcType="BIGINT" />
+    <result column="theme_id" property="theme_id" jdbcType="BIGINT" />
     <result column="end_time" property="end_time" jdbcType="BIGINT" />
     <result column="enc_type" property="enc_type" jdbcType="TINYINT" />
     <result column="executor_id" property="executor_id" jdbcType="INTEGER" />
@@ -40,17 +41,20 @@
   
    <select id="selectAllExes" resultMap="ResultMapWithBLOBs" parameterType="hdispatch.core.dispatch.dto.ExecutionFlows" >
     select 
-    scvb.meaning as meaning,exec_id, project_id, execution_flows.version, flow_id, status, submit_user, submit_time, update_time, 
-    start_time, end_time, execution_flows.enc_type, executor_id
+    scvb.meaning as meaning,exec_id, project_id, execution_flows.version, execution_flows.flow_id, execution_flows.status, execution_flows.submit_user, execution_flows.submit_time, execution_flows.update_time, 
+    execution_flows.start_time, execution_flows.end_time, execution_flows.enc_type, execution_flows.executor_id
     ,projects.name as project_name,
+     hwf.theme_id,
     <include refid="Blob_Column_List" />
-    from execution_flows,projects,sys_code_b scb,sys_code_value_b scvb,sys_code_value_tl scv
+    from execution_flows,projects,sys_code_b scb,sys_code_value_b scvb,sys_code_value_tl scv,hdispatch_workflow hwf
     where execution_flows.project_id=projects.id
     and scb.CODE_ID = scvb.CODE_ID
 	and execution_flows.status=scvb.value
 	and scvb.CODE_VALUE_ID = scv.CODE_VALUE_ID
 	and scb.CODE = 'HDISPATCH.JOB_STATUS'
 	and SCV.LANG = #{lang,jdbcType=VARCHAR}
+	and projects.name=hwf.name
+	and ('Y'=hasPermission(hwf.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hwf.theme_id,#{request.userId},NULL,'Y'))
     <if test="start_time != null" >
         and start_time > #{start_time,jdbcType=BIGINT}
       </if>

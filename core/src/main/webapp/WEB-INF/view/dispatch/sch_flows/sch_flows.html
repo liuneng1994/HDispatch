@@ -3,6 +3,28 @@
     <#include
             "../../include/header.html">
         <body>
+        <script type="text/javascript">
+            $.ajax({
+                type: 'GET',
+                url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true,
+                success: function (data) {
+                    filter_to_operate_themeIds = [];
+//            console.log(data);
+                    $.each(data.rows, function (key,value) {
+                        filter_to_operate_themeIds.push(value.themeId);
+//                console.log(key+"-------"+value);
+                    });
+                    console.log(filter_to_operate_themeIds);
+                },
+                async:false,
+                dataType: "json"
+            });
+            console.log("加载权限验证数组完毕");
+        </script>
         <script src="${base.contextPath}/lib/flatpickr.min.js"></script>
         <link rel="stylesheet" type="text/css" href="${base.contextPath}/lib/flatpickr.min.css">
         <script src="${base.contextPath}/common/language?var=languageData"
@@ -73,14 +95,18 @@
         <script type="text/javascript">
             document.getElementById("picker").flatpickr();
             var grid;
-            function removesch(id, fid, pid) {
-                if (confirm("确定取消调度？")) {
-                    flowoperation_ajax(id, fid, pid,
-                            '${base.contextPath}/schedule/unschedule');
-                    $('#flowGrid').data('kendoGrid').dataSource.read();
-                } else {
-                    $('#flowGrid').data('kendoGrid').dataSource.read();
-                    return;
+            function removesch(id, fid, pid,themeid) {
+                if (!hasOperatePermission(themeid)) {
+                    alert("您没有权限操作此调度任务！");
+                }else {
+                    if (confirm("确定取消调度？")) {
+                        flowoperation_ajax(id, fid, pid,
+                                '${base.contextPath}/schedule/unschedule');
+                        $('#flowGrid').data('kendoGrid').dataSource.read();
+                    } else {
+                        $('#flowGrid').data('kendoGrid').dataSource.read();
+                        return;
+                    }
                 }
 
             }
@@ -103,18 +129,22 @@
                     }
                 });
             }
-            function openSetSLAPage(schId, flowId, project) {
-                var dialog = $("#dialog").kendoWindow({
-                    //actions : [ "Maximize", "Minimize", "Close" ],
-                    width: 920,
-                    height: 450,
-                    modal: true,
-                    title: schId + ' Scheduled Detail',
-                    visible: false,
-                    iframe: true,
-                    content: 'setsla.html?schId=' + schId + '&flowId=' + flowId + '&project=' + project
-                }).data("kendoWindow");
-                dialog.maximize().open();
+            function openSetSLAPage(schId, flowId, project,themeid) {
+                if (!hasOperatePermission(themeid)) {
+                    alert("您没有权限操作此调度任务！");
+                }else {
+                    var dialog = $("#dialog").kendoWindow({
+                        //actions : [ "Maximize", "Minimize", "Close" ],
+                        width: 920,
+                        height: 450,
+                        modal: true,
+                        title: schId + ' Scheduled Detail',
+                        visible: false,
+                        iframe: true,
+                        content: 'setsla.html?schId=' + schId + '&flowId=' + flowId + '&project=' + project
+                    }).data("kendoWindow");
+                    dialog.maximize().open();
+                }
             }
 
             $(document)
@@ -288,7 +318,7 @@
                                                                 var html = "<button class='btn btn-danger'"
                                                                         + "onclick=removesch('"
                                                                         + item.scheduleId
-                                                                        + "','" + item.flowId + "','" + item.projectId + "')"
+                                                                        + "','" + item.flowId + "','" + item.projectId + "','" + item.themeId + "')"
                                                                         + "><@spring.message 'schflows.removesch'/>"
                                                                         + "</button>";
                                                                 return html;
@@ -301,7 +331,7 @@
                                                             template: function (item) {
                                                                 var html = "<button  class='btn btn-info'onclick='openSetSLAPage(\""
                                                                         + item.scheduleId
-                                                                        + "\",\"" + item.flowId + "\",\"" + item.projectName + "\")'"
+                                                                        + "\",\"" + item.flowId + "\",\"" + item.projectName + "\",\"" + item.themeId + "\")'"
                                                                         + "><@spring.message 'schflows.setsla'/>"
                                                                         + "</button>";
                                                                 return html;

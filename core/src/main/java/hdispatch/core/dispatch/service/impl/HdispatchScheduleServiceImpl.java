@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.service.impl;
 
+import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.mapper.HdispatchScheduleMapper;
 import hdispatch.core.dispatch.service.HdispatchScheduleService;
@@ -16,7 +17,7 @@ public class HdispatchScheduleServiceImpl implements HdispatchScheduleService {
 HdispatchScheduleMapper mapper;
 
 @Override
-public List<HdispatchSchedule> selectAll(HdispatchSchedule s) {
+public List<HdispatchSchedule> selectAll(IRequest requestContext,HdispatchSchedule s) {
 	// TODO Auto-generated method stub
 	return mapper.selectAll(s);
 }
