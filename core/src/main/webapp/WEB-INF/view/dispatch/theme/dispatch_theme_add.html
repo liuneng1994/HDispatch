@@ -276,7 +276,7 @@
                             template: function (rowData) {
                                 if(hasOperatePermission(rowData.themeId)){
                                     parameter = "themeListGrid";
-                                    return '<a class="btn btn-danger" onclick="grid_del_btn_click('+parameter+')"><@spring.message "hap.delete"/></a>';
+                                    return '<a class="btn btn-danger" onclick="grid_del_btn_click(parameter)"><@spring.message "hap.delete"/></a>';
                                 }
                                 return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
 
