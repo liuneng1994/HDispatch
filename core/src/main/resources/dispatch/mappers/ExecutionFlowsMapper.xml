@@ -56,13 +56,13 @@
 	and projects.name=hwf.name
 	and ('Y'=hasPermission(hwf.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hwf.theme_id,#{request.userId},NULL,'Y'))
     <if test="start_time != null" >
-        and start_time > #{start_time,jdbcType=BIGINT}
+        and execution_flows.start_time > #{start_time,jdbcType=BIGINT}
       </if>
       <if test="project_name != null" >
         and projects.name like CONCAT('%',#{project_name},'%')
       </if>
       <if test="flow_id != null" >
-        and flow_id like CONCAT('%',#{flow_id},'%')
+        and execution_flows.flow_id like CONCAT('%',#{flow_id},'%')
       </if>
        <if test="group_name != null" >
         and group_name like CONCAT('%',#{group_name},'%')

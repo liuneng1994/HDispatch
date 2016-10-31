@@ -38,9 +38,9 @@
                         <div class="panel-body">
 
                             <!-- roleCode -->
-                            <div class="col-sm-4">
+                            <div class="col-sm-6">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label"><@spring.message
+                                    <label class="col-sm-6 control-label"><@spring.message
                                         "hdispatch.flowlist.flowname"/></label>
                                     <div class="col-sm-6">
                                         <input type="text" data-bind="value:model.flowName"
@@ -50,7 +50,7 @@
                             </div>
                             <!-- roleCode  end-->
 
-                            <div class="col-sm-4">
+                          <!--  <div class="col-sm-4">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><@spring.message
                                         "hdispatch.flowlist.projectname"/></label>
@@ -59,12 +59,12 @@
                                                class="k-textbox">
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
 
 
-                            <div class="col-sm-4">
+                            <div class="col-sm-6">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label"><@spring.message
+                                    <label class="col-sm-6 control-label"><@spring.message
                                         "hdispatch.flowlist.date"/></label>
                                     <div class="col-sm-6">
                                         <input id="picker" data-enable-time="true" data-time_24hr="true"
@@ -269,21 +269,21 @@
                                                         }
                                                     },
                                                     columns: [
-                                                        {
+                                                      /*  {
                                                             field: "scheduleId",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.scheduleid"/>',
                                                             width: 140
-                                                        },
+                                                        },*/
                                                         {
                                                             field: "flowId",
                                                             title: '<@spring.message "hdispatch.flowlist.flowname"/>',
                                                             width: 80
                                                         },
-                                                        {
+                                                       /* {
                                                             field: "projectName",
                                                             title: '<@spring.message "hdispatch.flowlist.projectname"/>',
                                                             width: 200
-                                                        },
+                                                        },*/
                                                         {
                                                             field: "firstSchedTime",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.firstschtime"/>',
