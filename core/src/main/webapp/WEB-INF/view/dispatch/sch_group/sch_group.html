@@ -1,679 +1,674 @@
 <#-- * description: 角色界面 * version: 1.0 *author:hailin.xu@hand-china.com
-* #{copyright}# * --> <#include "../../include/header.html">
-<body>
-	<script src="${base.contextPath}/lib/flatpickr.min.js"></script>
-	<link rel="stylesheet" type="text/css"
-		href="${base.contextPath}/lib/flatpickr.min.css">
-	<script src="${base.contextPath}/common/language?var=languageData"
-		type="text/javascript"></script>
-	<div id="tipDelete"></div>
-	<div id="dialog"></div>
-	<div id="content-container">
-		<div id="page-content">
-			<div class="panel">
-				<form class="form-horizontal">
-					<div class="panel-body">
+        * #{copyright}# * -->
+    <#include "../../include/header.html">
+        <body>
+        <script src="${base.contextPath}/lib/flatpickr.min.js"></script>
+        <link rel="stylesheet" type="text/css"
+              href="${base.contextPath}/lib/flatpickr.min.css">
+        <script src="${base.contextPath}/common/language?var=languageData"
+                type="text/javascript"></script>
+        <div id="tipDelete"></div>
+        <div id="dialog"></div>
+        <div id="content-container">
+            <div id="page-content">
+                <div class="panel">
+                    <form class="form-horizontal">
+                        <div class="panel-body">
 
-						<!-- roleCode -->
-						<div class="col-sm-6">
-							<div class="form-group">
-								<label class="col-sm-4 control-label"><@spring.message
-									"hdispatch.flowlist.flowname"/></label>
-								<div class="col-sm-6">
-									<input type="text" data-bind="value:model.flowName"
-										class="k-textbox">
-								</div>
-							</div>
-						</div>
-						<!-- roleCode  end-->
+                            <!-- roleCode -->
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label"><@spring.message
+                                        "hdispatch.flowlist.flowname"/></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" data-bind="value:model.flowName"
+                                               class="k-textbox">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- roleCode  end-->
 
-						<!--   roleName -->
+                            <!--   roleName -->
 
-						<!--   roleName  end -->
+                            <!--   roleName  end -->
 
-						<!-- <div class="col-sm-4">
-							<div class="form-group">
-								<label class="col-sm-4 control-label"><@spring.message
-									"hdispatch.flowlist.projectname"/></label>
-								<div class="col-sm-6">
-									<input type="text" data-bind="value:model.projectName"
-										class="k-textbox">
-								</div>
-							</div>
-						</div> -->
+                            <!-- <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label"><@spring.message
+                                        "hdispatch.flowlist.projectname"/></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" data-bind="value:model.projectName"
+                                            class="k-textbox">
+                                    </div>
+                                </div>
+                            </div> -->
 
 
-						<div class="col-sm-6">
-							<div class="form-group">
-								<label class="col-sm-4 control-label"><@spring.message
-									"hdispatch.flowlist.date"/></label>
-								<div class="col-sm-6">
-									<input id="picker" data-enable-time="true"
-										data-time_24hr="true" data-bind="value:model.date"
-										class="k-textbox">
-								</div>
-							</div>
-						</div>
-					</div>
-					<!--  panel body end -->
-					<!-- -  panel-footer -->
-					<div class="panel-footer text-right">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label"><@spring.message
+                                        "hdispatch.flowlist.date"/></label>
+                                    <div class="col-sm-6">
+                                        <input id="picker" data-enable-time="true"
+                                               data-time_24hr="true" data-bind="value:model.date"
+                                               class="k-textbox">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--  panel body end -->
+                        <!-- -  panel-footer -->
+                        <div class="panel-footer text-right">
 						<span class="btn btn-success" data-bind="click:queryResource"
-							type="submit"><@spring.message "hap.query"/></span>
-					</div>
-					<!-- end panel-footer -->
-				</form>
-			</div>
-			<div class="panel">
-				<div class="panel-body">
-					<div id="toolbar"></div>
-					<div id="flowGrid" class="table"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script src="${base.contextPath}/lib/dateformat.js"></script>
-	<script type="text/javascript">
-		document.getElementById("picker").flatpickr();
-		var checkedIds = {};
+                              type="submit"><@spring.message "hap.query"/></span>
+                        </div>
+                        <!-- end panel-footer -->
+                    </form>
+                </div>
+                <div class="panel">
+                    <div class="panel-body">
+                        <div id="toolbar"></div>
+                        <div id="flowGrid" class="table"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="${base.contextPath}/lib/dateformat.js"></script>
+        <script type="text/javascript">
+            document.getElementById("picker").flatpickr();
+            var checkedIds = {};
 
-		//on click of the checkbox:
-		function selectRow() {
-			var checked = this.checked;
-			row = $(this).closest("tr");
-			grid = $("#flowGrid").data("kendoGrid");
-			dataItem = grid.dataItem(row);
-			checkedIds[dataItem.exec_id] = checked;
-			if (checked) {
-				//-select the row
-				row.addClass("k-state-selected");
-			} else {
-				//-remove selection
-				row.removeClass("k-state-selected");
-			}
+            //on click of the checkbox:
+            function selectRow() {
+                var checked = this.checked;
+                row = $(this).closest("tr");
+                grid = $("#flowGrid").data("kendoGrid");
+                dataItem = grid.dataItem(row);
+                checkedIds[dataItem.exec_id] = checked;
+                if (checked) {
+                    //-select the row
+                    row.addClass("k-state-selected");
+                } else {
+                    //-remove selection
+                    row.removeClass("k-state-selected");
+                }
 
-		}
+            }
 
-		//on dataBound event restore previous selected rows:
-		function onDataBound(e) {
-			var view = this.dataSource.view();
-			for (var i = 0; i < view.length; i++) {
-				if (checkedIds[view[i].id]) {
-					this.tbody.find("tr[data-uid='" + view[i].uid + "']")
-							.addClass("k-state-selected").find(".checkbox")
-							.attr("checked", "checked");
-				}
-			}
-		}
+            //on dataBound event restore previous selected rows:
+            function onDataBound(e) {
+                var view = this.dataSource.view();
+                for (var i = 0; i < view.length; i++) {
+                    if (checkedIds[view[i].id]) {
+                        this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+                                .addClass("k-state-selected").find(".checkbox")
+                                .attr("checked", "checked");
+                    }
+                }
+            }
 
-		function flowoperation_ajax(obj, url, succesCallback) {
-			$.ajax({
-				url : url,
-				type : "POST",
-				dataType : "json",
-				contentType : "application/json",
-				data : kendo.stringify(obj),
-				success : function(json) {
-					if (succesCallback) {
-						succesCallback(json);
-					}
-				},
-				error : function() {
-					grid.refresh();
-				}
-			});
-		}
-		function openFlowDetailPage(flow_id, exec_id) {
+            function flowoperation_ajax(obj, url, succesCallback) {
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: kendo.stringify(obj),
+                    success: function (json) {
+                        if (succesCallback) {
+                            succesCallback(json);
+                        }
+                    },
+                    error: function () {
+                        grid.refresh();
+                    }
+                });
+            }
+            function openFlowDetailPage(flow_id, exec_id) {
 
-			var dialog = $("#dialog")
-					.kendoWindow(
-							{
-								//actions : [ "Maximize", "Minimize", "Close" ],
-								width : 920,
-								height : 450,
-								modal: true,
-								title :' <@spring.message "hdispatch.flowlist.flowdetail"/>',
-								visible : false,
-								iframe : true,
-								content : 'flow_infodetail.html?flow_id='
-										+ flow_id + '&exec_id=' + exec_id
-							}).data("kendoWindow");
-			dialog.maximize().open();
-		}
-		window.stateColor = {
-				"READY" : "background-color:#1AE6E6;",
-				"PAUSED" : "background-color:#FFCC00;",
-				"RUNNING" : "background-color:#00CC00;",
-				"SUCCESS" : "background-color:#33FF00;",
-				"FAILED" : "background-color:#FF3333;",
-				"SUCCESS" : "background-color:#5CB85C;",
-				"FAILED" : "background-color:#D9534F;",
-				"KILLED" : "background-color:#D9534F;",
-				"PREPARING" : "background-color:#DDDDDD;",
-					"FAILED_FINISHING" : "background-color:#EE9611;",
-						"SKIPPED" : "background-color:#66FF00;",
-						"DISABLED" : "background-color:#F70909;",
-						"QUEUED" : "background-color:#FFFF00;",
-						"FAILED_SUCCEEDED" : "background-color:#FF0066;",
-						"CANCELLED" : "background-color:#6F8391;"
-		};
+                var dialog = $("#dialog")
+                        .kendoWindow(
+                                {
+                                    //actions : [ "Maximize", "Minimize", "Close" ],
+                                    width: 920,
+                                    height: 450,
+                                    modal: true,
+                                    title: ' <@spring.message "hdispatch.flowlist.flowdetail"/>',
+                                    visible: false,
+                                    iframe: true,
+                                    content: 'flow_infodetail.html?flow_id='
+                                    + flow_id + '&exec_id=' + exec_id
+                                }).data("kendoWindow");
+                dialog.maximize().open();
+            }
+            window.stateColor = {
+                "READY": "background-color:#1AE6E6;",
+                "PAUSED": "background-color:#FFCC00;",
+                "RUNNING": "background-color:#00CC00;",
+                "SUCCESS": "background-color:#33FF00;",
+                "FAILED": "background-color:#FF3333;",
+                "SUCCESS": "background-color:#5CB85C;",
+                "FAILED": "background-color:#D9534F;",
+                "KILLED": "background-color:#D9534F;",
+                "PREPARING": "background-color:#DDDDDD;",
+                "FAILED_FINISHING": "background-color:#EE9611;",
+                "SKIPPED": "background-color:#66FF00;",
+                "DISABLED": "background-color:#F70909;",
+                "QUEUED": "background-color:#FFFF00;",
+                "FAILED_SUCCEEDED": "background-color:#FF0066;",
+                "CANCELLED": "background-color:#6F8391;"
+            };
 
-		$(document)
-				.ready(
-						function() {
+            $(document)
+                    .ready(
+                            function () {
 
-							var viewModel = kendo.observable({
-								model : {},
-								queryResource : function(e) {
-									$('#flowGrid').data('kendoGrid').dataSource
-											.read();
-								}
-							});
+                                var viewModel = kendo.observable({
+                                    model: {},
+                                    queryResource: function (e) {
+                                        $('#flowGrid').data('kendoGrid').dataSource
+                                                .read();
+                                    }
+                                });
 
-							kendo.bind($('#page-content'), viewModel);
+                                kendo.bind($('#page-content'), viewModel);
 
-							var crudServiceBaseUrl = '${base.contextPath}/flows', dataSource = new kendo.data.DataSource(
-									{
-										transport : {
-											read : {
-												url : crudServiceBaseUrl
-														+ "/query",
-												contentType : "application/json",
-												type : "GET"
-											},
-											parameterMap : function(options,
-													type) {
-												if (type === "read") {
+                                var crudServiceBaseUrl = '${base.contextPath}/flows', dataSource = new kendo.data.DataSource(
+                                        {
+                                            transport: {
+                                                read: {
+                                                    url: crudServiceBaseUrl
+                                                    + "/query",
+                                                    contentType: "application/json",
+                                                    type: "GET"
+                                                },
+                                                parameterMap: function (options,
+                                                                        type) {
+                                                    if (type === "read") {
 
-													var model = viewModel.model;
-													var map = {};
-													if (model.flowName) {
-														map.flowName = model.flowName;
-													}
-													if (model.groupName) {
-														map.groupName = model.groupName;
-													}
-													if (model.projectName) {
-														map.projectName = model.projectName;
-													}
-													if (document
-															.getElementById("picker").value != '') {
-														map.date = new Date(
-																document
-																		.getElementById("picker").value)
-																.getTime();
-													}
-													if (options.page) {
-														map.page = options.page;
-													}
-													if (options.pageSize) {
-														map.pagesize = options.pageSize;
-													}
-													return map;
-												} else {
-													var datas = options.models;
-													return kendo
-															.stringify(datas);
-												}
-											}
-										},
-										batch : true,
-										serverPaging : true,
-										pageSize : 20,
-										schema : {
-											data : 'rows',
-											total : 'total',
-											model : {
-												fields : {
-													project_name : {
-														type : "string"
-													},
-													group_name : {
-														type : "string"
-													},
-													start_time : {
-														type : "long"
-													},
-													end_time : {
-														type : "long"
-													},
-													elapsed : {
-														type : "string"
-													},
-													status : {
-														type : "string"
-													},
-													running : {
-														type : "string"
-													}
+                                                        var model = viewModel.model;
+                                                        var map = {};
+                                                        if (model.flowName) {
+                                                            map.flowName = model.flowName;
+                                                        }
+                                                        if (model.groupName) {
+                                                            map.groupName = model.groupName;
+                                                        }
+                                                        if (model.projectName) {
+                                                            map.projectName = model.projectName;
+                                                        }
+                                                        if (document
+                                                                        .getElementById("picker").value != '') {
+                                                            map.date = new Date(
+                                                                    document
+                                                                            .getElementById("picker").value)
+                                                                    .getTime();
+                                                        }
+                                                        if (options.page) {
+                                                            map.page = options.page;
+                                                        }
+                                                        if (options.pageSize) {
+                                                            map.pagesize = options.pageSize;
+                                                        }
+                                                        return map;
+                                                    } else {
+                                                        var datas = options.models;
+                                                        return kendo
+                                                                .stringify(datas);
+                                                    }
+                                                }
+                                            },
+                                            batch: true,
+                                            serverPaging: true,
+                                            pageSize: 20,
+                                            schema: {
+                                                data: 'rows',
+                                                total: 'total',
+                                                model: {
+                                                    fields: {
+                                                        project_name: {
+                                                            type: "string"
+                                                        },
+                                                        group_name: {
+                                                            type: "string"
+                                                        },
+                                                        start_time: {
+                                                            type: "long"
+                                                        },
+                                                        end_time: {
+                                                            type: "long"
+                                                        },
+                                                        elapsed: {
+                                                            type: "string"
+                                                        },
+                                                        status: {
+                                                            type: "string"
+                                                        },
+                                                        running: {
+                                                            type: "string"
+                                                        }
 
-												}
-											},
-											errors : function(res) {
-												if (!res.success && res.message) {
-													return res.message;
-												}
-											}
-										},
-										error : function(e) {
+                                                    }
+                                                },
+                                                errors: function (res) {
+                                                    if (!res.success && res.message) {
+                                                        return res.message;
+                                                    }
+                                                }
+                                            },
+                                            error: function (e) {
 
-										}
-									});
+                                            }
+                                        });
 
-							$("#toolbar").kendoToolBar({
-								items : [ {
-									type : "button",
-									id : "start",
-									text : '<@spring.message "hap.start"/>'
-								}, {
-									type : "button",
-									id : "pause",
-									text : '<@spring.message "hap.pause"/>'
-								}, {
-									type : "button",
-									id : "resume",
-									text : '<@spring.message "hap.resume"/>'
-								}, {
-									type : "button",
-									id : "stop",
-									text : '<@spring.message "hap.stop"/>'
-								} /* , {
-																															type : "button",
-																															id : "fresh",
-																															text : '<@spring.message "hap.fresh"/>'
-																														} */
+                                $("#toolbar").kendoToolBar({
+                                    items: [{
+                                        type: "button",
+                                        id: "start",
+                                        text: '<@spring.message "hap.start"/>'
+                                    }, {
+                                        type: "button",
+                                        id: "pause",
+                                        text: '<@spring.message "hap.pause"/>'
+                                    }, {
+                                        type: "button",
+                                        id: "resume",
+                                        text: '<@spring.message "hap.resume"/>'
+                                    }, {
+                                        type: "button",
+                                        id: "stop",
+                                        text: '<@spring.message "hap.stop"/>'
+                                    } /* , {
+                                     type : "button",
+                                     id : "fresh",
+                                     text : '<@spring.message "hap.fresh"/>'
+                                     } */
 
-								]
-							});
-							var grid = $("#flowGrid")
-									.kendoGrid(
-											{
-												dataSource : dataSource,
-												//width:500,  
-												navigatable : true,
-												resizable : true,
-												reorderable : true,
-												scrollable : true,
-												editable : false,
-												sortable : true,
-												pageable : {
-													pageSizes : [ 5, 10, 20, 50 ],
-													refresh : true,
-													buttonCount : 5,
-													messages : {
-														noRecords : "未找到任何数据",
-														display : "{0} - {1} 共 {2} 条数据",
-														empty : "没有数据",
-														page : "页",
-														of : "/ {0}",
-														itemsPerPage : "条每页",
-														first : "第一页",
-														previous : "前一页",
-														next : "下一页",
-														last : "最后一页",
-														refresh : "刷新"
-													}
-												},
-												columns : [
-														{
-															title : '',
-															template : '<input class="checkbox" type="checkbox" />',
-															width : 50
-														}/* ,
-														{
-															field : "exec_id",
-															title : '<@spring.message "hdispatch.flowlist.flowgrid.exeid"/>',
-															width : 50
-														} */,
-														{
-															field : "flow_id",
-															title : '<@spring.message "hdispatch.flowlist.flowname"/>',
-															width : 150,
-															template : function(
-																	item) {
-																var exec_id = item.exec_id;
-																var flow_id = item.flow_id;
-																var html = "<a href='javascript:void(0)' style='text-decoration: none;'"
-																		+ "onclick='openFlowDetailPage(\""
-																		+ flow_id
-																		+ "\",\""
-																		+ exec_id
-																		+ "\")'>"
-																		+ item.project_name
-																		+ "</a>";
-																return html;
-															}
-														}/* ,
-														{
-															field : "project_name",
-															title : '<@spring.message "hdispatch.flowlist.projectname"/>',
-															width : 150
-														} */,
+                                    ]
+                                });
+                                var grid = $("#flowGrid")
+                                        .kendoGrid(
+                                                {
+                                                    dataSource: dataSource,
+                                                    //width:500,
+                                                    navigatable: true,
+                                                    resizable: true,
+                                                    reorderable: true,
+                                                    scrollable: true,
+                                                    editable: false,
+                                                    sortable: true,
+                                                    pageable: {
+                                                        pageSizes: [5, 10, 20, 50],
+                                                        refresh: true,
+                                                        buttonCount: 5,
+                                                        messages: {
+                                                            noRecords: "未找到任何数据",
+                                                            display: "{0} - {1} 共 {2} 条数据",
+                                                            empty: "没有数据",
+                                                            page: "页",
+                                                            of: "/ {0}",
+                                                            itemsPerPage: "条每页",
+                                                            first: "第一页",
+                                                            previous: "前一页",
+                                                            next: "下一页",
+                                                            last: "最后一页",
+                                                            refresh: "刷新"
+                                                        }
+                                                    },
+                                                    columns: [
+                                                        {
+                                                            title: '',
+                                                            template: '<input class="checkbox" type="checkbox" />',
+                                                            width: 50
+                                                        }/* ,
+                                                         {
+                                                         field : "exec_id",
+                                                         title : '<@spring.message "hdispatch.flowlist.flowgrid.exeid"/>',
+                                                         width : 50
+                                                         } */,
+                                                        {
+                                                            field: "flow_id",
+                                                            title: '<@spring.message "hdispatch.flowlist.flowname"/>',
+                                                            width: 150,
+                                                            template: function (item) {
+                                                                var exec_id = item.exec_id;
+                                                                var flow_id = item.flow_id;
+                                                                var html = "<a href='javascript:void(0)' style='text-decoration: none;'"
+                                                                        + "onclick='openFlowDetailPage(\""
+                                                                        + flow_id
+                                                                        + "\",\""
+                                                                        + exec_id
+                                                                        + "\")'>"
+                                                                        + item.project_name
+                                                                        + "</a>";
+                                                                return html;
+                                                            }
+                                                        }/* ,
+                                                         {
+                                                         field : "project_name",
+                                                         title : '<@spring.message "hdispatch.flowlist.projectname"/>',
+                                                         width : 150
+                                                         } */,
 
-														{
-															field : "start_time",
-															title : '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
-															width : 150,
-															template : function(
-																	dataItem) {
-																var v = dataItem.start_time;
-																return v == -1 ? '--'
-																		: getFormatDateByLong(
-																				v,
-																				"yyyy-MM-dd hh:mm:ss");
-															}
-														},
-														{
-															field : "end_time",
-															title : '<@spring.message "hdispatch.flowlist.flowgrid.enddate"/>',
-															width : 150,
-															template : function(
-																	dataItem) {
-																var v = dataItem.end_time;
-																/*  
-																    if(v instanceof Date){
-																        return kendo.toString(v,"yyyy-MM-dd hh:mm:ss");
-																    }
-																    return v?v:''; */
-																return v == -1 ? '--'
-																		: getFormatDateByLong(
-																				v,
-																				"yyyy-MM-dd hh:mm:ss");
-															}
-														},
-														{
-															field : "elapsed",
-															title : '<@spring.message "hdispatch.flowlist.flowgrid.rundate"/>',
-															width : 100,
-															template : function(
-																	dataItem) {
-																var v = dataItem.end_time
-																		- dataItem.start_time;
-																if (v < 0)
-																	v = 0;
-																var days = Math
-																		.floor(v
-																				/ (24 * 3600 * 1000))
-																var leave1 = v
-																		% (24 * 3600 * 1000) //计算天数后剩余的毫秒数  
-																var hours = Math
-																		.floor(leave1
-																				/ (3600 * 1000))
-																var leave2 = leave1
-																		% (3600 * 1000) //计算小时数后剩余的毫秒数  
-																var minutes = Math
-																		.floor(leave2
-																				/ (60 * 1000))
-																var leave3 = leave2
-																		% (60 * 1000) //计算分钟数后剩余的毫秒数  
-																var leave4 = leave3 % 1000;
-																var seconds = Math
-																		.round(leave3 / 1000)
-																var time = 0;
-																if (days > 0)
-																	time = days
-																			+ 'd '
-																			+ hours
-																			+ 'h '
-																			+ minutes
-																			+ 'm '
-																			+ seconds
-																			+ 's '
-																			+ leave4
-																			+ 'ms ';
-																else {
-																	if (hours > 0)
-																		time = hours
-																				+ 'h '
-																				+ minutes
-																				+ 'm '
-																				+ seconds
-																				+ 's '
-																				+ leave4
-																				+ 'ms ';
-																	else {
-																		if (minutes > 0)
-																			time = minutes
-																					+ 'm '
-																					+ seconds
-																					+ 's '
-																					+ leave4
-																					+ 'ms ';
-																		else {
-																			if (seconds > 0)
-																				time = seconds
-																						+ 's '
-																						+ leave4
-																						+ 'ms ';
-																			else
-																				time = leave4
-																						+ 'ms ';
-																		}
-																	}
-																}
-																return time;
-															}
-														},
-														{
-															field : "status",
-															title : '<@spring.message "hdispatch.flowlist.flowgrid.status"/>',
-															width : 100,
-															template : function(
-																	item) {
-																if (item.status == 50)
-																	status = 'SUCCESS';
-																else if (item.status == 70)
-																	status = 'FAILED';
-																else if (item.status == 20)
-																	status = 'PREPARING';
-																else if (item.status == 30)
-																	status = 'RUNNING';
-																else if (item.status == 60)
-																	status = 'KILLED';
-																else if (item.status == 40)
-																	status = 'PAUSED';				
-																else if (item.status == 10)
-																	status = 'READY';	
-																else if (item.status == 80)
-																	status = 'FAILED_FINISHING';
-																else if (item.status == 90)
-																	status = 'SKIPPED';
-																else if (item.status == 100)
-																	status = 'DISABLED';
-																else if (item.status == 110)
-																	status = 'QUEUED';
-																else if (item.status == 120)
-																	status = 'FAILED_SUCCEEDED';
-																else if (item.status == 130)
-																	status = 'CANCELLED';
-																var html = "<div "
-																		+ "style='text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
-																		+ (stateColor[status])
-																		+ "' "
-																		+ ">"
-																		+ item.meaning
-																		+ "</div>";
-																return html;
-															}
-														},
-														{
-															field : "running",
-															title : '<@spring.message "hdispatch.flowlist.flowgrid.running"/>',
-															width : 100,
-															template : function(
-																	item) {
-																var status = item.running;
-																var html = "<div class='progress progress-striped active' style='margin:0;border-radius:5px'>"
-																		+ "<div class='progress-bar progress-bar-success' role='progressbar'"
-																		+ "   aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"
-																		+ "  style='width: "
-																		+ status
-																		+ "%;background-color:#5CB85C; '>"
-																		+ " <span class='sr-only'>"
-																		+ status
-																		+ "% 完成</span></div></div>";
-																return html;
-															}
-														} ]
-											}).data("kendoGrid");
+                                                        {
+                                                            field: "start_time",
+                                                            title: '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
+                                                            width: 150,
+                                                            template: function (dataItem) {
+                                                                var v = dataItem.start_time;
+                                                                return v == -1 ? '--'
+                                                                        : getFormatDateByLong(
+                                                                        v,
+                                                                        "yyyy-MM-dd hh:mm:ss");
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "end_time",
+                                                            title: '<@spring.message "hdispatch.flowlist.flowgrid.enddate"/>',
+                                                            width: 150,
+                                                            template: function (dataItem) {
+                                                                var v = dataItem.end_time;
+                                                                /*
+                                                                 if(v instanceof Date){
+                                                                 return kendo.toString(v,"yyyy-MM-dd hh:mm:ss");
+                                                                 }
+                                                                 return v?v:''; */
+                                                                return v == -1 ? '--'
+                                                                        : getFormatDateByLong(
+                                                                        v,
+                                                                        "yyyy-MM-dd hh:mm:ss");
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "elapsed",
+                                                            title: '<@spring.message "hdispatch.flowlist.flowgrid.rundate"/>',
+                                                            width: 100,
+                                                            template: function (dataItem) {
+                                                                var v = dataItem.end_time
+                                                                        - dataItem.start_time;
+                                                                if (v < 0)
+                                                                    v = 0;
+                                                                var days = Math
+                                                                        .floor(v
+                                                                                / (24 * 3600 * 1000))
+                                                                var leave1 = v
+                                                                        % (24 * 3600 * 1000) //计算天数后剩余的毫秒数
+                                                                var hours = Math
+                                                                        .floor(leave1
+                                                                                / (3600 * 1000))
+                                                                var leave2 = leave1
+                                                                        % (3600 * 1000) //计算小时数后剩余的毫秒数
+                                                                var minutes = Math
+                                                                        .floor(leave2
+                                                                                / (60 * 1000))
+                                                                var leave3 = leave2
+                                                                        % (60 * 1000) //计算分钟数后剩余的毫秒数
+                                                                var leave4 = leave3 % 1000;
+                                                                var seconds = Math
+                                                                        .round(leave3 / 1000)
+                                                                var time = 0;
+                                                                if (days > 0)
+                                                                    time = days
+                                                                            + 'd '
+                                                                            + hours
+                                                                            + 'h '
+                                                                            + minutes
+                                                                            + 'm '
+                                                                            + seconds
+                                                                            + 's '
+                                                                            + leave4
+                                                                            + 'ms ';
+                                                                else {
+                                                                    if (hours > 0)
+                                                                        time = hours
+                                                                                + 'h '
+                                                                                + minutes
+                                                                                + 'm '
+                                                                                + seconds
+                                                                                + 's '
+                                                                                + leave4
+                                                                                + 'ms ';
+                                                                    else {
+                                                                        if (minutes > 0)
+                                                                            time = minutes
+                                                                                    + 'm '
+                                                                                    + seconds
+                                                                                    + 's '
+                                                                                    + leave4
+                                                                                    + 'ms ';
+                                                                        else {
+                                                                            if (seconds > 0)
+                                                                                time = seconds
+                                                                                        + 's '
+                                                                                        + leave4
+                                                                                        + 'ms ';
+                                                                            else
+                                                                                time = leave4
+                                                                                        + 'ms ';
+                                                                        }
+                                                                    }
+                                                                }
+                                                                return time;
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "status",
+                                                            title: '<@spring.message "hdispatch.flowlist.flowgrid.status"/>',
+                                                            width: 100,
+                                                            template: function (item) {
+                                                                if (item.status == 50)
+                                                                    status = 'SUCCESS';
+                                                                else if (item.status == 70)
+                                                                    status = 'FAILED';
+                                                                else if (item.status == 20)
+                                                                    status = 'PREPARING';
+                                                                else if (item.status == 30)
+                                                                    status = 'RUNNING';
+                                                                else if (item.status == 60)
+                                                                    status = 'KILLED';
+                                                                else if (item.status == 40)
+                                                                    status = 'PAUSED';
+                                                                else if (item.status == 10)
+                                                                    status = 'READY';
+                                                                else if (item.status == 80)
+                                                                    status = 'FAILED_FINISHING';
+                                                                else if (item.status == 90)
+                                                                    status = 'SKIPPED';
+                                                                else if (item.status == 100)
+                                                                    status = 'DISABLED';
+                                                                else if (item.status == 110)
+                                                                    status = 'QUEUED';
+                                                                else if (item.status == 120)
+                                                                    status = 'FAILED_SUCCEEDED';
+                                                                else if (item.status == 130)
+                                                                    status = 'CANCELLED';
+                                                                var html = "<div "
+                                                                        + "style='text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
+                                                                        + (stateColor[status])
+                                                                        + "' "
+                                                                        + ">"
+                                                                        + item.meaning
+                                                                        + "</div>";
+                                                                return html;
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "running",
+                                                            title: '<@spring.message "hdispatch.flowlist.flowgrid.running"/>',
+                                                            width: 100,
+                                                            template: function (item) {
+                                                                var status = item.running;
+                                                                var html = "<div class='progress progress-striped active' style='margin:0;border-radius:5px'>"
+                                                                        + "<div class='progress-bar progress-bar-success' role='progressbar'"
+                                                                        + "   aria-valuenow='60' aria-valuemin='0' aria-valuemax='100'"
+                                                                        + "  style='width: "
+                                                                        + status
+                                                                        + "%;background-color:#5CB85C; '>"
+                                                                        + " <span class='sr-only'>"
+                                                                        + status
+                                                                        + "% 完成</span></div></div>";
+                                                                return html;
+                                                            }
+                                                        }]
+                                                }).data("kendoGrid");
 
-							//bind click event to the checkbox
-							grid.table.on("click", ".checkbox", selectRow);
+                                //bind click event to the checkbox
+                                grid.table.on("click", ".checkbox", selectRow);
 
-							var start = $("#start")
-									.kendoButton(
-											{
-												click : function(e) {
-													var checked = [];
-													for ( var i in checkedIds) {
-														if (checkedIds[i] === true)
-															checked
-																	.push(grid.dataSource
-																			.get(
-																					i)
-																			.toJSON());
-													}
-													flowoperation_ajax(
-															checked,
-															'${base.contextPath}/flows/startflow',
-															function(json) {
-																if (json.code == 1)
-																	alert(json.message);
-																else if (json.code == 0)
-																	alert(json.message);
-																else
-																	alert("所选流已经启动！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
-															});
-												}
-											}).data("kendoButton");
+                                var start = $("#start")
+                                        .kendoButton(
+                                                {
+                                                    click: function (e) {
+                                                        var checked = [];
+                                                        for (var i in checkedIds) {
+                                                            if (checkedIds[i] === true)
+                                                                checked
+                                                                        .push(grid.dataSource
+                                                                                .get(
+                                                                                        i)
+                                                                                .toJSON());
+                                                        }
+                                                        flowoperation_ajax(
+                                                                checked,
+                                                                '${base.contextPath}/flows/startflow',
+                                                                function (json) {
+                                                                    if (json.code == 1)
+                                                                        alert(json.message);
+                                                                    else if (json.code == 0)
+                                                                        alert(json.message);
+                                                                    else
+                                                                        alert("所选流已经启动！");
+                                                                    $('#flowGrid')
+                                                                            .data(
+                                                                                    'kendoGrid').dataSource
+                                                                            .read();
+                                                                });
+                                                    }
+                                                }).data("kendoButton");
 
-							var pause = $("#pause")
-									.kendoButton(
-											{
-												click : function(e) {
-													var checked = [];
-													for ( var i in checkedIds) {
-														if (checkedIds[i] === true)
-															checked
-																	.push(grid.dataSource
-																			.get(
-																					i)
-																			.toJSON());
-													}
-													flowoperation_ajax(
-															checked,
-															'${base.contextPath}/flows/pauseflow',
-															function(json) {
-																if (json.code == 1)
-																	alert(json.message);
-																else if (json.code == 0)
-																	alert(json.message);
-																else
-																	alert("所选流没有在运行中,无法暂停！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
-															});
-												}
-											}).data("kendoButton");
+                                var pause = $("#pause")
+                                        .kendoButton(
+                                                {
+                                                    click: function (e) {
+                                                        var checked = [];
+                                                        for (var i in checkedIds) {
+                                                            if (checkedIds[i] === true)
+                                                                checked
+                                                                        .push(grid.dataSource
+                                                                                .get(
+                                                                                        i)
+                                                                                .toJSON());
+                                                        }
+                                                        flowoperation_ajax(
+                                                                checked,
+                                                                '${base.contextPath}/flows/pauseflow',
+                                                                function (json) {
+                                                                    if (json.code == 1)
+                                                                        alert(json.message);
+                                                                    else if (json.code == 0)
+                                                                        alert(json.message);
+                                                                    else
+                                                                        alert("所选流没有在运行中,无法暂停！");
+                                                                    $('#flowGrid')
+                                                                            .data(
+                                                                                    'kendoGrid').dataSource
+                                                                            .read();
+                                                                });
+                                                    }
+                                                }).data("kendoButton");
 
-							var stop = $("#stop")
-									.kendoButton(
-											{
-												click : function(e) {
-													var checked = [];
-													for ( var i in checkedIds) {
-														if (checkedIds[i] === true)
-															checked
-																	.push(grid.dataSource
-																			.get(
-																					i)
-																			.toJSON());
-													}
-													flowoperation_ajax(
-															checked,
-															'${base.contextPath}/flows/stopflow',
-															function(json) {
-																if (json.code == 1)
-																	alert(json.message);
-																else if (json.code == 0)
-																	alert(json.message);
-																else
-																	alert("所选流没有在运行中,无法停止！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
-															});
-												}
-											}).data("kendoButton");
-							var resume = $("#resume")
-									.kendoButton(
-											{
-												click : function(e) {
-													var checked = [];
-													for ( var i in checkedIds) {
-														if (checkedIds[i] === true)
-															checked
-																	.push(grid.dataSource
-																			.get(
-																					i)
-																			.toJSON());
-													}
-													flowoperation_ajax(
-															checked,
-															'${base.contextPath}/flows/resumeflow',
-															function(json) {
-																if (json.code == 1)
-																	alert(json.message);
-																else if (json.code == 0)
-																	alert(json.message);
-																else
-																	alert("所选流没有在暂停中,无法恢复！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
-															});
-												}
-											}).data("kendoButton");
-							var fresh = $("#fresh")
-									.kendoButton(
-											{
-												click : function(e) {
-													var checked = [];
-													for ( var i in checkedIds) {
-														if (checkedIds[i] === true)
-															checked
-																	.push(grid.dataSource
-																			.get(
-																					i)
-																			.toJSON());
-													}
-													flowoperation_ajax(
-															checked,
-															'${base.contextPath}/flows/freshflow',
-															function(json) {
-																if (json.code == 1)
-																	alert(json.message);
-																else if (json.code == 0)
-																	alert(json.message);
-																else
-																	alert("所选流异常！");
-																$('#flowGrid')
-																		.data(
-																				'kendoGrid').dataSource
-																		.read();
-															});
-												}
-											}).data("kendoButton");
+                                var stop = $("#stop")
+                                        .kendoButton(
+                                                {
+                                                    click: function (e) {
+                                                        var checked = [];
+                                                        for (var i in checkedIds) {
+                                                            if (checkedIds[i] === true)
+                                                                checked
+                                                                        .push(grid.dataSource
+                                                                                .get(
+                                                                                        i)
+                                                                                .toJSON());
+                                                        }
+                                                        flowoperation_ajax(
+                                                                checked,
+                                                                '${base.contextPath}/flows/stopflow',
+                                                                function (json) {
+                                                                    if (json.code == 1)
+                                                                        alert(json.message);
+                                                                    else if (json.code == 0)
+                                                                        alert(json.message);
+                                                                    else
+                                                                        alert("所选流没有在运行中,无法停止！");
+                                                                    $('#flowGrid')
+                                                                            .data(
+                                                                                    'kendoGrid').dataSource
+                                                                            .read();
+                                                                });
+                                                    }
+                                                }).data("kendoButton");
+                                var resume = $("#resume")
+                                        .kendoButton(
+                                                {
+                                                    click: function (e) {
+                                                        var checked = [];
+                                                        for (var i in checkedIds) {
+                                                            if (checkedIds[i] === true)
+                                                                checked
+                                                                        .push(grid.dataSource
+                                                                                .get(
+                                                                                        i)
+                                                                                .toJSON());
+                                                        }
+                                                        flowoperation_ajax(
+                                                                checked,
+                                                                '${base.contextPath}/flows/resumeflow',
+                                                                function (json) {
+                                                                    if (json.code == 1)
+                                                                        alert(json.message);
+                                                                    else if (json.code == 0)
+                                                                        alert(json.message);
+                                                                    else
+                                                                        alert("所选流没有在暂停中,无法恢复！");
+                                                                    $('#flowGrid')
+                                                                            .data(
+                                                                                    'kendoGrid').dataSource
+                                                                            .read();
+                                                                });
+                                                    }
+                                                }).data("kendoButton");
+                                var fresh = $("#fresh")
+                                        .kendoButton(
+                                                {
+                                                    click: function (e) {
+                                                        var checked = [];
+                                                        for (var i in checkedIds) {
+                                                            if (checkedIds[i] === true)
+                                                                checked
+                                                                        .push(grid.dataSource
+                                                                                .get(
+                                                                                        i)
+                                                                                .toJSON());
+                                                        }
+                                                        flowoperation_ajax(
+                                                                checked,
+                                                                '${base.contextPath}/flows/freshflow',
+                                                                function (json) {
+                                                                    if (json.code == 1)
+                                                                        alert(json.message);
+                                                                    else if (json.code == 0)
+                                                                        alert(json.message);
+                                                                    else
+                                                                        alert("所选流异常！");
+                                                                    $('#flowGrid')
+                                                                            .data(
+                                                                                    'kendoGrid').dataSource
+                                                                            .read();
+                                                                });
+                                                    }
+                                                }).data("kendoButton");
 
-						});
-	</script>
-</body>
-</html>
+                            });
+        </script>
+        </body>
+        </html>
