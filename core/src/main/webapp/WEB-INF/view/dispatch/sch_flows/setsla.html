@@ -160,6 +160,9 @@
                                         var minutes = parseInt(intMinutes);
                                         var hours = Math.floor(minutes / 60);
                                         minutes = minutes % 60;
+                                        if((hours + ":" + minutes)=="NaN:NaN")
+                                            duration.value="0:0"
+                                        else
                                         duration.value = hours + ":" + minutes;
                                         cDuration.appendChild(duration);
 

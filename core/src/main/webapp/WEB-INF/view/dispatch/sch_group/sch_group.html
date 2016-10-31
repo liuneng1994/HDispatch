@@ -243,6 +243,7 @@
                                                                             .getElementById("picker").value)
                                                                     .getTime();
                                                         }
+                                                        console.log(options);
                                                         if (options.page) {
                                                             map.page = options.page;
                                                         }
@@ -259,6 +260,7 @@
                                             },
                                             batch: true,
                                             serverPaging: true,
+                                           // serverFiltering: true,
                                             pageSize: 20,
                                             schema: {
                                                 data: 'rows',
@@ -268,7 +270,7 @@
                                                     fields: {
                                                     	/* exec_id:{
                                                     		type:"long"
-                                                    	}, */
+                                                     	}, */
                                                         project_name: {
                                                             type: "string"
                                                         },
@@ -340,6 +342,7 @@
                                                     scrollable: true,
                                                     editable: false,
                                                     sortable: true,
+                                                   //filterable:true,
                                                     pageable: {
                                                         pageSizes: [5, 10, 20, 50],
                                                         refresh: true,
