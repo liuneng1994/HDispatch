@@ -69,7 +69,7 @@ public class ScheduleController extends BaseController {
             sch.setSubmit_date(sdf.format(d));
         }
         PageHelper.startPage(page, pagesize);
-        List<HdispatchSchedule> list = hdispatchScheduleService.selectAll(sch);
+        List<HdispatchSchedule> list = hdispatchScheduleService.selectAll(i,sch);
         List<ScheduleFlow> list2 = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         for (HdispatchSchedule p : list) {
@@ -84,6 +84,7 @@ public class ScheduleController extends BaseController {
                 ss.setPeriod(s.getSchdule().getString("period"));
                 ss.setSubmitUser(s.getSchdule().getString("submitUser"));
                 ss.setFlowId(p.getFlow_id());
+                ss.setThemeId(p.getTheme_id());
                 ss.setProjectName(p.getProject_name());
                 ss.setProjectId(p.getProject_id());
                 ss.setHasSla(scheduleFlowService.hasSla(Integer.parseInt((s.getSchdule().getString("scheduleId")))));
@@ -228,9 +229,6 @@ public class ScheduleController extends BaseController {
      * 调度
      * @param request
      * @param projectName
-     * @param flow
-     * @param datetime
-     * @param isrecurring
      * @return
      * @throws ParseException 
      */

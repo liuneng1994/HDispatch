@@ -14,7 +14,16 @@ public class HdispatchSchedule {
 
     private String project_name;
     
-    
+    private Long theme_id;
+
+    public Long getTheme_id() {
+        return theme_id;
+    }
+
+    public void setTheme_id(Long theme_id) {
+        this.theme_id = theme_id;
+    }
+
     public String getProject_name() {
 		return project_name;
 	}

@@ -8,6 +8,7 @@
     <result column="flow_id" property="flow_id" jdbcType="VARCHAR" />
     <result column="project_name" property="project_name" jdbcType="VARCHAR" />
     <result column="submit_date" property="submit_date" jdbcType="VARCHAR" />
+    <result column="theme_id" property="theme_id" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     sch_id, schedule_id, project_id, flow_id, submit_date,project_name
@@ -20,10 +21,13 @@
     where sch_id = #{sch_id,jdbcType=BIGINT}
   </select>
    <select id="selectAll" resultMap="BaseResultMap" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
-    select 
-    <include refid="Base_Column_List" />
-    from hdispatch_schedule
+    select
+     hdispatch_schedule.sch_id, hdispatch_schedule.schedule_id, hdispatch_schedule.project_id, hdispatch_schedule.flow_id, hdispatch_schedule.submit_date,
+     hdispatch_schedule.project_name,hwf.theme_id
+    from hdispatch_schedule,hdispatch_workflow hwf
     where 1=1
+     and hdispatch_schedule.project_name=hwf.name
+     and ('Y'=hasPermission(hwf.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hwf.theme_id,#{request.userId},NULL,'Y'))
      <if test="project_name != null" >
         and project_name like CONCAT('%',#{project_name,jdbcType=VARCHAR},'%')
       </if>

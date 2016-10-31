@@ -4,8 +4,10 @@ import hdispatch.core.dispatch.dto.ExecutionFlows;
 
 import java.util.List;
 
+import com.hand.hap.core.IRequest;
+
 public interface ExecutionFlowsService{
 
-	List<ExecutionFlows> selectAll(ExecutionFlows exe);
+	List<ExecutionFlows> selectAll(IRequest requestContext,ExecutionFlows exe);
 
 }
