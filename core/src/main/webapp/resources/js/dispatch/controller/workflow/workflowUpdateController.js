@@ -8,7 +8,8 @@
         var vm = this;
         vm.workflow = {};
         vm.newJob = new Job();
-        vm.themes = {};
+        vm.themes = [];
+        vm.optThemes = [];
         vm.layers = [];
         vm.jobLayers = [];
         vm.jobSources = [];
@@ -54,6 +55,7 @@
 
 
         refreshThemes();
+        refreshOptThemes();
         init();
         var jobPosition = {x: 100, y: 100};
         vm.createJob = function () {
@@ -185,6 +187,12 @@
         function refreshThemes() {
             workflowService.themes().then(function (data) {
                 vm.themes = data;
+            });
+        }
+
+        function refreshOptThemes() {
+            workflowService.operateThemes().then(function (data) {
+                vm.optThemes = data;
             });
         }
 

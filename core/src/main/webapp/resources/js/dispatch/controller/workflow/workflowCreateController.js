@@ -6,6 +6,7 @@
         vm.workflow = {};
         vm.newJob = new Job();
         vm.themes = {};
+        vm.optThemes = [];
         vm.layers = {};
         vm.jobLayers = [];
         vm.jobSources = [];
@@ -22,6 +23,7 @@
 
 
         refreshThemes();
+        refreshOptThemes();
         vm.themeChange = function () {
             vm.workflow.layerId = null;
             refreshLayers('layers', vm.workflow.themeId);
@@ -162,6 +164,12 @@
             });
         }
 
+        function refreshOptThemes() {
+            workflowService.operateThemes().then(function (data) {
+                vm.optThemes = data;
+            });
+        }
+
         function refreshLayers(layers, themeId) {
             workflowService.layers(themeId).then(function (data) {
                 vm[layers] = data;
@@ -196,4 +204,4 @@
             });
         }
     }
-})()
+})();

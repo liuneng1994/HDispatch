@@ -161,7 +161,7 @@
             <version>${hap.version}</version>
           </dependency>
           <dependency>
-            <groupId>hbi</groupId>
+            <groupId>hdispatch</groupId>
             <artifactId>core-db</artifactId>
             <version>1.0-SNAPSHOT</version>
           </dependency>
