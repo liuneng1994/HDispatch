@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -44,7 +45,7 @@ public class ExecutionFlowsController extends BaseController {
      * @param pagesize
      * @return
      */
-    @RequestMapping("/query")
+    @RequestMapping(value="/query",method=RequestMethod.GET)
     @ResponseBody
     public ResponseData query(HttpServletRequest request, @RequestParam int page, @RequestParam int pagesize) {
         IRequest irequest = createRequestContext(request);
@@ -60,7 +61,7 @@ public class ExecutionFlowsController extends BaseController {
         if (date != null)
             exe.setStart_time(Long.parseLong(date));
         PageHelper.startPage(page, pagesize);
-        List<ExecutionFlows> list = service.selectAll(exe);
+        List<ExecutionFlows> list = service.selectAll(irequest,exe);
         /**
          * 查询flow的进度
          */

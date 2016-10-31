@@ -2,6 +2,28 @@
         * #{copyright}# * -->
     <#include "../../include/header.html">
         <body>
+        <script type="text/javascript">
+            $.ajax({
+                type: 'GET',
+                url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true,
+                success: function (data) {
+                    filter_to_operate_themeIds = [];
+//            console.log(data);
+                    $.each(data.rows, function (key,value) {
+                        filter_to_operate_themeIds.push(value.themeId);
+//                console.log(key+"-------"+value);
+                    });
+                    console.log(filter_to_operate_themeIds);
+                },
+                async:false,
+                dataType: "json"
+            });
+            console.log("加载权限验证数组完毕");
+        </script>
         <script src="${base.contextPath}/common/language?var=languageData"
                 type="text/javascript"></script>
         <script src="${base.contextPath}/common/code?resourceTypeData=HDISPATCH.JOB_STATUS"
@@ -40,23 +62,28 @@
                 });
             });
             function flowoperation_ajax(id, url, succesCallback) {
-                $.ajax({
-                    url: url,
-                    type: "get",
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: {
-                        exec_id: id
-                    },
-                    success: function (json) {
-                        if (succesCallback) {
-                            succesCallback(json);
+                var theme_id = "${RequestParameters.theme_id}";
+                if (!hasOperatePermission(theme_id)) {
+                    alert("您没有权限操作此调度任务！");
+                }else {
+                    $.ajax({
+                        url: url,
+                        type: "get",
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: {
+                            exec_id: id
+                        },
+                        success: function (json) {
+                            if (succesCallback) {
+                                succesCallback(json);
+                            }
+                        },
+                        error: function () {
+                            grid.refresh();
                         }
-                    },
-                    error: function () {
-                        grid.refresh();
-                    }
-                });
+                    });
+                }
             }
             function openLogDetailPage(job_id, exec_id) {
                 var dialog = $("#dialog")
@@ -474,8 +501,7 @@
                                                                 exec_id,
                                                                 '${base.contextPath}/flows/retryfailflow',
                                                                 function (json) {
-                                                                    if (json.message != null)
-                                                                        alert("当前流已经完成，请尝试重新执行！");
+                                                                        alert(json.message);
                                                                 });
                                                     }
                                                 }).data("kendoButton");

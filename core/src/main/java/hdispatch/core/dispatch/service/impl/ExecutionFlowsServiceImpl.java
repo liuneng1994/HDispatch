@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hand.hap.core.IRequest;
+
 import java.util.List;
 
 @Service
@@ -16,8 +18,7 @@ public class ExecutionFlowsServiceImpl implements ExecutionFlowsService {
 ExecutionFlowsMapper mapper;
 
 @Override
-public List<ExecutionFlows> selectAll(ExecutionFlows exe) {
-	// TODO Auto-generated method stub
+public List<ExecutionFlows> selectAll(IRequest requestContext,ExecutionFlows exe) {
 	return mapper.selectAllExes(exe);
 }
 }
