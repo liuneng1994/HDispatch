@@ -82,7 +82,7 @@ public class ScheduleFlowServiceImpl implements ScheduleFlowService {
             if (response.getBody().getObject().getString("status").equals("success")) {
 
                 result.setCode(1);
-                result.setMessage("执行成功");
+                result.setMessage("删除成功");
 
             } else {
                 result.setCode(0);
