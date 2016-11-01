@@ -84,9 +84,9 @@
         }
 
         //权限验证中的Grid行中的删除事件处理函数
-        //参数：grid_div_id是kendoGrid那个div的id值
-        function grid_del_btn_click(grid_div_id){
-            var e = window.event;
+        //参数：grid_div_id是kendoGrid那个div的id值;e:click事件
+        function grid_del_btn_click(grid_div_id,e){
+//            var e = window.event;
             e.preventDefault();
             kendo.ui.showConfirmDialog({
                 title:$l('hap.tip.info'),
