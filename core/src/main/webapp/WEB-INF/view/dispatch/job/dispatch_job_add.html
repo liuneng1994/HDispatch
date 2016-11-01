@@ -310,7 +310,7 @@
                                 template: function (rowData) {
                                     if(hasOperatePermission(rowData.themeId)){
                                         parameter = "jobListGrid";
-                                        return '<a class="btn btn-danger" onclick="grid_del_btn_click(parameter)"><@spring.message "hap.delete"/></a>';
+                                        return '<a class="btn btn-danger" onclick="grid_del_btn_click(parameter,event)"><@spring.message "hap.delete"/></a>';
                                     }
                                         return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
 
