@@ -247,7 +247,8 @@
                 var svnParametersListGrid_kendo = $("#svnParametersListGrid").kendoGrid({
                     dataSource: svn_parameter_data,
                     resizable: true,
-                    selectable: "multiple,rowbox",
+//                    selectable: "multiple,rowbox",
+                    selectable: "multiple",
                     scrollable: true,
                     pageable: {
                         pageSizes:[10, 20, 50, 100],
@@ -284,11 +285,11 @@
                             text:'<@spring.message "hdispatch.svn.export_excel"/>',
                             template: '<span class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>'
                         },
-                        {
-                            name:"batchDelete",
-                            text:'<@spring.message "hdispatch.job.batch_delete"/>',
-                            template: '<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>'
-                        },
+//                        {
+//                            name:"batchDelete",
+//                            text:'<@spring.message "hdispatch.job.batch_delete"/>',
+//                            template: '<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>'
+//                        },
                         {
                             name:"save",
                             text:'<@spring.message "hdispatch.save"/>',
@@ -350,9 +351,34 @@
 //                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd HH:mm:ss}', 'width': "100px" },
 //                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
 //                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
-                                { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': 60 },
+                                { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': 60 }
 //                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': 70,editor:enableFlagEditor,template:"#=enableFlag#" }
 //                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
+                        ,
+                        {
+                            attributes: {style: "text-align:center;padding:0px"},
+                            command : [{
+                                name:'remove',
+                                template : function (rowData) {
+                                    return '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>';
+                                },
+                                click: function(e){
+                                    var th = this;
+                                    e.preventDefault();
+                                    kendo.ui.showConfirmDialog({
+                                        title:$l('hap.tip.info'),
+                                        message: $l('hap.tip.delete_confirm')
+                                    }).done(function(event){
+                                        if(event.button == 'OK'){
+                                            var data = th.dataItem($(e.target).closest("tr"));
+                                            th.dataSource.remove(data);
+                                            th.dataSource.sync()
+                                        }
+                                    })
+                                }
+                            }],
+                            width:"60px"
+                        }
                     ],
                     editable: true,
                     edit: function (e) {
@@ -520,8 +546,10 @@
 
                             console.log(data);
                             if(data.success){
-                                alert("成功");
+                                alert('<@spring.message "hdispatch.create_success"/>');
                                 wnd.close();
+                                //刷新Grid
+                                $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
                             }else{
                                 alert(data.message);
                                 wnd.close();

@@ -178,8 +178,8 @@
 									},
                                     themeGroupId: { type: 'number' },
                                     userId: { type: 'number' },
-                                    authRead: { type: 'string' },
-                                    authOperate: { type: 'string' }
+                                    authRead: { defaultValue: 'Y',type: 'boolean',checkedValue:'Y',uncheckedValue:'N' },
+									authOperate: { defaultValue: 'N',type: 'boolean',checkedValue:'Y',uncheckedValue:'N' }
 								}
 							},
 							errors: function(res){
@@ -243,30 +243,14 @@
                                         'field':'authRead',
                                         width: "40px",
                                         headerAttributes: {style: "text-align:center"},
-                                        attributes: {style: "text-align:center"},
-                                        template: function (rowData) {
-                                            if("N"==rowData.authRead){
-                                                return  '<input type="checkbox" class="gridCheckbox_authRead" id="authRead"  name="authRead"/>';
-                                            }else {
-												rowData.set("authRead","Y");
-                                                return '<input type="checkbox" class="gridCheckbox_authRead" checked="checked" id="authRead"  name="authRead"/>';
-                                            }
-                                        }
+                                        attributes: {style: "text-align:center"}
                                     },
                                     {
                                         title: '操作权限',
                                         'field':'authOperate',
                                         width: "40px",
                                         headerAttributes: {style: "text-align:center"},
-                                        attributes: {style: "text-align:center"},
-                                        template: function (rowData) {
-                                            if("Y"==rowData.authOperate){
-                                                return '<input type="checkbox" class="gridCheckbox_authOperate" checked="checked" id="authOperate"  name="authOperate"/>';
-                                            }else {
-												rowData.set("authOperate","N");
-                                                return  '<input type="checkbox" class="gridCheckbox_authOperate" id="authOperate"  name="authOperate"/>'
-                                            }
-                                        }
+                                        attributes: {style: "text-align:center"}
                                     }
 								],
 						editable: true,
