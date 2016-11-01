@@ -54,6 +54,7 @@
             hdispatch_workflow
         WHERE
             `name` = #{name}
+            AND `active`=1
     </select>
 
     <select id="getById" parameterType="long" resultMap="workflow">

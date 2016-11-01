@@ -199,6 +199,7 @@
             vm.executeInfo.name = '';
             vm.executeInfo.flows = {};
             vm.executeInfo.failureAction = 'finishCurrent';
+            vm.executeInfo.concurrentOption = 'skip';
             if (vm.executeInfo.loading == 0) {
                 return;
             }

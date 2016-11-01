@@ -105,10 +105,10 @@ public class WorkflowServiceImpl implements WorkflowService {
         } else {
             workflowPropertyMapper.deleteByWorkflowId(workflow.getWorkflowId());
             workflowJobMapper.deleteByWorkflowId(workflow.getWorkflowId());
-            if (workflow.getProperties() != null) {
+            if (workflow.getProperties() != null && !workflow.getJobs().isEmpty()) {
                 workflowPropertyMapper.batchInsert(workflow.getProperties());
             }
-            if (workflow.getJobs() != null) {
+            if (workflow.getJobs() != null && workflow.getJobs().isEmpty()) {
                 workflowJobMapper.batchInsert(workflow.getJobs());
             }
             workflowMapper.update(workflow);
