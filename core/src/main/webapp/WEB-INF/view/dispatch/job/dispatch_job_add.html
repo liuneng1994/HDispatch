@@ -59,7 +59,7 @@
                         <span class="btn btn-primary" data-bind="click:createFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.create"/></span>
                         <span class="btn btn-primary" data-bind="click:batchCreateFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_create"/></span>
                         <!--<span class="btn btn-warning" onclick="" style="float:left;margin-right:5px;"><@spring.message "hap.pause"/></span>-->
-                        <span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>
+                        <!--<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>-->
                         <span class="btn btn-success" data-bind="click:saveFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.save"/></span>
                         <span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
                     </div>
@@ -274,7 +274,8 @@
                 var jobListGrid_kendo = $("#jobListGrid").kendoGrid({
                     dataSource: jobs_data,
                     resizable: true,
-                    selectable: "multiple,rowbox",
+//                    selectable: "multiple,rowbox",
+                    selectable: "multiple",
                     scrollable: true,
                     pageable: {
                         pageSizes:[10, 20, 50, 100],
@@ -314,11 +315,15 @@
                                         return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
 
                                 }
-                            },
+                            }
                         ],
                     editable: true
                 });
-
+//                $("#jobListGrid").on("click","tr", function (e) {
+//                    console.log($(this));
+//                    $(this).removeClass("k-state-selected");
+//                    $(this).attr("aria-selected",false);
+//                });
                 //声明grid中的下拉框
                 var grid_themeDropDown_dataSource=new kendo.data.DataSource({
                     transport: {
