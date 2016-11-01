@@ -242,6 +242,7 @@
                                                                     document
                                                                             .getElementById("picker").value)
                                                                     .getTime();
+                                                            document.getElementById("picker").value='';
                                                         }
                                                         console.log(options);
                                                         if (options.page) {
@@ -364,8 +365,8 @@
                                                     columns: [
                                                         {
                                                             title: '',
-                                                            template: '<input class="checkbox" type="checkbox" />',
-                                                            width: 50
+                                                            template: '<input class="checkbox" type="checkbox" style="margin-left: auto;margin-right: auto;text-align:center;"/>',
+                                                            width: 30
                                                         } ,
                                                          /*{
                                                          field : "exec_id",
@@ -531,7 +532,7 @@
                                                                 else if (item.status == 130)
                                                                     status = 'CANCELLED';
                                                                 var html = "<div "
-                                                                        + "style='text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
+                                                                        + "style='margin-left: auto;margin-right: auto;text-align:center;height:13px;width:80px;text-decoration: none;border-radius:5px;"
                                                                         + (stateColor[status])
                                                                         + "' "
                                                                         + ">"
@@ -566,6 +567,7 @@
                                 var start = $("#start")
                                         .kendoButton(
                                                 {
+
                                                     click: function (e) {
                                                         var checked = [];
                                                         for (var i in checkedIds) {
@@ -573,6 +575,7 @@
                                                                 checked.push(grid.dataSource.get(i).toJSON());
                                                             }
                                                         }
+                                                        checkedIds = {};
                                                         flowoperation_ajax(
                                                                 checked,
                                                                 '${base.contextPath}/flows/startflow',
@@ -581,8 +584,9 @@
                                                                         alert(json.message);
                                                                     else if (json.code == 0)
                                                                         alert(json.message);
-                                                                    else
-                                                                        alert("所选流已经启动！");
+                                                                    else {
+                                                                    alert("请选择后再操作！");
+                                                                }
                                                                     $('#flowGrid')
                                                                             .data(
                                                                                     'kendoGrid').dataSource
@@ -605,6 +609,7 @@
                                                                                 .toJSON());
                                                             }
                                                         }
+                                                        checkedIds = {};
                                                         flowoperation_ajax(
                                                                 checked,
                                                                 '${base.contextPath}/flows/pauseflow',
@@ -614,7 +619,7 @@
                                                                     else if (json.code == 0)
                                                                         alert(json.message);
                                                                     else
-                                                                        alert("所选流没有在运行中,无法暂停！");
+                                                                        alert("请选择后再操作！");
                                                                     $('#flowGrid')
                                                                             .data(
                                                                                     'kendoGrid').dataSource
@@ -636,6 +641,7 @@
                                                                                         i)
                                                                                 .toJSON());}
                                                         }
+                                                        checkedIds = {};
                                                         flowoperation_ajax(
                                                                 checked,
                                                                 '${base.contextPath}/flows/stopflow',
@@ -645,7 +651,7 @@
                                                                     else if (json.code == 0)
                                                                         alert(json.message);
                                                                     else
-                                                                        alert("所选流没有在运行中,无法停止！");
+                                                                        alert("请选择后再操作！");
                                                                     $('#flowGrid')
                                                                             .data(
                                                                                     'kendoGrid').dataSource
@@ -666,6 +672,7 @@
                                                                                         i)
                                                                                 .toJSON());}
                                                         }
+                                                        checkedIds = {};
                                                         flowoperation_ajax(
                                                                 checked,
                                                                 '${base.contextPath}/flows/resumeflow',
@@ -675,7 +682,7 @@
                                                                     else if (json.code == 0)
                                                                         alert(json.message);
                                                                     else
-                                                                        alert("所选流没有在暂停中,无法恢复！");
+                                                                        alert("请选择后再操作！");
                                                                     $('#flowGrid')
                                                                             .data(
                                                                                     'kendoGrid').dataSource
@@ -696,6 +703,7 @@
                                                                                         i)
                                                                                 .toJSON());}
                                                         }
+                                                        checkedIds = {};
                                                         flowoperation_ajax(
                                                                 checked,
                                                                 '${base.contextPath}/flows/freshflow',
@@ -705,7 +713,7 @@
                                                                     else if (json.code == 0)
                                                                         alert(json.message);
                                                                     else
-                                                                        alert("所选流异常！");
+                                                                        alert("请选择后再操作！");
                                                                     $('#flowGrid')
                                                                             .data(
                                                                                     'kendoGrid').dataSource

@@ -183,6 +183,7 @@
                                                         }
                                                         if (document.getElementById("picker").value != '') {
                                                             map.submitdate = new Date(document.getElementById("picker").value).getTime();
+                                                            document.getElementById("picker").value='';
                                                         }
                                                         if (options.page) {
                                                             map.page = options.page;
@@ -315,12 +316,12 @@
                                                             title: '<@spring.message "hdispatch.schedule.schlist.removesla"/>',
                                                             width: 100,
                                                             template: function (item) {
-                                                                var html = "<button class='btn btn-danger'"
+                                                                var html = "<center><button class='btn btn-danger'style='text-align:center;'"
                                                                         + "onclick=removesch('"
                                                                         + item.scheduleId
                                                                         + "','" + item.flowId + "','" + item.projectId + "','" + item.themeId + "')"
                                                                         + "><@spring.message 'schflows.removesch'/>"
-                                                                        + "</button>";
+                                                                        + "</button></center>";
                                                                 return html;
                                                             }
                                                         },
@@ -329,11 +330,11 @@
                                                             title: '<@spring.message "schflows.setsla"/>',
                                                             width: 100,
                                                             template: function (item) {
-                                                                var html = "<button  class='btn btn-info'onclick='openSetSLAPage(\""
+                                                                var html = "<center><button  class='btn btn-info'style='margin-left: auto;margin-right: auto;text-align:center;'onclick='openSetSLAPage(\""
                                                                         + item.scheduleId
                                                                         + "\",\"" + item.flowId + "\",\"" + item.projectName + "\",\"" + item.themeId + "\")'"
                                                                         + "><@spring.message 'schflows.setsla'/>"
-                                                                        + "</button>";
+                                                                        + "</button></center>";
                                                                 return html;
                                                             }
                                                         }]
