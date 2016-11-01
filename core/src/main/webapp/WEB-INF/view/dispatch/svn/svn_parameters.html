@@ -520,8 +520,10 @@
 
                             console.log(data);
                             if(data.success){
-                                alert("成功");
+                                alert('<@spring.message "hdispatch.create_success"/>');
                                 wnd.close();
+                                //刷新Grid
+                                $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
                             }else{
                                 alert(data.message);
                                 wnd.close();
