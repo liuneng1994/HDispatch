@@ -24,11 +24,15 @@
                                     <input id="input_layerName" type="text" style="width:60%" data-bind="value:model.parameterName" class="k-textbox">
                                 </div>
                             </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
-                                    <span class="btn btn-success" data-bind="click:queryResource" type="submit"><@spring.message "hdispatch.query"/></span>
-                                </div>
-                            </div>
+                            <!--<div class="col-sm-3">-->
+                                <!--<div class="form-group">-->
+                                    <!--<span class="btn btn-success" data-bind="click:queryFunction" type="submit"><@spring.message "hdispatch.query"/></span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="panel-footer text-right">
+                            <span class="btn btn-success" data-bind="click:queryFunction" type="submit"><@spring.message "hdispatch.query"/></span>
+                            <span class="btn btn-default" data-bind="click:resetFunction" type="button"><@spring.message "hap.reset"/></span>
                         </div>
                     </form>
                 </div>
@@ -78,7 +82,7 @@
                 //声明主窗口
                 var viewModel = kendo.observable({
                     model:{subjectName:'',mappingName:'',parameterName:'',page:''},
-                    queryResource: function(e) {
+                    queryFunction: function(e) {
                         viewModel.model.page=1;
                         $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
                     },
@@ -122,6 +126,12 @@
                         var that = $('#svnParametersListGrid').data('kendoGrid');
                         $('#svnParametersListGrid').data('kendoGrid').saveAsExcel();
 //                        that.saveAsExcel();
+                    },
+                    resetFunction: function (e) {
+                        var formData = viewModel.model.toJSON();
+                        for ( var k in formData) {
+                            viewModel.model.set(k, null);
+                        }
                     }
                 });
 //                kendo.bind($("#toolbar-btn"),viewModel);
