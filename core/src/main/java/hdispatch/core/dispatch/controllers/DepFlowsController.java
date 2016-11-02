@@ -127,8 +127,8 @@ public class DepFlowsController extends BaseController {
 	@RequestMapping("/queryDep")
 	@ResponseBody
 	public ResponseData queryDep(HttpServletRequest request,
-			@RequestParam String flow_id,
-			@RequestParam String project_name
+			@RequestParam("flow_id") String flow_id,
+			@RequestParam("project_name") String project_name
 			)
 	{
 
@@ -144,8 +144,8 @@ public class DepFlowsController extends BaseController {
 	@RequestMapping("/queryMut")
 	@ResponseBody
 	public ResponseData queryMut(HttpServletRequest request,
-			@RequestParam String flow_id,
-			@RequestParam String project_name
+			@RequestParam("flow_id") String flow_id,
+			@RequestParam("project_name") String project_name
 			)
 	{
 		return new ResponseData(service.selectMutWithId(flow_id, service.selectIdByName(project_name)));

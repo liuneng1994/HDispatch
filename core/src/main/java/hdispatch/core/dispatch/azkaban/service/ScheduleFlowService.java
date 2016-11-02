@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.azkaban.service;
 
+import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.azkaban.entity.schedule.Schedule;
 import hdispatch.core.dispatch.azkaban.flow.FlowObj;
 import hdispatch.core.dispatch.azkaban.util.ResultObj;
@@ -22,5 +23,6 @@ public interface ScheduleFlowService {
 
 	ResultObj slaInfo(Map<String, Object> map);
 
-	ResultObj scheduleCronFlow(String projectName,String flowName,String cronExpression);
+	ResponseData scheduleCronFlow(String projectName, String flowName, String cronExpression);
+
 }

@@ -219,6 +219,9 @@
                                                         period: {
                                                             type: "string"
                                                         },
+                                                        cronExpression:{
+                                                            type:"string"
+                                                        },
                                                         hasSla: {
                                                             type: "string"
                                                         }
@@ -298,6 +301,17 @@
                                                             template: function (item) {
                                                                 var html = item.period;
                                                                 if (item.period == "null")
+                                                                    html = "--";
+                                                                return html;
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "cronExpression",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.cronexpression"/>',
+                                                            width: 180,
+                                                            template: function (item) {
+                                                                var html = item.cronExpression;
+                                                                if (item.cronExpression == "null")
                                                                     html = "--";
                                                                 return html;
                                                             }
