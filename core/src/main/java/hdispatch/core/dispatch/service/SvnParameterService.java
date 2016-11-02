@@ -8,6 +8,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import java.util.List;
 
 /**
+ * 任务运行时参数service接口类<br>
+ *
  * Created by yyz on 2016/9/24.
  *
  * @author yazheng.yang@hand-china.com

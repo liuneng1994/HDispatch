@@ -21,11 +21,10 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * 任务运行时参数控制器<br>
+ *
  * Created by yyz on 2016/9/24.
- *
  * @author yazheng.yang@hand-china.com
- *
- * SVN文件参数控制器类
  */
 @Controller
 public class SvnParameterController extends BaseController{
@@ -33,6 +32,16 @@ public class SvnParameterController extends BaseController{
     @Autowired
     private SvnParameterService svnParameterService;
 
+    /**
+     * 模糊查询运行时参数
+     * @param request
+     * @param page 第几页
+     * @param pageSize 分页大小（每一页的数据条数）
+     * @param subjectName 参数的主题名称
+     * @param mappingName 参数的Mapping名称
+     * @param parameterName 参数名称
+     * @return 参数列表
+     */
     @RequestMapping(value = "/dispatcher/svnParameter/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getSvnParameters(HttpServletRequest request,
@@ -69,7 +78,7 @@ public class SvnParameterController extends BaseController{
      * 创建SVN 参数
      *
      * description:检查待插入的svnParameter是否已经存在；若存在，给出提示信息；若不存在，执行插入
-     *
+     * <br>
      * 修改：2016.10.24 by yazheng.yang@hand-china.com
      *  ,根据subjectName、mappingName、parameterName判断是否已经存在，若存在，直接更新；若不存在，执行插入
      * @param svnParameterList
@@ -135,7 +144,11 @@ public class SvnParameterController extends BaseController{
     }
 
     /**
-     * 批量删除 参数
+     * 批量删除任务运行时的参数
+     * @param svnParameterList
+     * @param result
+     * @param request
+     * @return
      */
     @RequestMapping(value = "/dispatcher/svnParameter/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
@@ -167,6 +180,13 @@ public class SvnParameterController extends BaseController{
         return rd;
     }
 
+    /**
+     * 批量更新任务运行时的参数
+     * @param svnParameterList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/svnParameter/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateSvnParameters(@RequestBody List<SvnParameter> svnParameterList, BindingResult result, HttpServletRequest request) {
@@ -184,7 +204,12 @@ public class SvnParameterController extends BaseController{
         return rd;
     }
 
-
+    /**
+     * 从excel中批量导入数据。若数据已经存在（subjectName、mappingName、parameterName作为主键），进行更新
+     * @param files
+     * @param req
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/svnParameter/importFromExcel",method = RequestMethod.POST)
     public ResponseData addSvnParametersFromExcel(@RequestParam("excelFiles") CommonsMultipartFile[] files, HttpServletRequest req){
 

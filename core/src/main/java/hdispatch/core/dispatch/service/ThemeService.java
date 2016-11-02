@@ -8,6 +8,7 @@ import hdispatch.core.dispatch.mapper.ThemeMapper;
 import java.util.List;
 
 /**
+ * 主题service接口<br>
  * Created by yyz on 2016/9/5.
  * yazheng.yang@hand-china.com
  */
@@ -23,19 +24,22 @@ public interface ThemeService extends ProxySelf<ThemeService> {
     List<Theme> selectByTheme(IRequest requestContext, Theme theme, int page, int pageSize);
 
     /**
-     * 获取所有主题（带分页）
+     * 获取当前用户可读的主题列表
      * @param requestContext
-     * @param page
-     * @param pageSize
      * @return
      */
     List<Theme> selectAll_read(IRequest requestContext);
 
+    /**
+     * 获取当前用户可以操作的主题列表
+     * @param requestContext
+     * @return
+     */
     List<Theme> selectAll_opt(IRequest requestContext);
 
 
     /**
-     * 批量编辑（目前只是新增）
+     * 批量编辑（目前只是新增和删除）
      * @param requestContext
      * @param themeList
      * @return
@@ -65,10 +69,10 @@ public interface ThemeService extends ProxySelf<ThemeService> {
     Theme selectActiveThemeById(Theme theme);
 
     /**
-     * 获取传入的列表中没有挂载层次的主题
+     * 获取传入的列表中没有挂载层次的主题（用于批量删除主题之前的检查）
      * @param requestContext
      * @param themeList
-     * @return
+     * @return 没有挂载层次的主题列表
      */
     List<Theme> checkIsMountThemes(IRequest requestContext, List<Theme> themeList);
 }

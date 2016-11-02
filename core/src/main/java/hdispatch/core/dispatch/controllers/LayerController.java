@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * 层次控制器<br>
  * Created by yyz on 2016/9/7.
  * yazheng.yang@hand-china.com
  */
@@ -147,6 +148,14 @@ public class LayerController extends BaseController {
         return rd;
     }
 
+    /**
+     * 批量更新层次
+     * @param layerList
+     * @param result
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/dispatcher/layer/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) throws Exception {
@@ -181,7 +190,7 @@ public class LayerController extends BaseController {
     }
 
     /**
-     * 批量删除layer
+     * 批量删除layer（先检查是否层次下面所有的任务和任务流都已经删除了）
      */
     @RequestMapping(value = "/dispatcher/layer/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
