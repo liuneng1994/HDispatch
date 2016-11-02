@@ -9,7 +9,7 @@ import hdispatch.core.dispatch.dto.theme.Theme;
 import java.util.List;
 
 /**
- * 任务调度权限服务接口类<br>
+ * 任务调度权限服务接口类
  *
  * Created by yyz on 2016/10/20.
  *

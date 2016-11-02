@@ -53,9 +53,8 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 获取当前用户可读的主题列表
-     * @param requestContext
-     * @return 当前用户可读的主题列表
+     * 获取所有可见的主题
+     * @return
      */
     @Override
     public List<Theme> selectAll_read(IRequest requestContext) {
@@ -71,9 +70,8 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 获取当前用户可以操作的主题列表
-     * @param requestContext
-     * @return 当前用户可以操作的主题列表
+     * 获取所有可操作的主题
+     * @return
      */
     @Override
     public List<Theme> selectAll_opt(IRequest requestContext) {
@@ -89,7 +87,7 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 批量编辑（目前只是新增和删除）
+     * 批量编辑（目前只是新增）
      * @param requestContext
      * @param themeList
      * @return
@@ -160,10 +158,10 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 获取传入的列表中没有挂载层次的主题（用于批量删除主题之前的检查）
+     * 获取传入的列表中没有挂载层次的主题
      * @param requestContext
      * @param themeList
-     * @return 没有挂载层次的主题列表
+     * @return
      */
     @Override
     public List<Theme> checkIsMountThemes(IRequest requestContext, List<Theme> themeList) {

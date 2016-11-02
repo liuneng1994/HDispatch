@@ -27,8 +27,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 任务运行时参数service实现类<br>
- *
  * Created by yyz on 2016/9/24.
  *
  * @author yazheng.yang@hand-china.com
@@ -115,12 +113,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
         return svnParameterList;
     }
 
-    /**
-     * 从excel文件中读取数据
-     * @param file
-     * @return 任务运行时参数的列表
-     * @throws Exception
-     */
+
     private List<SvnParameter> excelFileToList(CommonsMultipartFile file) throws Exception{
         List<SvnParameter> list = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
@@ -286,12 +279,6 @@ public class SvnParameterServiceImpl implements SvnParameterService {
         return list;
     }
 
-    /**
-     * 从excel中导入数据（只对excel文件中的第一个文件进行操作）
-     * @param files
-     * @return
-     * @throws Exception
-     */
     public List<SvnParameter> batchCreateFromExcel(CommonsMultipartFile[] files) throws Exception{
 //        ArrayList<SvnParameter> svnParameters = new ArrayList<>();
 //        for(CommonsMultipartFile file : files){

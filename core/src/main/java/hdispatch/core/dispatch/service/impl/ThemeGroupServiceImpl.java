@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 主题组service接口实现类<br>
  * Created by yyz on 2016/10/17.
  *
  * @author yazheng.yang@hand-china.com
@@ -33,14 +32,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
     @Autowired
     private HdispatchAuthorityMapper hdispatchAuthorityMapper;
 
-    /**
-     * 根据ThemeGroup进行模糊查询
-     * @param requestContext
-     * @param themeGroup
-     * @param page
-     * @param pageSize
-     * @return
-     */
+
     @Override
     public List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
@@ -48,12 +40,6 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
         return result;
     }
 
-    /**
-     * 批量操作（增加和修改）
-     * @param requestContext
-     * @param themeGroupList
-     * @return
-     */
     @Override
     public List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList) {
         for (ThemeGroup themeGroup : themeGroupList) {
@@ -76,12 +62,6 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
         return themeGroupList;
     }
 
-    /**
-     * 批量删除(如果主题组下没有挂载主题，可以删除)
-     * @param requestContext
-     * @param themeGroupList
-     * @param cannotRemoveList
-     */
     @Override
     public void batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
         for (ThemeGroup themeGroup : themeGroupList) {
