@@ -253,6 +253,7 @@ public class ScheduleController extends BaseController {
         hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
         hds.setFlow_id(flowId);
         hds.setProject_name(projectName);
+        hdispatchScheduleService.delete(hds);
         hdispatchScheduleService.insert(hds);
         }
         return obj;
