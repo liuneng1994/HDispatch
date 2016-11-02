@@ -1,7 +1,7 @@
 <#include "../../include/header.html">
     <script id="errorTemplate" type="text/x-kendo-template">
         <div class="wrong-pass">
-            <img src="${base.contextPath}/resources/images/error-icon.png" />
+            <img src="${base.contextPath}/resources/images/error-icon.png"/>
             <h3>#= title #</h3>
             <p>#= message #</p>
         </div>
@@ -9,7 +9,7 @@
 
     <script id="successTemplate" type="text/x-kendo-template">
         <div class="upload-success">
-            <img src="${base.contextPath}/resources/images/success-icon.png" />
+            <img src="${base.contextPath}/resources/images/success-icon.png"/>
             <h3>#= message #</h3>
         </div>
     </script>
@@ -23,33 +23,36 @@
             list-style: none;
             padding-bottom: 1em;
         }
+
         .k-notification {
             border: 0;
         }
 
-
         /* Info template */
         .k-notification-info.k-group {
-            background: rgba(0%,0%,0%,.7);
+            background: rgba(0%, 0%, 0%, .7);
             color: #fff;
         }
 
         /* Error template */
         .k-notification-error.k-group {
-            background: rgba(100%,0%,0%,.7);
+            background: rgba(100%, 0%, 0%, .7);
             color: #ffffff;
         }
+
         .wrong-pass {
             width: 300px;
             height: 100px;
         }
+
         .wrong-pass h3 {
-            windth:180px;
+            windth: 180px;
             font-size: 1em;
             color: red;
-            margin-top:0;
+            margin-top: 0;
             padding: 32px 10px 5px;
         }
+
         .wrong-pass img {
             float: left;
             margin: 30px 15px 30px 30px;
@@ -57,22 +60,25 @@
 
         /* Success template */
         .k-notification-upload-success.k-group {
-            background: rgba(0%,60%,0%,.7);
+            background: rgba(0%, 60%, 0%, .7);
             color: #fff;
         }
+
         .upload-success {
             width: 240px;
             height: 100px;
             padding: 0 30px;
             line-height: 100px;
         }
+
         .upload-success h3 {
-            width:180px;
+            width: 180px;
             font-size: 1.2em;
             font-weight: normal;
             display: inline-block;
             vertical-align: middle;
         }
+
         .upload-success img {
             display: inline-block;
             vertical-align: middle;
@@ -122,7 +128,7 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3">是否重复</label>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6" style="height: 100%">
                         <input type="checkbox" id="recurring"
                                class="k-checkbox"
                                ng-model="vm.scheduleFlow.isrecurring"/>
@@ -132,19 +138,22 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3">周期</label>
-                    <div class="col-sm-6">
+                    <div class="col-sm-5" style="padding-right:0;">
                         <input type="number" class="k-textbox"
                                ng-model="vm.scheduleFlow.periodVal"
                                ng-required="vm.scheduleFlow.isrecurring"
                                ng-disabled="!vm.scheduleFlow.isrecurring"
-                               style="padding-left:0;padding-right:0;width:78%"/>
-                        <select style="width:50px;"
+                               style="padding-left:0;padding-right:0;width:100%"/>
+                    </div>
+                    <div class="col-sm-1" style="padding-left:0;">
+                        <select
                                 kendo-drop-down-list
-                                ng-model="vm.scheduleFlow.period"
+                                k-ng-model="vm.scheduleFlow.period"
+                                k-value-primitive="true"
                                 k-data-text-field="'name'"
                                 k-data-value-field="'value'"
                                 k-data-source="vm.periods"
-                                style="padding-left:0;padding-right:0;"></select>
+                                style="padding-left:0;padding-right:0;width:100%"></select>
                     </div>
                 </div>
                 <div class="form-group text-center" style="margin-top: 20px;">
@@ -365,7 +374,7 @@
                 </div>
             </div>
             <span id="notification" style="display:none;z-index: 10000;"></span>
-            </div>
         </div>
+    </div>
     </body>
     </html>

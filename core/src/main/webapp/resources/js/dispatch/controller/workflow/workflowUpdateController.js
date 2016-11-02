@@ -8,7 +8,8 @@
         var vm = this;
         vm.workflow = {};
         vm.newJob = new Job();
-        vm.themes = {};
+        vm.themes = [];
+        vm.optThemes = [];
         vm.layers = [];
         vm.jobLayers = [];
         vm.jobSources = [];
@@ -54,6 +55,7 @@
 
 
         refreshThemes();
+        refreshOptThemes();
         init();
         var jobPosition = {x: 100, y: 100};
         vm.createJob = function () {
@@ -88,7 +90,34 @@
             var graphJson = vm.paint.toJSON();
             workflow.graph = JSON.stringify(graphJson);
             workflowService.updateWorkflow(workflow).then(function (data) {
-                window.hdispatch.confirm("保存成功，是否立刻生成任务流").accept(vm.generateWorkflow);
+                kendo.ui.showDialog({
+                    title: '生成新任务流',
+                    width: 400,
+                    message: '任务流保存成功,是否生成新任务流',
+                    buttons: [{
+                        text: "生成任务流",
+                        type: 'success',
+                        click: function(e) {
+                            e.dialog.destroy();
+                            e.deferred.resolve({
+                                button: "yes"
+                            });
+                        }
+                    }, {
+                        text: "取消",
+                        type: 'danger',
+                        click: function(e) {
+                            e.dialog.destroy();
+                            e.deferred.resolve({
+                                button: "no"
+                            });
+                        }
+                    }]
+                }).done(function(e) {
+                    if (e.button == 'yes') {
+                        vm.generateWorkflow();
+                    }
+                });
             }, function (data) {
                 window.alert(data);
             });
@@ -185,6 +214,12 @@
         function refreshThemes() {
             workflowService.themes().then(function (data) {
                 vm.themes = data;
+            });
+        }
+
+        function refreshOptThemes() {
+            workflowService.operateThemes().then(function (data) {
+                vm.optThemes = data;
             });
         }
 

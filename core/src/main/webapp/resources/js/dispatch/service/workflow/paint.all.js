@@ -405,7 +405,7 @@ var Paint = (function (mode) {
                 },
                 text: {text: name, fill: 'black'}
             };
-            var width = name.length * 8 + 20 > 100 ? name.length * 8 + 20 : 100;
+            var width = name.length * 7 + 20 > 100 ? name.length * 7 + 20 : 100;
             return new joint.shapes.basic.Rect({
                 position: {x: x, y: y},
                 size: {
@@ -501,7 +501,7 @@ var Paint = (function (mode) {
             this.prop('expanded', false);
             graph.removeCells(this.getEmbeddedCells({deep: true}));
             var name = this.get('attrs').text.text;
-            var width = name.length * 8 + 60 > 100 ? name.length * 8 + 60 : 100;
+            var width = name.length * 7 + 60 > 100 ? name.length * 7 + 60 : 100;
             this.resize(width - width % 10 + (width % 10 ? 10 : 0), 50);
             var parent = graph.getCell(this.get('parent'));
             while (parent) {
@@ -511,7 +511,7 @@ var Paint = (function (mode) {
         };
 
         return function (name, x, y) {
-            var width = name.length * 8 + 60 > 100 ? name.length * 8 + 60 : 100;
+            var width = name.length * 7 + 60 > 100 ? name.length * 7 + 60 : 100;
             var node = new joint.shapes.node.flow({
                 position: {x: x, y: y},
                 attrs: {
