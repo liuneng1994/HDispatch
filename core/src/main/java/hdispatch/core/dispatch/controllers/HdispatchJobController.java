@@ -45,11 +45,11 @@ public class HdispatchJobController extends BaseController {
     @RequestMapping(value = "/dispatcher/job/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getJobs(HttpServletRequest request,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(defaultValue = "-100") Long themeId,
-                                  @RequestParam(defaultValue = "-100") Long layerId,
-                                  @RequestParam(defaultValue = "") String jobName) {
+                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                  @RequestParam(name = "themeId", defaultValue = "-100") Long themeId,
+                                  @RequestParam(name = "layerId", defaultValue = "-100") Long layerId,
+                                  @RequestParam(name = "jobName", defaultValue = "") String jobName) {
         IRequest requestContext = createRequestContext(request);
         Job job = new Job();
         if(!jobName.trim().equals("")){
@@ -179,7 +179,7 @@ public class HdispatchJobController extends BaseController {
     @RequestMapping(value = "/dispatcher/job/svnTree/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getSvnTreeNodes(HttpServletRequest request,
-                                @RequestParam(defaultValue = "") String nodeId) {
+                                @RequestParam(name = "nodeId", defaultValue = "") String nodeId) {
         IRequest requestContext = createRequestContext(request);
         ResponseData responseData = null;
         nodeId = nodeId.trim();

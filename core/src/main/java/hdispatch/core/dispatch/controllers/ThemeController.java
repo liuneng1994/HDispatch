@@ -41,10 +41,10 @@ public class ThemeController extends BaseController {
     @RequestMapping(value = "/dispatcher/theme/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemes(HttpServletRequest request,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(defaultValue = "") String themeName,
-                                  @RequestParam(defaultValue = "") String themeDescription) {
+                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                  @RequestParam(name = "themeName", defaultValue = "") String themeName,
+                                  @RequestParam(name = "themeDescription", defaultValue = "") String themeDescription) {
         IRequest requestContext = createRequestContext(request);
         Theme theme = new Theme();
         themeName = themeName.trim();
