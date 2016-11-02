@@ -249,7 +249,7 @@ public class ScheduleController extends BaseController {
         Schedule s = scheduleFlowService.fetchschedule(map);
         if(obj.isSuccess())
         {
-        hds.setSubmit_date(s.getFirstSchedTime());	
+        hds.setSubmit_date(s.getSchdule().getString("firstSchedTime"));
         hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
         hds.setFlow_id(flowId);
         hds.setProject_name(projectName);
