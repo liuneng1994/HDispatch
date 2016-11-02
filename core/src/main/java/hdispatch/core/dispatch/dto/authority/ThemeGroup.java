@@ -3,11 +3,9 @@ package hdispatch.core.dispatch.dto.authority;
 import com.hand.hap.system.dto.BaseDTO;
 
 /**
+ * 主题组dto<br>
  * Created by yyz on 2016/10/14.
- *
  * @author yazheng.yang@hand-china.com
- *
- * 主题组
  */
 public class ThemeGroup extends BaseDTO {
     private Long themeGroupId;

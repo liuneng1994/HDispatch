@@ -1,10 +1,9 @@
 package hdispatch.core.dispatch.dto.job;
 
 /**
+ * 存储SVN服务器信息的类<br>
  * Created by yyz on 2016/9/14.
  * @author yazheng.yang@hand-china.com
- *
- * 存储SVN服务器信息的类
  */
 public class SvnConfig {
     private String ip;

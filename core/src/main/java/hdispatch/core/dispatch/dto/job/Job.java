@@ -9,10 +9,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
+ * 任务类<br>
  * Created by yyz on 2016/9/11.
  * @author yazheng.yang@hand-china.com
- *
- * 任务类
  */
 public class Job extends BaseDTO {
     @NotNull(groups = {Delete.class, Update.class})

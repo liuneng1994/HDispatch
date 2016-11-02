@@ -3,10 +3,9 @@ package hdispatch.core.dispatch.dto.theme;
 import com.hand.hap.system.dto.BaseDTO;
 
 /**
+ * 主题类dto<br>
  * Created by yyz on 2016/9/5.
  * @author yazheng.yang@hand-china.com
- *
- * 主题类
  */
 public class Theme extends BaseDTO{
     private Long themeId;
