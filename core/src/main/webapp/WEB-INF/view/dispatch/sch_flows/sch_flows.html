@@ -179,7 +179,6 @@
                                                         }
                                                         if (document.getElementById("picker").value != '') {
                                                             map.submitdate = new Date(document.getElementById("picker").value).getTime();
-                                                            document.getElementById("picker").value='';
                                                         }
                                                         if (options.page) {
                                                             map.page = options.page;
@@ -277,7 +276,12 @@
                                                         {
                                                             field: "flowId",
                                                             title: '<@spring.message "hdispatch.flowlist.flowname"/>',
-                                                            width: 150
+                                                            width: 150,
+                                                            template: function (item) {
+                                                                var html = item.flowId.substr(1);
+
+                                                                return html;
+                                                            }
                                                         },
                                                        /* {
                                                             field: "projectName",
