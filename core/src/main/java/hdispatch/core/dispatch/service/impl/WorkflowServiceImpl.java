@@ -105,10 +105,10 @@ public class WorkflowServiceImpl implements WorkflowService {
         } else {
             workflowPropertyMapper.deleteByWorkflowId(workflow.getWorkflowId());
             workflowJobMapper.deleteByWorkflowId(workflow.getWorkflowId());
-            if (workflow.getProperties() != null) {
+            if (workflow.getProperties() != null && !workflow.getJobs().isEmpty()) {
                 workflowPropertyMapper.batchInsert(workflow.getProperties());
             }
-            if (workflow.getJobs() != null) {
+            if (workflow.getJobs() != null && !workflow.getJobs().isEmpty()) {
                 workflowJobMapper.batchInsert(workflow.getJobs());
             }
             workflowMapper.update(workflow);
@@ -126,13 +126,18 @@ public class WorkflowServiceImpl implements WorkflowService {
         Set<Long> ids = new HashSet<>();
         workflow.getJobs().forEach(job -> ids.add(job.getJobSource()));
         WorkflowResolver resolver = new WorkflowResolver();
-        List<Job> jobStore = jobMapper.getByIds(resolver.resolveWorkflowJobs(workflow));
-        logger.info("job source " + jobStore);
-        File projectFile = generateWorkflowFile(workflow, jobStore);
-        projectService.createProject(workflow.getName(), workflow.getDescription());
-        Map<String, String> result = projectService.uploadProjectFile(workflow.getName(), projectFile);
-        if (!result.containsKey("error")) {
-            workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), "_"+workflow.getName());
+        Set<Long> idSet = resolver.resolveWorkflowJobs(workflow);
+        List<Job> jobStore = null;
+        Map<String, String> result = new HashMap<>();
+        if (!idSet.isEmpty()) {
+            jobStore = jobMapper.getByIds(idSet);
+            logger.info("job source " + jobStore);
+            File projectFile = generateWorkflowFile(workflow, jobStore);
+            projectService.createProject(workflow.getName(), workflow.getDescription());
+            result = projectService.uploadProjectFile(workflow.getName(), projectFile);
+            if (!result.containsKey("error")) {
+                workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), "_"+workflow.getName());
+            }
         }
         return result.get("error");
     }

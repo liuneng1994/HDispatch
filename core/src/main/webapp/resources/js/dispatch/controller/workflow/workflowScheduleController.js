@@ -134,7 +134,7 @@
                 return;
             }
             vm.scheduleFlow.isrecurring = false;
-            vm.scheduleFlow.period = 'M';
+            vm.scheduleFlow.period = 'd';
             vm.scheduleFlow.flows = {};
             vm.scheduleFlow.name = '';
             vm.scheduleWindow.center().open();
@@ -175,12 +175,12 @@
                 var arg = angular.copy(scheduleInfo);
                 workflowService.scheduleWorkflow(arg).then(function (data) {
                     vm.notification.show({
-                        message: data
+                        message: data||'计划成功'
                     }, "upload-success");
                 }, function (data) {
                     vm.notification.show({
                         title: '',
-                        message: data
+                        message: data||'计划失败'
                     }, "error");
                 });
             }
@@ -199,6 +199,7 @@
             vm.executeInfo.name = '';
             vm.executeInfo.flows = {};
             vm.executeInfo.failureAction = 'finishCurrent';
+            vm.executeInfo.concurrentOption = 'skip';
             if (vm.executeInfo.loading == 0) {
                 return;
             }

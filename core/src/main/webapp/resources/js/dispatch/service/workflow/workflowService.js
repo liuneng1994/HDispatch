@@ -10,6 +10,14 @@
                     }
                 });
         };
+        var operateThemes = function () {
+            return httpService.get(_basePath + '/dispatcher/theme/queryAll_opt', {},
+                function (data, defered) {
+                    if (data.success) {
+                        defered.resolve(data.rows);
+                    }
+                });
+        };
         var layers = function (themeId) {
             return httpService.get(_basePath + '/dispatcher/layer/queryAll',
                 {themeId: themeId},
@@ -200,7 +208,8 @@
             deleteWorkflowDependency: deleteWorkflowDependency,
             queryWorkflowMutex: queryWorkflowMutex,
             createWorkflowMutex: createWorkflowMutex,
-            deleteWorkflowMutex: deleteWorkflowMutex
+            deleteWorkflowMutex: deleteWorkflowMutex,
+            operateThemes: operateThemes
         };
     }
 })();

@@ -156,7 +156,7 @@
                                     options.success('');
                                     return;
                                 }
-                                workflowService.query({
+                                workflowService.queryOperate({
                                     themeId: vm.theme,
                                     layerId: vm.layer,
                                     workflowName: '',

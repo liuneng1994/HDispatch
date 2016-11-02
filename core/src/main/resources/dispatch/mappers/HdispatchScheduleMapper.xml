@@ -32,10 +32,10 @@
         and project_name like CONCAT('%',#{project_name,jdbcType=VARCHAR},'%')
       </if>
        <if test="flow_id != null" >
-        and flow_id  like CONCAT('%',#{flow_id,jdbcType=VARCHAR},'%')
+        and hdispatch_schedule.flow_id  like CONCAT('%',#{flow_id,jdbcType=VARCHAR},'%')
       </if>
        <if test="submit_date != null" >
-        and submit_date > #{submit_date,jdbcType=VARCHAR}
+        and hdispatch_schedule.submit_date > #{submit_date,jdbcType=VARCHAR}
       </if>
   </select>
    <select id="selectByFlowAndProject" resultMap="BaseResultMap" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >

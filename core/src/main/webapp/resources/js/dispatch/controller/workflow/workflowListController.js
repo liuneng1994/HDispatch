@@ -50,7 +50,6 @@
                 }
             },
             //width:500,
-            selectable: "multiple, rowbox",
             navigatable: true,
             resizable: true,
             scrollable: true,
@@ -96,14 +95,16 @@
                 },
                 {
                     field: "",
-                    title: '',
+                    title: '操作',
+                    attributes:　{style:"padding:0"},
                     width: 150,
                     template: function (item) {
                         var html = '';
-                        if  (hasOperatePermission(item.themeId)) {
+                        if (hasOperatePermission(item.themeId)) {
                             var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
-                            html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
                             html += "<button class='btn btn-danger' ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
+                            html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
+                            html += "<button class='btn btn-danger' ng-click='vm.delete(" + item.id + ")'>删除</button>"
                         }
                         return html;
                     }
@@ -122,9 +123,17 @@
             location = _basePath + '/dispatch/workflow/workflow_update.html';
         };
 
-        vm.deleteSelection = function () {
+        vm.delete = function (id) {
             "use strict";
-            grid_batchDelete_btn_click('grid');
+            kendo.ui.showConfirmDialog({
+                title: $l('hap.tip.info'),
+                message: $l('hap.tip.delete_confirm')
+            }).done(function (event) {
+                if (event.button == 'OK') {
+                    $('#grid').data('kendoGrid').dataSource.remove($('#grid').data('kendoGrid').dataSource.get(id));
+                    $('#grid').data('kendoGrid').dataSource.sync();
+                }
+            });
         };
 
         vm.themeChange = function (themeId) {
@@ -135,17 +144,20 @@
         vm.dependency = function (id) {
             "use strict";
             var item = $('#grid').data('kendoGrid').dataSource.get(id);
-            $('#dependencyFrame').attr('src', _basePath+'/dispatch/workflow/dept_workflow_list.html?workflowId='+item.workflowId+"&projectName="+item.project+"&flowId="+item.flowId);
+            $('#dependencyFrame').attr('src', _basePath + '/dispatch/workflow/dept_workflow_list.html?workflowId=' + item.workflowId + "&projectName=" + item.project + "&flowId=" + item.flowId);
             vm.dependencyWindow.maximize().open();
         };
 
         vm.mutex = function (id) {
             "use strict";
             var item = $('#grid').data('kendoGrid').dataSource.get(id);
-            $('#mutexFrame').attr('src', _basePath+'/dispatch/workflow/mutex_workflow_list.html?workflowId='+item.workflowId+"&projectName="+item.project+"&flowId="+item.flowId);
+            $('#mutexFrame').attr('src', _basePath + '/dispatch/workflow/mutex_workflow_list.html?workflowId=' + item.workflowId + "&projectName=" + item.project + "&flowId=" + item.flowId);
             vm.mutexWindow.maximize().open();
         };
 
+        window.setTimeout(function() {
+            Hap.autoResizeGrid('grid');
+        },200);
 
         refreshThemes();
         return vm;
