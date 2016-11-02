@@ -5,7 +5,6 @@ import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
-import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.mapper.HdispatchAuthorityMapper;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;

@@ -47,15 +47,4 @@
         <property name="maxInMemorySize" value="4098"/>
         <property name="maxUploadSize" value="10485760000"/>
     </bean>
-
-    <!--&lt;!&ndash;权限拦截切面设置&ndash;&gt;-->
-    <!--<aop:config>-->
-        <!--<aop:aspect id="hdispatch_permission_aspect" ref="permissionHandler">-->
-            <!--<aop:pointcut id="hdispatch_permission_pointcut"-->
-                          <!--expression="execution(* hdispatch.core.dispatch.service..*.*(..))"/>-->
-            <!--<aop:before method="checkPermission" pointcut-ref="hdispatch_permission_pointcut"/>-->
-        <!--</aop:aspect>-->
-    <!--</aop:config>-->
-    <!--<bean id="permissionHandler" class="hdispatch.core.dispatch.authorityValidate.PermissionHandler"/>-->
-
 </beans>

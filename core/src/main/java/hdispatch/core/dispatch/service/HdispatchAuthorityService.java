@@ -3,7 +3,6 @@ package hdispatch.core.dispatch.service;
 import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
-import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
 
 import java.util.List;
