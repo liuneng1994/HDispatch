@@ -6,10 +6,6 @@
             $.ajax({
                 type: 'GET',
                 url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
-                xhrFields: {
-                    withCredentials: true
-                },
-                crossDomain: true,
                 success: function (data) {
                     filter_to_operate_themeIds = [];
 //            console.log(data);
@@ -251,6 +247,9 @@
                                                         if (options.pageSize) {
                                                             map.pagesize = options.pageSize;
                                                         }
+                                                        /*if (options.filter) {
+                                                            console.log(options.filter);
+                                                        }*/
                                                         return map;
                                                     } else {
                                                         var datas = options.models;
@@ -261,7 +260,7 @@
                                             },
                                             batch: true,
                                             serverPaging: true,
-                                           // serverFiltering: true,
+                                            //serverFiltering: true,
                                             pageSize: 50,
                                             schema: {
                                                 data: 'rows',
