@@ -3,7 +3,6 @@ package hdispatch.core.dispatch.controllers;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.annotation.StdWho;
 import com.hand.hap.system.controllers.BaseController;
-import com.hand.hap.system.dto.DTOStatus;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.service.SvnParameterService;
@@ -16,16 +15,14 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
 import java.util.List;
 import java.util.Locale;
 
 /**
+ * 任务运行时参数控制器<br>
  * Created by yyz on 2016/9/24.
  *
  * @author yazheng.yang@hand-china.com
- *
- * SVN文件参数控制器类
  */
 @Controller
 public class SvnParameterController extends BaseController{
@@ -33,14 +30,24 @@ public class SvnParameterController extends BaseController{
     @Autowired
     private SvnParameterService svnParameterService;
 
+    /**
+     * 模糊查询任务运行时参数
+     * @param request
+     * @param page
+     * @param pageSize
+     * @param subjectName
+     * @param mappingName
+     * @param parameterName
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/svnParameter/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getSvnParameters(HttpServletRequest request,
-                                @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                @RequestParam(defaultValue = "") String subjectName,
-                                @RequestParam(defaultValue = "") String mappingName,
-                                @RequestParam(defaultValue = "") String parameterName) {
+                                @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                @RequestParam(name = "subjectName", defaultValue = "") String subjectName,
+                                @RequestParam(name = "mappingName", defaultValue = "") String mappingName,
+                                @RequestParam(name = "parameterName", defaultValue = "") String parameterName) {
         subjectName = subjectName.trim();
         mappingName = mappingName.trim();
         parameterName = parameterName.trim();
@@ -135,7 +142,7 @@ public class SvnParameterController extends BaseController{
     }
 
     /**
-     * 批量删除 参数
+     * 批量删除任务运行时参数
      */
     @RequestMapping(value = "/dispatcher/svnParameter/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
@@ -167,6 +174,13 @@ public class SvnParameterController extends BaseController{
         return rd;
     }
 
+    /**
+     * 批量更新
+     * @param svnParameterList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/svnParameter/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateSvnParameters(@RequestBody List<SvnParameter> svnParameterList, BindingResult result, HttpServletRequest request) {
@@ -185,6 +199,13 @@ public class SvnParameterController extends BaseController{
     }
 
 
+    /**
+     * 从excel文件中导入参数。
+     * 根据subjectName、mappingName、parameterName判断是否已经存在，若存在，直接更新；若不存在，执行插入
+     * @param files
+     * @param req
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/svnParameter/importFromExcel",method = RequestMethod.POST)
     public ResponseData addSvnParametersFromExcel(@RequestParam("excelFiles") CommonsMultipartFile[] files, HttpServletRequest req){
 

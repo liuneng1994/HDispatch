@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 处理主题组和主题映射关系的service接口实现类<br>
  * Created by yyz on 2016/10/18.
- *
  * @author yazheng.yang@hand-china.com
  */
 @Service
@@ -24,6 +24,15 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
     private Logger logger = Logger.getLogger(ThemeGroupThemeServiceImpl.class);
     @Autowired
     private ThemeGroupThemeMapper themeGroupThemeMapper;
+
+    /**
+     * 根据 ThemeGroupTheme 模糊查询不在主题组下的主题
+     * @param requestContext
+     * @param themeGroupTheme
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @Override
     public List<ThemeGroupTheme> selectThemesNotInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
@@ -34,6 +43,14 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
         return themeGroupThemeMapper.selectNotInThemeGroup(map);
     }
 
+    /**
+     * 根据 ThemeGroupTheme 模糊查询主题组下的主题
+     * @param requestContext
+     * @param themeGroupTheme
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @Override
     public List<ThemeGroupTheme> selectThemesInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
@@ -44,6 +61,12 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
         return themeGroupThemeMapper.selectInThemeGroup(map);
     }
 
+    /**
+     * 批量编辑（增加和删除，没有必要修改）
+     * @param requestContext
+     * @param filterList
+     * @return
+     */
     @Override
     public List<ThemeGroupTheme> batchUpdate(IRequest requestContext, List<ThemeGroupTheme> filterList) {
         for (ThemeGroupTheme themeGroupTheme : filterList) {

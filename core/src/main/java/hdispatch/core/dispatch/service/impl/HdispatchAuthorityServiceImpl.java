@@ -5,7 +5,6 @@ import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
-import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.mapper.HdispatchAuthorityMapper;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
@@ -18,11 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 任务调度权限service接口实现类<br>
  * Created by yyz on 2016/10/20.
- *
  * @author yazheng.yang@hand-china.com
- *
- * 任务调度权限服务实现类
  */
 @Service
 public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService {

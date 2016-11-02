@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * 任务组控制器<br>
  * Created by yyz on 2016/10/17.
- *
  * @author yazheng.yang@hand-china.com
  */
 @Controller
@@ -48,10 +48,10 @@ public class ThemeGroupController  extends BaseController {
     @RequestMapping(value = "/dispatch/themeGroup/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemeGroups(HttpServletRequest request,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(defaultValue = "") String themeGroupName,
-                                  @RequestParam(defaultValue = "") String themeGroupDesc) {
+                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                  @RequestParam(name = "themeGroupName", defaultValue = "") String themeGroupName,
+                                  @RequestParam(name = "themeGroupDesc", defaultValue = "") String themeGroupDesc) {
         IRequest requestContext = createRequestContext(request);
         ThemeGroup themeGroup = new ThemeGroup();
         themeGroupName = themeGroupName.trim();
@@ -169,11 +169,11 @@ public class ThemeGroupController  extends BaseController {
     @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryNotInThemeGroup", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemesNotInThemeGroup(HttpServletRequest request,
-                                       @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                       @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                       @RequestParam(defaultValue = "") String themeName,
-                                       @RequestParam(defaultValue = "") String themeDescription,
-                                       @RequestParam(defaultValue = "-100") Long themeGroupId) {
+                                       @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                       @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                       @RequestParam(name = "themeName", defaultValue = "") String themeName,
+                                       @RequestParam(name = "themeDescription", defaultValue = "") String themeDescription,
+                                       @RequestParam(name = "themeGroupId", defaultValue = "-100") Long themeGroupId) {
         ResponseData responseData = null;
         if(null == themeGroupId || themeGroupId < 0){
             responseData = new ResponseData(false);
@@ -212,11 +212,11 @@ public class ThemeGroupController  extends BaseController {
     @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryUnderThemeGroup", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemesInThemeGroup(HttpServletRequest request,
-                                                 @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                                 @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                                 @RequestParam(defaultValue = "") String themeName,
-                                                 @RequestParam(defaultValue = "") String themeDescription,
-                                                 @RequestParam(defaultValue = "-100") Long themeGroupId) {
+                                                 @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                                 @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                                 @RequestParam(name = "themeName", defaultValue = "") String themeName,
+                                                 @RequestParam(name = "themeDescription", defaultValue = "") String themeDescription,
+                                                 @RequestParam(name = "themeGroupId", defaultValue = "-100") Long themeGroupId) {
         ResponseData responseData = null;
         if(null == themeGroupId || themeGroupId < 0){
             responseData = new ResponseData(false);
@@ -312,10 +312,10 @@ public class ThemeGroupController  extends BaseController {
     @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryUnderThemeGroup", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getUsersInThemeGroup(HttpServletRequest request,
-                                              @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                              @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                              @RequestParam(defaultValue = "") String userName,
-                                              @RequestParam(defaultValue = "-100") Long themeGroupId) {
+                                              @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                              @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                              @RequestParam(name = "userName", defaultValue = "") String userName,
+                                              @RequestParam(name = "themeGroupId", defaultValue = "-100") Long themeGroupId) {
         ResponseData responseData = null;
         if(null == themeGroupId || themeGroupId < 0){
             responseData = new ResponseData(false);
@@ -347,10 +347,10 @@ public class ThemeGroupController  extends BaseController {
     @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryNotInThemeGroup", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getUsersNotInThemeGroup(HttpServletRequest request,
-                                             @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                             @RequestParam(defaultValue = "") String userName,
-                                             @RequestParam(defaultValue = "-100") Long themeGroupId) {
+                                             @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                             @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                             @RequestParam(name = "userName", defaultValue = "") String userName,
+                                             @RequestParam(name = "themeGroupId", defaultValue = "-100") Long themeGroupId) {
         ResponseData responseData = null;
         if(null == themeGroupId || themeGroupId < 0){
             responseData = new ResponseData(false);

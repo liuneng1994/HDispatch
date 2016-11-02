@@ -3,8 +3,6 @@ package hdispatch.core.dispatch.controllers;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
-import hdispatch.core.dispatch.authorityValidate.PermissionType;
-import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeService;
@@ -16,13 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
+ * 主题控制器<br>
  * Created by yyz on 2016/9/6.
  * yazheng.yang@hand-china.com
  */
@@ -46,10 +41,10 @@ public class ThemeController extends BaseController {
     @RequestMapping(value = "/dispatcher/theme/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getThemes(HttpServletRequest request,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(defaultValue = "") String themeName,
-                                  @RequestParam(defaultValue = "") String themeDescription) {
+                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                  @RequestParam(name = "themeName", defaultValue = "") String themeName,
+                                  @RequestParam(name = "themeDescription", defaultValue = "") String themeDescription) {
         IRequest requestContext = createRequestContext(request);
         Theme theme = new Theme();
         themeName = themeName.trim();
@@ -68,7 +63,7 @@ public class ThemeController extends BaseController {
     }
 
     /**
-     * 本方法用于提供具有操作权限的主题列表
+     * 用于提供具有操作权限的主题列表
      * @param request
      * @return
      */
@@ -83,7 +78,7 @@ public class ThemeController extends BaseController {
     }
 
     /**
-     * 本方法用于提供具有操作权限或者读权限的主题列表
+     * 用于提供具有操作权限或者读权限的主题列表
      * @param request
      * @return
      */
@@ -97,6 +92,13 @@ public class ThemeController extends BaseController {
         return responseData;
     }
 
+    /**
+     * 批量创建主题
+     * @param themeList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/theme/submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
@@ -144,6 +146,13 @@ public class ThemeController extends BaseController {
         return rd;
     }
 
+    /**
+     * 批量删除主题（首先检查主题下是否不存在层次，删除不存在层次的主题）
+     * @param themeList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/theme/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {

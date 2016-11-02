@@ -6,10 +6,9 @@ import hdispatch.core.dispatch.dto.job.Job;
 import java.util.List;
 
 /**
+ * 任务service接口<br>
  * Created by yyz on 2016/9/11.
  * @author yazheng.yang@hand-china.com
- *
- * 任务服务接口类
  */
 public interface JobService {
     /**

@@ -5,8 +5,8 @@ import hdispatch.core.dispatch.dto.authority.ThemeGroup;
 import java.util.List;
 
 /**
+ * 任务组mapper接口<br>
  * Created by yyz on 2016/10/14.
- *
  * @author yazheng.yang@hand-china.com
  */
 public interface ThemeGroupMapper {

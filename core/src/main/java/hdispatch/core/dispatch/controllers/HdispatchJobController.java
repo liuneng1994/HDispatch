@@ -25,12 +25,10 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * 任务控制器<br>
+ *     note:重新命名，因为在HAP原先的系统中存在JobController这个类，冲突了，改名为HdispatchJobController
  * Created by yyz on 2016/9/11.
  * @author yazheng.yang@hand-china.com
- *
- * note:重新命名，因为在HAP原先的系统中存在JobController这个类，冲突了，改名为HdispatchJobController
- *
- * 任务控制器类
  */
 @Controller
 public class HdispatchJobController extends BaseController {
@@ -47,11 +45,11 @@ public class HdispatchJobController extends BaseController {
     @RequestMapping(value = "/dispatcher/job/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getJobs(HttpServletRequest request,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                  @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                  @RequestParam(defaultValue = "-100") Long themeId,
-                                  @RequestParam(defaultValue = "-100") Long layerId,
-                                  @RequestParam(defaultValue = "") String jobName) {
+                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                  @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                  @RequestParam(name = "themeId", defaultValue = "-100") Long themeId,
+                                  @RequestParam(name = "layerId", defaultValue = "-100") Long layerId,
+                                  @RequestParam(name = "jobName", defaultValue = "") String jobName) {
         IRequest requestContext = createRequestContext(request);
         Job job = new Job();
         if(!jobName.trim().equals("")){
@@ -68,7 +66,7 @@ public class HdispatchJobController extends BaseController {
     }
 
     /**
-     * 新增job
+     * 批量新增job
      * @param jobList 新建的job list
      * @param result
      * @param request
@@ -173,7 +171,7 @@ public class HdispatchJobController extends BaseController {
 
 
     /**
-     * 根据节点ID获取SVN文件结构
+     * 根据节点ID获取Kettle文件结构
      * @param request
      * @param nodeId 当前节点相对于设定的根目录的完整路径
      * @return
@@ -181,7 +179,7 @@ public class HdispatchJobController extends BaseController {
     @RequestMapping(value = "/dispatcher/job/svnTree/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getSvnTreeNodes(HttpServletRequest request,
-                                @RequestParam(defaultValue = "") String nodeId) {
+                                @RequestParam(name = "nodeId", defaultValue = "") String nodeId) {
         IRequest requestContext = createRequestContext(request);
         ResponseData responseData = null;
         nodeId = nodeId.trim();
@@ -205,7 +203,7 @@ public class HdispatchJobController extends BaseController {
 
 
     /**
-     * 根据SVN文件列表批量创建job
+     * 根据Kettle文件列表批量创建job（每一个kettle文件对应一个job，job的名称为kettle文件名）
      */
     @RequestMapping(value = "/dispatcher/job/batchSubmit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody

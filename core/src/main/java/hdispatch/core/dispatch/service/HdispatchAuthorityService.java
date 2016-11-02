@@ -3,18 +3,15 @@ package hdispatch.core.dispatch.service;
 import com.hand.hap.account.dto.User;
 import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
-import hdispatch.core.dispatch.dto.authority.PermissionParameter;
 import hdispatch.core.dispatch.dto.theme.Theme;
 
 import java.util.List;
 
 /**
- * 任务调度权限服务接口类
+ * 任务调度权限service接口类<br>
  *
  * Created by yyz on 2016/10/20.
- *
  * @author yazheng.yang@hand-china.com
- *
  */
 public interface HdispatchAuthorityService {
     /**

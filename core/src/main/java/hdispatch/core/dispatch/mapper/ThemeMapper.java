@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
+ * 主题mapper接口<br>
  * Created by yyz on 2016/9/5.
  * @author yazheng.yang@hand-china.com
  */

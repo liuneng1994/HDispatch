@@ -34,7 +34,9 @@ public class LayerServiceImpl implements LayerService {
     @Autowired
     private WorkflowMapper workflowMapper;
     /**
-     * 创建层
+     * 创建层次
+     * @param layer
+     * @return
      */
     @Override
     public boolean create(Layer layer) {
@@ -47,6 +49,13 @@ public class LayerServiceImpl implements LayerService {
         return true;
     }
 
+    /**
+     * 批量编辑（增、删、改）
+     * @param requestContext
+     * @param layerList
+     * @return
+     * @throws Exception
+     */
     @Override
     public List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList) throws Exception {
         for (Layer layer : layerList) {
@@ -87,6 +96,11 @@ public class LayerServiceImpl implements LayerService {
         return layerList;
     }
 
+    /**
+     * 检查在当前主题下是否已经存在同名的层
+     * @param layerList
+     * @return
+     */
     @Override
     public boolean[] checkIsExist(List<Layer> layerList) {
         boolean[] isExist = new boolean[layerList.size()];
@@ -101,6 +115,10 @@ public class LayerServiceImpl implements LayerService {
         return isExist;
     }
 
+    /**
+     * 逻辑删除（在数据库中将active字段设置为1）
+     * @param layer
+     */
     @Override
     public void deleteInLogic(Layer layer) {
         if(null != layer){
@@ -108,6 +126,14 @@ public class LayerServiceImpl implements LayerService {
         }
     }
 
+    /**
+     * 主题下，根据层次中的字段进行模糊查询（分页）
+     * @param requestContext
+     * @param page
+     * @param pageSize
+     * @param layer
+     * @return
+     */
     @Override
     public List<Layer> selectActiveLayersByThemeId(IRequest requestContext, int page, int pageSize, Layer layer) {
         PageHelper.startPage(page, pageSize);
@@ -115,18 +141,36 @@ public class LayerServiceImpl implements LayerService {
         return layerList;
     }
 
+    /**
+     * 主题下，根据层次中的字段进行模糊查询
+     * @param requestContext
+     * @param layer
+     * @return
+     */
     @Override
     public List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext, Layer layer) {
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
         return layerList;
     }
 
+    /**
+     * 获取所有主题下的所有层次
+     * @param requestContext
+     * @return
+     */
     @Override
     public List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext) {
         List<Layer> layerList = layerMapper.selectAllActiveLayers();
         return layerList;
     }
 
+    /**
+     * 获取传入的列表中挂载任务或任务流的层次列表，
+     * 层次下面没有任务或任务流的层次将被过滤掉,
+     * 用于删除判断
+     * @param layerList 层次列表
+     * @return 挂载任务或任务流的层次列表
+     */
     @Override
     public List<Layer> checkIsMountJobOrWorkflow(List<Layer> layerList) {
         List<Layer> returnList = new ArrayList<>();

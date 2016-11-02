@@ -12,14 +12,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * 任务组service接口实现类<br>
  * Created by yyz on 2016/10/17.
- *
  * @author yazheng.yang@hand-china.com
  */
 @Service
@@ -32,7 +31,14 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
     @Autowired
     private HdispatchAuthorityMapper hdispatchAuthorityMapper;
 
-
+    /**
+     * 根据任务组模糊查询
+     * @param requestContext
+     * @param themeGroup
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @Override
     public List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
@@ -40,6 +46,12 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
         return result;
     }
 
+    /**
+     * 批量编辑任务组（增加和修改）
+     * @param requestContext
+     * @param themeGroupList
+     * @return
+     */
     @Override
     public List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList) {
         for (ThemeGroup themeGroup : themeGroupList) {
@@ -62,6 +74,13 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
         return themeGroupList;
     }
 
+    /**
+     * 批量删除任务组,<br>
+     *     如果任务组下没有挂载主题或用户，那么可以删除；否则，不删除，并返回不可以删除的列表
+     * @param requestContext
+     * @param themeGroupList 待删除的主题组列表
+     * @param cannotRemoveList 不可以删除的列表
+     */
     @Override
     public void batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
         for (ThemeGroup themeGroup : themeGroupList) {

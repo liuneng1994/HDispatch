@@ -8,15 +8,13 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import java.util.List;
 
 /**
+ * 任务运行时参数service接口<br>
  * Created by yyz on 2016/9/24.
- *
  * @author yazheng.yang@hand-china.com
- *
- * SVN参数-服务接口
  */
 public interface SvnParameterService {
     /**
-     * 根据SvnParameter进行查询
+     * 根据SvnParameter进行模糊查询
      */
     List<SvnParameter> selectBySvnParameter(IRequest requestContext, SvnParameter svnParameter, int page, int pageSize);
     /**

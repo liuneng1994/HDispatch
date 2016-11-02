@@ -3,10 +3,9 @@ package hdispatch.core.dispatch.dto.layer;
 import com.hand.hap.system.dto.BaseDTO;
 
 /**
+ * 层次类dto<br>
  * Created by yyz on 2016/9/7.
  * @author yazheng.yang@hand-china.com
- *
- * 层次类
  */
 public class Layer extends BaseDTO{
     private Long layerId;

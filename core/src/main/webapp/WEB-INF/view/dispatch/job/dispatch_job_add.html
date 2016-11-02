@@ -40,11 +40,15 @@
                                     <input id="input_layerName" type="text" style="width:70%" data-bind="value:model.jobName" class="k-textbox">
                                 </div>
                             </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
-                                    <span class="btn btn-success" data-bind="click:queryResource" type="submit"><@spring.message "hdispatch.query"/></span>
-                                </div>
-                            </div>
+                            <!--<div class="col-sm-3">-->
+                                <!--<div class="form-group">-->
+                                    <!--<span class="btn btn-success" data-bind="click:queryFunction" type="submit"><@spring.message "hdispatch.query"/></span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="panel-footer text-right">
+                            <span class="btn btn-success" data-bind="click:queryFunction" type="submit"><@spring.message "hdispatch.query"/></span>
+                            <span class="btn btn-default" data-bind="click:resetFunction" type="button"><@spring.message "hap.reset"/></span>
                         </div>
                     </form>
                 </div>
@@ -133,7 +137,7 @@
                     cancelFunction: function(e){
                         $('#jobListGrid').data('kendoGrid').cancelChanges();
                     },
-                    queryResource: function(e) {
+                    queryFunction: function(e) {
                         $('#jobListGrid').data('kendoGrid').dataSource.read();
                         $('#jobListGrid').data('kendoGrid').dataSource.page(1);
                     },
@@ -142,6 +146,12 @@
                     },
                     batchCreateFunction: function (e) {
                         showBatchCreateJobWindow(e);
+                    },
+                    resetFunction: function (e) {
+                        var formData = viewModel.model.toJSON();
+                        for ( var k in formData) {
+                            viewModel.model.set(k, null);
+                        }
                     }
                 });
 
