@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.azkaban.service.impl;
 
+import com.hand.hap.system.dto.ResponseData;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -82,7 +84,7 @@ public class ScheduleFlowServiceImpl implements ScheduleFlowService {
             if (response.getBody().getObject().getString("status").equals("success")) {
 
                 result.setCode(1);
-                result.setMessage("执行成功");
+                result.setMessage("删除成功");
 
             } else {
                 result.setCode(0);
@@ -109,7 +111,7 @@ public class ScheduleFlowServiceImpl implements ScheduleFlowService {
 			logger.error("schedule不存在！");
 			throw new IllegalArgumentException("schedule不存在！", e);
 		}
-		return new Schedule(response.getBody().getObject());
+        return new Schedule(response.getBody().getObject());
 	}
 /**
  * 是否设置了sla
@@ -170,39 +172,31 @@ public ResultObj slaInfo(Map<String, Object> map) {
 }
 
 @Override
-public ResultObj scheduleCronFlow(String projectName,String flowName,String cronExpression) {
-	 ResultObj result = new ResultObj();
+public ResponseData scheduleCronFlow(String projectName, String flowName, String cronExpression) {
+    ResponseData result = null;
      try {
-         response = RequestUtils.post(RequestUrl.SCHEDULE).field("ajax", "scheduleCronFlows")
+         response = RequestUtils.post(RequestUrl.SCHEDULE).field("ajax", "scheduleCronFlow")
                  .field("projectName", projectName)
-                 .field("flowName", flowName)
+                 .field("flow", flowName)
                  .field("cronExpression",cronExpression)
                  .asJson();
-         if (response.getBody().getObject().getString("status").equals("success")) {
-            /* if(response.getBody().getObject().toString().contains("\"error\":"))
-             {
-                     result.setCode(0);
-                     result.setMessage("调度错误！");
-             }else
-             {
-
-             }*/
-             result.setCode(1);
-             result.setMessage("执行成功");
-
-         } else {
-             result.setCode(0);
-             result.setMessage("调度错误！");
+         if(response.getBody().getObject().has("status")) {
+             if (response.getBody().getObject().getString("status").equals("success")) {
+                 result = new ResponseData(true);
+                 result.setMessage("执行成功");
+             } else {
+                 result = new ResponseData(false);
+                 result.setMessage(response.getBody().getObject().getString("message"));
+             }
+         }else {
+             result = new ResponseData(false);
+             result.setMessage(response.getBody().getObject().getString("error"));
          }
      } catch (UnirestException e) {
-         result.setCode(0);
-         result.setMessage("工程错误或调度时间错误");
-         logger.error("工程错误或调度时间错误");
-         throw new IllegalArgumentException("工程错误或调度时间错误", e);
-
-
+         result=new ResponseData(false);
+         result.setMessage("工程错误或表达式错误");
+         throw new IllegalArgumentException("工程错误或调度表达式错误", e);
      }
-
      return result;
 }
 }
