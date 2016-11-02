@@ -14,10 +14,6 @@
         $.ajax({
             type: 'GET',
             url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
             success: function (data) {
                 window.filter_to_operate_themeIds = [];
                 $.each(data.rows, function (key,value) {

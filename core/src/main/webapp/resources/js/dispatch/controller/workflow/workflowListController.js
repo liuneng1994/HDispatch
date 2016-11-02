@@ -96,6 +96,7 @@
                 {
                     field: "",
                     title: '操作',
+                    attributes:　{style:"padding:0"},
                     width: 150,
                     template: function (item) {
                         var html = '';
@@ -105,7 +106,6 @@
                             html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
                             html += "<button class='btn btn-danger' ng-click='vm.delete(" + item.id + ")'>删除</button>"
                         }
-                        html += "<button class='btn btn-danger' style='visibility:hidden'>填充</button>";
                         return html;
                     }
                 }]
@@ -154,6 +154,10 @@
             $('#mutexFrame').attr('src', _basePath + '/dispatch/workflow/mutex_workflow_list.html?workflowId=' + item.workflowId + "&projectName=" + item.project + "&flowId=" + item.flowId);
             vm.mutexWindow.maximize().open();
         };
+
+        window.setTimeout(function() {
+            Hap.autoResizeGrid('grid');
+        },200);
 
         refreshThemes();
         return vm;
