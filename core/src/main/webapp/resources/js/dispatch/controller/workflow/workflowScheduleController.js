@@ -3,7 +3,7 @@
  */
 (function () {
     'use strict';
-    angular.module('dispatch').controller('workflowListController', ['$window', '$scope', 'workflowService', function ($window, $scope, workflowService) {
+    angular.module('dispatch').controller('workflowListController', ['$window', '$scope', 'workflowService', '$compile', function ($window, $scope, workflowService, $compile) {
         var vm = this;
 
         vm.notification = $("#notification").kendoNotification({
@@ -125,6 +125,86 @@
             });
         }
 
+        vm.cronSchedule = function() {
+            vm.cronExp = [0,'*','*','?','*','*'];
+            getSelectWorkflows();
+            var selectedFlows = loadSelectedWorkflow();
+            vm.cronScheduleFlow = {};
+            vm.cronScheduleFlow.loading = selectedFlows.size;
+            if (vm.cronScheduleFlow.loading == 0) {
+                return;
+            }
+            vm.cronScheduleFlow.flows = {};
+            vm.cronScheduleFlow.name = '';
+            for (var flow of selectedFlows.values()) {
+                workflowService.workflow(flow.workflowId).then(function (data) {
+                    vm.cronScheduleFlow.loading--;
+                    if (data.projectName && data.flowId) {
+                        vm.cronScheduleFlow.flows[data.workflowId] = {};
+                        vm.cronScheduleFlow.flows[data.workflowId].projectName = data.projectName;
+                        vm.cronScheduleFlow.flows[data.workflowId].flowId = data.flowId;
+                        vm.cronScheduleFlow.name += (data.name + '  ');
+                    } else {
+                        vm.notification.show({
+                            title: data.name,
+                            message: "未生成工作流"
+                        }, "error");
+                    }
+                    if (vm.cronScheduleFlow.loading == 0 && vm.cronScheduleFlow.name.length == 0) {
+                        vm.scheduleWindow.close();
+                    }
+                })
+            };
+            kendo.ui.showDialog({
+                title: 'cron计划',
+                width: 600,
+                message: $('#cronScheduleWindow').html(),
+                buttons: [{
+                    text: "计划",
+                    type: 'success',
+                    click: function(e) {
+                        e.dialog.destroy();
+                        e.deferred.resolve({
+                            button: "yes"
+                        });
+                    }
+                }, {
+                    text: "取消",
+                    type: 'danger',
+                    click: function(e) {
+                        e.dialog.destroy();
+                        e.deferred.resolve({
+                            button: "no"
+                        });
+                    }
+                }]
+            }).done(function(e) {
+                if (e.button == 'yes') {
+                    vm.cronScheduleSubmit();
+                }
+            });
+            $compile($('div.modal-body table'))($scope);
+        };
+        vm.cronScheduleSubmit = function() {
+            var scheduleInfo = {};
+            for (var id in vm.cronScheduleFlow.flows) {
+                scheduleInfo.projectName = vm.cronScheduleFlow.flows[id].projectName;
+                scheduleInfo.flowId = vm.cronScheduleFlow.flows[id].flowId;
+                scheduleInfo.cronExpression = vm.cronExp.join(' ');
+                var arg = angular.copy(scheduleInfo);
+                workflowService.cronScheduleWorkflow(arg).then(function (data) {
+                    vm.notification.show({
+                        message: data||'计划成功'
+                    }, "upload-success");
+                }, function (data) {
+                    vm.notification.show({
+                        title: '',
+                        message: data||'计划失败'
+                    }, "error");
+                });
+            }
+        };
+
         vm.schedule = function () {
             getSelectWorkflows();
             var selectedFlows = loadSelectedWorkflow();
@@ -156,8 +236,7 @@
                         vm.scheduleWindow.close();
                     }
                 })
-            }
-            ;
+            };
         };
         vm.scheduleSubmit = function () {
             var scheduleInfo = {};
