@@ -119,7 +119,7 @@
 
         var cronScheduleWorkflow = function(scheduleInfo) {
             return httpService.get(_basePath + '/schedule/schedulecron', scheduleInfo, function (data, defered) {
-                if (data.code == 1) {
+                if (data.success) {
                     defered.resolve(scheduleInfo.projectName + '计划成功');
                 } else {
                     defered.reject(data.message);
