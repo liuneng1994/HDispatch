@@ -27,8 +27,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 任务运行时参数service接口实现类<br>
  * Created by yyz on 2016/9/24.
- *
  * @author yazheng.yang@hand-china.com
  */
 @Service
@@ -38,7 +38,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     private SvnParameterMapper svnParameterMapper;
 
     /**
-     * 根据SvnParameter进行查询
+     * 根据SvnParameter进行模糊查询
      * @param requestContext
      * @param svnParameter
      * @param page

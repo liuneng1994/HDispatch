@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * 任务mapper接口<br>
  * Created by yyz on 2016/9/11.
  * @author yazheng.yang@hand-china.com
  */

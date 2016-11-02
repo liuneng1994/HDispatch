@@ -8,12 +8,10 @@ import hdispatch.core.dispatch.dto.theme.Theme;
 import java.util.List;
 
 /**
- * 任务调度权限服务接口类
+ * 任务调度权限service接口类<br>
  *
  * Created by yyz on 2016/10/20.
- *
  * @author yazheng.yang@hand-china.com
- *
  */
 public interface HdispatchAuthorityService {
     /**

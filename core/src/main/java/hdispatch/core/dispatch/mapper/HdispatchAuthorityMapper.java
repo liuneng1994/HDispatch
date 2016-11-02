@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 任务调度权限mapper接口<br>
  * Created by yyz on 2016/10/20.
  *
  * @author yazheng.yang@hand-china.com

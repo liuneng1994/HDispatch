@@ -9,7 +9,6 @@ import hdispatch.core.dispatch.mapper.LayerMapper;
 import hdispatch.core.dispatch.mapper.ThemeMapper;
 import hdispatch.core.dispatch.service.ThemeService;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +30,7 @@ public class ThemeServiceImpl implements ThemeService {
     private LayerMapper layerMapper;
 
     /**
-     * 根据主题模糊选择主题列表
+     * 根据主题模糊查询（当前用户可见的）主题列表
      * @param requestContext
      * @param theme
      * @param page
@@ -53,7 +52,8 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 获取所有可见的主题
+     * 获取当前用户可见的所有主题
+     * @param requestContext
      * @return
      */
     @Override
@@ -70,7 +70,8 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 获取所有可操作的主题
+     * 获取当前用户可以操作的所有主题
+     * @param requestContext
      * @return
      */
     @Override
@@ -87,7 +88,7 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 批量编辑（目前只是新增）
+     * 批量编辑（目前只是新增和删除，删除没有检查主题下是否有层次）
      * @param requestContext
      * @param themeList
      * @return
@@ -158,7 +159,7 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     /**
-     * 获取传入的列表中没有挂载层次的主题
+     * 获取传入的列表中没有挂载层次的主题（用于删除之前的检查）
      * @param requestContext
      * @param themeList
      * @return

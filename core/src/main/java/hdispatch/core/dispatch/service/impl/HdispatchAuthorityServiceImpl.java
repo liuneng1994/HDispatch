@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 任务调度权限service接口实现类<br>
  * Created by yyz on 2016/10/20.
- *
  * @author yazheng.yang@hand-china.com
- *
- * 任务调度权限服务实现类
  */
 @Service
 public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService {

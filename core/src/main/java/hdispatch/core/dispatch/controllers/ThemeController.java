@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
+ * 主题控制器<br>
  * Created by yyz on 2016/9/6.
  * yazheng.yang@hand-china.com
  */
@@ -62,7 +63,7 @@ public class ThemeController extends BaseController {
     }
 
     /**
-     * 本方法用于提供具有操作权限的主题列表
+     * 用于提供具有操作权限的主题列表
      * @param request
      * @return
      */
@@ -77,7 +78,7 @@ public class ThemeController extends BaseController {
     }
 
     /**
-     * 本方法用于提供具有操作权限或者读权限的主题列表
+     * 用于提供具有操作权限或者读权限的主题列表
      * @param request
      * @return
      */
@@ -91,6 +92,13 @@ public class ThemeController extends BaseController {
         return responseData;
     }
 
+    /**
+     * 批量创建主题
+     * @param themeList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/theme/submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
@@ -138,6 +146,13 @@ public class ThemeController extends BaseController {
         return rd;
     }
 
+    /**
+     * 批量删除主题（首先检查主题下是否不存在层次，删除不存在层次的主题）
+     * @param themeList
+     * @param result
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/dispatcher/theme/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {

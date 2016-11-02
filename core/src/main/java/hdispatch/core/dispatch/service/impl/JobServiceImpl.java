@@ -15,10 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 任务service接口实现类<br>
  * Created by yyz on 2016/9/11.
  * @author yazheng.yang@hand-china.com
- *
- * 任务服务实现类
  */
 @Service
 public class JobServiceImpl implements JobService {

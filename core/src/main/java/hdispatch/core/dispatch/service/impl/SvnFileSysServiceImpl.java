@@ -15,10 +15,9 @@ import java.util.Vector;
 
 
 /**
+ * 用于获取kettle文件所在服务器的文件目录service接口实现类<br>
  * Created by yyz on 2016/9/14.
  * @author yazheng.yang@hand-china.com
- *
- * SVN文件操作服务实现类
  */
 @Service
 public class SvnFileSysServiceImpl implements SvnFileSysService {
@@ -167,7 +166,11 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
         return flag;
     }
 
-
+    /**
+     * 判断是否是kettle文件
+     * @param fileName
+     * @return
+     */
     private boolean isLegalFile(String fileName){
         boolean flag = false;
         String surfix = fileName.substring(fileName.length()-4);
