@@ -276,7 +276,7 @@
                                                         {
                                                             field: "flowId",
                                                             title: '<@spring.message "hdispatch.flowlist.flowname"/>',
-                                                            width: 150,
+                                                            width: 100,
                                                             template: function (item) {
                                                                 var html = item.flowId.substr(1);
 
@@ -301,7 +301,7 @@
                                                         {
                                                             field: "period",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.period"/>',
-                                                            width: 180,
+                                                            width: 100,
                                                             template: function (item) {
                                                                 var html = item.period;
                                                                 if (item.period == "null")
@@ -312,7 +312,7 @@
                                                         {
                                                             field: "cronExpression",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.cronexpression"/>',
-                                                            width: 180,
+                                                            width: 100,
                                                             template: function (item) {
                                                                 var html = item.cronExpression;
                                                                 if (item.cronExpression == "null")
@@ -323,7 +323,7 @@
                                                         {
                                                             field: "hasSla",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.hassla"/>',
-                                                            width: 180
+                                                            width: 70
                                                         },
                                                         {
                                                             field: "",
