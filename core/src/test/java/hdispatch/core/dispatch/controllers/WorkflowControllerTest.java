@@ -1,12 +1,18 @@
 package hdispatch.core.dispatch.controllers;
 
+import hdispatch.core.dispatch.service.WorkflowService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -19,10 +25,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Rollback
 public class WorkflowControllerTest{
+    @InjectMocks
     private WorkflowController workflowController;
+
+    private MockMvc mockMvc;
+
+    @Mock
+    private WorkflowService workflowService;
 
     @Before
     public void before() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(workflowController).build();
     }
 
     @After
@@ -33,8 +47,8 @@ public class WorkflowControllerTest{
      * Method: createWorkflow(@RequestBody Workflow workflow)
      */
     @Test
-    public void testCreateWorkflow() throws Exception {
-//TODO: Test goes here... 
+    public void testCreateWorkflowInHappy() throws Exception {
+
     }
 
     /**
