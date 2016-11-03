@@ -3,6 +3,7 @@ package hdispatch.core.dispatch.controllers;
 import hdispatch.core.dispatch.TestUtil;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.service.WorkflowService;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.*;
 
 import org.mockito.MockitoAnnotations;
 import org.mvel2.util.Make;
+import org.springframework.context.MessageSource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.Validator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +53,12 @@ public class WorkflowControllerTest {
     private MockMvc mockMvc;
 
     @Mock
+    private Validator validator;
+
+    @Mock
+    private MessageSource messageSource;
+
+    @Mock
     private WorkflowService workflowService;
 
     @Before
@@ -70,15 +79,15 @@ public class WorkflowControllerTest {
         Workflow workflow = new Workflow().setWorkflowId(1L);
         Map<String, Object> map = new HashMap<>();
         map.put(RET_SUCCESS, "1");
-        when(workflowService.getWorkflowByName(anyString())).thenReturn(new Workflow());
+        when(workflowService.getWorkflowByName(anyString())).thenReturn(null);
         when(workflowService.createWorkflow(anyObject())).thenReturn(map);
         mockMvc.perform(post("/dispatcher/workflow/create")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content("{\"themeId\":1,\"layerId\":1,\"name\":\"aaa\",\"description\":\"aaa\",\"jobs\":[{\"workflowJobId\":\"a\",\"jobSource\":\"29\",\"jobType\":\"job\",\"parentsJobId\":\"\"}],\"graph\":\"{\\\"graph\\\":{\\\"cells\\\":[{\\\"type\\\":\\\"basic.Rect\\\",\\\"position\\\":{\\\"x\\\":190,\\\"y\\\":80},\\\"size\\\":{\\\"width\\\":100,\\\"height\\\":50},\\\"angle\\\":0,\\\"id\\\":\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\",\\\"jobId\\\":\\\"29\\\",\\\"z\\\":1,\\\"attrs\\\":{\\\"rect\\\":{\\\"fill\\\":\\\"lightgray\\\",\\\"stroke\\\":\\\"black\\\",\\\"stroke-width\\\":\\\"1\\\",\\\"stroke-opacity\\\":0.7,\\\"rx\\\":3,\\\"ry\\\":3},\\\"text\\\":{\\\"fill\\\":\\\"black\\\",\\\"text\\\":\\\"a\\\"}}}]},\\\"jobs\\\":{\\\"jobs\\\":{\\\"keys\\\":[\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\"],\\\"values\\\":[{\\\"themeId\\\":null,\\\"layerId\\\":0,\\\"name\\\":\\\"a\\\",\\\"type\\\":\\\"job\\\",\\\"jobSource\\\":\\\"29\\\",\\\"dept\\\":[]}]},\\\"names\\\":{\\\"keys\\\":[\\\"a\\\"],\\\"values\\\":[\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\"]},\\\"depts\\\":{\\\"keys\\\":[],\\\"values\\\":[]}}}\"}"))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("success", is(true)))
-                .andExpect(jsonPath("message", is("1")));
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("message", is("1")));
     }
 
     /**
