@@ -13,14 +13,14 @@
     <script type="text/javascript">
         $.ajax({
             type: 'GET',
-            url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
+            url: "${base.contextPath}/dispatcher/theme/queryAll_opt",
             success: function (data) {
                 window.filter_to_operate_themeIds = [];
-                $.each(data.rows, function (key,value) {
+                $.each(data.rows, function (key, value) {
                     filter_to_operate_themeIds.push(value.themeId);
                 });
             },
-            async:false,
+            async: false,
             dataType: "json"
         });
     </script>
@@ -127,7 +127,9 @@
                                 ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
                         </button>
                     </div>
-                    <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
+                    <div style="clear:both">
+                        <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
+                    </div>
                 </div>
             </div>
 
