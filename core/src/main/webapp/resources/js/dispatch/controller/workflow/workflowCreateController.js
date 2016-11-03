@@ -135,7 +135,7 @@
 
         vm.format = function () {
             vm.paint.format();
-        }
+        };
 
         function Job() {
             this.themeId = new Number();

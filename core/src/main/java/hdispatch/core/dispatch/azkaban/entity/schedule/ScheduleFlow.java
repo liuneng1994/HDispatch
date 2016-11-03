@@ -11,6 +11,15 @@ public class ScheduleFlow {
 	 private String projectName;
 	 private Integer projectId;
 	 private Long themeId;
+	private String cronExpression;
+
+	public String getCronExpression() {
+		return cronExpression;
+	}
+
+	public void setCronExpression(String cronExpression) {
+		this.cronExpression = cronExpression;
+	}
 
 	public Long getThemeId() {
 		return themeId;

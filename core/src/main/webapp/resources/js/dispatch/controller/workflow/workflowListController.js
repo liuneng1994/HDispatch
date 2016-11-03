@@ -155,10 +155,6 @@
             vm.mutexWindow.maximize().open();
         };
 
-        window.setTimeout(function() {
-            Hap.autoResizeGrid('grid');
-        },200);
-
         refreshThemes();
         return vm;
 

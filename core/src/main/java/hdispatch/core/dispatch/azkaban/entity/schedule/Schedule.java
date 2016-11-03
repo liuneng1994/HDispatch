@@ -50,7 +50,7 @@ public class Schedule {
 	    {
 	    	return obj.getString("firstSchedTime");
 	    }
-	    
+
 	    
 	    public boolean getNotifyOnFirstFailure()
 	    {

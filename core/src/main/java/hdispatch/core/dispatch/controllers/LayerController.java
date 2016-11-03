@@ -4,7 +4,6 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.layer.Layer;
-import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.service.LayerService;
 import hdispatch.core.dispatch.service.ThemeService;
 import org.apache.log4j.Logger;
@@ -37,9 +36,9 @@ public class LayerController extends BaseController {
      */
     @RequestMapping(path = "/dispatcher/layer/query",method = RequestMethod.GET)
     public ResponseData getLayersByThemeId(HttpServletRequest request,
-                                           @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                           @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                           @RequestParam(defaultValue = "-100") Long themeId){
+                                           @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                           @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                           @RequestParam(name = "themeId", defaultValue = "-100") Long themeId){
         IRequest requestContext = createRequestContext(request);
         //        查询theme是否存在并且处于active状态
         ResponseData rd = null;
@@ -71,7 +70,7 @@ public class LayerController extends BaseController {
      */
     @RequestMapping(path = "/dispatcher/layer/queryAll",method = RequestMethod.GET)
     public ResponseData getLayersByThemeIdWithoutPaging(HttpServletRequest request,
-                                           @RequestParam(defaultValue = "-100") Long themeId){
+                                           @RequestParam(name = "themeId", defaultValue = "-100") Long themeId){
         IRequest requestContext = createRequestContext(request);
         //        查询theme是否存在并且处于active状态
         ResponseData rd = null;

@@ -6,10 +6,6 @@
             $.ajax({
                 type: 'GET',
                 url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
-                xhrFields: {
-                    withCredentials: true
-                },
-                crossDomain: true,
                 success: function (data) {
                     filter_to_operate_themeIds = [];
 //            console.log(data);
@@ -242,7 +238,6 @@
                                                                     document
                                                                             .getElementById("picker").value)
                                                                     .getTime();
-                                                            document.getElementById("picker").value='';
                                                         }
                                                         console.log(options);
                                                         if (options.page) {
@@ -251,6 +246,9 @@
                                                         if (options.pageSize) {
                                                             map.pagesize = options.pageSize;
                                                         }
+                                                        /*if (options.filter) {
+                                                            console.log(options.filter);
+                                                        }*/
                                                         return map;
                                                     } else {
                                                         var datas = options.models;
@@ -261,8 +259,8 @@
                                             },
                                             batch: true,
                                             serverPaging: true,
-                                           // serverFiltering: true,
-                                            pageSize: 20,
+                                            //serverFiltering: true,
+                                            pageSize: 50,
                                             schema: {
                                                 data: 'rows',
                                                 total: 'total',
@@ -345,7 +343,7 @@
                                                     sortable: true,
                                                    //filterable:true,
                                                     pageable: {
-                                                        pageSizes: [5, 10, 20, 50],
+                                                        pageSizes: [10, 20, 50,100],
                                                         refresh: true,
                                                         buttonCount: 5,
                                                         messages: {

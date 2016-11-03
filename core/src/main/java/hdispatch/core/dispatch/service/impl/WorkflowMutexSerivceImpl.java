@@ -52,7 +52,7 @@ public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
         workflowMutexMapper.batchInsert(filteredMutexes);
         List<AzkabanFlowMutex> reverseMutexList = filteredMutexes.parallelStream().map(item -> {
             AzkabanFlowMutex mutex = new AzkabanFlowMutex();
-            mutex.setProjectId(item.getMutexProjectId()).setFlowId(item.getMutexFlowId()).setProjectId(item.getProjectId())
+            mutex.setProjectId(item.getMutexProjectId()).setFlowId(item.getMutexFlowId()).setProjectName(item.getMutexProjectName())
                     .setMutexProjectId(item.getProjectId()).setMutexFlowId(item.getFlowId()).setMutexProjectName(item.getProjectName());
             return mutex;
         }).collect(Collectors.toList());

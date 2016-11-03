@@ -53,7 +53,7 @@ public class ScheduleController extends BaseController {
      */
     @RequestMapping("/queryschedule")
     @ResponseBody
-    public ResponseData query(HttpServletRequest request, @RequestParam int page, @RequestParam int pagesize,
+    public ResponseData query(HttpServletRequest request, @RequestParam("page") int page, @RequestParam("pagesize") int pagesize,
                               HttpServletResponse response) {
 
         IRequest i = createRequestContext(request);
@@ -83,6 +83,7 @@ public class ScheduleController extends BaseController {
                 ss.setNextExecTime(s.getSchdule().getString("nextExecTime"));
                 ss.setPeriod(s.getSchdule().getString("period"));
                 ss.setSubmitUser(s.getSchdule().getString("submitUser"));
+                ss.setCronExpression(s.getSchdule().get("cronExpression").toString());
                 ss.setFlowId(p.getFlow_id());
                 ss.setThemeId(p.getTheme_id());
                 ss.setProjectName(p.getProject_name());
@@ -103,7 +104,7 @@ public class ScheduleController extends BaseController {
      */
     @RequestMapping("/unschedule")
     @ResponseBody
-    public ResultObj unschedule(HttpServletRequest request, @RequestParam Long schId, @RequestParam String fid, @RequestParam Integer pid) {
+    public ResultObj unschedule(HttpServletRequest request, @RequestParam("schId") Long schId, @RequestParam("fid") String fid, @RequestParam("pid") Integer pid) {
         HdispatchSchedule s = new HdispatchSchedule();
         s.setFlow_id(fid);
         s.setProject_id(pid);
@@ -121,8 +122,8 @@ public class ScheduleController extends BaseController {
      */
     @RequestMapping("/getjoblist")
     @ResponseBody
-    public List<JobsOfFlow> getjoblist(HttpServletRequest request, @RequestParam String flow_id,
-                                       @RequestParam String project) {
+    public List<JobsOfFlow> getjoblist(HttpServletRequest request, @RequestParam("flow_id") String flow_id,
+                                       @RequestParam("project") String project) {
         List<JobsOfFlow> list = new ArrayList<>();
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -152,8 +153,8 @@ public class ScheduleController extends BaseController {
      */
     @RequestMapping("/setsla")
     @ResponseBody
-    public ResultObj setSla(HttpServletRequest request, @RequestParam Long scheduleId, @RequestParam String slaEmails,
-                            @RequestParam String settings) {
+    public ResultObj setSla(HttpServletRequest request, @RequestParam("scheduleId") Long scheduleId, @RequestParam("slaEmails") String slaEmails,
+                            @RequestParam("settings") String settings) {
     	 Map<String, Object> map = new HashMap<String, Object>();
          map.put("scheduleId", scheduleId);
          map.put("slaEmails", slaEmails);
@@ -173,7 +174,7 @@ public class ScheduleController extends BaseController {
      */
     @RequestMapping("/slaInfo")
     @ResponseBody
-    public ResultObj slaInfo(HttpServletRequest request, @RequestParam Long scheduleId) {
+    public ResultObj slaInfo(HttpServletRequest request, @RequestParam("scheduleId") Long scheduleId) {
     	 Map<String, Object> map = new HashMap<String, Object>();
          map.put("scheduleId", scheduleId);         
         return scheduleFlowService.slaInfo(map);
@@ -191,10 +192,10 @@ public class ScheduleController extends BaseController {
     @RequestMapping("/schedule")
     @ResponseBody
     public ResultObj schedule(HttpServletRequest request,
-                              @RequestParam String projectName,
-                              @RequestParam String flow,
-                              @RequestParam Long datetime,
-                              @RequestParam boolean isrecurring
+                              @RequestParam("projectName") String projectName,
+                              @RequestParam("flow") String flow,
+                              @RequestParam("datetime") Long datetime,
+                              @RequestParam("isrecurring") boolean isrecurring
     ) throws ParseException {
     	Long projectId=exeFlowService.Fetchflows(projectName);
         SimpleDateFormat sdf=new SimpleDateFormat("MM/dd/yyyy hh,mm,a,zzz",Locale.US);
@@ -234,27 +235,28 @@ public class ScheduleController extends BaseController {
      */
     @RequestMapping("/schedulecron")
     @ResponseBody
-    public ResultObj schedulecron(HttpServletRequest request,
-                              @RequestParam String projectName,
-                              @RequestParam String flowId,
-                              @RequestParam String cronExpression
+    public ResponseData schedulecron(HttpServletRequest request,
+                              @RequestParam("projectName") String projectName,
+                              @RequestParam("flowId") String flowId,
+                              @RequestParam("cronExpression") String cronExpression
     ) throws ParseException {
-    	ResultObj obj=scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
+        ResponseData obj=scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
     	Long projectId=exeFlowService.Fetchflows(projectName);
         HdispatchSchedule hds=new HdispatchSchedule();
         Map<String, Object> map = new HashMap<>();
         map.put("projectId", projectId);
         map.put("flowId", flowId);
         Schedule s = scheduleFlowService.fetchschedule(map);
-        if(obj.getCode()==1)
+        if(obj.isSuccess())
         {
-        hds.setSubmit_date(s.getFirstSchedTime());	
+        hds.setSubmit_date(s.getSchdule().getString("firstSchedTime"));
         hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
         hds.setFlow_id(flowId);
         hds.setProject_name(projectName);
+        hdispatchScheduleService.delete(hds);
         hdispatchScheduleService.insert(hds);
         }
-        return scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
+        return obj;
 
     }
     /**
@@ -266,8 +268,8 @@ public class ScheduleController extends BaseController {
      */
     @RequestMapping("/exeflow")
 	@ResponseBody
-	public ResultObj exeFlow(HttpServletRequest request, @RequestParam String project,
-                             @RequestParam String flow) {
+	public ResultObj exeFlow(HttpServletRequest request, @RequestParam("project") String project,
+                             @RequestParam("flow") String flow) {
     	String disabled=request.getParameter("disabled");
     	String successEmails=request.getParameter("successEmails");
     	String failureEmails=request.getParameter("failureEmails");

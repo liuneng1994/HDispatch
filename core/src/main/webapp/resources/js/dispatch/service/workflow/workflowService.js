@@ -1,5 +1,5 @@
 (function () {
-    'use strict;';
+    "use strict";
     angular.module('dispatch').factory('workflowService', ['httpService', workflowService]);
     function workflowService(httpService) {
         var themes = function () {
@@ -117,6 +117,16 @@
             });
         };
 
+        var cronScheduleWorkflow = function(scheduleInfo) {
+            return httpService.get(_basePath + '/schedule/schedulecron', scheduleInfo, function (data, defered) {
+                if (data.success) {
+                    defered.resolve(scheduleInfo.projectName + '计划成功');
+                } else {
+                    defered.reject(data.message);
+                }
+            });
+        }
+
         var executeWorkflow = function (executeInfo) {
             return httpService.postForm(_basePath + '/schedule/exeflow', executeInfo, function (data, defered) {
                 if (data.code == 1) {
@@ -201,6 +211,7 @@
             queryOperate: queryOperate,
             workflow: workflow,
             scheduleWorkflow: scheduleWorkflow,
+            cronScheduleWorkflow: cronScheduleWorkflow,
             executeWorkflow: executeWorkflow,
             deleteWorkflow: deleteWorkflow,
             queryWorkflowDependency: queryWorkflowDependency,

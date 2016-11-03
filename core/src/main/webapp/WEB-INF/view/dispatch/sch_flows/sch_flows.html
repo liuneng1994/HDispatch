@@ -7,10 +7,6 @@
             $.ajax({
                 type: 'GET',
                 url: "${base.contextPath}/dispatcher/theme/queryAll_opt" ,
-                xhrFields: {
-                    withCredentials: true
-                },
-                crossDomain: true,
                 success: function (data) {
                     filter_to_operate_themeIds = [];
 //            console.log(data);
@@ -183,7 +179,6 @@
                                                         }
                                                         if (document.getElementById("picker").value != '') {
                                                             map.submitdate = new Date(document.getElementById("picker").value).getTime();
-                                                            document.getElementById("picker").value='';
                                                         }
                                                         if (options.page) {
                                                             map.page = options.page;
@@ -201,7 +196,7 @@
                                             },
                                             batch: true,
                                             serverPaging: true,
-                                            pageSize: 20,
+                                            pageSize: 50,
                                             schema: {
                                                 data: 'rows',
                                                 total: 'total',
@@ -222,6 +217,9 @@
                                                         },
                                                         period: {
                                                             type: "string"
+                                                        },
+                                                        cronExpression:{
+                                                            type:"string"
                                                         },
                                                         hasSla: {
                                                             type: "string"
@@ -252,7 +250,7 @@
                                                     editable: false,
                                                     sortable: true,
                                                     pageable: {
-                                                        pageSizes: [5, 10, 20, 50],
+                                                        pageSizes: [10, 20, 50,100],
                                                         refresh: true,
                                                         buttonCount: 5,
                                                         messages: {
@@ -278,7 +276,12 @@
                                                         {
                                                             field: "flowId",
                                                             title: '<@spring.message "hdispatch.flowlist.flowname"/>',
-                                                            width: 150
+                                                            width: 150,
+                                                            template: function (item) {
+                                                                var html = item.flowId.substr(1);
+
+                                                                return html;
+                                                            }
                                                         },
                                                        /* {
                                                             field: "projectName",
@@ -302,6 +305,17 @@
                                                             template: function (item) {
                                                                 var html = item.period;
                                                                 if (item.period == "null")
+                                                                    html = "--";
+                                                                return html;
+                                                            }
+                                                        },
+                                                        {
+                                                            field: "cronExpression",
+                                                            title: '<@spring.message "hdispatch.schedule.schlist.cronexpression"/>',
+                                                            width: 180,
+                                                            template: function (item) {
+                                                                var html = item.cronExpression;
+                                                                if (item.cronExpression == "null")
                                                                     html = "--";
                                                                 return html;
                                                             }

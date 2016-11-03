@@ -66,6 +66,9 @@
             vm.newJob = angular.copy(vm.newJob);
             vm.resetWindow();
         };
+        vm.format = function () {
+            vm.paint.format();
+        };
 
         vm.deleteJob = function () {
         };

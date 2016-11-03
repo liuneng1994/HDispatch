@@ -47,7 +47,7 @@ public class ExecutionFlowsController extends BaseController {
      */
     @RequestMapping(value="/query",method=RequestMethod.GET)
     @ResponseBody
-    public ResponseData query(HttpServletRequest request, @RequestParam int page, @RequestParam int pagesize) {
+    public ResponseData query(HttpServletRequest request, @RequestParam("page") int page, @RequestParam("pagesize") int pagesize) {
         IRequest irequest = createRequestContext(request);
         String flowName = request.getParameter("flowName");
         String groupName = request.getParameter("groupName");
@@ -96,7 +96,7 @@ public class ExecutionFlowsController extends BaseController {
      */
     @RequestMapping("/queryjobs")
     @ResponseBody
-    public ResponseData queryjobs(HttpServletRequest request, @RequestParam int page, @RequestParam int pagesize) {
+    public ResponseData queryjobs(HttpServletRequest request, @RequestParam("page") int page, @RequestParam("pagesize") int pagesize) {
         IRequest irequest = createRequestContext(request);
         String flow_id = request.getParameter("flow_id");
         String exec_id = request.getParameter("exec_id");
@@ -188,7 +188,7 @@ public class ExecutionFlowsController extends BaseController {
      */
     @RequestMapping("/getjoblog")
     @ResponseBody
-    public ResultObj getjoblog(HttpServletRequest request, @RequestParam int exec_id, @RequestParam String job_id) {
+    public ResultObj getjoblog(HttpServletRequest request, @RequestParam("exec_id") int exec_id, @RequestParam("job_id") String job_id) {
         Map<String, Object> map = new HashMap<>();
         map.put("execid", exec_id);
         map.put("jobId", job_id);
@@ -206,7 +206,7 @@ public class ExecutionFlowsController extends BaseController {
      */
     @RequestMapping("/retryfailflow")
     @ResponseBody
-    public ResultObj retryfailflow(HttpServletRequest request, @RequestParam int exec_id) {
+    public ResultObj retryfailflow(HttpServletRequest request, @RequestParam("exec_id") int exec_id) {
         Map<String, Object> map = new HashMap<>();
         System.out.println(exec_id);
         map.put("execid", exec_id);

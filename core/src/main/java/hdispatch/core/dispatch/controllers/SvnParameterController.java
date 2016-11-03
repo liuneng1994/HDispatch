@@ -43,11 +43,11 @@ public class SvnParameterController extends BaseController{
     @RequestMapping(value = "/dispatcher/svnParameter/query", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData getSvnParameters(HttpServletRequest request,
-                                @RequestParam(defaultValue = DEFAULT_PAGE) int page,
-                                @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
-                                @RequestParam(defaultValue = "") String subjectName,
-                                @RequestParam(defaultValue = "") String mappingName,
-                                @RequestParam(defaultValue = "") String parameterName) {
+                                @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
+                                @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+                                @RequestParam(name = "subjectName", defaultValue = "") String subjectName,
+                                @RequestParam(name = "mappingName", defaultValue = "") String mappingName,
+                                @RequestParam(name = "parameterName", defaultValue = "") String parameterName) {
         subjectName = subjectName.trim();
         mappingName = mappingName.trim();
         parameterName = parameterName.trim();
