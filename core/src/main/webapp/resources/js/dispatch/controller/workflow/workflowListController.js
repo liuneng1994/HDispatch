@@ -105,7 +105,7 @@
                             disabled = "";
                         }
                         var html = "<button style='margin-left:5px;margin-right:5px;' class='btn btn-info' " + disabled + " ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
-                        html += "<button style='margin-left:5px;margin-right:5px;' class='btn btn-danger' " + disabled + " ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
+                        html += "<button style='margin-left:5px;margin-right:5px;' class='btn btn-warning' " + disabled + " ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
                         html += "<button style='margin-left:5px;margin-right:5px;' class='btn btn-success' " + disabled + "  ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
                         html += "<button style='margin-left:5px;margin-right:5px;' class='btn btn-danger' " + disabled + "  ng-click='vm.delete(" + item.id + ")'>删除</button>"
                         return html;
