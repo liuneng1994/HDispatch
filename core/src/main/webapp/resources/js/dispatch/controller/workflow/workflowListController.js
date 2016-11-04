@@ -15,8 +15,8 @@
                     read: function (options) {
                         vm.workflow.page = options.data.page;
                         vm.workflow.pageSize = options.data.pageSize;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) vm.workflow.themeId = 0;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) vm.workflow.layerId = 0;
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) delete vm.workflow.themeId;
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) delete vm.workflow.layerId;
                         workflowService.query(vm.workflow).then(function (data) {
                             options.success(data);
                         });
@@ -96,16 +96,18 @@
                 {
                     field: "",
                     title: '操作',
-                    attributes:　{style:"padding:0"},
+                    attributes: {style: "padding:0"},
                     width: 150,
                     template: function (item) {
                         var html = '';
+                        var disabled = "disabled";
                         if (hasOperatePermission(item.themeId)) {
-                            var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
-                            html += "<button class='btn btn-danger' ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
-                            html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
-                            html += "<button class='btn btn-danger' ng-click='vm.delete(" + item.id + ")'>删除</button>"
+                            disabled = "";
                         }
+                        var html = "<button style='margin-left:5px;margin-right:5px;' class='btn btn-info' " + disabled + " ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
+                        html += "<button style='margin-left:5px;margin-right:5px;' class='btn btn-danger' " + disabled + " ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
+                        html += "<button style='margin-left:5px;margin-right:5px;' class='btn btn-success' " + disabled + "  ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
+                        html += "<button style='margin-left:5px;margin-right:5px;' class='btn btn-danger' " + disabled + "  ng-click='vm.delete(" + item.id + ")'>删除</button>"
                         return html;
                     }
                 }]
@@ -137,7 +139,7 @@
         };
 
         vm.themeChange = function (themeId) {
-            vm.workflow.layerId = undefined;
+            vm.workflow.layerId = "";
             refreshLayers('layers', themeId);
         };
 

@@ -42,8 +42,8 @@
                         vm.selectedWorkflow = [];
                         vm.workflow.page = options.data.page;
                         vm.workflow.pageSize = options.data.pageSize;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) vm.workflow.themeId = 0;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) vm.workflow.layerId = 0;
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) delete vm.workflow.themeId;
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) delete vm.workflow.layerId;
                         workflowService.queryOperate(vm.workflow).then(function (data) {
                             vm.total = data.total;
                             vm.currentWorklfows = data.rows;
@@ -113,7 +113,7 @@
         };
 
         vm.themeChange = function (themeId) {
-            vm.workflow.layerId = undefined;
+            vm.workflow.layerId = "";
             refreshLayers('layers', themeId);
         };
 
@@ -122,6 +122,21 @@
             var checked = $('#grid').data('kendoGrid').selectedDataItems();
             checked.forEach(function(item) {
                 vm.selectedWorkflow.push(item.workflowId);
+            });
+        }
+
+        vm.showExpDetail = function() {
+            kendo.ui.showDialog({
+                title: 'cron计划',
+                width: 1000,
+                message: $('#expDetail').html(),
+                buttons: [{
+                    text: "确定",
+                    type: 'info',
+                    click: function(e) {
+                        e.dialog.destroy();
+                    }
+                }]
             });
         }
 
@@ -500,6 +515,7 @@
             ;
             return idMap;
         };
+
         refreshThemes();
         return vm;
 

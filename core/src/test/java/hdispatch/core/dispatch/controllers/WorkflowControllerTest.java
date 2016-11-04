@@ -90,6 +90,32 @@ public class WorkflowControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("message", is("1")));
     }
 
+    @Test
+    public void testCreateWorkflowInJobDuplication() throws Exception {
+        Workflow workflow = new Workflow().setWorkflowId(1L);
+        Map<String, Object> map = new HashMap<>();
+        when(workflowService.getWorkflowByName(anyString())).thenReturn(null);
+        mockMvc.perform(post("/dispatcher/workflow/create")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content("{\"themeId\":1,\"layerId\":1,\"name\":\"aaa\",\"description\":\"aaa\",\"jobs\":[{\"workflowJobId\":\"a\",\"jobSource\":\"29\",\"jobType\":\"job\",\"parentsJobId\":\"\"},{\"workflowJobId\":\"a\",\"jobSource\":\"29\",\"jobType\":\"job\",\"parentsJobId\":\"\"}],\"graph\":\"{\\\"graph\\\":{\\\"cells\\\":[{\\\"type\\\":\\\"basic.Rect\\\",\\\"position\\\":{\\\"x\\\":190,\\\"y\\\":80},\\\"size\\\":{\\\"width\\\":100,\\\"height\\\":50},\\\"angle\\\":0,\\\"id\\\":\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\",\\\"jobId\\\":\\\"29\\\",\\\"z\\\":1,\\\"attrs\\\":{\\\"rect\\\":{\\\"fill\\\":\\\"lightgray\\\",\\\"stroke\\\":\\\"black\\\",\\\"stroke-width\\\":\\\"1\\\",\\\"stroke-opacity\\\":0.7,\\\"rx\\\":3,\\\"ry\\\":3},\\\"text\\\":{\\\"fill\\\":\\\"black\\\",\\\"text\\\":\\\"a\\\"}}},]},\\\"jobs\\\":{\\\"jobs\\\":{\\\"keys\\\":[\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\"],\\\"values\\\":[{\\\"themeId\\\":null,\\\"layerId\\\":0,\\\"name\\\":\\\"a\\\",\\\"type\\\":\\\"job\\\",\\\"jobSource\\\":\\\"29\\\",\\\"dept\\\":[]}]},\\\"names\\\":{\\\"keys\\\":[\\\"a\\\"],\\\"values\\\":[\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\"]},\\\"depts\\\":{\\\"keys\\\":[],\\\"values\\\":[]}}}\"}"))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(false)));
+    }
+
+    @Test
+    public void testCreateWorkflowInWorkflowDuplication() throws Exception{
+        Workflow workflow = new Workflow().setWorkflowId(1L);
+        Map<String, Object> map = new HashMap<>();
+        when(workflowService.getWorkflowByName(anyString())).thenReturn(new Workflow());
+        mockMvc.perform(post("/dispatcher/workflow/create")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content("{\"themeId\":1,\"layerId\":1,\"name\":\"aaa\",\"description\":\"aaa\",\"jobs\":[{\"workflowJobId\":\"a\",\"jobSource\":\"29\",\"jobType\":\"job\",\"parentsJobId\":\"\"},{\"workflowJobId\":\"a\",\"jobSource\":\"29\",\"jobType\":\"job\",\"parentsJobId\":\"\"}],\"graph\":\"{\\\"graph\\\":{\\\"cells\\\":[{\\\"type\\\":\\\"basic.Rect\\\",\\\"position\\\":{\\\"x\\\":190,\\\"y\\\":80},\\\"size\\\":{\\\"width\\\":100,\\\"height\\\":50},\\\"angle\\\":0,\\\"id\\\":\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\",\\\"jobId\\\":\\\"29\\\",\\\"z\\\":1,\\\"attrs\\\":{\\\"rect\\\":{\\\"fill\\\":\\\"lightgray\\\",\\\"stroke\\\":\\\"black\\\",\\\"stroke-width\\\":\\\"1\\\",\\\"stroke-opacity\\\":0.7,\\\"rx\\\":3,\\\"ry\\\":3},\\\"text\\\":{\\\"fill\\\":\\\"black\\\",\\\"text\\\":\\\"a\\\"}}},]},\\\"jobs\\\":{\\\"jobs\\\":{\\\"keys\\\":[\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\"],\\\"values\\\":[{\\\"themeId\\\":null,\\\"layerId\\\":0,\\\"name\\\":\\\"a\\\",\\\"type\\\":\\\"job\\\",\\\"jobSource\\\":\\\"29\\\",\\\"dept\\\":[]}]},\\\"names\\\":{\\\"keys\\\":[\\\"a\\\"],\\\"values\\\":[\\\"e3682a22-c627-4fa9-937e-5c58750699e5\\\"]},\\\"depts\\\":{\\\"keys\\\":[],\\\"values\\\":[]}}}\"}"))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(false)));
+    }
+
     /**
      * Method: saveWorkflowGraph(@RequestParam("workflowId") long workflowId, @RequestParam("graph") String graph)
      */
