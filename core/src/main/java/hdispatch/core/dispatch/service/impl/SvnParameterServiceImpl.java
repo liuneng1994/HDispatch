@@ -7,6 +7,7 @@ import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.mapper.SvnParameterMapper;
 import hdispatch.core.dispatch.service.SvnParameterService;
+import hdispatch.core.dispatch.utils.ConfigUtil;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -313,5 +314,43 @@ public class SvnParameterServiceImpl implements SvnParameterService {
                 }
             }
         }
+    }
+
+    /**
+     * 判断当前用户是否有操作任务运行时参数的权限<br>
+     * @param requestContext
+     * @return
+     */
+    @Override
+    public boolean hasOperatePermission(IRequest requestContext) {
+        String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
+        if(null == themeGroupName){
+            logger.error("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称",
+                    new RuntimeException("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称"));
+        }
+        Long rows = svnParameterMapper.hasOperatePermission(themeGroupName);
+        if(null == rows || rows < 1){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 判断当前用户是否有读取任务运行时参数的权限<br>
+     * @param requestContext
+     * @return
+     */
+    @Override
+    public boolean hasReadPermission(IRequest requestContext) {
+        String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
+        if(null == themeGroupName){
+            logger.error("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称",
+                    new RuntimeException("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称"));
+        }
+        Long rows = svnParameterMapper.hasReadPermission(themeGroupName);
+        if(null == rows || rows < 1){
+            return false;
+        }
+        return true;
     }
 }

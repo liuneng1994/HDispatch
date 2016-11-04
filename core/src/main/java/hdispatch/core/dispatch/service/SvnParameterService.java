@@ -41,4 +41,19 @@ public interface SvnParameterService {
      * @return
      */
     void preAddHandle(List<SvnParameter> svnParameterList);
+
+    /**
+     * 判断当前用户是否有操作任务运行时参数的权限<br>
+     * @param requestContext
+     * @return
+     */
+    boolean hasOperatePermission(IRequest requestContext);
+
+    /**
+     * 判断当前用户是否有读取任务运行时参数的权限<br>
+     * @param requestContext
+     * @return
+     */
+    boolean hasReadPermission(IRequest requestContext);
+
 }
