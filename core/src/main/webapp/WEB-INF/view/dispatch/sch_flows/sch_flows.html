@@ -90,6 +90,7 @@
         <script src="${base.contextPath}/lib/dateformat.js"></script>
         <script type="text/javascript">
             document.getElementById("picker").flatpickr();
+            document.getElementById("picker").removeAttribute("readonly");
             var grid;
             function removesch(id, fid, pid,themeid) {
                 if (!hasOperatePermission(themeid)) {
