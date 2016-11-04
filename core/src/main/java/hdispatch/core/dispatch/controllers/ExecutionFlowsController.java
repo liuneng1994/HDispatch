@@ -50,13 +50,11 @@ public class ExecutionFlowsController extends BaseController {
     public ResponseData query(HttpServletRequest request, @RequestParam("page") int page, @RequestParam("pagesize") int pagesize) {
         IRequest irequest = createRequestContext(request);
         String flowName = request.getParameter("flowName");
-        String groupName = request.getParameter("groupName");
-        String projectName = request.getParameter("projectName");
+        String description = request.getParameter("description");
         String date = request.getParameter("date");
         ExecutionFlows exe = new ExecutionFlows();
         exe.setFlow_id(flowName);
-        exe.setProject_name(projectName);
-        exe.setGroup_name(groupName);
+        exe.setDescription(description);
         exe.setLang(irequest.getLocale());
         if (date != null)
             exe.setStart_time(Long.parseLong(date));

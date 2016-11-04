@@ -19,6 +19,7 @@
     <result column="end_time" property="end_time" jdbcType="BIGINT" />
     <result column="enc_type" property="enc_type" jdbcType="TINYINT" />
     <result column="executor_id" property="executor_id" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="hdispatch.core.dispatch.dto.ExecutionFlows" extends="BaseResultMap" >
     <result column="flow_data" property="flow_data" jdbcType="LONGVARBINARY" />
@@ -44,7 +45,7 @@
     scvb.meaning as meaning,exec_id, project_id, execution_flows.version, execution_flows.flow_id, execution_flows.status, execution_flows.submit_user, execution_flows.submit_time, execution_flows.update_time, 
     execution_flows.start_time, execution_flows.end_time, execution_flows.enc_type, execution_flows.executor_id
     ,projects.name as project_name,
-     hwf.theme_id,
+     hwf.theme_id,hwf.description,
     <include refid="Blob_Column_List" />
     from execution_flows,projects,sys_code_b scb,sys_code_value_b scvb,sys_code_value_tl scv,hdispatch_workflow hwf
     where execution_flows.project_id=projects.id
@@ -58,14 +59,11 @@
     <if test="start_time != null" >
         and execution_flows.start_time > #{start_time,jdbcType=BIGINT}
       </if>
-      <if test="project_name != null" >
-        and projects.name like CONCAT('%',#{project_name},'%')
+      <if test="description != null" >
+        and hwf.description like CONCAT('%',#{description},'%')
       </if>
       <if test="flow_id != null" >
         and execution_flows.flow_id like CONCAT('%',#{flow_id},'%')
-      </if>
-       <if test="group_name != null" >
-        and group_name like CONCAT('%',#{group_name},'%')
       </if>
       order by exec_id desc
   </select>
