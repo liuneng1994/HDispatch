@@ -44,7 +44,7 @@
                         vm.workflow.pageSize = options.data.pageSize;
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) delete vm.workflow.themeId;
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) delete vm.workflow.layerId;
-                        workflowService.queryOperate(vm.workflow).then(function (data) {
+                        workflowService.query(vm.workflow).then(function (data) {
                             vm.total = data.total;
                             vm.currentWorklfows = data.rows;
                             options.success(data.rows);
@@ -117,15 +117,25 @@
             refreshLayers('layers', themeId);
         };
 
+        function validateOperate() {
+            var dataItems = $("#grid").data('kendoGrid').selectedDataItems();
+            var names = [];
+            for (var item of dataItems) {
+                if (!hasOperatePermission(item.themeId))
+                    names.push(item.name);
+            }
+            return names;
+        }
+
         function getSelectWorkflows() {
             vm.selectedWorkflow = [];
             var checked = $('#grid').data('kendoGrid').selectedDataItems();
-            checked.forEach(function(item) {
+            checked.forEach(function (item) {
                 vm.selectedWorkflow.push(item.workflowId);
             });
         }
 
-        vm.showExpDetail = function() {
+        vm.showExpDetail = function () {
             kendo.ui.showDialog({
                 title: 'cron计划',
                 width: 1000,
@@ -133,15 +143,22 @@
                 buttons: [{
                     text: "确定",
                     type: 'info',
-                    click: function(e) {
+                    click: function (e) {
                         e.dialog.destroy();
                     }
                 }]
             });
         }
 
-        vm.cronSchedule = function() {
-            vm.cronExp = [0,'*','*','?','*','*'];
+        vm.cronSchedule = function () {
+            var names = validateOperate();
+            if (names.length) {
+                kendo.ui.showWarningDialog({
+                    message: names.join(', ') + '没有操作权限'
+                });
+                return;
+            }
+            vm.cronExp = [0, '*', '*', '?', '*', '*'];
             getSelectWorkflows();
             var selectedFlows = loadSelectedWorkflow();
             vm.cronScheduleFlow = {};
@@ -169,7 +186,8 @@
                         vm.scheduleWindow.close();
                     }
                 })
-            };
+            }
+            ;
             kendo.ui.showDialog({
                 title: 'cron计划',
                 width: 600,
@@ -177,7 +195,7 @@
                 buttons: [{
                     text: "计划",
                     type: 'success',
-                    click: function(e) {
+                    click: function (e) {
                         e.dialog.destroy();
                         e.deferred.resolve({
                             button: "yes"
@@ -186,21 +204,21 @@
                 }, {
                     text: "取消",
                     type: 'danger',
-                    click: function(e) {
+                    click: function (e) {
                         e.dialog.destroy();
                         e.deferred.resolve({
                             button: "no"
                         });
                     }
                 }]
-            }).done(function(e) {
+            }).done(function (e) {
                 if (e.button == 'yes') {
                     vm.cronScheduleSubmit();
                 }
             });
             $compile($('div.modal-body table'))($scope);
         };
-        vm.cronScheduleSubmit = function() {
+        vm.cronScheduleSubmit = function () {
             var scheduleInfo = {};
             for (var id in vm.cronScheduleFlow.flows) {
                 scheduleInfo.projectName = vm.cronScheduleFlow.flows[id].projectName;
@@ -209,18 +227,25 @@
                 var arg = angular.copy(scheduleInfo);
                 workflowService.cronScheduleWorkflow(arg).then(function (data) {
                     vm.notification.show({
-                        message: data||'计划成功'
+                        message: data || '计划成功'
                     }, "upload-success");
                 }, function (data) {
                     vm.notification.show({
                         title: '',
-                        message: data||'计划失败'
+                        message: data || '计划失败'
                     }, "error");
                 });
             }
         };
 
         vm.schedule = function () {
+            var names = validateOperate();
+            if (names.length) {
+                kendo.ui.showWarningDialog({
+                    message: names.join(', ') + '没有操作权限'
+                });
+                return;
+            }
             getSelectWorkflows();
             var selectedFlows = loadSelectedWorkflow();
             vm.scheduleFlow = {};
@@ -251,7 +276,8 @@
                         vm.scheduleWindow.close();
                     }
                 })
-            };
+            }
+            ;
         };
         vm.scheduleSubmit = function () {
             var scheduleInfo = {};
@@ -269,12 +295,12 @@
                 var arg = angular.copy(scheduleInfo);
                 workflowService.scheduleWorkflow(arg).then(function (data) {
                     vm.notification.show({
-                        message: data||'计划成功'
+                        message: data || '计划成功'
                     }, "upload-success");
                 }, function (data) {
                     vm.notification.show({
                         title: '',
-                        message: data||'计划失败'
+                        message: data || '计划失败'
                     }, "error");
                 });
             }
@@ -285,6 +311,13 @@
         };
 
         vm.execute = function () {
+            var names = validateOperate();
+            if (names.length) {
+                kendo.ui.showWarningDialog({
+                    message: names.join(', ') + '没有操作权限'
+                });
+                return;
+            }
             getSelectWorkflows();
             vm.showExecuteGraph = false;
             var selectedFlows = loadSelectedWorkflow();
