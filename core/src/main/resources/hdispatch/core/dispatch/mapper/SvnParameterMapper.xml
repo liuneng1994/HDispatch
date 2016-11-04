@@ -130,4 +130,23 @@ yazheng.yang@hand-china.com
       DELETE FROM hdispatch_fnd_schedule_parameter
       WHERE SCHEDULE_PARA_ID = #{scheduleParaId}
     </delete>
+
+    <!--检查当前用户是否有操作任务运行时参数的权限-->
+    <select id="hasOperatePermission" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM hdispatch_authority authority JOIN hdispatch_themegroup themegroup
+        ON authority.theme_group_id = themegroup.theme_group_id
+        WHERE themegroup.theme_group_name=#{themeGroupName}
+        AND authority.auth_operate='Y'
+        AND authority.user_id=#{request.userId}
+    </select>
+    <!--检查当前用户是否有任务运行时参数的读权限-->
+    <select id="hasReadPermission" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM hdispatch_authority authority JOIN hdispatch_themegroup themegroup
+        ON authority.theme_group_id = themegroup.theme_group_id
+        WHERE themegroup.theme_group_name=#{themeGroupName}
+        AND (authority.auth_read='Y' OR authority.auth_operate='Y')
+        AND authority.user_id=#{request.userId}
+    </select>
 </mapper>
