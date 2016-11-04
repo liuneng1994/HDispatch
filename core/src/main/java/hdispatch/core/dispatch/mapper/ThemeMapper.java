@@ -58,4 +58,11 @@ public interface ThemeMapper {
      * @return
      */
     Theme selectById(Theme theme);
+
+    /**
+     * 检查当前用户是否有创建主题的权限
+     * @param themeGroupName
+     * @return
+     */
+    Long hasOperatePermission(@Param("themeGroupName") String themeGroupName);
 }

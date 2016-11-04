@@ -13,12 +13,14 @@ import java.util.Properties;
 public class ConfigUtil {
     private static Properties properties;
     private static String jobRuntimeParameter_themeGroupName;
+    private static String themeLayer_themeGroupName;
 
     static {
         properties = new Properties();
         try {
             properties.load(ConfigUtil.class.getClassLoader().getResourceAsStream("config.properties"));
             jobRuntimeParameter_themeGroupName = properties.getProperty("job_runtime_parameters.themeGroupName");
+            themeLayer_themeGroupName = properties.getProperty("theme_layer_management.themeGroupName");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,5 +60,13 @@ public class ConfigUtil {
      */
     public static String getJobRuntimeParameter_themeGroupName() {
         return jobRuntimeParameter_themeGroupName;
+    }
+
+    /**
+     * 获取 管理主题创建的权限所在的主题组名称（用于确认操作主题（创建）的权限）
+     * @return
+     */
+    public static String getThemeLayer_themeGroupName() {
+        return themeLayer_themeGroupName;
     }
 }

@@ -67,4 +67,14 @@ yazheng.yang@hand-china.com
         SELECT * FROM hdispatch_theme
         WHERE theme_id=#{themeId,jdbcType=DECIMAL}
     </select>
+
+    <!--检查当前用户是否有创建主题的权限-->
+    <select id="hasOperatePermission" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM hdispatch_authority authority JOIN hdispatch_themegroup themegroup
+        ON authority.theme_group_id = themegroup.theme_group_id
+        WHERE themegroup.theme_group_name=#{themeGroupName}
+        AND authority.auth_operate='Y'
+        AND authority.user_id=#{request.userId}
+    </select>
 </mapper>

@@ -75,4 +75,11 @@ public interface ThemeService extends ProxySelf<ThemeService> {
      * @return
      */
     List<Theme> checkIsMountThemes(IRequest requestContext, List<Theme> themeList);
+
+    /**
+     * 判断当前用户是否有操作主题的权限<br>
+     * @param requestContext
+     * @return
+     */
+    boolean hasOperatePermission(IRequest requestContext);
 }

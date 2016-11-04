@@ -191,4 +191,28 @@ public class ThemeController extends BaseController {
         }
         return rd;
     }
+
+    /**
+     * 判断当前用户是否有操作主题的权限<br>
+     * @param request
+     * @return ResponseData中的total如果大于0表示有操作权限；否则，没有操作权限
+     */
+    @RequestMapping(value = "/dispatcher/theme/hasOperatePermission", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData hasOperatePermission(HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        ResponseData rd = null;
+        List<String> list = new ArrayList<>();
+        boolean hasPermission = themeService.hasOperatePermission(requestContext);
+        if(hasPermission) {
+            list.add("YOU");
+            list.add("HAVE");
+            list.add("THIS");
+            list.add("PAGE");
+            list.add("OPERATION");
+            list.add("PERMISSION");
+        }
+        rd = new ResponseData(list);
+        return rd;
+    }
 }
