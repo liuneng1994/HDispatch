@@ -8,6 +8,7 @@ import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.mapper.LayerMapper;
 import hdispatch.core.dispatch.mapper.ThemeMapper;
 import hdispatch.core.dispatch.service.ThemeService;
+import hdispatch.core.dispatch.utils.ConfigUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -176,5 +177,24 @@ public class ThemeServiceImpl implements ThemeService {
             }
         }
         return listFiltered;
+    }
+
+    /**
+     * 判断当前用户是否有操作主题的权限<br>
+     * @param requestContext
+     * @return
+     */
+    @Override
+    public boolean hasOperatePermission(IRequest requestContext) {
+        String themeGroupName = ConfigUtil.getThemeLayer_themeGroupName();
+        if(null == themeGroupName){
+            logger.error("主题和层次（权限控制）：读取不到挂载主题和层次的主题组名称",
+                    new RuntimeException("主题和层次（权限控制）：读取不到挂载主题和层次的主题组名称"));
+        }
+        Long rows = themeMapper.hasOperatePermission(themeGroupName);
+        if(null == rows || rows < 1){
+            return false;
+        }
+        return true;
     }
 }
