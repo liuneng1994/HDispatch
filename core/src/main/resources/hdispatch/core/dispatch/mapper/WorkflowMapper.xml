@@ -225,5 +225,6 @@
         SELECT workflow_id
         FROM hdispatch_workflow
         WHERE layer_id = #{layerId}
+        AND active=1
     </select>
 </mapper>

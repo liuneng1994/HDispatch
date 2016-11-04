@@ -14,44 +14,48 @@ public class Theme extends BaseDTO{
     private Long themeActive;
     private Long themeSequence;
 
-
     public Long getThemeId() {
         return themeId;
     }
 
-    public void setThemeId(Long themeId) {
+    public Theme setThemeId(Long themeId) {
         this.themeId = themeId;
+        return this;
     }
 
     public String getThemeName() {
         return themeName;
     }
 
-    public void setThemeName(String themeName) {
+    public Theme setThemeName(String themeName) {
         this.themeName = themeName;
+        return this;
     }
 
     public String getThemeDescription() {
         return themeDescription;
     }
 
-    public void setThemeDescription(String themeDescription) {
+    public Theme setThemeDescription(String themeDescription) {
         this.themeDescription = themeDescription;
+        return this;
     }
 
     public Long getThemeActive() {
         return themeActive;
     }
 
-    public void setThemeActive(Long themeActive) {
+    public Theme setThemeActive(Long themeActive) {
         this.themeActive = themeActive;
+        return this;
     }
 
     public Long getThemeSequence() {
         return themeSequence;
     }
 
-    public void setThemeSequence(Long themeSequence) {
+    public Theme setThemeSequence(Long themeSequence) {
         this.themeSequence = themeSequence;
+        return this;
     }
 }
