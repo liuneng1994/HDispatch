@@ -1,5 +1,24 @@
 <#include "../../include/header.html">
 <body>
+<script>
+    var hasOperationPermission_jobRuntimeParameter = false;
+    $.ajax({
+        type: 'GET',
+        url: "${base.contextPath}/dispatcher/svnParameter/hasOperatePermission" ,
+        success: function (data) {
+            if(0 < data.total){
+                hasOperationPermission_jobRuntimeParameter = true;
+            }else{
+                hasOperationPermission_jobRuntimeParameter = false;
+            }
+            console.log(data);
+            console.log(data.total);
+        },
+        async:false,
+        dataType: "json"
+    });
+    console.log("加载权限验证完毕");
+</script>
     <div>
         <div id="content-container">
             <div id="theme-content">
@@ -41,12 +60,11 @@
                 <div id="page-content" style="clear:both">
                     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
                         <!--<span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>-->
-                        <!--<span class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>-->
-                        <!--<span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>-->
-                        <!--<span class="btn btn-danger k-grid-excel" data-bind="click:exportToExcelFunction" style="float:left;">导出为excel</span>-->
-                        <!--<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>-->
-                        <!--<span class="btn btn-warning" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>-->
-                        <!--<span class="btn btn-warning" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>-->
+                        <span id="btn_parameter_create" class="btn btn-primary" style="float:left;margin-right:5px;margin-left:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                        <span id="btn_parameter_importFormExcel" class="btn btn-primary" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>
+                        <span id="btn_parameter_exportToExcel" class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>
+                        <span id="btn_parameter_save" class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                        <span id="btn_parameter_calcel" class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
                     </div>
                     <div style="clear:both">
                         <div id="svnParametersListGrid" style="clear:both"></div>
@@ -56,6 +74,20 @@
             <div id="importByExcelWindow_div"></div>
         </div>
         <script type="text/javascript">
+            if(!hasOperationPermission_jobRuntimeParameter){
+                $("#btn_parameter_create").attr("disabled","disabled");
+                $("#btn_parameter_importFormExcel").attr("disabled","disabled");
+                $("#btn_parameter_exportToExcel").attr("disabled","disabled");
+                $("#btn_parameter_save").attr("disabled","disabled");
+                $("#btn_parameter_calcel").attr("disabled","disabled");
+            }else {
+                $("#btn_parameter_create").removeAttr("disabled","disabled");
+                $("#btn_parameter_importFormExcel").removeAttr("disabled","disabled");
+                $("#btn_parameter_exportToExcel").removeAttr("disabled","disabled");
+                $("#btn_parameter_save").removeAttr("disabled","disabled");
+                $("#btn_parameter_calcel").removeAttr("disabled","disabled");
+            }
+
             var wnd, batchCreateWindowTemplate;
 
             var svnParameterBaseUrl = "${base.contextPath}/dispatcher/svnParameter/";
@@ -79,26 +111,45 @@
                         }).data("kendoWindow");
                 batchCreateWindowTemplate = kendo.template($("#import_by_excel_template").html());
 
+                var disabledStr = "disabled";
+                if(hasOperationPermission_jobRuntimeParameter){
+                    disabledStr = "";
+                }
                 //声明主窗口
                 var viewModel = kendo.observable({
-                    model:{subjectName:'',mappingName:'',parameterName:'',page:''},
+                    model:{subjectName:'',mappingName:'',parameterName:'',page:'',disabledFlag:disabledStr},
                     queryFunction: function(e) {
                         viewModel.model.page=1;
                         $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
                     },
                     createFunction: function(){
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
                         $('#svnParametersListGrid').data('kendoGrid').addRow();
                     },
                     saveFunction: function(){
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
                         $('#svnParametersListGrid').data('kendoGrid').saveChanges();
                     },
                     cancelFunction: function(e){
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
                         $('#svnParametersListGrid').data('kendoGrid').cancelChanges();
                     },
                     importFromExcelFunction: function (e) {
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
                         showImportFromExcelWindow(e);
                     },
                     batchDeleteFunction: function (e) {
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
                         /*
                          确认是否批量删除
                          进行删除
@@ -122,6 +173,9 @@
                         }
                     },
                     exportToExcelFunction: function (e) {
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
                         e.preventDefault();
                         var that = $('#svnParametersListGrid').data('kendoGrid');
                         $('#svnParametersListGrid').data('kendoGrid').saveAsExcel();
@@ -278,39 +332,39 @@
                             refresh: '<@spring.message "hdispatch.grid_refresh"/>'
                         }
                     },
-                    toolbar: [
-                        {
-                            name:"create",
-                            text:'<@spring.message "hdispatch.create"/>',
-//                            template : '<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
-                            template : '<span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
-                        },
-                        {
-                            name:"importFromExcel",
-                            text:'<@spring.message "hdispatch.svn.import_excel"/>',
-                            template: '<span class="btn btn-primary" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>'
-                        },
-                        {
-                            name:"excel",
-                            text:'<@spring.message "hdispatch.svn.export_excel"/>',
-                            template: '<span class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>'
-                        },
+//                    toolbar: [
 //                        {
-//                            name:"batchDelete",
-//                            text:'<@spring.message "hdispatch.job.batch_delete"/>',
-//                            template: '<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>'
+//                            name:"create",
+//                            text:'<@spring.message "hdispatch.create"/>',
+////                            template : '<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
+//                            template : '<span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
 //                        },
-                        {
-                            name:"save",
-                            text:'<@spring.message "hdispatch.save"/>',
-                            template: '<span class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>'
-                        },
-                        {
-                            name:"cancel",
-                            text:'<@spring.message "hdispatch.cancel"/>',
-                            template: '<span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>'
-                        }
-                    ],
+//                        {
+//                            name:"importFromExcel",
+//                            text:'<@spring.message "hdispatch.svn.import_excel"/>',
+//                            template: '<span class="btn btn-primary" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>'
+//                        },
+//                        {
+//                            name:"excel",
+//                            text:'<@spring.message "hdispatch.svn.export_excel"/>',
+//                            template: '<span class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>'
+//                        },
+////                        {
+////                            name:"batchDelete",
+////                            text:'<@spring.message "hdispatch.job.batch_delete"/>',
+////                            template: '<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>'
+////                        },
+//                        {
+//                            name:"save",
+//                            text:'<@spring.message "hdispatch.save"/>',
+//                            template: '<span class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>'
+//                        },
+//                        {
+//                            name:"cancel",
+//                            text:'<@spring.message "hdispatch.cancel"/>',
+//                            template: '<span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>'
+//                        }
+//                    ],
                     excel: {
                         fileName: "SVN_parameters_Export.xlsx",
                         proxyURL: svnParameterBaseUrl,
@@ -370,9 +424,15 @@
                             command : [{
                                 name:'remove',
                                 template : function (rowData) {
-                                    return '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>';
+                                    if(hasOperationPermission_jobRuntimeParameter){
+                                        return '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>';
+                                    }
+                                    return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
                                 },
                                 click: function(e){
+                                    if(!hasOperationPermission_jobRuntimeParameter){
+                                        return;
+                                    }
                                     var th = this;
                                     e.preventDefault();
                                     kendo.ui.showConfirmDialog({

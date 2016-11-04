@@ -15,6 +15,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +49,10 @@ public class SvnParameterController extends BaseController{
                                 @RequestParam(name = "subjectName", defaultValue = "") String subjectName,
                                 @RequestParam(name = "mappingName", defaultValue = "") String mappingName,
                                 @RequestParam(name = "parameterName", defaultValue = "") String parameterName) {
+        IRequest requestContext = createRequestContext(request);
+        if(!svnParameterService.hasReadPermission(requestContext)){
+            return new ResponseData(true);
+        }
         subjectName = subjectName.trim();
         mappingName = mappingName.trim();
         parameterName = parameterName.trim();
@@ -64,7 +69,6 @@ public class SvnParameterController extends BaseController{
         svnParameter.setSubjectName(subjectName).
                 setMappingName(mappingName).
                 setParameterName(parameterName);
-        IRequest requestContext = createRequestContext(request);
         List<SvnParameter> svnParameterList = svnParameterService.selectBySvnParameter(requestContext,svnParameter,page,pageSize);
         ResponseData rd = new ResponseData(svnParameterList);
 
@@ -222,6 +226,30 @@ public class SvnParameterController extends BaseController{
         }
 
         rd = new ResponseData(svnParameterList);
+        return rd;
+    }
+
+    /**
+     * 判断当前用户是否有操作任务运行时参数的权限<br>
+     * @param request
+     * @return ResponseData中的total如果大于0表示有操作权限；否则，没有操作权限
+     */
+    @RequestMapping(value = "/dispatcher/svnParameter/hasOperatePermission", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData hasOperatePermission(HttpServletRequest request) {
+        IRequest requestContext = createRequestContext(request);
+        ResponseData rd = null;
+        List<String> list = new ArrayList<>();
+        boolean hasPermission = svnParameterService.hasOperatePermission(requestContext);
+        if(hasPermission) {
+            list.add("YOU");
+            list.add("HAVE");
+            list.add("THIS");
+            list.add("PAGE");
+            list.add("OPERATION");
+            list.add("PERMISSION");
+        }
+        rd = new ResponseData(list);
         return rd;
     }
 }

@@ -1,8 +1,8 @@
 package hdispatch.core.dispatch.mapper;
 
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -62,4 +62,19 @@ public interface SvnParameterMapper {
      */
     List<SvnParameter> selectForCheck_2(SvnParameter svnParameter);
 
+    /**
+     * 检查当前用户是否有操作任务运行时参数的权限<br>
+     *     返回值非空且大于0表示有权限
+     * @param themeGroupName
+     * @return 返回值非空且大于0表示有权限
+     */
+    Long hasOperatePermission(@Param("themeGroupName") String themeGroupName);
+
+    /**
+     * 检查当前用户是否有读取任务运行时参数的权限<br>
+     *     返回值非空且大于0表示有权限
+     * @param themeGroupName
+     * @return 返回值非空且大于0表示有权限
+     */
+    Long hasReadPermission(@Param("themeGroupName") String themeGroupName);
 }
