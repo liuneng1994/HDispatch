@@ -230,10 +230,10 @@
                             var responseText = eval("("+e.xhr.responseText+")");
                             if(!responseText.success && responseText.message){
                                 alert(responseText.message);
-                                //操作不成功之后会取消
-                                $('#themeListGrid').data('kendoGrid').cancelChanges();
                             }
                         }
+                        //操作不成功之后会取消
+                        $('#themeListGrid').data('kendoGrid').cancelChanges();
                     }
                 });
                 $("#themeListGrid").kendoGrid({
@@ -513,10 +513,10 @@
                             var responseText = eval("("+e.xhr.responseText+")");
                             if(!responseText.success && responseText.message){
                                 alert(responseText.message);
-                                //操作不成功之后会取消
-                                $('#layerListGrid').data('kendoGrid').cancelChanges();
                             }
                         }
+                        //操作不成功之后会取消
+                        $('#layerListGrid').data('kendoGrid').cancelChanges();
                     }
                 });
                 $("#layerListGrid").kendoGrid({
