@@ -41,7 +41,7 @@ public class SvnParameterController extends BaseController{
      * @param parameterName
      * @return
      */
-    @RequestMapping(value = "/dispatcher/svnParameter/query", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatcher/svnParameter/query", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getSvnParameters(HttpServletRequest request,
                                 @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
@@ -77,7 +77,7 @@ public class SvnParameterController extends BaseController{
 
 
     /**
-     * 创建SVN 参数
+     * 创建任务运行时参数
      *
      * description:检查待插入的svnParameter是否已经存在；若存在，给出提示信息；若不存在，执行插入
      *

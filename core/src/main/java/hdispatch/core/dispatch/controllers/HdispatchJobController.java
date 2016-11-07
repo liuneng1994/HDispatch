@@ -42,7 +42,7 @@ public class HdispatchJobController extends BaseController {
     /**
      * 根据主题id，层次id以及job名称模糊查询job
      */
-    @RequestMapping(value = "/dispatcher/job/query", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatcher/job/query", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getJobs(HttpServletRequest request,
                                   @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,

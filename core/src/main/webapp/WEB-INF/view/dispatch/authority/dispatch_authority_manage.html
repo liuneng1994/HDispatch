@@ -97,7 +97,7 @@
 						transport: {
 							read:  {
 								url: baseUrl+"queryUnderThemeGroup",
-								type : 'GET',
+								type : 'POST',
 								dataType: "json"
 							},
 							update: {
@@ -307,7 +307,7 @@
                         transport: {
                             read:  {
                                 url: baseUrl+"queryNotInThemeGroup",
-                                type : 'GET',
+                                type : 'POST',
                                 dataType: "json"
                             },
                             parameterMap: function(options, operation) {

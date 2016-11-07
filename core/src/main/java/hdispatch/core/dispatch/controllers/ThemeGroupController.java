@@ -45,7 +45,7 @@ public class ThemeGroupController  extends BaseController {
      * @param themeGroupDesc
      * @return
      */
-    @RequestMapping(value = "/dispatch/themeGroup/query", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatch/themeGroup/query", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getThemeGroups(HttpServletRequest request,
                                   @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
@@ -166,7 +166,7 @@ public class ThemeGroupController  extends BaseController {
      * @param themeGroupId
      * @return
      */
-    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryNotInThemeGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryNotInThemeGroup", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getThemesNotInThemeGroup(HttpServletRequest request,
                                        @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
@@ -209,7 +209,7 @@ public class ThemeGroupController  extends BaseController {
      * @param themeGroupId
      * @return
      */
-    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryUnderThemeGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatch/themeGroup/themeGroupTheme/queryUnderThemeGroup", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getThemesInThemeGroup(HttpServletRequest request,
                                                  @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
@@ -309,7 +309,7 @@ public class ThemeGroupController  extends BaseController {
      * @param themeGroupId 主题组id
      * @return
      */
-    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryUnderThemeGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryUnderThemeGroup", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getUsersInThemeGroup(HttpServletRequest request,
                                               @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
@@ -344,7 +344,7 @@ public class ThemeGroupController  extends BaseController {
      * @param themeGroupId 主题组id
      * @return
      */
-    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryNotInThemeGroup", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatch/themeGroup/authorityUser/queryNotInThemeGroup", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getUsersNotInThemeGroup(HttpServletRequest request,
                                              @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,
