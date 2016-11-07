@@ -38,7 +38,7 @@ public class ThemeController extends BaseController {
      * @param themeDescription 主题的描述
      * @return
      */
-    @RequestMapping(value = "/dispatcher/theme/query", method = RequestMethod.GET)
+    @RequestMapping(value = "/dispatcher/theme/query", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData getThemes(HttpServletRequest request,
                                   @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page,

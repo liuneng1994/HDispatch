@@ -13,7 +13,7 @@ File Encoding         : 65001
 Date: 2016-10-26 9:35:54
 权限验证函数--by yazheng.yang@hand-china.com
 */
--- 权限判定函数
+-- 权限判定函数--by yazheng.yang@hand-china.com
 -- version 2.1
 -- 修复version 1.1中可能出现的一个用户对同一个主题有多个权限组合时，多对一的错误
 -- 参数说明：in_theme_id       bigint        传入的主题id
@@ -60,18 +60,3 @@ BEGIN
 		RETURN 'N';
 	END IF;
 END;
--- 测试和使用示例
-SELECT hasPermission(1,1,'Y','Y');
-SELECT hasPermission(1,1,'Y','N');
-SELECT hasPermission(2,1,'Y','Y');
-SELECT hasPermission(2,1,'Y','N');
-SELECT hasPermission(1,2,'Y','Y');
-SELECT hasPermission(1,2,'Y','N');
-SELECT hasPermission(1,1,NULL,'N');
-SELECT hasPermission(1,1,NULL,NULL);
-
-SELECT * FROM hdispatch_theme
-WHERE "Y"=hasPermission(1,1,'Y','Y');
-
-SELECT * FROM hdispatch_theme
-WHERE 'Y'=hasPermission(1,1,'Y','N');
