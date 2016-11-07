@@ -63,6 +63,7 @@
             selectable: 'multiple, rowbox',
             navigatable: true,
             resizable: true,
+            columnMenu: true,
             reorderable: true,
             scrollable: true,
             editable: false,

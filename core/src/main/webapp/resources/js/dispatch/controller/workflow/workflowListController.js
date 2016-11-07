@@ -51,6 +51,8 @@
             },
             //width:500,
             navigatable: true,
+            columnMenu: true,
+            reorderable: true,
             resizable: true,
             scrollable: true,
             editable: false,

@@ -72,6 +72,8 @@
                     },
                     //width:500,
                     selectable: "multiple, rowbox",
+                    columnMenu: true,
+                    reorderable: true,
                     navigatable: true,
                     resizable: true,
                     scrollable: true,

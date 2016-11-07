@@ -73,7 +73,9 @@
                     //width:500,
                     selectable: "multiple, rowbox",
                     navigatable: true,
+                    columnMenu: true,
                     resizable: true,
+                    reorderable: true,
                     scrollable: true,
                     pageable: {
                         pageSizes: [5, 10, 20, 50],
