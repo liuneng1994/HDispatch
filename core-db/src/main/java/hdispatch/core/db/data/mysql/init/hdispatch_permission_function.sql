@@ -1,0 +1,15 @@
+-- 测试和使用示例
+-- SELECT hasPermission(1,1,'Y','Y');
+-- SELECT hasPermission(1,1,'Y','N');
+-- SELECT hasPermission(2,1,'Y','Y');
+-- SELECT hasPermission(2,1,'Y','N');
+-- SELECT hasPermission(1,2,'Y','Y');
+-- SELECT hasPermission(1,2,'Y','N');
+-- SELECT hasPermission(1,1,NULL,'N');
+-- SELECT hasPermission(1,1,NULL,NULL);
+--
+-- SELECT * FROM hdispatch_theme
+-- WHERE "Y"=hasPermission(1,1,'Y','Y');
+--
+-- SELECT * FROM hdispatch_theme
+-- WHERE 'Y'=hasPermission(1,1,'Y','N');
