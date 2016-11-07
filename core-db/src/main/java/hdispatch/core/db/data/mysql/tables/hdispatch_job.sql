@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS `hdispatch_job`;
 CREATE TABLE `hdispatch_job` (
   `job_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `job_type` varchar(32) DEFAULT NULL,
   `svn` varchar(256) DEFAULT NULL,
   `active` tinyint(4) DEFAULT '1',
   `theme_id` bigint(20) DEFAULT NULL,
