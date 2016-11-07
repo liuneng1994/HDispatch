@@ -229,6 +229,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         FileUtils.deleteQuietly(projectDir);
         FileUtils.deleteQuietly(projectZipFile);
         projectDir.mkdir();
+        WorkflowUtils.createInitJob(projectDir);
         workflow.getJobs().forEach(job -> {
             switch (job.getJobType()) {
                 case "job":

@@ -50,6 +50,9 @@ public class WorkflowUtils {
                 String deptName = parentWorkflow.isEmpty() ? dept : String.join(".", parentWorkflow) + "." + dept;
                 newDepts.add(deptName);
             });
+            if (newDepts.isEmpty() && parentWorkflow.isEmpty()) {
+                newDepts.add("_init");
+            }
             FileUtils.writeLines(file, generateJobContent(jobSource, String.join(",", newDepts)));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -74,8 +77,25 @@ public class WorkflowUtils {
                 String namespace = parentWorkflow.isEmpty() ? "" : String.join(".", parentWorkflow) + ".";
                 newDepts.add(namespace + dept);
             });
+            if (newDepts.isEmpty() && parentWorkflow.isEmpty()) {
+                newDepts.add("_init");
+            }
             flowName = parentWorkflow.isEmpty() ? FLOW_PREFIX + flowName : FLOW_PREFIX + String.join(".", parentWorkflow) + "." + flowName;
             FileUtils.writeLines(file, generateFlowContent(flowName, String.join(",", newDepts)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void createInitJob(File parentFile) {
+        String command = ConfigUtil.getProperty("workflow.sync.command","echo \"workflow init\"");
+        File file = new File(parentFile, FLOW_PREFIX + "init" + JOB_SUFFIX);
+        List<String> content = new ArrayList<>();
+        content.add("type=command");
+        content.add("command="+command);
+        try {
+            file.createNewFile();
+            FileUtils.writeLines(file, content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,4 +1,4 @@
-//package hdispatch.core.db
+package hdispatch.core.db
 
 import com.hand.hap.liquibase.MigrationHelper
 
