@@ -219,8 +219,7 @@
                                                 read: {
                                                     url: crudServiceBaseUrl
                                                     + "/query",
-                                                    contentType: "application/json",
-                                                    type: "GET"
+                                                    type: "POST"
                                                 },
                                                 parameterMap: function (options,
                                                                         type) {
@@ -343,6 +342,7 @@
                                                     navigatable: true,
                                                     resizable: true,
                                                     reorderable: true,
+                                                    columnMenu: true,
                                                     scrollable: true,
                                                     editable: false,
                                                     sortable: true,

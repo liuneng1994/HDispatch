@@ -37,11 +37,9 @@ public class ExecutionFlowsController extends BaseController {
      * 获取全部flows及相关信息
      *
      * @param request
-     * @param page
-     * @param pagesize
      * @return
      */
-    @RequestMapping(value="/query",method=RequestMethod.GET)
+    @RequestMapping(value="/query",method=RequestMethod.POST)
     @ResponseBody
     public ResponseData query(HttpServletRequest request, @RequestParam("page") int page, @RequestParam("pagesize") int pagesize) {
         IRequest irequest = createRequestContext(request);
