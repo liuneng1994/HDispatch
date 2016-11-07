@@ -1,4 +1,18 @@
 <#include "../../include/header.html">
+    <script type="text/javascript">
+        $.ajax({
+            type: 'GET',
+            url: "${base.contextPath}/dispatcher/theme/queryAll_opt",
+            success: function (data) {
+                window.filter_to_operate_themeIds = [];
+                $.each(data.rows, function (key, value) {
+                    filter_to_operate_themeIds.push(value.themeId);
+                });
+            },
+            async: false,
+            dataType: "json"
+        });
+    </script>
     <script id="errorTemplate" type="text/x-kendo-template">
         <div class="wrong-pass">
             <img src="${base.contextPath}/resources/images/error-icon.png"/>

@@ -214,7 +214,6 @@
         AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
         <if test='description != "" and description != null'>AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')</if>
         AND hw.active=1
-        AND ('Y'=hasPermission(hw.theme_id,#{request.userId},NULL,'Y'))
         AND hw.project_name IS NOT NULL
         AND hw.flow_id IS NOT NULL
     </select>

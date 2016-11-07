@@ -44,7 +44,7 @@
                         vm.workflow.pageSize = options.data.pageSize;
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) delete vm.workflow.themeId;
                         if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) delete vm.workflow.layerId;
-                        workflowService.query(vm.workflow).then(function (data) {
+                        workflowService.queryOperate(vm.workflow).then(function (data) {
                             vm.total = data.total;
                             vm.currentWorklfows = data.rows;
                             options.success(data.rows);
@@ -187,8 +187,7 @@
                         vm.scheduleWindow.close();
                     }
                 })
-            }
-            ;
+            };
             kendo.ui.showDialog({
                 title: 'cron计划',
                 width: 600,

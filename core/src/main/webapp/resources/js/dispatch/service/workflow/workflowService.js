@@ -28,7 +28,7 @@
                 });
         };
         var jobs = function (themeId, layerId) {
-            return httpService.get(_basePath + '/dispatcher/job/query',
+            return httpService.postForm(_basePath + '/dispatcher/job/query',
                 {
                     themeId: themeId,
                     layerId: layerId,
