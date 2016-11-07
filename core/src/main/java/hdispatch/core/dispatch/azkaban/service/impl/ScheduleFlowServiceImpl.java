@@ -148,9 +148,9 @@ public ResultObj setsla(Map<String, Object> map) {
 		throw new IllegalArgumentException("schedule不存在！", e);
 	}
 	if(response.getBody().getObject().length()==0)
-		obj.setMessage("success!");
+		obj.setMessage("设置成功!");
 	else
-		obj.setMessage("Failed!");
+		obj.setMessage("设置失败!");
 	return obj;
 }
 /**
