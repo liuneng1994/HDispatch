@@ -131,7 +131,7 @@ public class WorkflowController extends BaseController {
      * @param pageSize     每页个数
      * @return
      */
-    @RequestMapping(path = "/query", method = RequestMethod.GET)
+    @RequestMapping(path = "/query", method = RequestMethod.POST)
     public ResponseData queryWorkflow(@RequestParam(name = "themeId", required = false) Long themeId,
                                       @RequestParam(name = "layerId", required = false) Long layerId,
                                       @RequestParam(name = "workflowName", required = false) String workflowName,
@@ -145,7 +145,7 @@ public class WorkflowController extends BaseController {
         return responseData;
     }
 
-    @RequestMapping(path = "/query_operate", method = RequestMethod.GET)
+    @RequestMapping(path = "/query_operate", method = RequestMethod.POST)
     public ResponseData queryOperateWorkflow(@RequestParam(name = "themeId", required = false) Long themeId,
                                       @RequestParam(name = "layerId", required = false) Long layerId,
                                       @RequestParam(name = "workflowName", required = false) String workflowName,

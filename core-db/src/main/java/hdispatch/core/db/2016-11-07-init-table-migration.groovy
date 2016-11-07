@@ -9,5 +9,5 @@ import com.hand.hap.liquibase.MigrationHelper
 
 def mhi = MigrationHelper.getInstance()
 
-databaseChangeLog(logicalFilePath:"hdispatch/core/db/2016-06-01-init-migration.groovy"){
+databaseChangeLog(logicalFilePath:"hdispatch/core/db/2016-11-07-init-migration.groovy"){
 }
