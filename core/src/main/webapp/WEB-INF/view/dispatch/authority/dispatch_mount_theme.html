@@ -197,6 +197,8 @@
 						resizable: true,
 						selectable: "multiple,rowbox",
 						scrollable: true,
+						columnMenu: true,
+						reorderable: true,
 						pageable: {
 							pageSizes:[10, 20, 50, 100],
 							refresh:true,
@@ -217,12 +219,6 @@
 						},
 						columns:
 								[
-									{
-										'field': 'themeGroupThemeId','hidden':true
-									},
-									{
-										'field': 'themeId','hidden':true
-									},
 									{
 										'field': 'themeName',
 										'title':'<@spring.message "hdispatch.theme_name"/>',
@@ -355,6 +351,8 @@
                         resizable: true,
                         selectable: "multiple",
                         scrollable: true,
+						columnMenu: true,
+						reorderable: true,
                         pageable: {
                             pageSizes:[10, 20, 50, 100],
                             refresh:true,
@@ -375,9 +373,6 @@
                         },
                         columns:
                                 [
-                                    {
-                                        'field': 'themeId','hidden':true
-                                    },
                                     {
                                         'field': 'themeName',
                                         'title':'<@spring.message "hdispatch.theme_name"/>',
