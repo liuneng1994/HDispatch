@@ -309,7 +309,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
             if(null != returnList && 0 < returnList.size()){
                 parameter.set__status(DTOStatus.UPDATE);
                 //id回写，防止页面中缺失id
-                if(null == parameter.getScheduleParaId()){
+                if(null == parameter.getScheduleParaId() || 0 == parameter.getScheduleParaId().longValue()){
                     parameter.setScheduleParaId(returnList.get(0).getScheduleParaId());
                 }
             }
