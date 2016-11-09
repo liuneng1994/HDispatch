@@ -463,7 +463,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">层级</label>
+                                        <label class="col-sm-4 control-label">层次</label>
                                         <div class="col-sm-8 ">
                                             <select name="layer"
                                                     k-ng-model="vm.workflow.layerId"
@@ -502,6 +502,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                     <div class="panel-footer text-right">
 						<span class="btn btn-success" ng-click="vm.search()"
                               type="submit">查询</span>
+                        <span class="btn btn-default" ng-click="vm.resetQuery()">重置</span>
                     </div>
                 </form>
             </div>

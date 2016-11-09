@@ -108,7 +108,7 @@
                         },
                         {
                             field: "mutexLayer",
-                            title: '层级',
+                            title: '层次',
                             width: 100
                         }]
                 };

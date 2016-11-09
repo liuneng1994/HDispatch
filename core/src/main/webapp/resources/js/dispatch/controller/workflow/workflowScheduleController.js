@@ -99,7 +99,7 @@
                 },
                 {
                     field: "layer",
-                    title: '层级',
+                    title: '层次',
                     width: 100
                 },
                 {
@@ -394,6 +394,13 @@
         };
         vm.executeCancel = function () {
             vm.executeWindow.close();
+        };
+        vm.resetQuery = function() {
+            "use strict";
+            vm.workflow.themeId = null;
+            vm.workflow.layerId = null;
+            vm.workflow.workflowName = '';
+            vm.workflow.description = '';
         };
 
         vm.paint = new Paint();
