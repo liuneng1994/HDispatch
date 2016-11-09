@@ -1,26 +1,38 @@
 package hdispatch.core.dispatch.controllers;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.impl.RequestHelper;
+import com.hand.hap.system.dto.ResponseData;
+import hdispatch.core.dispatch.TestUtil;
 import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeService;
+import org.easymock.EasyMock;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.Validator;
+
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +44,10 @@ import java.util.List;
  * @version 1.0
  * @since <pre>11/03/2016</pre>
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:/spring/applicationContext.xml","classpath:/spring/applicationContext-*.xml","classpath:/spring/appServlet/servlet-context.xml"})
+@Transactional
+@Rollback
 public class ThemeControllerTest {
     @InjectMocks
     private ThemeController themeController;
@@ -43,6 +59,12 @@ public class ThemeControllerTest {
     @Mock
     private HdispatchAuthorityService hdispatchAuthorityService;
 
+    @Mock
+    private Validator validator;
+
+    @Mock
+    private MessageSource messageSource;
+
     //用于模拟的数据
     private List<Theme> themesMock;
     private MockHttpServletRequest request;
@@ -53,10 +75,28 @@ public class ThemeControllerTest {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(themeController).build();
 
+        request = new MockHttpServletRequest();
+        request.setCharacterEncoding("UTF-8");
+        request.setAttribute("userId",3);
+    }
+
+    @After
+    public void after() throws Exception {
+//        themeController = null;
+//        mockMvc = null;
+//        themeService = null;
+//        hdispatchAuthorityService = null;
+//        themesMock = null;
+    }
+
+    /**
+     * Method: getThemes(HttpServletRequest request, @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page, @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize, @RequestParam(name = "themeName", defaultValue = "") String themeName, @RequestParam(name = "themeDescription", defaultValue = "") String themeDescription)
+     */
+    @Test
+    public void testGetThemes() throws Exception {
         //初始化模拟数据
         themesMock = new ArrayList<>();
         List<Theme> list_1 = new ArrayList<>();
-        List<Theme> list_2 = new ArrayList<>();
 
         for(int i = 1; i <11; i++){
             Theme temp_1 = new Theme();
@@ -66,32 +106,44 @@ public class ThemeControllerTest {
             themesMock.add(temp_1);
             themesMock.add(temp_2);
             list_1.add(temp_1);
-            list_2.add(temp_2);
         }
-        request = new MockHttpServletRequest();
-        request.setCharacterEncoding("UTF-8");
-        request.setAttribute("userId",3);
+        IRequest requestContext = RequestHelper.createServiceRequest(request);
+        //模拟的返回数据规则
+        when(themeService.selectByTheme(anyObject(),anyObject(),eq(1),eq(20)))
+                .thenReturn(themesMock);
+//        when(themeService.selectByTheme(anyObject(),eq(null),anyInt(),anyInt()))
+//                .thenThrow(NullPointerException.class);
+        when(themeService.selectByTheme(anyObject(),anyObject(),eq(1),eq(10)))
+                .thenReturn(list_1);
+        //用例
+        mockMvc.perform(post("/dispatcher/theme/query")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .param("page","1")
+                .param("pageSize","20")
+                .param("themeName","name")
+                .param("themeDescription","desc"))
+//                .content("{\"page\":1,\"pageSize\":20,\"themeName\":\"name\",\"themeDescription\":\"desc\"}"))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("total", is(20)));
+        mockMvc.perform(post("/dispatcher/theme/query")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .param("page","1")
+                .param("pageSize","10")
+                .param("themeName","name")
+                .param("themeDescription","desc"))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("total", is(10)));
 
-        //返回数据规则
-        when(themeService.selectByTheme((IRequest) request,new Theme(),1,30)).thenReturn(themesMock);
-
-
-    }
-
-    @After
-    public void after() throws Exception {
-        themeController = null;
-        mockMvc = null;
-        themeService = null;
-        hdispatchAuthorityService = null;
-        themesMock = null;
-    }
-
-    /**
-     * Method: getThemes(HttpServletRequest request, @RequestParam(name = "page", defaultValue = DEFAULT_PAGE) int page, @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize, @RequestParam(name = "themeName", defaultValue = "") String themeName, @RequestParam(name = "themeDescription", defaultValue = "") String themeDescription)
-     */
-    @Test
-    public void testGetThemes() throws Exception {
+        mockMvc.perform(post("/dispatcher/theme/query")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("total", is(10)));//默认的数据条数
 
     }
 
@@ -101,6 +153,7 @@ public class ThemeControllerTest {
     @Test
     public void testGetAllThemes_operate() throws Exception {
 //TODO: Test goes here... 
+                .andExpect(MockMvcResultMatchers.jsonPath("total", is(eq(list.size()))));
     }
 
     /**
