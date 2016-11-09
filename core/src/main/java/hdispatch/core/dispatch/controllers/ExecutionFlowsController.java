@@ -254,7 +254,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getResume());
                 obj.setCode(0);
             } else {
-                obj.setMessage("success");
+                obj.setMessage("恢复成功");
                 obj.setCode(1);
             }
         }
@@ -280,7 +280,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getError());
                 obj.setCode(0);
             } else {
-                obj.setMessage("success");
+                obj.setMessage("暂停成功");
                 obj.setCode(1);
             }
         }
@@ -306,7 +306,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getError());
                 obj.setCode(0);
             } else {
-                obj.setMessage("success");
+                obj.setMessage("停止成功");
                 obj.setCode(1);
             }
         }

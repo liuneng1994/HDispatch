@@ -39,8 +39,8 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 					.queryString("project", projectName).asJson();
 
 		} catch (UnirestException e) {
-			logger.error("工程名错误！");
-			throw new IllegalArgumentException("工程名错误！", e);
+			logger.error("网络异常！");
+			throw new IllegalArgumentException("网络异常！", e);
 		}
 		return response.getBody().getObject().getLong("projectId");
 	}

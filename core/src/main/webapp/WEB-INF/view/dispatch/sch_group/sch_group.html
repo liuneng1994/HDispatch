@@ -79,6 +79,7 @@
                         <div class="panel-footer text-right">
 						<span class="btn btn-success" data-bind="click:queryResource"
                               type="submit"><@spring.message "hap.query"/></span>
+                            <span class="btn btn-default" data-bind="click:resetFunction" type="button"><@spring.message "hap.reset"/></span>
                         </div>
                         <!-- end panel-footer -->
                     </form>
@@ -208,6 +209,13 @@
                                     queryResource: function (e) {
                                         $('#flowGrid').data('kendoGrid').dataSource
                                                 .read();
+                                    },
+                                    resetFunction: function (e) {
+                                        var formData = viewModel.model.toJSON();
+                                        for ( var k in formData) {
+                                            viewModel.model.set(k, null);
+                                        }
+                                        document.getElementById("picker").value= '';
                                     }
                                 });
 
@@ -399,7 +407,7 @@
                                                          {
                                                          field : "description",
                                                          title : '<@spring.message "hdispatch.flowlist.description"/>',
-                                                         width : 200,
+                                                         width : 150,
                                                              template: function (item){
                                                                  return item.description.substr(0,200);
                                                              }
@@ -408,7 +416,7 @@
                                                         {
                                                             field: "start_time",
                                                             title: '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
-                                                            width: 100,
+                                                            width: 130,
                                                             template: function (dataItem) {
                                                                 var v = dataItem.start_time;
                                                                 return v == -1 ? '--'
@@ -420,7 +428,7 @@
                                                         {
                                                             field: "end_time",
                                                             title: '<@spring.message "hdispatch.flowlist.flowgrid.enddate"/>',
-                                                            width: 100,
+                                                            width: 130,
                                                             template: function (dataItem) {
                                                                 var v = dataItem.end_time;
                                                                 /*

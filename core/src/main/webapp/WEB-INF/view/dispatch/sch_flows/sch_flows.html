@@ -75,6 +75,7 @@
                         <div class="panel-footer text-right">
 						<span class="btn btn-success" data-bind="click:queryResource"
                               type="submit"><@spring.message "hap.query"/></span>
+                            <span class="btn btn-default" data-bind="click:resetFunction" type="button"><@spring.message "hap.reset"/></span>
                         </div>
                         <!-- end panel-footer -->
                     </form>
@@ -153,6 +154,13 @@
                                     queryResource: function (e) {
                                         $('#flowGrid').data('kendoGrid').dataSource
                                                 .read();
+                                    },
+                                    resetFunction: function (e) {
+                                        var formData = viewModel.model.toJSON();
+                                        for ( var k in formData) {
+                                            viewModel.model.set(k, null);
+                                        }
+                                        document.getElementById("picker").value= '';
                                     }
                                 });
 
