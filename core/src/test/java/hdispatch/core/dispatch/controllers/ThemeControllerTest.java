@@ -152,7 +152,22 @@ public class ThemeControllerTest {
      */
     @Test
     public void testGetAllThemes_operate() throws Exception {
-//TODO: Test goes here... 
+        List<Theme> list = new ArrayList<>();
+        for(int i = 1; i <11; i++){
+            Theme temp_1 = new Theme();
+            Theme temp_2 = new Theme();
+            temp_1.setThemeId(new Long(i)).setThemeName("abc"+i).setThemeDescription("Desc_abc"+i).setThemeSequence(new Long(i)).setThemeActive(1L);
+            temp_2.setThemeId(new Long(i*2)).setThemeName("def"+i*2).setThemeDescription("Desc_def"+i*2).setThemeSequence(new Long(i*2)).setThemeActive(1L);
+            list.add(temp_1);
+            list.add(temp_2);
+        }
+        Mockito.when(themeService.selectAll_opt(anyObject())).thenReturn(list);
+
+        mockMvc.perform(get("/dispatcher/theme/queryAll_opt")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(true)))
                 .andExpect(MockMvcResultMatchers.jsonPath("total", is(eq(list.size()))));
     }
 
