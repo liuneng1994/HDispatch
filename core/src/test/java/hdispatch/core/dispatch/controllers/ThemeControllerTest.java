@@ -193,12 +193,70 @@ public class ThemeControllerTest {
     }
 
     /**
+     * use case：添加主题
      * Method: addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request)
      */
     @Test
     public void testAddThemes() throws Exception {
-//TODO: Test goes here... 
+        List<Theme> dataList_1 = new ArrayList<>();
+        dataList_1.add(new Theme().setThemeId(1L).setThemeName("theme_1").setThemeDescription("desc_1").setThemeActive(1L));
+        dataList_1.add(new Theme().setThemeId(2L).setThemeName("theme_2").setThemeDescription("desc_2").setThemeActive(1L));
+        boolean[] isExist = {false,false};
+        when(themeService.checkIsExist(anyObject())).thenReturn(isExist);
+        when(themeService.batchUpdate(anyObject(),anyObject())).thenReturn(dataList_1);
+        byte[] sentDataBytes = TestUtil.convertObjectToJsonBytes(dataList_1);
+        mockMvc.perform(post("/dispatcher/theme/submit","json")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(sentDataBytes))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("total", is(2)));
+
+
+        //用于返回已经存在的数据列表
+        List<Theme> dataList_2 = new ArrayList<>();
+        dataList_2.add(new Theme().setThemeId(3L).setThemeName("theme_3").setThemeDescription("desc_3").setThemeActive(1L));
+        dataList_2.add(new Theme().setThemeId(4L).setThemeName("theme_4").setThemeDescription("desc_4").setThemeActive(1L));
+        //重新设置返回数据规则
+        isExist = new boolean[]{true,true};
+        when(themeService.checkIsExist(anyObject())).thenReturn(isExist);
+        when(themeService.batchUpdate(anyObject(),anyObject())).thenReturn(dataList_2);
+        sentDataBytes = TestUtil.convertObjectToJsonBytes(dataList_2);
+        mockMvc.perform(post("/dispatcher/theme/submit","json")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(sentDataBytes))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("success", is(false)))
+                .andExpect(MockMvcResultMatchers.jsonPath("message", not(eq(""))));
     }
+
+//    /**
+//     * use case：添加主题(主题已经存在)
+//     * Method: addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request)
+//     * @throws Exception
+//     */
+//    @Test
+//    public void testAddThemes() throws Exception {
+//        //用于返回已经存在的数据列表
+//        List<Theme> dataList_2 = new ArrayList<>();
+//        dataList_2.add(new Theme().setThemeId(3L).setThemeName("theme_3").setThemeDescription("desc_3").setThemeActive(1L));
+//        dataList_2.add(new Theme().setThemeId(4L).setThemeName("theme_4").setThemeDescription("desc_4").setThemeActive(1L));
+//        boolean[] isExist = {true,true};
+//        when(themeService.checkIsExist(anyObject())).thenReturn(isExist);
+//        when(themeService.batchUpdate(anyObject(),anyObject())).thenReturn(eq(null));
+//        byte[] sentDataBytes = TestUtil.convertObjectToJsonBytes(dataList_2);
+//        mockMvc.perform(post("/dispatcher/theme/submit")
+//                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+//                .content(sentDataBytes))
+//                .andDo(print())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("success", is(false)))
+//                .andExpect(MockMvcResultMatchers.jsonPath("message", not(eq(null))))
+//                .andExpect(MockMvcResultMatchers.jsonPath("message", not(eq(""))));
+//
+//    }
 
     /**
      * Method: deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request)
