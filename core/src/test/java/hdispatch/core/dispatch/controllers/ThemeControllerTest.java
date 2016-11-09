@@ -2,13 +2,10 @@ package hdispatch.core.dispatch.controllers;
 
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.impl.RequestHelper;
-import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.TestUtil;
 import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeService;
-import org.easymock.EasyMock;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
