@@ -4,6 +4,7 @@ import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.dto.workflow.WorkflowJob;
+import hdispatch.core.dispatch.exception.JobAbsentException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -41,8 +42,9 @@ public class WorkflowUtils {
         File file = new File(parentFile, parentWorkflow.isEmpty() ? job.getWorkflowJobId() + JOB_SUFFIX : String.join(".", parentWorkflow) + "." + job.getWorkflowJobId() + JOB_SUFFIX);
         try {
             file.createNewFile();
-            Job jobSource = jobStore.stream()
-                    .filter(item -> item.getJobId() == job.getJobSource()).findFirst().get();
+            Optional<Job> jobSource = jobStore.stream()
+                    .filter(item -> item.getJobId() == job.getJobSource()).findFirst();
+            if (!jobSource.isPresent()) throw new JobAbsentException(job.getWorkflowJobId());
             List<String> depts = Arrays.asList(job.getParentsJobId().split(","));
             List<String> newDepts = new ArrayList<>();
             depts.forEach(dept -> {
@@ -53,7 +55,7 @@ public class WorkflowUtils {
             if (newDepts.isEmpty() && parentWorkflow.isEmpty()) {
                 newDepts.add("_init");
             }
-            FileUtils.writeLines(file, generateJobContent(jobSource, String.join(",", newDepts)));
+            FileUtils.writeLines(file, generateJobContent(jobSource.get(), String.join(",", newDepts)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

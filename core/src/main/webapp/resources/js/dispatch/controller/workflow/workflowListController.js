@@ -2,6 +2,7 @@
  * Created by hasee on 2016/9/21.
  */
 (function () {
+    'use strict;';
     angular.module('dispatch').controller('workflowListController', ['$window', '$scope', 'workflowService', function ($window, $scope, workflowService) {
         var vm = this;
         vm.workflow = {};
@@ -29,6 +30,9 @@
                         });
                         workflowService.deleteWorkflow(ids).then(function () {
                             options.success();
+                            kendo.ui.showInfoDialog({
+                                message: '成功'
+                            });
                         });
                     }
                 },
@@ -87,7 +91,7 @@
                 },
                 {
                     field: "layer",
-                    title: '层级',
+                    title: '层次',
                     width: 100
                 },
                 {
@@ -126,6 +130,14 @@
         vm.edit = function (id) {
             $window.sessionStorage['workflowId'] = id;
             location = _basePath + '/dispatch/workflow/workflow_update.html';
+        };
+
+        vm.resetQuery = function() {
+            "use strict";
+            vm.workflow.themeId = null;
+            vm.workflow.layerId = null;
+            vm.workflow.workflowName = '';
+            vm.workflow.description = '';
         };
 
         vm.delete = function (id) {

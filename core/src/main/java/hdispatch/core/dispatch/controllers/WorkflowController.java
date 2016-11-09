@@ -4,6 +4,7 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
+import hdispatch.core.dispatch.exception.JobAbsentException;
 import hdispatch.core.dispatch.service.WorkflowService;
 import hdispatch.core.dispatch.utils.StringUtils;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class WorkflowController extends BaseController {
     @Autowired
     private WorkflowService workflowService;
     private Logger logger = LoggerFactory.getLogger(WorkflowController.class);
+
     /**
      * 创建工作流，工作流的名称要唯一，工作流内的job名称不能重复
      *
@@ -40,7 +42,7 @@ public class WorkflowController extends BaseController {
      */
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public ResponseData createWorkflow(@RequestBody Workflow workflow) {
-        logger.info("create workflow {}",workflow);
+        logger.info("create workflow {}", workflow);
         ResponseData responseData;
         if (workflowService.getWorkflowByName(workflow.getName()) != null) {
             logger.info("workflow {} exits", workflow.getName());
@@ -53,13 +55,13 @@ public class WorkflowController extends BaseController {
             jobs.add(job.getWorkflowJobId());
         });
         if (jobs.size() < workflow.getJobs().size()) {
-            logger.info("workflow {} has duplicated job",workflow);
+            logger.info("workflow {} has duplicated job", workflow);
             responseData = new ResponseData(false);
             responseData.setMessage("工作流中存在重复的job");
             return responseData;
         }
         Map<String, Object> result = workflowService.createWorkflow(workflow);
-         if (result.containsKey(RET_ERROR)) {
+        if (result.containsKey(RET_ERROR)) {
             responseData = new ResponseData(false);
             responseData.setMessage((String) result.get(RET_ERROR));
         } else {
@@ -97,13 +99,18 @@ public class WorkflowController extends BaseController {
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
     public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId) {
         ResponseData responseData;
-        String result = workflowService.generateWorkflow(workflowId);
-        if (StringUtils.isEmpty(result)) {
-            responseData = new ResponseData(true);
-            responseData.setMessage("工作流生成成功");
-        } else {
+        try {
+            String result = workflowService.generateWorkflow(workflowId);
+            if (StringUtils.isEmpty(result)) {
+                responseData = new ResponseData(true);
+                responseData.setMessage("工作流生成成功");
+            } else {
+                responseData = new ResponseData(false);
+                responseData.setMessage(result);
+            }
+        } catch (JobAbsentException e) {
             responseData = new ResponseData(false);
-            responseData.setMessage(result);
+            responseData.setMessage(e.getMessage() + "不存在");
         }
         return responseData;
     }
@@ -147,12 +154,12 @@ public class WorkflowController extends BaseController {
 
     @RequestMapping(path = "/query_operate", method = RequestMethod.POST)
     public ResponseData queryOperateWorkflow(@RequestParam(name = "themeId", required = false) Long themeId,
-                                      @RequestParam(name = "layerId", required = false) Long layerId,
-                                      @RequestParam(name = "workflowName", required = false) String workflowName,
-                                      @RequestParam(name = "description", required = false) String description,
-                                      @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-                                      @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,
-                                      HttpServletRequest servletRequest) {
+                                             @RequestParam(name = "layerId", required = false) Long layerId,
+                                             @RequestParam(name = "workflowName", required = false) String workflowName,
+                                             @RequestParam(name = "description", required = false) String description,
+                                             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
+                                             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,
+                                             HttpServletRequest servletRequest) {
         ResponseData responseData = null;
         IRequest request = createRequestContext(servletRequest);
         responseData = new ResponseData(workflowService.queryOperateWorkflow(request, themeId, layerId, workflowName, description, page, pageSize));
@@ -161,13 +168,13 @@ public class WorkflowController extends BaseController {
 
     /**
      * 通过ID查找工作流
+     *
      * @param workflowId 工作流编号
      * @return
      */
     @RequestMapping(path = "/get", method = RequestMethod.GET)
     public ResponseData getWorkflow(@RequestParam(name = "workflowId") long workflowId) {
         ResponseData responseData = null;
-
         Workflow workflow = workflowService.getWorkflowById(workflowId);
         if (workflow == null) {
             responseData = new ResponseData(false);
@@ -181,6 +188,7 @@ public class WorkflowController extends BaseController {
 
     /**
      * 更新工作流
+     *
      * @param workflow 工作流
      * @return
      */
@@ -193,7 +201,7 @@ public class WorkflowController extends BaseController {
         return responseData;
     }
 
-    @RequestMapping(path="/delete", method = RequestMethod.POST)
+    @RequestMapping(path = "/delete", method = RequestMethod.POST)
     public ResponseData updateWorkflow(@RequestBody List<Integer> ids) {
         workflowService.deleteWorkflow(ids);
         return new ResponseData(true);

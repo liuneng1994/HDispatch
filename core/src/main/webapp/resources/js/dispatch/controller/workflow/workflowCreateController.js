@@ -90,9 +90,9 @@
                 kendo.ui.showDialog({
                     title: '生成新任务流',
                     width: 400,
-                    message: '任务流创建成功,是否生成新任务流',
+                    message: '任务流新建成功,是否立即生成',
                     buttons: [{
-                        text: "生成任务流",
+                        text: "是",
                         type: 'success',
                         click: function(e) {
                             e.dialog.destroy();
@@ -101,7 +101,7 @@
                             });
                         }
                     }, {
-                        text: "取消",
+                        text: "否",
                         type: 'danger',
                         click: function(e) {
                             e.dialog.destroy();
