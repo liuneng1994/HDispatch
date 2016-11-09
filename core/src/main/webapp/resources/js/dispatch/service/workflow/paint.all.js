@@ -51,7 +51,7 @@ var Paint = (function (mode) {
         new Drag(attr.elScroll, this._paper);
         var highlightedCellViews = [];
         // 增加选中
-        this._paper.on('cell:pointerclick', function (cellView, event) {
+        this._paper.on('cell:pointerdown', function (cellView, event) {
             if (event.ctrlKey && cellView.model.isElement() && !cellView.model.get('parent')) {
                 if (!highlightedCellViews.includes(cellView)) {
                     cellView.highlight();
@@ -450,7 +450,6 @@ var Paint = (function (mode) {
                 }
             }, joint.shapes.basic.Generic.prototype.defaults)
         });
-
         joint.shapes.node.flow.prototype.expandFlow = function (sourceGraph, graph) {
             this.prop('expanded', true);
             var $this = this;
@@ -572,6 +571,13 @@ var Paint = (function (mode) {
         this._graph.getCell(id).remove();
 
     };
+    Paint.prototype.deleteSelectedNode = function() {
+        var $this = this;
+        this.selected.forEach(function (cell) {
+            $this.deleteNode(cell.id);
+        });
+        this.selected = [];
+    }
     Paint.prototype.linkNode = function (sourceId, targetId, hasDept) {
         "use strict";
         if (typeof hasDept != "boolean") {
@@ -689,10 +695,7 @@ var Paint = (function (mode) {
         var $this = this;
         if (this.editable) {
             hotkeys('del', function (event, handler) {
-                $this.selected.forEach(function (cell) {
-                    $this.deleteNode(cell.id);
-                });
-                $this.selected = [];
+                $this.deleteSelectedNode();
             });
         }
         ;
