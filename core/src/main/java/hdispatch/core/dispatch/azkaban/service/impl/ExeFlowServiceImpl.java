@@ -206,8 +206,8 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			job.setEnd_time(new exejob(obj).getEndTime());
 			job.setStart_time(new exejob(obj).getStartTime());
 			job.setStatus((byte)new exejob(obj).getStatus());
-			if(new exejob(obj).getStartTime()!=-1&&!job.getJob_id().startsWith("_"))
-			list.add(job);
+			if(job.getStart_time()!=-1&&!job.getJob_id().startsWith("_"))
+				list.add(job);
 			JSONArray array=new exejob(obj).getNodes();
 			for (int i=0;i<array.length();i++)
 			{
@@ -224,8 +224,8 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			job.setEnd_time(new exejob(obj).getEndTime());
 			job.setStart_time(new exejob(obj).getStartTime());
 			job.setStatus((byte)new exejob(obj).getStatus());
-			if(new exejob(obj).getStartTime()!=-1&&!job.getJob_id().startsWith("_"))
-			list.add(job);
+			if(job.getStart_time()!=-1&&!job.getJob_id().startsWith("_"))
+				list.add(job);
 		}
 		return list;
 	}

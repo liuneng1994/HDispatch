@@ -142,6 +142,7 @@ public class ExecutionFlowsController extends BaseController {
             endtime = list.get(0).getEnd_time();
             starttime = list.get(0).getStart_time();
             flow_id=list.get(0).getFlow_id();
+            if(list.size()>1)
             list.remove(0);
         }
         for (ExecutionJobs job : list) {
