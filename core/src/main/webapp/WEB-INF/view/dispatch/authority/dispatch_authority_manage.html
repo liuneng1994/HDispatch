@@ -205,6 +205,8 @@
 						resizable: true,
 						selectable: "multiple,rowbox",
 						scrollable: true,
+						columnMenu: true,
+						reorderable: true,
 						pageable: {
 							pageSizes:[10, 20, 50, 100],
 							refresh:true,
@@ -225,12 +227,6 @@
 						},
 						columns:
 								[
-									{
-										'field': 'authorityId','hidden':true
-									},
-									{
-										'field': 'userId','hidden':true
-									},
 									{
 									    'field': "userName",
 										'title': '<@spring.message "user.username"/>',
@@ -365,6 +361,8 @@
                         resizable: true,
                         selectable: "multiple",
                         scrollable: true,
+						columnMenu: true,
+						reorderable: true,
                         pageable: {
                             pageSizes:[10, 20, 50, 100],
                             refresh:true,
@@ -385,9 +383,6 @@
                         },
                         columns:
                                 [
-                                    {
-                                        'field': 'userId','hidden':true
-                                    },
                                     {
                                         'field': 'userName',
                                         'title':'<@spring.message "user.username"/>',

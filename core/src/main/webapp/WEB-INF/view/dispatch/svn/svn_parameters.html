@@ -314,6 +314,8 @@
 //                    selectable: "multiple,rowbox",
                     selectable: "multiple",
                     scrollable: true,
+//                    columnMenu: true,
+//                    reorderable: true,
                     pageable: {
                         pageSizes:[10, 20, 50, 100],
                         refresh:true,
@@ -373,7 +375,6 @@
                     format:"{0:yyyy-MM-dd}",
                     columns:
                             [
-                                { 'field': 'scheduleParaId','hidden':true },
                                 {
                                     'field': 'subjectName',
                                     'title':'<@spring.message "hdispatch.svn.svn_parameter.subject_name"/>',
