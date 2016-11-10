@@ -88,6 +88,7 @@
                 $("#btn_parameter_calcel").removeAttr("disabled","disabled");
             }
 
+
             var wnd, detailsTemplate;
             var baseUrl_theme = "${base.contextPath}/dispatcher/theme/";
             var baseUrl_layer = "${base.contextPath}/dispatcher/layer/";
@@ -140,6 +141,7 @@
                             height:450
                         }).data("kendoWindow");
                 detailsTemplate = kendo.template($("#template").html());
+
                 //声明主窗口
                 themes_data = new kendo.data.DataSource({
                     transport: {
@@ -205,6 +207,17 @@
                             }
                         }
                     },
+                    requestEnd: function(e) {
+                        if (e.response.success && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
+                            });
+                        }
+                        if (!e.response.success && e.type == "destroy") {
+                            $('#themeListGrid').data('kendoGrid').cancelChanges();
+                        }
+
+                    },
                     batch: true,
                     serverPaging : true,
                     pageSize: 50,
@@ -238,8 +251,6 @@
                                 alert(responseText.message);
                             }
                         }
-                        //操作不成功之后会取消
-                        $('#themeListGrid').data('kendoGrid').cancelChanges();
                     }
                 });
                 $("#themeListGrid").kendoGrid({
@@ -531,8 +542,6 @@
                                 alert(responseText.message);
                             }
                         }
-                        //操作不成功之后会取消
-                        $('#layerListGrid').data('kendoGrid').cancelChanges();
                     }
                 });
                 $("#layerListGrid").kendoGrid({
