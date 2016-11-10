@@ -325,7 +325,7 @@
                         {
                             attributes: {style: "text-align:center;padding:0px"},
                             'field' : "",
-                            'title' : '',
+                            'title' : '<@spring.message "hdispatch.grid_title.operation"/>',
                             'width' : 50,
                             template: function (rowData) {
                                 if(hasOperatePermission(rowData.themeId)){
@@ -577,6 +577,7 @@
 //                                { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "140px" },
                                 {
                                     attributes: {style: "text-align:center;padding:0px"},
+                                    title:'<@spring.message "hdispatch.grid_title.operation"/>',
                                     command : [{
                                         name:'remove',
                                         template : function (rowData) {
