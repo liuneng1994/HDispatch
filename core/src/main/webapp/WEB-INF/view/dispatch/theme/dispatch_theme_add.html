@@ -154,6 +154,12 @@
                             dataType: "json",
                             contentType:"application/json"
                         },
+                        update: {
+                            url: baseUrl_theme + "update",
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
                         destroy: {
                             url: baseUrl_theme + "remove",
                             type : 'POST',
@@ -268,22 +274,22 @@
                             'field': 'themeName',
                             'title':'<@spring.message "hdispatch.theme_name"/>',
                             'width': "150px",
-                            editor:themeNameEditor,
-                            template:"#=themeName#"
+//                            editor:themeNameEditor,
+//                            template:"#=themeName#"
                         },
-                        {
-                            'field': 'themeSequence',
-                            'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
-                            'width': "100px",
-                            editor:themeSequenceEditor,
-                            template:"#=themeSequence#"
-                        },
+//                        {
+//                            'field': 'themeSequence',
+//                            'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
+//                            'width': "100px",
+//                            editor:themeSequenceEditor,
+//                            template:"#=themeSequence#"
+//                        },
                         {
                             'field': 'themeDescription',
                             'title':'<@spring.message "hdispatch.theme.theme_description"/>',
                             'width': "200px",
-                            editor:themeDescEditor,
-                            template:"#=themeDescription#"
+//                            editor:themeDescEditor,
+//                            template:"#=themeDescription#"
                         },
                         {
                             attributes: {style: "text-align:center;padding:0px"},
@@ -325,7 +331,7 @@
                         if(e.model.themeId){
                             $("#themeName_grid_input").attr("readonly","readonly");
                             $("#themeDesc_grid_input").attr("readonly","readonly");
-                            $("#themeSequence_grid_input").attr("readonly","readonly");
+//                            $("#themeSequence_grid_input").attr("readonly","readonly");
                         }
                     }
                 });
@@ -484,6 +490,17 @@
                             }
                         }
                     },
+                    requestEnd: function(e) {
+                        if (e.response.success && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
+                            });
+                        }
+                        if (!e.response.success && e.type == "destroy") {
+                            $('#layerListGrid').data('kendoGrid').cancelChanges();
+                        }
+
+                    },
                     batch: true,
                     serverPaging : true,
                     pageSize: 50,
@@ -548,7 +565,7 @@
                             [
                                 { 'field': 'layerName','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "140px" },
                                 { 'field': 'layerDescription','title':'<@spring.message "hdispatch.layer.layer_description"/>', 'width': "140px" },
-                                { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "140px" },
+//                                { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "140px" },
                                 {
                                     attributes: {style: "text-align:center;padding:0px"},
                                     command : [{
