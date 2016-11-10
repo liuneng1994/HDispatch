@@ -4,7 +4,7 @@
 DROP TABLE IF EXISTS `hdispatch_theme`;
 CREATE TABLE `hdispatch_theme` (
   `theme_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) DEFAULT NULL,
+  `name` varchar(128) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `active` tinyint(4) DEFAULT '1',
   `display_sequence` int(11) DEFAULT '0',
