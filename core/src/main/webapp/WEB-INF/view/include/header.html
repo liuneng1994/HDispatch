@@ -95,7 +95,8 @@
                 if(event.button == 'OK'){
                     var data = $("#"+grid_div_id).data("kendoGrid").dataItem($(e.target).closest("tr"));
                     $("#"+grid_div_id).data("kendoGrid").dataSource.remove(data);
-                    $("#"+grid_div_id).data("kendoGrid").dataSource.sync();
+//                    $("#"+grid_div_id).data("kendoGrid").dataSource.sync();
+                    $("#"+grid_div_id).data('kendoGrid').saveChanges();
                 }
             });
         }
