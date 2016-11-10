@@ -156,8 +156,7 @@ public class HdispatchJobController extends BaseController {
         Locale locale = RequestContextUtils.getLocale(request);
         try {
             List<Job> jobListReturn = jobService.batchUpdate(requestContext, jobList);
-            rd = new ResponseData(true);
-            rd.setMessage("success");
+            rd = new ResponseData(jobListReturn);
         } catch (Exception e) {
             //删除任务中途失败
             String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_deleting", null, locale);
