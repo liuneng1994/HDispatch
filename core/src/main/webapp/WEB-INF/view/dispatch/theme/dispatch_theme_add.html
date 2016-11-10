@@ -88,6 +88,7 @@
                 $("#btn_parameter_calcel").removeAttr("disabled","disabled");
             }
 
+
             var wnd, detailsTemplate;
             var baseUrl_theme = "${base.contextPath}/dispatcher/theme/";
             var baseUrl_layer = "${base.contextPath}/dispatcher/layer/";
@@ -140,6 +141,7 @@
                             height:450
                         }).data("kendoWindow");
                 detailsTemplate = kendo.template($("#template").html());
+
                 //声明主窗口
                 themes_data = new kendo.data.DataSource({
                     transport: {
@@ -150,6 +152,12 @@
                         },
                         create: {
                             url: baseUrl_theme+'submit',
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
+                        update: {
+                            url: baseUrl_theme + "update",
                             type : 'POST',
                             dataType: "json",
                             contentType:"application/json"
@@ -199,6 +207,17 @@
                             }
                         }
                     },
+                    requestEnd: function(e) {
+                        if ((!e.response || e.response.success) && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
+                            });
+                        }
+                        if (e.response && !e.response.success && e.type == "destroy") {
+                            $('#themeListGrid').data('kendoGrid').cancelChanges();
+                        }
+
+                    },
                     batch: true,
                     serverPaging : true,
                     pageSize: 50,
@@ -232,8 +251,6 @@
                                 alert(responseText.message);
                             }
                         }
-                        //操作不成功之后会取消
-                        $('#themeListGrid').data('kendoGrid').cancelChanges();
                     }
                 });
                 $("#themeListGrid").kendoGrid({
@@ -268,22 +285,22 @@
                             'field': 'themeName',
                             'title':'<@spring.message "hdispatch.theme_name"/>',
                             'width': "150px",
-                            editor:themeNameEditor,
-                            template:"#=themeName#"
+//                            editor:themeNameEditor,
+//                            template:"#=themeName#"
                         },
-                        {
-                            'field': 'themeSequence',
-                            'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
-                            'width': "100px",
-                            editor:themeSequenceEditor,
-                            template:"#=themeSequence#"
-                        },
+//                        {
+//                            'field': 'themeSequence',
+//                            'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
+//                            'width': "100px",
+//                            editor:themeSequenceEditor,
+//                            template:"#=themeSequence#"
+//                        },
                         {
                             'field': 'themeDescription',
                             'title':'<@spring.message "hdispatch.theme.theme_description"/>',
                             'width': "200px",
-                            editor:themeDescEditor,
-                            template:"#=themeDescription#"
+//                            editor:themeDescEditor,
+//                            template:"#=themeDescription#"
                         },
                         {
                             attributes: {style: "text-align:center;padding:0px"},
@@ -308,7 +325,7 @@
                         {
                             attributes: {style: "text-align:center;padding:0px"},
                             'field' : "",
-                            'title' : '',
+                            'title' : '<@spring.message "hdispatch.grid_title.operation"/>',
                             'width' : 50,
                             template: function (rowData) {
                                 if(hasOperatePermission(rowData.themeId)){
@@ -325,7 +342,7 @@
                         if(e.model.themeId){
                             $("#themeName_grid_input").attr("readonly","readonly");
                             $("#themeDesc_grid_input").attr("readonly","readonly");
-                            $("#themeSequence_grid_input").attr("readonly","readonly");
+//                            $("#themeSequence_grid_input").attr("readonly","readonly");
                         }
                     }
                 });
@@ -484,6 +501,17 @@
                             }
                         }
                     },
+                    requestEnd: function(e) {
+                        if (e.response.success && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
+                            });
+                        }
+                        if (!e.response.success && e.type == "destroy") {
+                            $('#layerListGrid').data('kendoGrid').cancelChanges();
+                        }
+
+                    },
                     batch: true,
                     serverPaging : true,
                     pageSize: 50,
@@ -514,8 +542,6 @@
                                 alert(responseText.message);
                             }
                         }
-                        //操作不成功之后会取消
-                        $('#layerListGrid').data('kendoGrid').cancelChanges();
                     }
                 });
                 $("#layerListGrid").kendoGrid({
@@ -548,9 +574,10 @@
                             [
                                 { 'field': 'layerName','title':'<@spring.message "hdispatch.layer_name"/>', 'width': "140px" },
                                 { 'field': 'layerDescription','title':'<@spring.message "hdispatch.layer.layer_description"/>', 'width': "140px" },
-                                { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "140px" },
+//                                { 'field': 'layerSequence','title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>', 'width': "140px" },
                                 {
                                     attributes: {style: "text-align:center;padding:0px"},
+                                    title:'<@spring.message "hdispatch.grid_title.operation"/>',
                                     command : [{
                                         name:'remove',
                                         template : function (rowData) {

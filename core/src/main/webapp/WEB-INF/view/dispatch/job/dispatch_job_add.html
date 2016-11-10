@@ -238,6 +238,17 @@
                             }
                         }
                     },
+                    requestEnd: function(e) {
+                        if ((!e.response || e.response.success) && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
+                            });
+                        }
+                        if (e.response && !e.response.success && e.type == "destroy") {
+                            $('#jobListGrid').data('kendoGrid').cancelChanges();
+                        }
+
+                    },
                     batch: true,
                     serverPaging : true,
                     pageSize: 50,
@@ -310,7 +321,7 @@
                             {
                                 attributes: {style: "text-align:center;padding:0px"},
                                 field : "",
-                                title : '',
+                                title : '<@spring.message "hdispatch.grid_title.operation"/>',
                                 width : 50,
                                 template: function (rowData) {
                                     if(hasOperatePermission(rowData.themeId)){

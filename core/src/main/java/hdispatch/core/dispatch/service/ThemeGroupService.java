@@ -36,5 +36,5 @@ public interface ThemeGroupService {
      * @param themeGroupList 待删除的主题组列表
      * @param cannotRemoveList 不可以删除的列表
      */
-    void batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList);
+    List<ThemeGroup> batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList);
 }

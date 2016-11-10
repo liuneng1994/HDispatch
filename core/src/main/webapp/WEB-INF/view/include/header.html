@@ -83,7 +83,7 @@
             return false;
         }
 
-        //权限验证中的Grid行中的删除事件处理函数
+        //Grid行中的删除事件处理函数
         //参数：grid_div_id是kendoGrid那个div的id值;e:click事件
         function grid_del_btn_click(grid_div_id,e){
 //            var e = window.event;
@@ -95,7 +95,8 @@
                 if(event.button == 'OK'){
                     var data = $("#"+grid_div_id).data("kendoGrid").dataItem($(e.target).closest("tr"));
                     $("#"+grid_div_id).data("kendoGrid").dataSource.remove(data);
-                    $("#"+grid_div_id).data("kendoGrid").dataSource.sync();
+//                    $("#"+grid_div_id).data("kendoGrid").dataSource.sync();
+                    $("#"+grid_div_id).data('kendoGrid').saveChanges();
                 }
             });
         }
