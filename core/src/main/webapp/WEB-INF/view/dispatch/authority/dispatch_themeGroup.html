@@ -159,6 +159,17 @@
                             }
                         }
                     },
+                    requestEnd: function(e) {
+                        if ((!e.response || e.response.success) && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
+                            });
+                        }
+                        if (e.response && !e.response.success && e.type == "destroy") {
+                            $('#themeGroupListGrid').data('kendoGrid').cancelChanges();
+                        }
+
+                    },
                     batch: true,
                     serverPaging : true,
                     pageSize: 50,

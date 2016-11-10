@@ -82,7 +82,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @param cannotRemoveList 不可以删除的列表
      */
     @Override
-    public void batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
+    public List<ThemeGroup> batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {
                 switch (themeGroup.get__status()) {
@@ -98,6 +98,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
                 }
             }
         }
+        return themeGroupList;
     }
 
     /**

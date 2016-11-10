@@ -141,9 +141,9 @@ public class ThemeGroupController  extends BaseController {
         ResponseData rd = null;
         IRequest requestContext = createRequestContext(request);
         List<ThemeGroup> cannotRemove = new ArrayList<>();
-        themeGroupService.batchDelete(requestContext,themeGroupList,cannotRemove);
+        List<ThemeGroup> themeGroupsReturn = themeGroupService.batchDelete(requestContext, themeGroupList, cannotRemove);
         if(0 == cannotRemove.size()){
-            rd = new ResponseData(true);
+            rd = new ResponseData(themeGroupsReturn);
             return rd;
         }
         StringBuilder stringBuilder = new StringBuilder();
@@ -294,8 +294,8 @@ public class ThemeGroupController  extends BaseController {
                 filterList.add(temp);
             }
         }
-        themeGroupThemeService.batchUpdate(requestContext, filterList);
-        rd = new ResponseData(true);
+        List<ThemeGroupTheme> themeGroupThemesReturn = themeGroupThemeService.batchUpdate(requestContext, filterList);
+        rd = new ResponseData(themeGroupThemesReturn);
         return rd;
     }
 
