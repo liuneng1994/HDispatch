@@ -77,4 +77,18 @@ yazheng.yang@hand-china.com
         AND authority.auth_operate='Y'
         AND authority.user_id=#{request.userId}
     </select>
+
+    <!--更新主题：名称和描述-->
+    <update id="updateById">
+        UPDATE hdispatch_theme
+        SET hdispatch_theme.name=#{themeName},description=#{themeDescription}
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+    </update>
+
+    <!--用于更新查重（查找是否已经存在同名的主题且id不同）-->
+    <select id="selectByNameAndActiveAndId" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE name=#{themeName,jdbcType=VARCHAR} AND active=1
+        AND theme_id!=theme_id=#{themeId,jdbcType=DECIMAL}
+    </select>
 </mapper>

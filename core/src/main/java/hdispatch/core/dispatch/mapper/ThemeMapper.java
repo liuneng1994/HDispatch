@@ -65,4 +65,17 @@ public interface ThemeMapper {
      * @return
      */
     Long hasOperatePermission(@Param("themeGroupName") String themeGroupName);
+
+    /**
+     * 更新主题（只更新主题的名称和描述）
+     * @param theme
+     */
+    void updateById(Theme theme);
+
+    /**
+     * 用于更新查重（查找是否已经存在同名的主题--id不同）
+     * @param theme
+     * @return
+     */
+    Theme selectByNameAndActiveAndId(Theme theme);
 }

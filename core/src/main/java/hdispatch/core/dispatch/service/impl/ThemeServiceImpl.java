@@ -197,4 +197,33 @@ public class ThemeServiceImpl implements ThemeService {
         }
         return true;
     }
+
+    /**
+     * 批量更新主题<br>
+     *     在更新之前检查是否会引起主题名称重复，将会引起重复的主题放置在duplicateThemesReturn返回
+     * @param requestContext
+     * @param themesToModify
+     * @return List<Theme> duplicateThemesReturn——返回的重复主题列表
+     */
+    @Override
+    public List<Theme> batchModify(IRequest requestContext, List<Theme> themesToModify) {
+        List<Theme> duplicateThemesReturn = new ArrayList<>();
+        for (Theme theme : themesToModify) {
+            if (theme.get__status() != null) {
+                switch (theme.get__status()) {
+                    case DTOStatus.UPDATE:
+                        Theme themeReturn = themeMapper.selectByNameAndActiveAndId(theme);
+                        if(null != themeReturn){
+                            duplicateThemesReturn.add(theme);
+                            break;
+                        }
+                        themeMapper.updateById(theme);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return duplicateThemesReturn;
+    }
 }

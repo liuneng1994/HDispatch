@@ -179,9 +179,8 @@ public class ThemeController extends BaseController {
         }
 
         try {
-            themeService.batchUpdate(requestContext, themeList);
-            rd = new ResponseData(true);
-            rd.setMessage("success");
+
+            rd = new ResponseData(themeService.batchUpdate(requestContext, themeList));
         } catch (Exception e) {
             String errorMsg = getMessageSource().getMessage("hdispatch.error_during_deleting", null, locale);
             logger.error(errorMsg, e);
@@ -213,6 +212,43 @@ public class ThemeController extends BaseController {
             list.add("PERMISSION");
         }
         rd = new ResponseData(list);
+        return rd;
+    }
+
+
+    /**
+     * 批量更新主题
+     * @param themeList
+     * @param result
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/dispatcher/theme/update", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseData updateThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
+        ResponseData rd = null;
+        //获取语言环境
+        Locale locale = RequestContextUtils.getLocale(request);
+        IRequest requestContext = createRequestContext(request);
+        List<Theme> duplicateThemes = themeService.batchModify(requestContext, themeList);
+        StringBuilder sb = null;
+        if(null != duplicateThemes && duplicateThemes.size() > 0){
+            String errorMsg = getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale);
+            sb = new StringBuilder(errorMsg+":");
+            boolean flag = false;
+            for (int i = 0; i < themeList.size(); i++) {
+                if (!flag) {
+                    sb.append(themeList.get(i).getThemeName());
+                    flag = true;
+                } else {
+                    sb.append("," + themeList.get(i).getThemeName());
+                }
+            }
+            rd = new ResponseData(false);
+            rd.setMessage(sb.toString());
+        }
+        rd = new ResponseData(true);
+        rd.setRows(themeList);
         return rd;
     }
 }

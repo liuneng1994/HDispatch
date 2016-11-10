@@ -82,4 +82,13 @@ public interface ThemeService extends ProxySelf<ThemeService> {
      * @return
      */
     boolean hasOperatePermission(IRequest requestContext);
+
+    /**
+     * 批量更新主题<br>
+     *     在更新之前检查是否会引起主题名称重复，将会引起重复的主题放置在duplicateThemesReturn返回
+     * @param requestContext
+     * @param themesToModify
+     * @return List<Theme> duplicateThemesReturn——返回的重复主题列表
+     */
+    List<Theme> batchModify(IRequest requestContext, List<Theme> themesToModify);
 }
