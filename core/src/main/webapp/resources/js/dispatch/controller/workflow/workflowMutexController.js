@@ -41,6 +41,9 @@
                                 });
                                 workflowService.createWorkflowMutex(mutexList).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             },
                             destroy: function (options) {
@@ -55,6 +58,9 @@
                                 });
                                 workflowService.deleteWorkflowMutex(mutexList).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             }
                         },

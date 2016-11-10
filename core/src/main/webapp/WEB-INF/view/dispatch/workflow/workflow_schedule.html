@@ -349,14 +349,14 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                                     <input type="radio" id="firstFailure"
                                            ng-value="true" k-ng-model="vm.executeInfo.notifyFailureFirst"
                                            name="notifyTime" class="k-radio"
-                                           ng-change="vm.executeInfo.notifyFailureLast=false">
+                                           k-onchange="vm.executeInfo.notifyFailureLast=false">
                                     <label class="k-radio-label" for="firstFailure">首次任务失败时提醒</label>
                                 </div>
                                 <div>
                                     <input type="radio" id="flowFailure"
                                            ng-value="true" k-ng-model="vm.executeInfo.notifyFailureLast"
                                            name="notifyTime" class="k-radio"
-                                           ng-change="vm.executeInfo.notifyFailureFirst=false">
+                                           k-onchange="vm.executeInfo.notifyFailureFirst=false">
                                     <label class="k-radio-label" for="flowFailure">任务流失败时提醒</label>
                                 </div>
                             </div>

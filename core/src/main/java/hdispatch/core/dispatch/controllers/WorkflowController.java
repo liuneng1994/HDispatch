@@ -23,7 +23,7 @@ import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
  */
 
 /**
- * 工作流管理控制器
+ * 任务流管理控制器
  *
  * @author neng.liu@hand-china.com
  */
@@ -35,9 +35,9 @@ public class WorkflowController extends BaseController {
     private Logger logger = LoggerFactory.getLogger(WorkflowController.class);
 
     /**
-     * 创建工作流，工作流的名称要唯一，工作流内的job名称不能重复
+     * 创建任务流，任务流的名称要唯一，任务流内的job名称不能重复
      *
-     * @param workflow 工作流对象
+     * @param workflow 任务流对象
      * @return 结果信息
      */
     @RequestMapping(path = "/create", method = RequestMethod.POST)
@@ -47,7 +47,7 @@ public class WorkflowController extends BaseController {
         if (workflowService.getWorkflowByName(workflow.getName()) != null) {
             logger.info("workflow {} exits", workflow.getName());
             responseData = new ResponseData(false);
-            responseData.setMessage("工作流已存在");
+            responseData.setMessage("任务流已存在");
             return responseData;
         }
         Set<String> jobs = new HashSet<>();
@@ -57,7 +57,7 @@ public class WorkflowController extends BaseController {
         if (jobs.size() < workflow.getJobs().size()) {
             logger.info("workflow {} has duplicated job", workflow);
             responseData = new ResponseData(false);
-            responseData.setMessage("工作流中存在重复的job");
+            responseData.setMessage("任务流中存在重复的job");
             return responseData;
         }
         Map<String, Object> result = workflowService.createWorkflow(workflow);
@@ -72,9 +72,9 @@ public class WorkflowController extends BaseController {
     }
 
     /**
-     * 保存工作流图
+     * 保存任务流图
      *
-     * @param workflowId 工作流id
+     * @param workflowId 任务流id
      * @param graph      图形数据
      * @return 保存结果
      */
@@ -91,9 +91,9 @@ public class WorkflowController extends BaseController {
     }
 
     /**
-     * 在azkaban生成工作流
+     * 在azkaban生成任务流
      *
-     * @param workflowId 工作流id
+     * @param workflowId 任务流id
      * @return 创建是否成功
      */
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
@@ -103,7 +103,7 @@ public class WorkflowController extends BaseController {
             String result = workflowService.generateWorkflow(workflowId);
             if (StringUtils.isEmpty(result)) {
                 responseData = new ResponseData(true);
-                responseData.setMessage("工作流生成成功");
+                responseData.setMessage("任务流生成成功");
             } else {
                 responseData = new ResponseData(false);
                 responseData.setMessage(result);
@@ -128,11 +128,11 @@ public class WorkflowController extends BaseController {
     }
 
     /**
-     * 工作流查询
+     * 任务流查询
      *
      * @param themeId      主题编号
      * @param layerId      层级编号
-     * @param workflowName 工作流名称
+     * @param workflowName 任务流名称
      * @param description  描述
      * @param page         页数
      * @param pageSize     每页个数
@@ -167,9 +167,9 @@ public class WorkflowController extends BaseController {
     }
 
     /**
-     * 通过ID查找工作流
+     * 通过ID查找任务流
      *
-     * @param workflowId 工作流编号
+     * @param workflowId 任务流编号
      * @return
      */
     @RequestMapping(path = "/get", method = RequestMethod.GET)
@@ -178,7 +178,7 @@ public class WorkflowController extends BaseController {
         Workflow workflow = workflowService.getWorkflowById(workflowId);
         if (workflow == null) {
             responseData = new ResponseData(false);
-            responseData.setMessage("工作流不存在");
+            responseData.setMessage("任务流不存在");
         } else {
             responseData = new ResponseData(true);
             responseData.setRows(Collections.singletonList(workflow));
@@ -187,9 +187,9 @@ public class WorkflowController extends BaseController {
     }
 
     /**
-     * 更新工作流
+     * 更新任务流
      *
-     * @param workflow 工作流
+     * @param workflow 任务流
      * @return
      */
     @RequestMapping(path = "/update", method = RequestMethod.POST)

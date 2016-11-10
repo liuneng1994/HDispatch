@@ -41,6 +41,9 @@
                                 });
                                 workflowService.createWorkflowDependency(dependencies).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             },
                             destroy: function (options) {
@@ -55,6 +58,9 @@
                                 });
                                 workflowService.deleteWorkflowDependency(dependencies).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             }
                         },
