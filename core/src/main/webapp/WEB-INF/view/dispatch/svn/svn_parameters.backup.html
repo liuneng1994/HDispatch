@@ -1,0 +1,670 @@
+<#include "../../include/header.html">
+<body>
+<script>
+    var hasOperationPermission_jobRuntimeParameter = false;
+    $.ajax({
+        type: 'GET',
+        url: "${base.contextPath}/dispatcher/svnParameter/hasOperatePermission" ,
+        success: function (data) {
+            if(0 < data.total){
+                hasOperationPermission_jobRuntimeParameter = true;
+            }else{
+                hasOperationPermission_jobRuntimeParameter = false;
+            }
+            console.log(data);
+            console.log(data.total);
+        },
+        async:false,
+        dataType: "json"
+    });
+    console.log("加载权限验证完毕");
+</script>
+    <div>
+        <div id="content-container">
+            <div id="theme-content">
+                <div class="panel">
+                    <form class="form-horizontal">
+                        <div class="panel-body col-sm-offset-0">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label style="width: 35%" class="text-right"><@spring.message "hdispatch.svn.svn_parameter.subject_name"/></label>
+                                    <input id="input_themeId" type="text" style="width: 60%" data-bind="value:model.subjectName" class="k-textbox">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label style="width: 35%" class="text-right"><@spring.message "hdispatch.svn.svn_parameter.mapping_name"/></label>
+                                    <input id="input_layerId" type="text" style="width:60%" data-bind="value:model.mappingName" class="k-textbox">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label style="width: 35%" class="text-right"><@spring.message "hdispatch.svn.svn_parameter.parameter_name"/></label>
+                                    <input id="input_layerName" type="text" style="width:60%" data-bind="value:model.parameterName" class="k-textbox">
+                                </div>
+                            </div>
+                            <!--<div class="col-sm-3">-->
+                                <!--<div class="form-group">-->
+                                    <!--<span class="btn btn-success" data-bind="click:queryFunction" type="submit"><@spring.message "hdispatch.query"/></span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="panel-footer text-right">
+                            <span class="btn btn-success" data-bind="click:queryFunction" type="submit"><@spring.message "hdispatch.query"/></span>
+                            <span class="btn btn-default" data-bind="click:resetFunction" type="button"><@spring.message "hap.reset"/></span>
+                        </div>
+                    </form>
+                </div>
+
+
+                <div id="page-content" style="clear:both">
+                    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+                        <!--<span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>-->
+                        <span id="btn_parameter_create" class="btn btn-primary" style="float:left;margin-right:5px;margin-left:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                        <span id="btn_parameter_importFormExcel" class="btn btn-primary" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>
+                        <span id="btn_parameter_exportToExcel" class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>
+                        <span id="btn_parameter_save" class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                        <span id="btn_parameter_calcel" class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
+                    </div>
+                    <div style="clear:both">
+                        <div id="svnParametersListGrid" style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="importByExcelWindow_div"></div>
+        </div>
+        <script type="text/javascript">
+            if(!hasOperationPermission_jobRuntimeParameter){
+                $("#btn_parameter_create").attr("disabled","disabled");
+                $("#btn_parameter_importFormExcel").attr("disabled","disabled");
+                $("#btn_parameter_exportToExcel").attr("disabled","disabled");
+                $("#btn_parameter_save").attr("disabled","disabled");
+                $("#btn_parameter_calcel").attr("disabled","disabled");
+            }else {
+                $("#btn_parameter_create").removeAttr("disabled","disabled");
+                $("#btn_parameter_importFormExcel").removeAttr("disabled","disabled");
+                $("#btn_parameter_exportToExcel").removeAttr("disabled","disabled");
+                $("#btn_parameter_save").removeAttr("disabled","disabled");
+                $("#btn_parameter_calcel").removeAttr("disabled","disabled");
+            }
+
+            var wnd, batchCreateWindowTemplate;
+
+            var svnParameterBaseUrl = "${base.contextPath}/dispatcher/svnParameter/";
+
+            $(document).ready(function () {
+                //声明 从excel导入数据 窗口
+                wnd = $("#importByExcelWindow_div")
+                        .kendoWindow({
+                            title: '<@spring.message "hdispatch.svn.import_excel"/>',
+                            modal: true,
+                            visible: false,
+                            resizable: true,
+                            actions: [
+                                "Pin",
+                                "Minimize",
+                                "Maximize",
+                                "Close"
+                            ],
+                            width: 400,
+                            height:200
+                        }).data("kendoWindow");
+                batchCreateWindowTemplate = kendo.template($("#import_by_excel_template").html());
+
+                var disabledStr = "disabled";
+                if(hasOperationPermission_jobRuntimeParameter){
+                    disabledStr = "";
+                }
+                //声明主窗口
+                var viewModel = kendo.observable({
+                    model:{subjectName:'',mappingName:'',parameterName:'',page:'',disabledFlag:disabledStr},
+                    queryFunction: function(e) {
+                        viewModel.model.page=1;
+                        $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
+                    },
+                    createFunction: function(){
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
+                        $('#svnParametersListGrid').data('kendoGrid').addRow();
+                    },
+                    saveFunction: function(){
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
+                        $('#svnParametersListGrid').data('kendoGrid').saveChanges();
+                    },
+                    cancelFunction: function(e){
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
+                        $('#svnParametersListGrid').data('kendoGrid').cancelChanges();
+                    },
+                    importFromExcelFunction: function (e) {
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
+                        showImportFromExcelWindow(e);
+                    },
+                    batchDeleteFunction: function (e) {
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
+                        /*
+                         确认是否批量删除
+                         进行删除
+                         1.从grid中移除数据
+                         2.发送删除请求
+                         */
+                        var grid = $("#svnParametersListGrid").data("kendoGrid");
+                        var checked = grid.selectedDataItems();
+                        if (grid.selectedDataItems().length) {
+                            kendo.ui.showConfirmDialog({
+                                title: $l('hap.tip.info'),
+                                message: $l('hap.tip.delete_confirm')
+                            }).done(function (event) {
+                                if (event.button == 'OK') {
+                                    $.each(checked, function (key,value) {
+                                        grid.dataSource.remove(value);
+                                    });
+                                    grid.dataSource.sync();
+                                }
+                            })
+                        }
+                    },
+                    exportToExcelFunction: function (e) {
+                        if(!hasOperationPermission_jobRuntimeParameter){
+                            return;
+                        }
+                        e.preventDefault();
+                        var that = $('#svnParametersListGrid').data('kendoGrid');
+                        $('#svnParametersListGrid').data('kendoGrid').saveAsExcel();
+//                        that.saveAsExcel();
+                    },
+                    resetFunction: function (e) {
+                        var formData = viewModel.model.toJSON();
+                        for ( var k in formData) {
+                            viewModel.model.set(k, null);
+                        }
+                    }
+                });
+//                kendo.bind($("#toolbar-btn"),viewModel);
+                //SVN参数行表显示数据加载和窗口渲染
+                var svn_parameter_data= new kendo.data.DataSource({
+                    transport: {
+                        read:  {
+                            url: svnParameterBaseUrl+"query",
+                            type : 'POST',
+                            dataType: "json"
+                        },
+                        create: {
+                            url: svnParameterBaseUrl+'submit',
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
+                        update: {
+                            url: svnParameterBaseUrl + "update",
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
+                        destroy: {
+                            url: svnParameterBaseUrl + "remove",
+                            type : 'POST',
+                            dataType: "application/json",
+                            contentType:"application/json"
+                        },
+                        parameterMap: function(options, operation) {
+                            //封装请求参数
+                            if (operation !== "read" && options.models) {
+                                var datas = options.models;
+                                if(operation =='create' || operation =='update'){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = (operation =='create' ? 'add' : 'update');
+                                        return data;
+                                    });
+                                }
+                                if('destroy'==operation){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = 'delete';
+                                        return data;
+                                    });
+                                }
+
+                                var data_str = kendo.stringify(datas);
+                                svn_parameter_data= data_str;
+                                return data_str;
+                            }
+                            else if (operation === "read") {
+                                var model = viewModel.model;
+                                if(!model.subjectName){
+                                    model.subjectName= ' ';
+                                }
+                                if(!model.mappingName){
+                                    model.mappingName=' ';
+                                }
+                                if(!model.parameterName){
+                                    model.parameterName=' ';
+                                }
+
+                                var map = {subjectName: model.subjectName,mappingName: model.mappingName,parameterName:model.parameterName};
+
+                                if (options.page)
+                                    map.page = options.page;
+                                if(model.page){
+                                    map.page = 1;
+                                    model.page = '';
+                                }
+                                if (options.pageSize)
+                                    map.pageSize = options.pageSize;
+                                for(var k in map){
+                                    if(map[k]==='')delete map[k]
+                                }
+                                return map;
+                            }
+                        }
+                    },
+                    requestEnd: function(e) {
+                        if (e.response.success && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
+                            });
+                        }
+                        if (e.response && !e.response.success && e.type == "destroy") {
+                            $('#svnParametersListGrid').data('kendoGrid').cancelChanges();
+                        }
+
+                    },
+                    batch: true,
+                    serverPaging : true,
+                    pageSize: 50,
+                    selectable: "multiple",
+                    schema: {
+                        data:'rows',
+                        total:'total',
+                        model: {
+                            id: 'scheduleParaId',
+                            fields: {
+                                scheduleParaId: { type: 'number',validation: { required: true } },
+                                parameterName: { type: 'string',validation: { required: true } },
+                                parameterValue: { type: 'string',validation: { required: true } },
+                                parameterSort: { type: 'number',validation: { required: true } },
+                                subjectName: { type: 'string',validation: { required: true } },
+                                mappingName: { type: 'string',validation: { required: true } },
+                                sessionName: { type: 'string',validation: { required: true } },
+                                workFlowName: { type: 'string',validation: { required: true } },
+                                formatMask: { type: 'string',validation: { required: true } },
+                                paraOffset: { type: 'number',validation: { required: true } },
+                                frequency: { type: 'string',validation: { required: true } },
+                                enableFlag: { type: 'string',validation: { required: true } },
+                                startDateActive: { type: 'date',validation: { required: true } },
+                                endDateActive: { type: 'date',validation: { required: true } }
+                            }
+                        },
+                        errors: function(res){
+                            if(!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function(e){
+                        if(e.errors){
+                            alert(e.errors);
+                        }else {
+                            var responseText = eval("("+e.xhr.responseText+")");
+                            if(!responseText.success && responseText.message){
+                                alert(responseText.message);
+                            }
+                        }
+                    }
+                });
+                var svnParametersListGrid_kendo = $("#svnParametersListGrid").kendoGrid({
+                    dataSource: svn_parameter_data,
+                    resizable: true,
+//                    selectable: "multiple,rowbox",
+                    selectable: "multiple",
+                    scrollable: true,
+//                    columnMenu: true,
+//                    reorderable: true,
+                    pageable: {
+                        pageSizes:[10, 20, 50, 100],
+                        refresh:true,
+                        buttonCount:50,
+                        messages: {
+                            noRecords: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                            display: '{0} - {1} <@spring.message "hdispatch.grid_data_total_num"/> {2} <@spring.message "hdispatch.grid_data_records"/>',
+                            empty: '<@spring.message "hdispatch.grid_find_no_data"/>',
+                            page: '<@spring.message "hdispatch.grid_page"/>',
+                            of: "/ {0}",
+                            itemsPerPage: '<@spring.message "hdispatch.grid_pages_per_page"/>',
+                            first: '<@spring.message "hdispatch.grid_first_page"/>',
+                            previous: '<@spring.message "hdispatch.grid_pre_page"/>',
+                            next: '<@spring.message "hdispatch.grid_next_page"/>',
+                            last: '<@spring.message "hdispatch.grid_last_page"/>',
+                            refresh: '<@spring.message "hdispatch.grid_refresh"/>'
+                        }
+                    },
+//                    toolbar: [
+//                        {
+//                            name:"create",
+//                            text:'<@spring.message "hdispatch.create"/>',
+////                            template : '<span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
+//                            template : '<span class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>'
+//                        },
+//                        {
+//                            name:"importFromExcel",
+//                            text:'<@spring.message "hdispatch.svn.import_excel"/>',
+//                            template: '<span class="btn btn-primary" data-bind="click:importFromExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.import_excel"/></span>'
+//                        },
+//                        {
+//                            name:"excel",
+//                            text:'<@spring.message "hdispatch.svn.export_excel"/>',
+//                            template: '<span class="btn btn-warning" data-bind="click:exportToExcelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.svn.export_excel"/></span>'
+//                        },
+////                        {
+////                            name:"batchDelete",
+////                            text:'<@spring.message "hdispatch.job.batch_delete"/>',
+////                            template: '<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>'
+////                        },
+//                        {
+//                            name:"save",
+//                            text:'<@spring.message "hdispatch.save"/>',
+//                            template: '<span class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>'
+//                        },
+//                        {
+//                            name:"cancel",
+//                            text:'<@spring.message "hdispatch.cancel"/>',
+//                            template: '<span class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>'
+//                        }
+//                    ],
+                    excel: {
+                        fileName: "SVN_parameters_Export.xlsx",
+                        proxyURL: svnParameterBaseUrl,
+                        filterable: true
+                    },
+                    format:"{0:yyyy-MM-dd}",
+                    columns:
+                            [
+                                {
+                                    'field': 'subjectName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.subject_name"/>',
+                                    'width': 100,
+                                    editor:subjectNameEditor,
+                                    template:"#=subjectName#"
+                                },
+                                {
+                                    'field': 'mappingName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.mapping_name"/>',
+                                    'width': 100,
+                                    editor:mappingNameEditor,
+                                    template:"#=mappingName#"
+                                },
+                                {
+                                    'field': 'sessionName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.session_name"/>',
+                                    'width': 100,
+                                    editor:sessionNameEditor,
+                                    template:"#=sessionName#"
+                                },
+                                {
+                                    'field': 'workFlowName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.workflow_name"/>',
+                                    'width': 100,
+                                    editor:workFlowNameEditor,
+                                    template:"#=workFlowName#"
+                                },
+                                {
+                                    'field': 'parameterName',
+                                    'title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_name"/>',
+                                    'width': 100,
+                                    editor:parameterNameEditor,
+                                    template:"#=parameterName#"
+                                },
+                                { 'field': 'parameterValue','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_value"/>', 'width': 100 },
+                                { 'field': 'formatMask','title':'<@spring.message "hdispatch.svn.svn_parameter.format_mask"/>', 'width': 100 },
+                                { 'field': 'paraOffset','title':'<@spring.message "hdispatch.svn.svn_parameter.parameter_offset"/>', 'width': 60 },
+//                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd HH:mm:ss}', 'width': "100px" },
+//                                { 'field': 'startDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.start_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
+//                                { 'field': 'endDateActive','title':'<@spring.message "hdispatch.svn.svn_parameter.end_active_date"/>',format: '{0: yyyy-MM-dd}', 'width': 90 },
+                                { 'field': 'frequency','title':'<@spring.message "hdispatch.svn.svn_parameter.frequency"/>', 'width': 60 }
+//                                { 'field': 'enableFlag','title':'<@spring.message "hdispatch.svn.svn_parameter.enable_flag"/>', 'width': 70,editor:enableFlagEditor,template:"#=enableFlag#" }
+//                        { command: "destroy", text:{destroy:'<@spring.message "hdispatch.delete"/>'}, title: "&nbsp;", width: "80px" }
+                        ,
+                        {
+                            attributes: {style: "text-align:center;padding:0px"},
+                            title: '<@spring.message "hdispatch.grid_title.operation"/>',
+                            command : [{
+                                name:'remove',
+                                template : function (rowData) {
+                                    if(hasOperationPermission_jobRuntimeParameter){
+                                        return '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>';
+                                    }
+                                    return '<a class="btn btn-danger" disabled="disabled"><@spring.message "hap.delete"/></a>';
+                                },
+                                click: function(e){
+                                    if(!hasOperationPermission_jobRuntimeParameter){
+                                        return;
+                                    }
+                                    var th = this;
+                                    e.preventDefault();
+                                    kendo.ui.showConfirmDialog({
+                                        title:$l('hap.tip.info'),
+                                        message: $l('hap.tip.delete_confirm')
+                                    }).done(function(event){
+                                        if(event.button == 'OK'){
+                                            var data = th.dataItem($(e.target).closest("tr"));
+                                            th.dataSource.remove(data);
+                                            th.dataSource.sync()
+                                        }
+                                    })
+                                }
+                            }],
+                            width:"60px"
+                        }
+                    ],
+                    editable: true,
+                    edit: function (e) {
+                        if(e.model.scheduleParaId){
+                            $("#subjectName_grid_input").attr("readonly","readonly");
+                            $("#mappingName_grid_input").attr("readonly","readonly");
+                            $("#sessionName_grid_input").attr("readonly","readonly");
+                            $("#workFlowName_grid_input").attr("readonly","readonly");
+                            $("#parameterName_grid_input").attr("readonly","readonly");
+                        }
+                    }
+                });
+                function subjectNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="subjectName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+                function mappingNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="mappingName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+                function sessionNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="sessionName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+                function workFlowNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="workFlowName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+
+                function parameterNameEditor(container, options) {
+                    $('<span class="k-textbox" style="width: 100%;"><input id="parameterName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
+                            .appendTo(container);
+                }
+                //自定义toolbar中的按钮
+                $(".k-grid-importFromExcel").click(function(e){
+                    showImportFromExcelWindow(e);
+                });
+
+                //设置grid中enableFlag选择框
+                function enableFlagEditor(container, options) {
+                    grid_themeDropDownList = $('<input required name="' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoDropDownList({
+                                dataTextField: "enableFlag",
+                                dataValueField: "enableFlag",
+                                dataSource:[
+                                    {
+                                        enableFlag:"Y"
+                                    },
+                                    {
+                                        enableFlag:"N"
+                                    }
+                                ],
+                                index:0
+                            });
+                };
+                //绑定主页面的数据和视图
+                kendo.bind($('#theme-content'),viewModel);
+
+            });
+
+
+            function showImportFromExcelWindow(e) {
+                e.preventDefault();
+
+                wnd.content(batchCreateWindowTemplate);
+                wnd.center().open();
+
+                loadBatchCreateData();
+            };
+
+            var batchCreateJobViewModel;
+            function loadBatchCreateData() {
+                batchCreateJobViewModel = kendo.observable({
+                    model:{
+                        themeId:'',
+                        layerId:'',
+                        jobSvn:''
+                    }
+                });
+                $('input[name="excelFiles"]').kendoUpload({
+                    validation: {
+                        allowedExtensions: [".xls", ".xlsx"]
+                    },
+                    selectable:'single',
+                    multiple:false,
+                    data:'rows',
+                    success: function (data) {
+                        console.log(data);
+                        console.log(data.success);
+                        if(!data.success){
+                            alert('<@spring.message "hdispatch.create_failure"/>：'+data.message);
+                            wnd.close();
+                        }else{
+                            alert('<@spring.message "hdispatch.create_success"/>');
+                            wnd.close();
+                            //刷新Grid
+                            $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
+                        }
+                    },
+                    showFileList: true,
+                    remove: onFileRemove,
+                    select: onFileSelect
+                });
+                kendo.bind($('#batchCreateJobForm'),batchCreateJobViewModel);
+            };
+            function onFileSelect(e) {
+//                console.log("e.files:");
+//                console.log(e.files);
+//                console.log(e.files.length);
+//                var files = $('input[name="excelFiles"]').prop('files');//获取到文件列表
+//                console.log(files);
+//                console.log(files.length);
+                if(e.files.length > 1){
+                    alert('只能上传一个文件');
+                    $("#excelFilesForm").resetForm(true);
+                    //设置提交按钮不可用
+                    $("#excelFormButton").attr("disabled",true);
+                    return;
+                }
+                $.map(e.files, function(file) {
+                    var info = file.name;
+                    var isExcelFile = info.lastIndexOf(".xls")==info.length-4 || info.lastIndexOf(".xlsx")==info.length-5;
+                    if(!isExcelFile){
+                        alert(info+"不是Excel文件");
+                        $("#excelFilesForm").resetForm(true);
+                        //设置提交按钮不可用
+                        $("#excelFormButton").attr("disabled",true);
+                    }else{
+                        //设置提交按钮可用
+                        $("#excelFormButton").attr("disabled",false);
+//                        getUpload().disable();
+//                        getUpload().hide();
+                    }
+                }).join(", ");
+            }
+
+            function onFileRemove() {
+                $("#excelFilesForm").resetForm(true);
+                //设置提交按钮不可用
+                $("#excelFormButton").attr("disabled",true);
+            }
+
+            //获取当前行的数据
+            function getEdictingRowData(index)
+            {
+                return $('#svnParametersListGrid').data("kendoGrid")._data[index];
+            }
+
+            function submitImportFromExcelForm() {
+                var files = $('input[name="excelFiles"]').prop('files');//获取到文件列表
+                console.log(files);
+                if(files.length == 0){
+                    alert('请选择文件');
+                }else if(files.length > 1){
+                    alert('只能上传一个文件');
+                }
+                else{
+//                    $('#excelFilesForm').attr("action",svnParameterBaseUrl+"importFromExcel");
+                    getUpload().enable();
+                    var options = {
+                        url:svnParameterBaseUrl+"importFromExcel",
+//                    beforeSubmit:  showRequest,  //提交前处理
+                        success:function (data) {
+
+                            console.log(data);
+                            if(data.success){
+                                alert('<@spring.message "hdispatch.create_success"/>');
+                                wnd.close();
+                                //刷新Grid
+                                $('#svnParametersListGrid').data('kendoGrid').dataSource.read();
+                            }else{
+                                alert(data.message);
+                                wnd.close();
+                            }
+                        },
+                        resetForm: true,
+                        dataType:  'json'
+                    };
+
+                    $('#excelFilesForm').submit(function() {
+                        $(this).ajaxSubmit(options);
+                        return false;//防止dialog 自动关闭
+                    });
+                }
+                return false;
+            }
+            function getUpload() {
+                return $('input[name="excelFiles"]').data("kendoUpload");
+            }
+        </script>
+        <script type="text/x-kendo-template" id="import_by_excel_template">
+            <div id="import_by_excel_div" style="clear: both">
+                <form id="excelFilesForm" enctype="multipart/form-data" method="post">
+                    <div class="demo-section k-content">
+                        <input name="excelFiles" type="file" />
+                        <p style="padding-top: 1em; text-align: right">
+                            <button id="excelFormButton" disabled="disabled" class="k-button k-primary" onclick="submitImportFromExcelForm()"><@spring.message "hdispatch.svn.import_excel.import"/></button>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </script>
+    </div>
+    </body>
+</html>
