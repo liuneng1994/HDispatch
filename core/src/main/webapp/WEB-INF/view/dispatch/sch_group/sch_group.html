@@ -34,7 +34,7 @@
                         <div class="panel-body">
 
                             <!-- roleCode -->
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><@spring.message
                                         "hdispatch.flowlist.flowname"/></label>
@@ -50,26 +50,26 @@
 
                             <!--   roleName  end -->
 
-                            <!-- <div class="col-sm-4">
+                            <div class="col-sm-4">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><@spring.message
-                                        "hdispatch.flowlist.projectname"/></label>
+                                        "hdispatch.flowlist.description"/></label>
                                     <div class="col-sm-6">
-                                        <input type="text" data-bind="value:model.projectName"
+                                        <input type="text" data-bind="value:model.description"
                                             class="k-textbox">
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
 
 
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><@spring.message
                                         "hdispatch.flowlist.date"/></label>
                                     <div class="col-sm-6">
                                         <input id="picker" data-enable-time="true"
                                                data-time_24hr="true" data-bind="value:model.date"
-                                               class="k-textbox">
+                                               class="k-textbox" />
                                     </div>
                                 </div>
                             </div>
@@ -79,13 +79,18 @@
                         <div class="panel-footer text-right">
 						<span class="btn btn-success" data-bind="click:queryResource"
                               type="submit"><@spring.message "hap.query"/></span>
+                            <span class="btn btn-default" data-bind="click:resetFunction" type="button"><@spring.message "hap.reset"/></span>
                         </div>
                         <!-- end panel-footer -->
                     </form>
                 </div>
                 <div class="panel">
                     <div class="panel-body">
-                        <div id="toolbar"></div>
+                        <div id="toolbar">
+                            <button type="button" class="btn btn-warning" id="pause" onclick="pause()"><@spring.message "hap.pause"/></button>
+                            <button type="button" class="btn btn-info" id="resume"onclick="resume()"><@spring.message "hap.resume"/></button>
+                            <button type="button" class="btn btn-danger" id="stop" onclick="stop()"><@spring.message "hap.stop"/></button>
+                        </div>
                         <div id="flowGrid" class="table"></div>
                     </div>
                 </div>
@@ -94,6 +99,7 @@
         <script src="${base.contextPath}/lib/dateformat.js"></script>
         <script type="text/javascript">
             document.getElementById("picker").flatpickr();
+            document.getElementById("picker").removeAttribute("readonly");
             var checkedIds = {};
 
             //on click of the checkbox:
@@ -203,6 +209,13 @@
                                     queryResource: function (e) {
                                         $('#flowGrid').data('kendoGrid').dataSource
                                                 .read();
+                                    },
+                                    resetFunction: function (e) {
+                                        var formData = viewModel.model.toJSON();
+                                        for ( var k in formData) {
+                                            viewModel.model.set(k, null);
+                                        }
+                                        document.getElementById("picker").value= '';
                                     }
                                 });
 
@@ -214,8 +227,7 @@
                                                 read: {
                                                     url: crudServiceBaseUrl
                                                     + "/query",
-                                                    contentType: "application/json",
-                                                    type: "GET"
+                                                    type: "POST"
                                                 },
                                                 parameterMap: function (options,
                                                                         type) {
@@ -229,8 +241,8 @@
                                                         if (model.groupName) {
                                                             map.groupName = model.groupName;
                                                         }
-                                                        if (model.projectName) {
-                                                            map.projectName = model.projectName;
+                                                        if (model.description) {
+                                                            map.description = model.description;
                                                         }
                                                         if (document
                                                                         .getElementById("picker").value != '') {
@@ -238,8 +250,8 @@
                                                                     document
                                                                             .getElementById("picker").value)
                                                                     .getTime();
+                                                            console.log(map.date);
                                                         }
-                                                        console.log(options);
                                                         if (options.page) {
                                                             map.page = options.page;
                                                         }
@@ -270,10 +282,10 @@
                                                     	/* exec_id:{
                                                     		type:"long"
                                                      	}, */
-                                                        project_name: {
+                                                        flow_id: {
                                                             type: "string"
                                                         },
-                                                        group_name: {
+                                                        description: {
                                                             type: "string"
                                                         },
                                                         start_time: {
@@ -304,13 +316,13 @@
 
                                             }
                                         });
-
+/*
                                 $("#toolbar").kendoToolBar({
-                                    items: [{
+                                    items: [/!*{
                                         type: "button",
                                         id: "start",
                                         text: '<@spring.message "hap.start"/>'
-                                    }, {
+                                    },*!/ {
                                         type: "button",
                                         id: "pause",
                                         text: '<@spring.message "hap.pause"/>'
@@ -322,14 +334,14 @@
                                         type: "button",
                                         id: "stop",
                                         text: '<@spring.message "hap.stop"/>'
-                                    } /* , {
+                                    } /!* , {
                                      type : "button",
                                      id : "fresh",
                                      text : '<@spring.message "hap.fresh"/>'
-                                     } */
+                                     } *!/
 
                                     ]
-                                });
+                                });*/
                                 var grid = $("#flowGrid")
                                         .kendoGrid(
                                                 {
@@ -338,6 +350,7 @@
                                                     navigatable: true,
                                                     resizable: true,
                                                     reorderable: true,
+                                                    columnMenu: true,
                                                     scrollable: true,
                                                     editable: false,
                                                     sortable: true,
@@ -374,11 +387,11 @@
                                                         {
                                                             field: "flow_id",
                                                             title: '<@spring.message "hdispatch.flowlist.flowname"/>',
-                                                            width: 150,
+                                                            width: 100,
                                                             template: function (item) {
                                                                 var exec_id = item.exec_id;
                                                                 var flow_id = item.flow_id;
-                                                                var html = "<a href='javascript:void(0)' style='text-decoration: none;'"
+                                                                var html = "<div style='text-align:center;cursor: pointer;'><a href='javascript:void(0)' style='text-decoration: none;color:skyblue;'"
                                                                         + "onclick='openFlowDetailPage(\""
                                                                         + flow_id
                                                                         + "\",\""
@@ -387,20 +400,23 @@
                                                                         + item.theme_id
                                                                         + "\")'>"
                                                                         + item.project_name
-                                                                        + "</a>";
+                                                                        + "</a></div>";
                                                                 return html;
                                                             }
-                                                        }/* ,
+                                                        } ,
                                                          {
-                                                         field : "project_name",
-                                                         title : '<@spring.message "hdispatch.flowlist.projectname"/>',
-                                                         width : 150
-                                                         } */,
+                                                         field : "description",
+                                                         title : '<@spring.message "hdispatch.flowlist.description"/>',
+                                                         width : 150,
+                                                             template: function (item){
+                                                                 return item.description.substr(0,200);
+                                                             }
+                                                         } ,
 
                                                         {
                                                             field: "start_time",
                                                             title: '<@spring.message "hdispatch.flowlist.flowgrid.startdate"/>',
-                                                            width: 150,
+                                                            width: 130,
                                                             template: function (dataItem) {
                                                                 var v = dataItem.start_time;
                                                                 return v == -1 ? '--'
@@ -412,7 +428,7 @@
                                                         {
                                                             field: "end_time",
                                                             title: '<@spring.message "hdispatch.flowlist.flowgrid.enddate"/>',
-                                                            width: 150,
+                                                            width: 130,
                                                             template: function (dataItem) {
                                                                 var v = dataItem.end_time;
                                                                 /*
@@ -565,7 +581,6 @@
                                 var start = $("#start")
                                         .kendoButton(
                                                 {
-
                                                     click: function (e) {
                                                         var checked = [];
                                                         for (var i in checkedIds) {
@@ -592,135 +607,118 @@
                                                                 });
                                                     }
                                                 }).data("kendoButton");
-
-                                var pause = $("#pause")
-                                        .kendoButton(
-                                                {
-                                                    click: function (e) {
-                                                        var checked = [];
-                                                        for (var i in checkedIds) {
-                                                            if (checkedIds[i] === true) {
-                                                                checked
-                                                                        .push(grid.dataSource
-                                                                                .get(
-                                                                                        i)
-                                                                                .toJSON());
-                                                            }
-                                                        }
-                                                        checkedIds = {};
-                                                        flowoperation_ajax(
-                                                                checked,
-                                                                '${base.contextPath}/flows/pauseflow',
-                                                                function (json) {
-                                                                    if (json.code == 1)
-                                                                        alert(json.message);
-                                                                    else if (json.code == 0)
-                                                                        alert(json.message);
-                                                                    else
-                                                                        alert("请选择后再操作！");
-                                                                    $('#flowGrid')
-                                                                            .data(
-                                                                                    'kendoGrid').dataSource
-                                                                            .read();
-                                                                });
-                                                    }
-                                                }).data("kendoButton");
-
-                                var stop = $("#stop")
-                                        .kendoButton(
-                                                {
-                                                    click: function (e) {
-                                                        var checked = [];
-                                                        for (var i in checkedIds) {
-                                                            if (checkedIds[i] === true)
-                                                            {checked
-                                                                        .push(grid.dataSource
-                                                                                .get(
-                                                                                        i)
-                                                                                .toJSON());}
-                                                        }
-                                                        checkedIds = {};
-                                                        flowoperation_ajax(
-                                                                checked,
-                                                                '${base.contextPath}/flows/stopflow',
-                                                                function (json) {
-                                                                    if (json.code == 1)
-                                                                        alert(json.message);
-                                                                    else if (json.code == 0)
-                                                                        alert(json.message);
-                                                                    else
-                                                                        alert("请选择后再操作！");
-                                                                    $('#flowGrid')
-                                                                            .data(
-                                                                                    'kendoGrid').dataSource
-                                                                            .read();
-                                                                });
-                                                    }
-                                                }).data("kendoButton");
-                                var resume = $("#resume")
-                                        .kendoButton(
-                                                {
-                                                    click: function (e) {
-                                                        var checked = [];
-                                                        for (var i in checkedIds) {
-                                                            if (checkedIds[i] === true)
-                                                            {checked
-                                                                        .push(grid.dataSource
-                                                                                .get(
-                                                                                        i)
-                                                                                .toJSON());}
-                                                        }
-                                                        checkedIds = {};
-                                                        flowoperation_ajax(
-                                                                checked,
-                                                                '${base.contextPath}/flows/resumeflow',
-                                                                function (json) {
-                                                                    if (json.code == 1)
-                                                                        alert(json.message);
-                                                                    else if (json.code == 0)
-                                                                        alert(json.message);
-                                                                    else
-                                                                        alert("请选择后再操作！");
-                                                                    $('#flowGrid')
-                                                                            .data(
-                                                                                    'kendoGrid').dataSource
-                                                                            .read();
-                                                                });
-                                                    }
-                                                }).data("kendoButton");
-                                var fresh = $("#fresh")
-                                        .kendoButton(
-                                                {
-                                                    click: function (e) {
-                                                        var checked = [];
-                                                        for (var i in checkedIds) {
-                                                            if (checkedIds[i] === true)
-                                                            {checked
-                                                                        .push(grid.dataSource
-                                                                                .get(
-                                                                                        i)
-                                                                                .toJSON());}
-                                                        }
-                                                        checkedIds = {};
-                                                        flowoperation_ajax(
-                                                                checked,
-                                                                '${base.contextPath}/flows/freshflow',
-                                                                function (json) {
-                                                                    if (json.code == 1)
-                                                                        alert(json.message);
-                                                                    else if (json.code == 0)
-                                                                        alert(json.message);
-                                                                    else
-                                                                        alert("请选择后再操作！");
-                                                                    $('#flowGrid')
-                                                                            .data(
-                                                                                    'kendoGrid').dataSource
-                                                                            .read();
-                                                                });
-                                                    }
-                                                }).data("kendoButton");
-
                             });
+
+            function pause() {
+                var checked = [];
+                for (var i in checkedIds) {
+                    if (checkedIds[i] === true) {
+                        checked
+                                .push(grid.dataSource
+                                        .get(
+                                                i)
+                                        .toJSON());
+                    }
+                }
+                checkedIds = {};
+                flowoperation_ajax(
+                        checked,
+                        '${base.contextPath}/flows/pauseflow',
+                        function (json) {
+                            if (json.code == 1)
+                                alert(json.message);
+                            else if (json.code == 0)
+                                alert(json.message);
+                            else
+                                alert("请选择后再操作！");
+                            $('#flowGrid')
+                                    .data(
+                                            'kendoGrid').dataSource
+                                    .read();
+                        });
+            }
+            function stop() {
+                var checked = [];
+                for (var i in checkedIds) {
+                    if (checkedIds[i] === true)
+                    {checked
+                            .push(grid.dataSource
+                                    .get(
+                                            i)
+                                    .toJSON());}
+                }
+                checkedIds = {};
+                flowoperation_ajax(
+                        checked,
+                        '${base.contextPath}/flows/stopflow',
+                        function (json) {
+                            if (json.code == 1)
+                                alert(json.message);
+                            else if (json.code == 0)
+                                alert(json.message);
+                            else
+                                alert("请选择后再操作！");
+                            $('#flowGrid')
+                                    .data(
+                                            'kendoGrid').dataSource
+                                    .read();
+                        });
+            }
+            function resume() {
+                var checked = [];
+                for (var i in checkedIds) {
+                    if (checkedIds[i] === true)
+                    {checked
+                            .push(grid.dataSource
+                                    .get(
+                                            i)
+                                    .toJSON());}
+                }
+                checkedIds = {};
+                flowoperation_ajax(
+                        checked,
+                        '${base.contextPath}/flows/resumeflow',
+                        function (json) {
+                            if (json.code == 1)
+                                alert(json.message);
+                            else if (json.code == 0)
+                                alert(json.message);
+                            else
+                                alert("请选择后再操作！");
+                            $('#flowGrid')
+                                    .data(
+                                            'kendoGrid').dataSource
+                                    .read();
+                        });
+            }
+            function fresh() {
+                var checked = [];
+                for (var i in checkedIds) {
+                    if (checkedIds[i] === true)
+                    {checked
+                            .push(grid.dataSource
+                                    .get(
+                                            i)
+                                    .toJSON());}
+                }
+                checkedIds = {};
+                flowoperation_ajax(
+                        checked,
+                        '${base.contextPath}/flows/freshflow',
+                        function (json) {
+                            if (json.code == 1)
+                                alert(json.message);
+                            else if (json.code == 0)
+                                alert(json.message);
+                            else
+                                alert("请选择后再操作！");
+                            $('#flowGrid')
+                                    .data(
+                                            'kendoGrid').dataSource
+                                    .read();
+                        });
+            }
+
         </script>
         </body>
         </html>

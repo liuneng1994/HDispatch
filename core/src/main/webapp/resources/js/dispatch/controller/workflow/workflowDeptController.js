@@ -41,6 +41,9 @@
                                 });
                                 workflowService.createWorkflowDependency(dependencies).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             },
                             destroy: function (options) {
@@ -55,6 +58,9 @@
                                 });
                                 workflowService.deleteWorkflowDependency(dependencies).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             }
                         },
@@ -72,6 +78,8 @@
                     },
                     //width:500,
                     selectable: "multiple, rowbox",
+                    columnMenu: true,
+                    reorderable: true,
                     navigatable: true,
                     resizable: true,
                     scrollable: true,
@@ -106,7 +114,7 @@
                         },
                         {
                             field: "deptLayer",
-                            title: '层级',
+                            title: '层次',
                             width: 100
                         }]
                 };

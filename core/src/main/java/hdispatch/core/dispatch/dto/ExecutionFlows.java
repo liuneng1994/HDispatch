@@ -43,6 +43,17 @@ public class ExecutionFlows extends BaseDTO{
     
     private String lang;
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private String description;
+
+
 
     public Long getTheme_id() {
         return theme_id;

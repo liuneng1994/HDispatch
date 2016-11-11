@@ -41,6 +41,9 @@
                                 });
                                 workflowService.createWorkflowMutex(mutexList).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             },
                             destroy: function (options) {
@@ -55,6 +58,9 @@
                                 });
                                 workflowService.deleteWorkflowMutex(mutexList).then(function () {
                                     options.success('');
+                                    kendo.ui.showInfoDialog({
+                                        message: '成功'
+                                    });
                                 });
                             }
                         },
@@ -73,7 +79,9 @@
                     //width:500,
                     selectable: "multiple, rowbox",
                     navigatable: true,
+                    columnMenu: true,
                     resizable: true,
+                    reorderable: true,
                     scrollable: true,
                     pageable: {
                         pageSizes: [5, 10, 20, 50],
@@ -106,7 +114,7 @@
                         },
                         {
                             field: "mutexLayer",
-                            title: '层级',
+                            title: '层次',
                             width: 100
                         }]
                 };

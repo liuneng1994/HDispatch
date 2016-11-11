@@ -63,29 +63,29 @@
                                         <label class="col-sm-4 control-label">任务组</label>
                                         <div class="col-sm-8 ">
                                             <select name="theme"
-                                                    ng-model="vm.workflow.themeId"
+                                                    k-ng-model="vm.workflow.themeId"
+                                                    k-value-primitive="true"
                                                     kendo-combo-box
                                                     k-on-change="vm.themeChange(vm.workflow.themeId)"
                                                     k-data-text-field="'themeName'"
                                                     k-data-value-field="'themeId'"
                                                     k-data-source="vm.themes"
-                                                    k-option-label="'请选择任务流'"
                                                     style="padding-left:0;padding-right:0;width:100%;padding-bottom:2px"></select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">层级</label>
+                                        <label class="col-sm-4 control-label">层次</label>
                                         <div class="col-sm-8 ">
                                             <select name="layer"
-                                                    ng-model="vm.workflow.layerId"
+                                                    k-ng-model="vm.workflow.layerId"
                                                     kendo-combo-box
                                                     k-data-text-field="'layerName'"
                                                     k-data-value-field="'layerId'"
+                                                    k-value-primitive="true"
                                                     k-data-source="vm.layers"
-                                                    k-option-label="'请选择层级'"
-                                                    style="padding-left:0;padding-right:0;width:100%;;padding-bottom:2px">123123</select>
+                                                    style="padding-left:0;padding-right:0;width:100%;;padding-bottom:2px"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -113,8 +113,8 @@
                         </div>
                     </div>
                     <div class="panel-footer text-right">
-						<span class="btn btn-success" ng-click="vm.search()"
-                              type="submit">查询</span>
+						<span class="btn btn-success" ng-click="vm.search()">查询</span>
+                        <span class="btn btn-default" ng-click="vm.resetQuery()">重置</span>
                     </div>
                 </form>
             </div>
@@ -124,7 +124,7 @@
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
                         <button class="btn btn-success"
-                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">创建
+                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">新建
                         </button>
                     </div>
                     <div style="clear:both">

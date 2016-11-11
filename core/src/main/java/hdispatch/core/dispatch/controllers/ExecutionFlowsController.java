@@ -21,11 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/flows")
@@ -41,22 +37,18 @@ public class ExecutionFlowsController extends BaseController {
      * 获取全部flows及相关信息
      *
      * @param request
-     * @param page
-     * @param pagesize
      * @return
      */
-    @RequestMapping(value="/query",method=RequestMethod.GET)
+    @RequestMapping(value="/query",method=RequestMethod.POST)
     @ResponseBody
     public ResponseData query(HttpServletRequest request, @RequestParam("page") int page, @RequestParam("pagesize") int pagesize) {
         IRequest irequest = createRequestContext(request);
         String flowName = request.getParameter("flowName");
-        String groupName = request.getParameter("groupName");
-        String projectName = request.getParameter("projectName");
+        String description = request.getParameter("description");
         String date = request.getParameter("date");
         ExecutionFlows exe = new ExecutionFlows();
         exe.setFlow_id(flowName);
-        exe.setProject_name(projectName);
-        exe.setGroup_name(groupName);
+        exe.setDescription(description);
         exe.setLang(irequest.getLocale());
         if (date != null)
             exe.setStart_time(Long.parseLong(date));
@@ -150,6 +142,7 @@ public class ExecutionFlowsController extends BaseController {
             endtime = list.get(0).getEnd_time();
             starttime = list.get(0).getStart_time();
             flow_id=list.get(0).getFlow_id();
+            if(list.size()>1)
             list.remove(0);
         }
         for (ExecutionJobs job : list) {
@@ -261,7 +254,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getResume());
                 obj.setCode(0);
             } else {
-                obj.setMessage("success");
+                obj.setMessage("恢复成功");
                 obj.setCode(1);
             }
         }
@@ -287,7 +280,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getError());
                 obj.setCode(0);
             } else {
-                obj.setMessage("success");
+                obj.setMessage("暂停成功");
                 obj.setCode(1);
             }
         }
@@ -313,7 +306,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getError());
                 obj.setCode(0);
             } else {
-                obj.setMessage("success");
+                obj.setMessage("停止成功");
                 obj.setCode(1);
             }
         }

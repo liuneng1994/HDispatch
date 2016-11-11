@@ -4,6 +4,7 @@ import hdispatch.core.dispatch.azkaban.util.RequestUtils;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.dto.workflow.WorkflowJob;
+import hdispatch.core.dispatch.exception.JobAbsentException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -41,8 +42,9 @@ public class WorkflowUtils {
         File file = new File(parentFile, parentWorkflow.isEmpty() ? job.getWorkflowJobId() + JOB_SUFFIX : String.join(".", parentWorkflow) + "." + job.getWorkflowJobId() + JOB_SUFFIX);
         try {
             file.createNewFile();
-            Job jobSource = jobStore.stream()
-                    .filter(item -> item.getJobId() == job.getJobSource()).findFirst().get();
+            Optional<Job> jobSource = jobStore.stream()
+                    .filter(item -> item.getJobId() == job.getJobSource()).findFirst();
+            if (!jobSource.isPresent()) throw new JobAbsentException(job.getWorkflowJobId());
             List<String> depts = Arrays.asList(job.getParentsJobId().split(","));
             List<String> newDepts = new ArrayList<>();
             depts.forEach(dept -> {
@@ -50,7 +52,10 @@ public class WorkflowUtils {
                 String deptName = parentWorkflow.isEmpty() ? dept : String.join(".", parentWorkflow) + "." + dept;
                 newDepts.add(deptName);
             });
-            FileUtils.writeLines(file, generateJobContent(jobSource, String.join(",", newDepts)));
+            if (newDepts.isEmpty() && parentWorkflow.isEmpty()) {
+                newDepts.add("_init");
+            }
+            FileUtils.writeLines(file, generateJobContent(jobSource.get(), String.join(",", newDepts)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,8 +79,25 @@ public class WorkflowUtils {
                 String namespace = parentWorkflow.isEmpty() ? "" : String.join(".", parentWorkflow) + ".";
                 newDepts.add(namespace + dept);
             });
+            if (newDepts.isEmpty() && parentWorkflow.isEmpty()) {
+                newDepts.add("_init");
+            }
             flowName = parentWorkflow.isEmpty() ? FLOW_PREFIX + flowName : FLOW_PREFIX + String.join(".", parentWorkflow) + "." + flowName;
             FileUtils.writeLines(file, generateFlowContent(flowName, String.join(",", newDepts)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void createInitJob(File parentFile) {
+        String command = ConfigUtil.getProperty("workflow.sync.command","echo \"workflow init\"");
+        File file = new File(parentFile, FLOW_PREFIX + "init" + JOB_SUFFIX);
+        List<String> content = new ArrayList<>();
+        content.add("type=command");
+        content.add("command="+command);
+        try {
+            file.createNewFile();
+            FileUtils.writeLines(file, content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

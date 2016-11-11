@@ -2,6 +2,7 @@
  * Created by hasee on 2016/9/21.
  */
 (function () {
+    'use strict;';
     angular.module('dispatch').controller('workflowListController', ['$window', '$scope', 'workflowService', function ($window, $scope, workflowService) {
         var vm = this;
         vm.workflow = {};
@@ -15,8 +16,8 @@
                     read: function (options) {
                         vm.workflow.page = options.data.page;
                         vm.workflow.pageSize = options.data.pageSize;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) vm.workflow.themeId = 0;
-                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) vm.workflow.layerId = 0;
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.themeId)) delete vm.workflow.themeId;
+                        if (vm.workflow.themeId != undefined && isNaN(vm.workflow.layerId)) delete vm.workflow.layerId;
                         workflowService.query(vm.workflow).then(function (data) {
                             options.success(data);
                         });
@@ -29,6 +30,9 @@
                         });
                         workflowService.deleteWorkflow(ids).then(function () {
                             options.success();
+                            kendo.ui.showInfoDialog({
+                                message: '成功'
+                            });
                         });
                     }
                 },
@@ -51,6 +55,8 @@
             },
             //width:500,
             navigatable: true,
+            columnMenu: true,
+            reorderable: true,
             resizable: true,
             scrollable: true,
             editable: false,
@@ -85,7 +91,7 @@
                 },
                 {
                     field: "layer",
-                    title: '层级',
+                    title: '层次',
                     width: 100
                 },
                 {
@@ -96,16 +102,19 @@
                 {
                     field: "",
                     title: '操作',
-                    attributes:　{style:"padding:0"},
-                    width: 150,
+                    attributes: {style: "padding-top:0;padding-bottom:0"},
+                    width: 200,
                     template: function (item) {
                         var html = '';
+                        var disabled = "disabled";
                         if (hasOperatePermission(item.themeId)) {
-                            var html = "<button class='btn btn-info' ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
-                            html += "<button class='btn btn-danger' ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
-                            html += "<button class='btn btn-success' ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
-                            html += "<button class='btn btn-danger' ng-click='vm.delete(" + item.id + ")'>删除</button>"
+                            disabled = "";
                         }
+                        var html = "<button style='margin-left:4px' class='btn btn-info' " + disabled + " ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
+                        html += "<button style='margin-left:4px' class='btn btn-warning' " + disabled + " ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
+                        html += "<button style='margin-left:4px' class='btn btn-success' " + disabled + "  ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
+                        html += "<button style='margin-left:4px' class='btn btn-danger' " + disabled + "  ng-click='vm.delete(" + item.id + ")'>删除</button>"
+                        html = "<div class='row'>"+html+"</div>";
                         return html;
                     }
                 }]
@@ -123,6 +132,14 @@
             location = _basePath + '/dispatch/workflow/workflow_update.html';
         };
 
+        vm.resetQuery = function() {
+            "use strict";
+            vm.workflow.themeId = null;
+            vm.workflow.layerId = null;
+            vm.workflow.workflowName = '';
+            vm.workflow.description = '';
+        };
+
         vm.delete = function (id) {
             "use strict";
             kendo.ui.showConfirmDialog({
@@ -137,7 +154,7 @@
         };
 
         vm.themeChange = function (themeId) {
-            vm.workflow.layerId = undefined;
+            vm.workflow.layerId = "";
             refreshLayers('layers', themeId);
         };
 

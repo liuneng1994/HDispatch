@@ -179,16 +179,18 @@
                                     height: 540,
                                     sortable: true,
                                     resizable: true,
+                                    reorderable: true,
+                                    columnMenu: true,
                                     columns: [
                                         {
                                             field: "job_id",
                                             title: '<@spring.message "hdispatch.flowlist.jobgrid.jobname"/>',
-                                            width: 200
+                                            width: 100
                                         },
                                         {
                                             field: "Timeline",
                                             title: '<@spring.message "hdispatch.flowlist.flowgrid.running"/>',
-                                            width: 300,
+                                            width: 200,
                                             template: function (item) {
 
                                                 var status = item.running;
@@ -330,7 +332,7 @@
                                         {
                                             field: "end_time",
                                             title: '<@spring.message "hdispatch.flowlist.jobgrid.enddate"/>',
-                                            width: 180,
+                                            width: 150,
                                             template: function (dataItem) {
                                                 var v = dataItem.end_time;
                                                 /*
@@ -347,7 +349,7 @@
                                         {
                                             field: "elapsed",
                                             title: '<@spring.message "hdispatch.flowlist.jobgrid.rundate"/>',
-                                            width: 180,
+                                            width: 130,
                                             template: function (dataItem) {
                                                 var v = dataItem.end_time
                                                         - dataItem.start_time;
@@ -419,7 +421,7 @@
                                         {
                                             field: "status",
                                             title: '<@spring.message "hdispatch.flowlist.flowgrid.status"/>',
-                                            width: 100,
+                                            width: 80,
                                             template: function (item) {
                                                 if (item.status < 0)
                                                     item.status = 90;

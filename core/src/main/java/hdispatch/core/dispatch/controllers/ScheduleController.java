@@ -162,6 +162,7 @@ public class ScheduleController extends BaseController {
     	for (int i = 0; i < object.length(); i++) {
 			map.put("settings["+i+"]", object.get(""+i+""));
 		}
+        System.out.println(map);
         return scheduleFlowService.setsla(map);
     }
 

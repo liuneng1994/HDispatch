@@ -75,6 +75,7 @@
                         <div class="panel-footer text-right">
 						<span class="btn btn-success" data-bind="click:queryResource"
                               type="submit"><@spring.message "hap.query"/></span>
+                            <span class="btn btn-default" data-bind="click:resetFunction" type="button"><@spring.message "hap.reset"/></span>
                         </div>
                         <!-- end panel-footer -->
                     </form>
@@ -90,6 +91,7 @@
         <script src="${base.contextPath}/lib/dateformat.js"></script>
         <script type="text/javascript">
             document.getElementById("picker").flatpickr();
+            document.getElementById("picker").removeAttribute("readonly");
             var grid;
             function removesch(id, fid, pid,themeid) {
                 if (!hasOperatePermission(themeid)) {
@@ -152,6 +154,13 @@
                                     queryResource: function (e) {
                                         $('#flowGrid').data('kendoGrid').dataSource
                                                 .read();
+                                    },
+                                    resetFunction: function (e) {
+                                        var formData = viewModel.model.toJSON();
+                                        for ( var k in formData) {
+                                            viewModel.model.set(k, null);
+                                        }
+                                        document.getElementById("picker").value= '';
                                     }
                                 });
 
@@ -246,6 +255,7 @@
                                                     navigatable: true,
                                                     resizable: true,
                                                     reorderable: true,
+                                                    columnMenu: true,
                                                     scrollable: true,
                                                     editable: false,
                                                     sortable: true,
@@ -276,7 +286,7 @@
                                                         {
                                                             field: "flowId",
                                                             title: '<@spring.message "hdispatch.flowlist.flowname"/>',
-                                                            width: 150,
+                                                            width: 100,
                                                             template: function (item) {
                                                                 var html = item.flowId.substr(1);
 
@@ -301,7 +311,7 @@
                                                         {
                                                             field: "period",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.period"/>',
-                                                            width: 180,
+                                                            width: 100,
                                                             template: function (item) {
                                                                 var html = item.period;
                                                                 if (item.period == "null")
@@ -312,7 +322,7 @@
                                                         {
                                                             field: "cronExpression",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.cronexpression"/>',
-                                                            width: 180,
+                                                            width: 100,
                                                             template: function (item) {
                                                                 var html = item.cronExpression;
                                                                 if (item.cronExpression == "null")
@@ -323,11 +333,12 @@
                                                         {
                                                             field: "hasSla",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.hassla"/>',
-                                                            width: 180
+                                                            width: 70
                                                         },
                                                         {
                                                             field: "",
                                                             title: '<@spring.message "hdispatch.schedule.schlist.removesla"/>',
+                                                            attributes: {style: "padding:0"},
                                                             width: 100,
                                                             template: function (item) {
                                                                 var html = "<center><button class='btn btn-danger'style='text-align:center;'"
@@ -342,6 +353,7 @@
                                                         {
                                                             field: "",
                                                             title: '<@spring.message "schflows.setsla"/>',
+                                                            attributes: {style: "padding:0"},
                                                             width: 100,
                                                             template: function (item) {
                                                                 var html = "<center><button  class='btn btn-info'style='margin-left: auto;margin-right: auto;text-align:center;'onclick='openSetSLAPage(\""

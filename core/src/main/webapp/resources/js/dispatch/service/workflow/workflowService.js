@@ -28,7 +28,7 @@
                 });
         };
         var jobs = function (themeId, layerId) {
-            return httpService.get(_basePath + '/dispatcher/job/query',
+            return httpService.postForm(_basePath + '/dispatcher/job/query',
                 {
                     themeId: themeId,
                     layerId: layerId,
@@ -67,7 +67,7 @@
             for (var name in queryInfo) {
                 if (queryInfo.hasOwnProperty(name) && queryInfo[name] != undefined) params[name] = queryInfo[name];
             }
-            return httpService.get(_basePath + '/dispatcher/workflow/query', params, function (data, defered) {
+            return httpService.postForm(_basePath + '/dispatcher/workflow/query', params, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data);
                 }
@@ -79,7 +79,7 @@
             for (var name in queryInfo) {
                 if (queryInfo.hasOwnProperty(name) && queryInfo[name] != undefined) params[name] = queryInfo[name];
             }
-            return httpService.get(_basePath + '/dispatcher/workflow/query_operate', params, function (data, defered) {
+            return httpService.postForm(_basePath + '/dispatcher/workflow/query_operate', params, function (data, defered) {
                 if (data.success) {
                     defered.resolve(data);
                 }

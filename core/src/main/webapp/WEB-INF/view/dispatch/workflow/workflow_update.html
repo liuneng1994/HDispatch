@@ -132,7 +132,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label">层级</label>
+                                    <label class="col-sm-4 control-label">层次</label>
                                     <div class="col-sm-8 ">
                                         <select name="layer" class="col-sm-12"
                                                 ng-model="vm.workflow.layerId"
@@ -179,6 +179,7 @@
                 <div class="row">
                     <button class="btn btn-info" ng-click="vm.jobWindow.center().open()">添加任务</button>
                     <button class="btn btn-success" ng-click="vm.format()">格式化</button>
+                    <button class="btn btn-danger" ng-click="vm.paint.deleteSelectedNode()">删除</button>
                     <button class="btn btn-primary" ng-click="vm.save()"
                             ng-disabled="flow.$invalid||!vm.workflow.themeId||!vm.workflow.layerId">保存
                     </button>
