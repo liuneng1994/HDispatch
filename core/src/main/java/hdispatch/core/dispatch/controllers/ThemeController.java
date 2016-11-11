@@ -172,7 +172,8 @@ public class ThemeController extends BaseController {
                 sb.append(temp.getThemeName()+",");
             }
 
-            rd = new ResponseData(false);
+            rd = new ResponseData(themeListExist);
+            rd.setSuccess(false);
             rd.setMessage(sb.toString());
 
             return rd;
