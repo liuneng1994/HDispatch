@@ -96,78 +96,127 @@
 					detailsTemplate = kendo.template($("#themesNotInThemeGroup_template").html());
 					themes_data = new kendo.data.DataSource({
 						transport: {
-							read:  {
-								url: baseUrl_theme+"queryUnderThemeGroup",
-								type : 'POST',
-								dataType: "json"
-							},
-							update: {
-								url: baseUrl_theme + "update",
-								type : 'POST',
-								dataType: "json",
-								contentType:"application/json"
-							},
-							create: {
-								url: baseUrl_theme+'submit',
-								type : 'POST',
-								dataType: "json",
-								contentType:"application/json"
-							},
-                            destroy: {
-                                url: baseUrl_theme+'remove',
-                                type : 'POST',
-                                dataType: "json",
-                                contentType:"application/json"
-                            },
-							parameterMap: function(options, operation) {
-								//封装请求参数
-								if (operation !== "read" && options.models) {
-									var datas = options.models;
-									if(operation =='create'){
-										datas = options.models.map(function(data){
-											if(data["themeId"]){
-                                                data['__status'] = 'add';
-                                                data['themeGroupId'] = viewModel.model.themeGroupId;
-                                                return data;
-                                            }
-										});
-									}
-                                    if('destroy'==operation){
-                                        datas = options.models.map(function(data){
-                                            data['__status'] = 'delete';
-                                            return data;
-                                        });
+                            read:  function (args) {
+                                var options = args.data;
+                                var model = viewModel.model;
+                                if(!model.themeName){
+                                    model.themeName='';
+                                }
+                                var map = {themeGroupId:model.themeGroupId,themeName: model.themeName,themeDescription:model.themeDescription};
+                                if (options.page)
+                                    map.page = options.page;
+                                if (options.pageSize)
+                                    map.pageSize = options.pageSize;
+                                for(var k in map){
+                                    if(map[k]==='')delete map[k]
+                                }
+                                $.ajax({
+                                    type: 'POST',
+                                    url: baseUrl_theme+"queryUnderThemeGroup" ,
+                                    data: map,
+                                    success: function (data) {
+                                        args.success(data);
+                                    },
+                                    async:true,
+                                    dataType: "json"
+                                });
+                            }
+							,
+                            create: function(args) {
+                                var options = args.data;
+                                var datas = options.models.map(function(data){
+                                    for(var k in data){
+                                        if(data[k]===''||typeof(data[k])=="undefined"){
+                                            delete data[k]
+                                        }
                                     }
-									var data_str = kendo.stringify(datas);
-									themes_data = data_str;
-									return data_str;
-								} else if (operation === "read") {
-									var model = viewModel.model;
-									if(!model.themeName){
-										model.themeName='';
-									}
-									var map = {themeGroupId:model.themeGroupId,themeName: model.themeName,themeDescription:model.themeDescription};
-									if (options.page)
-										map.page = options.page;
-									if (options.pageSize)
-										map.pageSize = options.pageSize;
-									for(var k in map){
-										if(map[k]==='')delete map[k]
-									}
-									return map;
-								}
-							}
-						},
-						requestEnd: function(e) {
-							if ((!e.response || e.response.success) && e.type != "read") {
-								kendo.ui.showInfoDialog({
-									message:'<@spring.message "hap.tip.success"/>'
-								});
-							}
-							if (e.response && !e.response.success && e.type == "destroy") {
-								$('#themeListGrid').data('kendoGrid').cancelChanges();
-							}
-
+                                    data['__status'] = 'add';
+                                    data['themeGroupId'] = viewModel.model.themeGroupId;
+                                    return data;
+                                });
+                                $.ajax({
+                                    type: 'POST',
+                                    url: baseUrl_theme+"submit" ,
+                                    data: JSON.stringify(datas),
+                                    dataType: "application/json",
+                                    contentType:"application/json",
+                                    success: function (data) {
+                                        args.success(data);
+                                        if(data.success){
+                                            kendo.ui.showInfoDialog({
+                                                message:'<@spring.message "hap.tip.success"/>'
+                                            });
+                                        }
+                                    },
+                                    async:true,
+                                    dataType: "json"
+                                });
+                            }
+							,
+                            update: function(args) {
+                                var options = args.data;
+                                var datas = options.models.map(function(data){
+                                    for(var k in data){
+                                        if(data[k]===''||typeof(data[k])=="undefined"){
+                                            delete data[k]
+                                        }
+                                    }
+                                    data['__status'] = 'update';
+                                    return data;
+                                });
+                                $.ajax({
+                                    type: 'POST',
+                                    url: baseUrl_theme+"update" ,
+                                    data: JSON.stringify(datas),
+                                    dataType: "application/json",
+                                    contentType:"application/json",
+                                    success: function (data) {
+                                        args.success(data);
+                                        if(data.success){
+                                            kendo.ui.showInfoDialog({
+                                                message:'<@spring.message "hap.tip.success"/>'
+                                            });
+                                        }
+                                    },
+                                    async:true,
+                                    dataType: "json"
+                                });
+                            }
+                            ,
+                            destroy: function(args) {
+                                var options = args.data;
+                                var datas = options.models.map(function(data){
+                                    for(var k in data){
+                                        if(data[k]===''||typeof(data[k])=="undefined"){
+                                            delete data[k]
+                                        }
+                                    }
+                                    data['__status'] = 'delete';
+                                    return data;
+                                });
+                                $.ajax({
+                                    type: 'POST',
+                                    url: baseUrl_theme+"remove" ,
+                                    data: JSON.stringify(datas),
+                                    dataType: "application/json",
+                                    contentType:"application/json",
+                                    success: function (data) {
+                                        if(data.success){
+                                            args.success(data);
+                                            kendo.ui.showInfoDialog({
+                                                message:'<@spring.message "hap.tip.success"/>'
+                                            });
+                                        }else {
+                                            $("#themeListGrid").data('kendoGrid').cancelChanges();
+                                            if(data.message){
+                                                alert(data.message);
+                                            }
+                                        }
+                                    },
+                                    async:true,
+                                    dataType: "json"
+                                });
+                            }
 						},
 						batch: true,
 						serverPaging : true,
