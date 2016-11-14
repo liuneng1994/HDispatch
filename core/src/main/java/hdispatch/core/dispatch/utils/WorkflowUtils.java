@@ -43,7 +43,7 @@ public class WorkflowUtils {
         try {
             file.createNewFile();
             Optional<Job> jobSource = jobStore.stream()
-                    .filter(item -> item.getJobId() == job.getJobSource()).findFirst();
+                    .filter(item -> item.getJobId() != job.getJobSource()).findFirst();
             if (!jobSource.isPresent()) throw new JobAbsentException(job.getWorkflowJobId());
             List<String> depts = Arrays.asList(job.getParentsJobId().split(","));
             List<String> newDepts = new ArrayList<>();

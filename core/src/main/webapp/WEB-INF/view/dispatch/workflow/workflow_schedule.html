@@ -314,7 +314,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
          k-on-close="vm.executeWindow.visible=false"
          k-visible="false">
         <div class="text-center" ng-show="vm.executeInfo.loading>0">加载中</div>
-        <div kendo-tab-strip ng-hide="vm.executeInfo.loading>0">
+        <div id="executeTab" kendo-tab-strip ng-hide="vm.executeInfo.loading>0">
             <ul>
                 <li class="k-state-active">任务流预览</li>
                 <li>通知</li>
