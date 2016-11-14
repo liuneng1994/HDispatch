@@ -318,6 +318,7 @@
                 });
                 return;
             }
+            $('#executeTab').data('kendoTabStrip').select(0);
             getSelectWorkflows();
             vm.showExecuteGraph = false;
             var selectedFlows = loadSelectedWorkflow();
@@ -347,7 +348,7 @@
                             for (var link of vm.paint._graph.getLinks()) {
                                 link.attr('.link-tools/display', 'none');
                             }
-                        }, 500);
+                        }, 1000);
                     }
                     if (data.projectName && data.flowId) {
                         vm.executeInfo.flows[data.workflowId] = {};
