@@ -190,7 +190,8 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		list=new ArrayList<>();
 		parentId=0;
 		version=0;
-		return parseJSON(response.getBody().getObject(),parentId);
+		list=parseJSON(response.getBody().getObject(),parentId);
+		return list;
 	}
 
 	public static List<ExecutionJobs> parseJSON(JSONObject obj,Integer parentId)
