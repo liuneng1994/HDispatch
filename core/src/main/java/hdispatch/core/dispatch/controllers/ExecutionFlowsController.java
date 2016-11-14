@@ -138,12 +138,11 @@ public class ExecutionFlowsController extends BaseController {
         Long endtime = 1L;
         Long starttime = 0L;
         String flow_id="";
+        ExecutionJobs lastJOb=null;
         if (list.size() > 0) {
             endtime = list.get(0).getEnd_time();
             starttime = list.get(0).getStart_time();
             flow_id=list.get(0).getFlow_id();
-            if(list.size()>1)
-            list.remove(0);
         }
         for (ExecutionJobs job : list) {
             job.setExec_id(Integer.parseInt(exec_id));
@@ -154,7 +153,6 @@ public class ExecutionFlowsController extends BaseController {
                 job.setRunning((job.getStart_time() - starttime) + ",0," + (endtime - starttime));
             else
                 job.setRunning((job.getStart_time() - starttime) + "," + (job.getEnd_time() - starttime) + "," + (endtime - starttime));
-            System.out.println(job.toString());
         }
         Collections.sort(list, new Comparator<ExecutionJobs>() {
 
@@ -169,7 +167,6 @@ public class ExecutionFlowsController extends BaseController {
                 return -1;
             }
         });
-
         return list;
     }
 

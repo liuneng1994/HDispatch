@@ -97,14 +97,24 @@
                 if (!hasOperatePermission(themeid)) {
                     alert("您没有权限操作此调度任务！");
                 }else {
-                    if (confirm("确定取消调度？")) {
+                   /* if (confirm("确定取消调度？")) {
                         flowoperation_ajax(id, fid, pid,
                                 '${base.contextPath}/schedule/unschedule');
                         $('#flowGrid').data('kendoGrid').dataSource.read();
                     } else {
                         $('#flowGrid').data('kendoGrid').dataSource.read();
                         return;
-                    }
+                    }*/
+                    kendo.ui.showConfirmDialog({
+                        title:$l('hap.tip.info'),
+                        message:'确定取消调度？'
+                    }).done(function(event){
+                        if(event.button == 'OK'){
+                            flowoperation_ajax(id, fid, pid,
+                                    '${base.contextPath}/schedule/unschedule');
+                            $('#flowGrid').data('kendoGrid').dataSource.read();
+                        }
+                    })
                 }
 
             }
@@ -136,7 +146,7 @@
                         width: 920,
                         height: 450,
                         modal: true,
-                        title: schId + ' Scheduled Detail',
+                        title: 'SLA 详情',
                         visible: false,
                         iframe: true,
                         content: 'setsla.html?schId=' + schId + '&flowId=' + flowId + '&project=' + project
