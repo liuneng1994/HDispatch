@@ -20,4 +20,4 @@
 **/.tmp
 **/bin/**
 **/overlays
-sh.exe.stackdump
+*.stackdump
