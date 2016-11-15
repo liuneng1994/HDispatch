@@ -165,135 +165,89 @@
                 //任务行表显示数据加载和窗口渲染
                 jobs_data = new kendo.data.DataSource({
                     transport: {
-                        read:  function (args) {
-                            var options = args.data;
-                            var model = viewModel.model;
-                            if(!model.themeId){
-                                model.themeId='-100';
-                            }
-                            if(!model.layerId){
-                                model.layerId='-100';
-                            }
-                            if(!model.jobName){
-                                model.jobName=' ';
-                            }
+                        read:  {
+                            url: jobBaseUrl+"query",
+                            type : 'POST',
+                            dataType: "json"
+                        },
+                        create: {
+                            url: jobBaseUrl+'submit',
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
+                        update: {
+                            url: jobBaseUrl + "update",
+                            type : 'POST',
+                            dataType: "json",
+                            contentType:"application/json"
+                        },
+                        destroy: {
+                            url: jobBaseUrl + "remove",
+                            type : 'POST',
+                            dataType: "application/json",
+                            contentType:"application/json"
+                        },
+                        parameterMap: function(options, operation) {
+                            //封装请求参数
+                            if (operation !== "read" && options.models) {
+                                var datas = options.models;
+                                if(operation =='create' || operation =='update'){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = (operation =='create' ? 'add' : 'update');
+                                        return data;
+                                    });
+                                }
+                                if('destroy'==operation){
+                                    datas = options.models.map(function(data){
+                                        data['__status'] = 'delete';
+                                        return data;
+                                    });
+                                }
 
-                            var map = {themeId: model.themeId,layerId: model.layerId,jobName:model.jobName};
+                                var data_str = kendo.stringify(datas);
+                                jobs_data = data_str;
+                                return data_str;
+                            }
+                            else if (operation === "read") {
+                                var model = viewModel.model;
+                                if(!model.themeId){
+                                    model.themeId='-100';
+                                }
+                                if(!model.layerId){
+                                    model.layerId='-100';
+                                }
+                                if(!model.jobName){
+                                    model.jobName=' ';
+                                }
 
-                            if (options.page)
-                                map.page = options.page;
-                            if(model.page){
-                                map.page = 1;
-                                model.page = '';
+                                var map = {themeId: model.themeId,layerId: model.layerId,jobName:model.jobName};
+
+                                if (options.page)
+                                    map.page = options.page;
+                                if(model.page){
+                                    map.page = 1;
+                                    model.page = '';
+                                }
+                                if (options.pageSize)
+                                    map.pageSize = options.pageSize;
+                                for(var k in map){
+                                    if(map[k]==='')delete map[k]
+                                }
+                                return map;
                             }
-                            if (options.pageSize)
-                                map.pageSize = options.pageSize;
-                            for(var k in map){
-                                if(map[k]==='')delete map[k]
-                            }
-                            $.ajax({
-                                type: 'POST',
-                                url: jobBaseUrl+"query" ,
-                                data: map,
-                                success: function (data) {
-                                    args.success(data);
-                                },
-                                async:true,
-                                dataType: "json"
-                            });
-                        },
-                        create: function(args) {
-                            var options = args.data;
-                            var datas = options.models.map(function(data){
-                                for(var k in data){
-                                    if(data[k]===''||typeof(data[k])=="undefined"){
-                                        delete data[k]
-                                    }
-                                }
-                                data['__status'] = 'add';
-                                return data;
-                            });
-                            $.ajax({
-                                type: 'POST',
-                                url: jobBaseUrl+"submit" ,
-                                data: JSON.stringify(datas),
-                                dataType: "application/json",
-                                contentType:"application/json",
-                                success: function (data) {
-                                    args.success(data);
-                                    if(data.success){
-                                        kendo.ui.showInfoDialog({
-                                            message:'<@spring.message "hap.tip.success"/>'
-                                        });
-                                    }
-                                },
-                                async:true,
-                                dataType: "json"
-                            });
-                        },
-                        update: function(args) {
-                            var options = args.data;
-                            var datas = options.models.map(function(data){
-                                for(var k in data){
-                                    if(data[k]===''||typeof(data[k])=="undefined"){
-                                        delete data[k]
-                                    }
-                                }
-                                data['__status'] = 'update';
-                                return data;
-                            });
-                            $.ajax({
-                                type: 'POST',
-                                url: jobBaseUrl+"update" ,
-                                data: JSON.stringify(datas),
-                                dataType: "application/json",
-                                contentType:"application/json",
-                                success: function (data) {
-                                    args.success(data);
-                                    if(data.success){
-                                        kendo.ui.showInfoDialog({
-                                            message:'<@spring.message "hap.tip.success"/>'
-                                        });
-                                    }
-                                },
-                                async:true,
-                                dataType: "json"
-                            });
-                        },
-                        destroy: function(args) {
-                            var options = args.data;
-                            var datas = options.models.map(function(data){
-                                for(var k in data){
-                                    if(data[k]===''||typeof(data[k])=="undefined"){
-                                        delete data[k]
-                                    }
-                                }
-                                data['__status'] = 'delete';
-                                return data;
-                            });
-                            $.ajax({
-                                type: 'POST',
-                                url: jobBaseUrl+"remove" ,
-                                data: JSON.stringify(datas),
-                                dataType: "application/json",
-                                contentType:"application/json",
-                                success: function (data) {
-                                    if(data.success){
-                                        args.success(data);
-                                        kendo.ui.showInfoDialog({
-                                            message:'<@spring.message "hap.tip.success"/>'
-                                        });
-                                    }else {
-                                        $("#jobListGrid").data('kendoGrid').cancelChanges();
-                                        if(data.message){
-                                            alert(data.message);
-                                        }
-                                    }
-                                },
-                                async:true,
-                                dataType: "json"
+                        }
+                    },
+                    requestEnd: function(e) {
+                        if ((!e.response || e.response.success) && e.type != "read") {
+                            kendo.ui.showInfoDialog({
+                                message:'<@spring.message "hap.tip.success"/>'
                             });
                         }
+                        if (e.response && !e.response.success && e.type == "destroy") {
+                            $('#jobListGrid').data('kendoGrid').cancelChanges();
+                        }
+
                     },
                     batch: true,
                     serverPaging : true,
