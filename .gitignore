@@ -19,3 +19,5 @@
 **/tmp
 **/.tmp
 **/bin/**
+**/overlays
+sh.exe.stackdump
