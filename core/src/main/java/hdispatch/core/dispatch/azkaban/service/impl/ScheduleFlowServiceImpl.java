@@ -173,6 +173,7 @@ public ResultObj slaInfo(Map<String, Object> map) {
 
 @Override
 public ResponseData scheduleCronFlow(Map<String, Object> map) {
+    System.out.println(map);
     ResponseData result = null;
      try {
          response = RequestUtils.get(RequestUrl.SCHEDULE).queryString("ajax", "scheduleCronFlow")
