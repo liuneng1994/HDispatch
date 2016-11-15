@@ -12,4 +12,5 @@ public interface WorkflowDependencyMapper {
     List<WorkflowDependency> queryDependency(String projectName);
     int batchInsert(List<AzkabanFlowDependency> dependencies);
     int delete(AzkabanFlowDependency dependency);
+    List<WorkflowDependency> queryDependencyed(String projectName);
 }

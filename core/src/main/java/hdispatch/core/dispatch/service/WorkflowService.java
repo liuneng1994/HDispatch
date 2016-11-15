@@ -29,5 +29,5 @@ public interface WorkflowService {
 
     List<SimpleWorkflow> queryOperateWorkflow(IRequest request,Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
 
-    void deleteWorkflow(List<Integer> ids);
+    String deleteWorkflow(List<Long> ids);
 }

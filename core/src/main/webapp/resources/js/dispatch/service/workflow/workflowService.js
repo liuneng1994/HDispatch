@@ -140,7 +140,10 @@
         var deleteWorkflow = function (ids) {
             "use strict";
             return httpService.postJSON(_basePath + '/dispatcher/workflow/delete', ids, function (data, defered) {
-                defered.resolve("");
+                if (data.success)
+                    defered.resolve("");
+                else
+                    defered.reject(data.message);
             });
         };
 

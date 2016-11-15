@@ -33,6 +33,11 @@
                             kendo.ui.showInfoDialog({
                                 message: '成功'
                             });
+                        },function (data) {
+                            $("#grid").data("kendoGrid").dataSource.cancelChanges();
+                            kendo.ui.showErrorDialog({
+                                message: data
+                            });
                         });
                     }
                 },

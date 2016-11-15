@@ -61,4 +61,36 @@
             dep_project_name = #{deptProjectName}
             AND project_name = #{projectName}
     </delete>
+
+    <select id="queryDependencyed" resultMap="workflowDependency">
+        SELECT
+        dhw.workflow_id     AS dept_workflow_id,
+        dhw.name            AS dept_workflow_name,
+        dht.name            AS dept_theme,
+        dht.name            AS dept_layer,
+        df.dep_project_name AS dept_project_name,
+        df.dep_flow_id      AS dept_flow_id,
+        hw.name             AS workflow_name,
+        hw.workflow_id      AS workflow_id
+        FROM
+        dep_flows df
+        LEFT JOIN
+        hdispatch_workflow dhw
+        ON
+        df.dep_project_name = dhw.name
+        LEFT JOIN
+        hdispatch_workflow hw
+        ON
+        df.project_name = hw.name
+        LEFT JOIN
+        hdispatch_theme dht
+        ON
+        dhw.theme_id = dht.theme_id
+        LEFT JOIN
+        hdispatch_layer dhl
+        ON
+        dhw.layer_id = dhl.layer_id
+        WHERE
+        df.dep_project_name = #{projectName}
+    </select>
 </mapper>
