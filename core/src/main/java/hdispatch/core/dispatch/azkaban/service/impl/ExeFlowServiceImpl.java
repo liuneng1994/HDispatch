@@ -173,8 +173,12 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("当前流已经运行完，无法重跑！");
 			throw new IllegalArgumentException("当前流已经运行完，无法重跑！", e);
 		}
+		if(response.getBody().getObject().has("error"))
 		obj.setMessage((String)response.getBody().getObject().get("error"));
-		System.out.println(response.getBody().getObject());
+		else
+		{
+			obj.setMessage("重跑成功，重跑3次后任务将失败！");
+		}
 		return obj;
 	}
 
