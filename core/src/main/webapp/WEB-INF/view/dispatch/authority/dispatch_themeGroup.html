@@ -146,7 +146,7 @@
                                     args.success(data);
                                     if(data.success){
                                         kendo.ui.showInfoDialog({
-                                            message:'<@spring.message "hap.tip.success"/>'
+                                            message:'<@spring.message "hdispatch.tip.create_success"/>'
                                         });
                                     }
                                 },
@@ -175,7 +175,7 @@
                                     args.success(data);
                                     if(data.success){
                                         kendo.ui.showInfoDialog({
-                                            message:'<@spring.message "hap.tip.success"/>'
+                                            message:'<@spring.message "hdispatch.tip.update_success"/>'
                                         });
                                     }
                                 },
@@ -204,7 +204,7 @@
                                     if(data.success){
                                         args.success(data);
                                         kendo.ui.showInfoDialog({
-                                            message:'<@spring.message "hap.tip.success"/>'
+                                            message:'<@spring.message "hdispatch.tip.delete_success"/>'
                                         });
                                     }else {
                                         $("#themeGroupListGrid").data('kendoGrid').cancelChanges();
