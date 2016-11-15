@@ -159,6 +159,7 @@
                 });
                 return;
             }
+            vm.scheduleInfo = {};
             vm.cronExp = [0, '*', '*', '?', '*', '*'];
             getSelectWorkflows();
             var selectedFlows = loadSelectedWorkflow();
@@ -169,6 +170,9 @@
             }
             vm.cronScheduleFlow.flows = {};
             vm.cronScheduleFlow.name = '';
+            vm.scheduleInfo.flows = {};
+            vm.scheduleInfo.failureAction = 'finishCurrent';
+            vm.scheduleInfo.concurrentOption = 'skip';
             for (var flow of selectedFlows.values()) {
                 workflowService.workflow(flow.workflowId).then(function (data) {
                     vm.cronScheduleFlow.loading--;
@@ -187,7 +191,8 @@
                         vm.scheduleWindow.close();
                     }
                 })
-            };
+            }
+            ;
             kendo.ui.showDialog({
                 title: 'cron计划',
                 width: 600,
@@ -219,12 +224,13 @@
             $compile($('div.modal-body table'))($scope);
         };
         vm.cronScheduleSubmit = function () {
-            var scheduleInfo = {};
+            vm.scheduleInfo.successEmailsOverride = true;
+            vm.scheduleInfo.failureEmailsOverride = true;
             for (var id in vm.cronScheduleFlow.flows) {
-                scheduleInfo.projectName = vm.cronScheduleFlow.flows[id].projectName;
-                scheduleInfo.flowId = vm.cronScheduleFlow.flows[id].flowId;
-                scheduleInfo.cronExpression = vm.cronExp.join(' ');
-                var arg = angular.copy(scheduleInfo);
+                vm.scheduleInfo.projectName = vm.cronScheduleFlow.flows[id].projectName;
+                vm.scheduleInfo.flowId = vm.cronScheduleFlow.flows[id].flowId;
+                vm.scheduleInfo.cronExpression = vm.cronExp.join(' ');
+                var arg = angular.copy(vm.scheduleInfo);
                 workflowService.cronScheduleWorkflow(arg).then(function (data) {
                     vm.notification.show({
                         message: data || '计划成功'
@@ -369,12 +375,8 @@
         };
         vm.executeSubmit = function () {
             console.log(gatherDisableElements());
-            if (vm.executeInfo.successEmails) {
-                vm.executeInfo.successEmailsOverride = true;
-            }
-            if (vm.executeInfo.failureEmails) {
-                vm.failureEmailsOverride = true;
-            }
+            vm.executeInfo.successEmailsOverride = true;
+            vm.executeInfo.failureEmailsOverride = true;
             for (var id in vm.executeInfo.flows) {
                 if (vm.showExecuteGraph) vm.executeInfo.disabled = JSON.stringify(gatherDisableElements());
                 vm.executeInfo.project = vm.executeInfo.flows[id].project;
@@ -396,7 +398,7 @@
         vm.executeCancel = function () {
             vm.executeWindow.close();
         };
-        vm.resetQuery = function() {
+        vm.resetQuery = function () {
             "use strict";
             vm.workflow.themeId = null;
             vm.workflow.layerId = null;
