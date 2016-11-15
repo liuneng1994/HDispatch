@@ -4,11 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hdispatch.core.dispatch.azkaban.entity.project.SimpleProject;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.azkaban.util.RequestUrl;
 import hdispatch.core.dispatch.azkaban.util.RequestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Created by 刘能 on 2016/8/31.
@@ -32,7 +35,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public boolean createProject(String projectName, String description) {
-        logger.info("创建工程:{}--{}",projectName,description);
+        logger.info("创建工程:{}--{}", projectName, description);
         HttpResponse<JsonNode> response;
         try {
             response = RequestUtils.post(RequestUrl.PROJECT_MANAGER).field("action", "create")
@@ -64,9 +67,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public boolean deleteProject(String projectName) {
+    public String deleteProject(String projectName) {
+        HttpResponse<String> response;
         try {
-            RequestUtils.get(RequestUrl.INDEX)
+            response = RequestUtils.get(RequestUrl.INDEX)
                     .queryString("delete", "true")
                     .queryString("project", projectName)
                     .asString();
@@ -74,7 +78,15 @@ public class ProjectServiceImpl implements ProjectService {
             logger.error("刪除工程失败", e);
             throw new IllegalStateException("刪除工程失败", e);
         }
-        return true;
+        List<String> cookies = response.getHeaders().get("Set-Cookie");
+        String cookie = String.join(",", cookies);
+        String successMessage = Pattern.compile("azkaban\\.success\\.message=(.*);").matcher(cookie).group(0);
+        String failMessage = Pattern.compile("azkaban\\.failure\\.message=(.*);").matcher(cookie).group(0);
+        if (!StringUtils.isBlank(failMessage)) {
+            return failMessage;
+        } else {
+            return null;
+        }
     }
 
     @Override

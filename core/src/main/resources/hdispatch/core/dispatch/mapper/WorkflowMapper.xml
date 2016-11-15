@@ -123,10 +123,9 @@
     </update>
 
     <update id="deleteByIds" parameterType="list">
-        UPDATE
+        DELETE
+        FROM
             hdispatch_workflow
-        SET
-            active=0
         WHERE
             workflow_id IN
             <foreach collection="list" open="(" index="index" item="id" separator="," close=")">

@@ -61,4 +61,35 @@
             mut_project_name = #{mutexProjectName}
             AND project_name = #{projectName}
     </delete>
+    <select id="queryMutexed" resultMap="workflowMutex">
+        SELECT
+        dhw.workflow_id     AS mutex_workflow_id,
+        dhw.name            AS mutex_workflow_name,
+        dht.name            AS mutex_theme,
+        dht.name            AS mutex_layer,
+        df.mut_project_name AS mutex_project_name,
+        df.mut_flow_id      AS mutex_flow_id,
+        hw.name             AS workflow_name,
+        hw.workflow_id      AS workflow_id
+        FROM
+        mut_flows df
+        LEFT JOIN
+        hdispatch_workflow dhw
+        ON
+        df.mut_project_name = dhw.name
+        LEFT JOIN
+        hdispatch_workflow hw
+        ON
+        df.project_name = hw.name
+        LEFT JOIN
+        hdispatch_theme dht
+        ON
+        dhw.theme_id = dht.theme_id
+        LEFT JOIN
+        hdispatch_layer dhl
+        ON
+        dhw.layer_id = dhl.layer_id
+        WHERE
+        df.mut_project_name = #{projectName}
+    </select>
 </mapper>

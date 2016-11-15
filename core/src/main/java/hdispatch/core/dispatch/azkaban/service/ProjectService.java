@@ -15,7 +15,7 @@ public interface ProjectService {
 
     List<SimpleProject> getAllProjects();
 
-    boolean deleteProject(String projectName);
+    String deleteProject(String projectName);
 
     Map<String, String> uploadProjectFile(String projectName, File projectFile);
 }
