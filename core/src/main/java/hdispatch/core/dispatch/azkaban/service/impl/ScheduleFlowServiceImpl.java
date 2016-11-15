@@ -172,13 +172,11 @@ public ResultObj slaInfo(Map<String, Object> map) {
 }
 
 @Override
-public ResponseData scheduleCronFlow(String projectName, String flowName, String cronExpression) {
+public ResponseData scheduleCronFlow(Map<String, Object> map) {
     ResponseData result = null;
      try {
-         response = RequestUtils.post(RequestUrl.SCHEDULE).field("ajax", "scheduleCronFlow")
-                 .field("projectName", projectName)
-                 .field("flow", flowName)
-                 .field("cronExpression",cronExpression)
+         response = RequestUtils.get(RequestUrl.SCHEDULE).queryString("ajax", "scheduleCronFlow")
+                 .queryString(map)
                  .asJson();
          if(response.getBody().getObject().has("status")) {
              if (response.getBody().getObject().getString("status").equals("success")) {
