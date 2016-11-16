@@ -35,7 +35,7 @@ public int delete(HdispatchSchedule s) {
 }
 
 @Override
-public HdispatchSchedule selectByFlowAndProject(HdispatchSchedule s) {
+public int selectByFlowAndProject(HdispatchSchedule s) {
 	// TODO Auto-generated method stub
 	return mapper.selectByFlowAndProject(s);
 }
