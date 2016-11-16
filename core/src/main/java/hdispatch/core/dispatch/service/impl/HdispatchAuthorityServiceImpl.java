@@ -181,7 +181,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Transactional
     public boolean hasOperatePermission(Theme theme, User user) {
         Assert.notNull(theme);
-        Assert.notNull();
+        Assert.notNull(user);
         return hasOperatePermission(theme.getThemeId(),user.getUserId());
     }
 

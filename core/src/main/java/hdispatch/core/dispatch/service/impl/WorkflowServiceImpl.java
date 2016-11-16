@@ -235,7 +235,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 HdispatchSchedule schedule = new HdispatchSchedule();
                 schedule.setProject_name(workflow.getProjectName());
                 int count = hdispatchScheduleService.selectByFlowAndProject(schedule);
-                result = count > 0 ? "存在计划" : null;
+                result = count > 0 ? "任务流存在计划,请移除" : null;
             }
             if (result == null)
                 workflowMapper.deleteByIds(ids);
