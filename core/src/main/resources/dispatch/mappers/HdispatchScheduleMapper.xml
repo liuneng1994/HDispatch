@@ -38,9 +38,9 @@
         and hdispatch_schedule.submit_date > #{submit_date,jdbcType=VARCHAR}
       </if>
   </select>
-   <select id="selectByFlowAndProject"  parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
-    select 
-    count(1)
+   <select id="selectByFlowAndProject"  resultMap="BaseResultMap" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
+    select
+       <include refid="Base_Column_List" />
     from hdispatch_schedule
     where  project_name = #{project_name,jdbcType=VARCHAR}
   </select>
