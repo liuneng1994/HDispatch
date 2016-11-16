@@ -43,10 +43,6 @@ public class LayerServiceImpl implements LayerService {
     @Override
     @Transactional
     public boolean create(Layer layer) {
-        Assert.notNull(layer);
-        Assert.notNull(layer.getLayerName());
-        Assert.isTrue(layer.getLayerName().equals(""));
-        Assert.notNull(layer.getThemeId());
         try{
             layerMapper.save(layer);
         } catch (Exception e) {
@@ -70,10 +66,6 @@ public class LayerServiceImpl implements LayerService {
             if (layer.get__status() != null) {
                 switch (layer.get__status()) {
                     case DTOStatus.ADD:
-                        Assert.notNull(layer);
-                        Assert.notNull(layer.getLayerName());
-                        Assert.isTrue(layer.getLayerName().equals(""));
-                        Assert.notNull(layer.getThemeId());
                         layerMapper.save(layer);
                         layer.setLayerActive(1L);
                         break;
@@ -98,8 +90,6 @@ public class LayerServiceImpl implements LayerService {
                         }
                         break;
                     case DTOStatus.DELETE:
-                        Assert.notNull(layer);
-                        Assert.notNull(layer.getLayerId());
                         layerMapper.deleteInLogic(layer);
                         break;
                     default:
@@ -153,7 +143,6 @@ public class LayerServiceImpl implements LayerService {
     @Override
     @Transactional
     public List<Layer> selectActiveLayersByThemeId(IRequest requestContext, int page, int pageSize, Layer layer) {
-        Assert.notNull(layer);
         PageHelper.startPage(page, pageSize);
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
         return layerList;
@@ -168,7 +157,6 @@ public class LayerServiceImpl implements LayerService {
     @Override
     @Transactional
     public List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext, Layer layer) {
-        Assert.notNull(layer);
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
         return layerList;
     }

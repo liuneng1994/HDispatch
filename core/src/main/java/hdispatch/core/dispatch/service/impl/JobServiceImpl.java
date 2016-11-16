@@ -37,8 +37,6 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional
     public List<Job> selectByJob(IRequest requestContext, Job job, int page, int pageSize) {
-        Assert.notNull(requestContext);
-        Assert.notNull(job);
         PageHelper.startPage(page, pageSize);
         List<Job> list;
         if (null == jobMapper) {

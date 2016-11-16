@@ -51,7 +51,6 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     @Override
     @Transactional
     public List<SvnParameter> selectBySvnParameter(IRequest requestContext, SvnParameter svnParameter, int page, int pageSize) {
-        Assert.notNull(svnParameter);
         PageHelper.startPage(page, pageSize);
         List<SvnParameter> list;
         if (null == svnParameterMapper) {
@@ -71,7 +70,6 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     @Override
     @Transactional
     public boolean[] checkIsExist(List<SvnParameter> svnParameterList) {
-        Assert.notNull(svnParameterList);
         boolean[] isExist = new boolean[svnParameterList.size()];
         int i = 0;
         for (SvnParameter svnParameter : svnParameterList) {
@@ -334,7 +332,6 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     @Override
     @Transactional
     public boolean hasOperatePermission(IRequest requestContext) {
-        Assert.notNull(requestContext);
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
             logger.error("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称",
@@ -355,7 +352,6 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     @Override
     @Transactional
     public boolean hasReadPermission(IRequest requestContext) {
-        Assert.notNull(requestContext);
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
             logger.error("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称",
