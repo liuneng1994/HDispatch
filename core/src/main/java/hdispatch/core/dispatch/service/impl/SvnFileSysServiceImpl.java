@@ -7,6 +7,7 @@ import hdispatch.core.dispatch.service.SvnFileSysService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
      * @throws Exception
      */
     @Override
+    @Transactional
     public List<TreeNode> fetchSubNodes(TreeNode treeNode) throws Exception {
         List<TreeNode> list = new ArrayList<TreeNode>();
         ChannelSftp sftp = null;

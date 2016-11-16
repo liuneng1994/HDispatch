@@ -11,6 +11,8 @@ import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,10 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public List<HdispatchAuthority> selectInThemeGroup(IRequest requestContext, HdispatchAuthority hdispatchAuthority, int page, int pageSize) {
+        Assert.notNull(requestContext);
+        Assert.notNull(hdispatchAuthority);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap();
         map.put("themeGroupId",hdispatchAuthority.getThemeGroupId());
@@ -53,7 +58,10 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public List<HdispatchAuthority> selectNotInThemeGroup(IRequest requestContext,HdispatchAuthority hdispatchAuthority, int page, int pageSize) {
+        Assert.notNull(requestContext);
+        Assert.notNull(hdispatchAuthority);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap();
         map.put("themeGroupId",hdispatchAuthority.getThemeGroupId());
@@ -66,7 +74,11 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @param hdispatchAuthority
      */
     @Override
+    @Transactional
     public void save(HdispatchAuthority hdispatchAuthority) {
+        Assert.notNull(hdispatchAuthority);
+        Assert.notNull(hdispatchAuthority.getThemeGroupId());
+        Assert.notNull(hdispatchAuthority.getUserId());
         hdispatchAuthorityMapper.save(hdispatchAuthority);
     }
 
@@ -75,7 +87,10 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @param hdispatchAuthority
      */
     @Override
+    @Transactional
     public void updateAuthority(HdispatchAuthority hdispatchAuthority) {
+        Assert.notNull(hdispatchAuthority);
+        Assert.notNull(hdispatchAuthority.getAuthorityId());
         hdispatchAuthorityMapper.updateAuthority(hdispatchAuthority);
     }
 
@@ -84,7 +99,10 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @param hdispatchAuthority
      */
     @Override
+    @Transactional
     public void deleteUser(HdispatchAuthority hdispatchAuthority) {
+        Assert.notNull(hdispatchAuthority);
+        Assert.notNull(hdispatchAuthority.getAuthorityId());
         hdispatchAuthorityMapper.deleteUser(hdispatchAuthority);
     }
 
@@ -95,6 +113,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public List<HdispatchAuthority> batchUpdate(IRequest requestContext, List<HdispatchAuthority> filterList) {
         for (HdispatchAuthority authority : filterList) {
             if (authority.get__status() != null) {
@@ -123,7 +142,10 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public boolean hasReadPermission(Theme theme, User user) {
+        Assert.notNull(theme);
+        Assert.notNull(user);
         return hasReadPermission(theme.getThemeId(),user.getUserId());
     }
 
@@ -134,6 +156,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public boolean hasReadPermission(Long themeId, Long userId) {
         if(!checkNotNull(userId,themeId))
             return false;
@@ -155,7 +178,10 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public boolean hasOperatePermission(Theme theme, User user) {
+        Assert.notNull(theme);
+        Assert.notNull();
         return hasOperatePermission(theme.getThemeId(),user.getUserId());
     }
 
@@ -166,6 +192,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public boolean hasOperatePermission(Long themeId, Long userId) {
         if(!checkNotNull(userId,themeId))
             return false;
@@ -187,6 +214,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public boolean hasReadAndOperatePermission(Theme theme, User user) {
         return hasReadAndOperatePermission(theme.getThemeId(),user.getUserId());
     }
@@ -198,6 +226,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return
      */
     @Override
+    @Transactional
     public boolean hasReadAndOperatePermission(Long themeId, Long userId) {
         if(!checkNotNull(userId,themeId))
             return false;
@@ -218,6 +247,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return 返回的只是主题id（themeId）列表
      */
     @Override
+    @Transactional
     public List<Theme> themesReadByUser(Long userId) {
         if(null == userId)
             return null;
@@ -235,6 +265,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return 返回的只是主题id（themeId）列表
      */
     @Override
+    @Transactional
     public List<Theme> themesOperateByUser(Long userId) {
         if(null == userId)
             return null;
@@ -252,6 +283,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
      * @return 返回的只是主题id（themeId）列表
      */
     @Override
+    @Transactional
     public List<Theme> themesReadAndOperateByUser(Long userId) {
         if(null == userId)
             return null;

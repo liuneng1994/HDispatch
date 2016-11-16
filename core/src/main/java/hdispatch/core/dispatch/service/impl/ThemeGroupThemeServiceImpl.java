@@ -9,6 +9,8 @@ import hdispatch.core.dispatch.service.ThemeGroupThemeService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,9 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
+    @Transactional
     public List<ThemeGroupTheme> selectThemesNotInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
+        Assert.notNull(themeGroupTheme);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
         map.put("themeGroupId",themeGroupTheme.getThemeGroupId());
@@ -52,7 +56,9 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
+    @Transactional
     public List<ThemeGroupTheme> selectThemesInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
+        Assert.notNull(themeGroupTheme);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
         map.put("themeGroupId",themeGroupTheme.getThemeGroupId());
@@ -68,6 +74,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
+    @Transactional
     public List<ThemeGroupTheme> batchUpdate(IRequest requestContext, List<ThemeGroupTheme> filterList) {
         for (ThemeGroupTheme themeGroupTheme : filterList) {
             if (themeGroupTheme.get__status() != null) {

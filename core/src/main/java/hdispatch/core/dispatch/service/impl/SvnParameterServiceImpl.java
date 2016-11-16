@@ -17,6 +17,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.FileInputStream;
@@ -47,7 +49,9 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
+    @Transactional
     public List<SvnParameter> selectBySvnParameter(IRequest requestContext, SvnParameter svnParameter, int page, int pageSize) {
+        Assert.notNull(svnParameter);
         PageHelper.startPage(page, pageSize);
         List<SvnParameter> list;
         if (null == svnParameterMapper) {
@@ -65,7 +69,9 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
+    @Transactional
     public boolean[] checkIsExist(List<SvnParameter> svnParameterList) {
+        Assert.notNull(svnParameterList);
         boolean[] isExist = new boolean[svnParameterList.size()];
         int i = 0;
         for (SvnParameter svnParameter : svnParameterList) {
@@ -86,6 +92,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
+    @Transactional
     public List<SvnParameter> batchUpdate(IRequest requestContext,@StdWho List<SvnParameter> svnParameterList) {
         for (SvnParameter svnParameter : svnParameterList) {
             if (svnParameter.get__status() != null) {
@@ -280,6 +287,8 @@ public class SvnParameterServiceImpl implements SvnParameterService {
         return list;
     }
 
+    @Override
+    @Transactional
     public List<SvnParameter> batchCreateFromExcel(CommonsMultipartFile[] files) throws Exception{
 //        ArrayList<SvnParameter> svnParameters = new ArrayList<>();
 //        for(CommonsMultipartFile file : files){
@@ -299,6 +308,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
+    @Transactional
     public void preAddHandle(List<SvnParameter> svnParameterList) {
         for(SvnParameter parameter : svnParameterList){
             SvnParameter temp = new SvnParameter();
@@ -322,7 +332,9 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
+    @Transactional
     public boolean hasOperatePermission(IRequest requestContext) {
+        Assert.notNull(requestContext);
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
             logger.error("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称",
@@ -341,7 +353,9 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
+    @Transactional
     public boolean hasReadPermission(IRequest requestContext) {
+        Assert.notNull(requestContext);
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
             logger.error("任务运行时参数（权限控制）：读取不到挂载任务参数的主题组名称",
