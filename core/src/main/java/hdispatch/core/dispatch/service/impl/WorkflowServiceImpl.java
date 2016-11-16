@@ -3,10 +3,13 @@ package hdispatch.core.dispatch.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
+import hdispatch.core.dispatch.azkaban.service.ScheduleFlowService;
+import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.*;
 import hdispatch.core.dispatch.exception.CircularReferenceException;
 import hdispatch.core.dispatch.mapper.*;
+import hdispatch.core.dispatch.service.HdispatchScheduleService;
 import hdispatch.core.dispatch.service.WorkflowService;
 import hdispatch.core.dispatch.utils.WorkflowUtils;
 import hdispatch.core.dispatch.utils.ZipUtils;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static hdispatch.core.dispatch.utils.Constants.RET_ERROR;
 import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
+import static org.drools.runtime.rule.Variable.v;
 
 /**
  * Created by 刘能 on 2016/9/12.
@@ -53,6 +57,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     private WorkflowMutexMapper workflowMutexMapper;
     @Autowired
     private WorkflowDependencyMapper workflowDependencyMapper;
+    @Autowired
+    private HdispatchScheduleService hdispatchScheduleService;
 
     /**
      * 创建一个新的工作流，工作流中包含属性和Job.工作流的名称是唯一的。
@@ -220,22 +226,29 @@ public class WorkflowServiceImpl implements WorkflowService {
         List<WorkflowDependency> dependencies2 = workflowDependencyMapper.queryDependency(workflow.getProjectName());
         List<String> dependencies2ToName = dependencies2.parallelStream().map(WorkflowDependency::getDeptWorkflowName).collect(Collectors.toList());
         List<WorkflowMutex> mutexList = workflowMutexMapper.queryMutex(workflow.getProjectName());
-        List<String> mutexName = mutexList.parallelStream().filter(item->item.getMutexWorkflowName().equals(workflow.getName())).map(WorkflowMutex::getMutexProjectName).collect(Collectors.toList());
-        if (dependencies1ToName.isEmpty()&&dependencies2ToName.isEmpty()&&mutexName.isEmpty()) {
+        List<String> mutexName = mutexList.parallelStream().map(WorkflowMutex::getMutexProjectName).collect(Collectors.toList());
+        if (dependencies1ToName.isEmpty() && dependencies2ToName.isEmpty() && mutexName.isEmpty()) {
 //            if (workflow.getProjectName() != null) {
 //                result = projectService.deleteProject(workflow.getProjectName());
 //            }
-            workflowMapper.deleteByIds(ids);
+            if (workflow.getProjectName() != null) {
+                HdispatchSchedule schedule = new HdispatchSchedule();
+                schedule.setProject_name(workflow.getProjectName());
+                int count = hdispatchScheduleService.selectByFlowAndProject(schedule);
+                result = count > 0 ? "存在计划" : null;
+            }
+            if (result == null)
+                workflowMapper.deleteByIds(ids);
         } else {
             result = "";
             if (!dependencies1ToName.isEmpty()) {
-                result += "被" + String.join(" ",dependencies1ToName) +"依赖.<br/>";
+                result += "被" + String.join(" ", dependencies1ToName) + "依赖.<br/>";
             }
-            if (! dependencies2ToName.isEmpty()) {
-                result += "存在依赖" + String.join("",dependencies2ToName)+".<br/>";
+            if (!dependencies2ToName.isEmpty()) {
+                result += "存在依赖" + String.join("", dependencies2ToName) + ".<br/>";
             }
             if (!mutexName.isEmpty()) {
-                result += "存在互斥" + String.join("",mutexName) + ".<br/>";
+                result += "存在互斥" + String.join("", mutexName) + ".<br/>";
             }
         }
 
