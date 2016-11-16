@@ -490,6 +490,10 @@
                                         type: "button",
                                         id: "retryflow",
                                         text: '<@spring.message "hap.retry"/>'
+                                    },{
+                                        type: "button",
+                                        id: "fresh",
+                                        text: '<@spring.message "hdispatch.grid_refresh"/>'
                                     }]
                                 });
                                 var start = $("#retryflow")
@@ -501,11 +505,25 @@
                                                                 '${base.contextPath}/flows/retryfailflow',
                                                                 function (json) {
                                                                         alert(json.message);
+                                                                    $('#flowGrid')
+                                                                            .data(
+                                                                                    'kendoTreeList').dataSource
+                                                                            .read();
                                                                 });
                                                     }
                                                 }).data("kendoButton");
-
+                                var start = $("#fresh")
+                                        .kendoButton(
+                                                {
+                                                    click: function (e) {
+                                                        $('#flowGrid')
+                                                                .data(
+                                                                        'kendoTreeList').dataSource
+                                                                .read();
+                                                    }
+                                                }).data("kendoButton");
                             });
+
         </script>
         </body>
         </html>

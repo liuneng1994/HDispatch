@@ -52,7 +52,7 @@
             var indexToName = {};
             var nameToIndex = {};
             var indexToText = {};
-            var ruleBoxOptions = ["SUCCESS", "FINISH"];
+            var ruleBoxOptions = ["FINISH"];
             var jobs = [];
             var data = {};
             function ajax(url) {
@@ -132,8 +132,7 @@
                                                 "form-control");
                                         for (var i in ruleBoxOptions) {
                                             ruleSelect.options[i] = new Option(
-                                                    ruleBoxOptions[i],
-                                                    ruleBoxOptions[i]);
+                                                    "FAILED","FINISH");
                                             if (data.settings[setting].rule == ruleBoxOptions[i]) {
                                                 ruleSelect.options[i].selected = true;
                                             }
@@ -206,7 +205,7 @@
                 var tr = document.createElement("tr");
                 tr.className = "tr" + count;
                 tr.innerHTML = "<td><select class='form-control' id='flow" + count + "'>"
-                        + "</select></td><td><select class='form-control'><option value='SUCCESS'>SUCCESS</option><option value='FINISH'>FINISH</option></select></td><td>"
+                        + "</select></td><td><select class='form-control'><option value='FINISH'>FAILED</option></select></td><td>"
                         + "<input id='flatpickr" + count + "'class='form-control' data-default-date='' data-enable-time='true' value='00:01' data-enable-seconds='false' data-no-calendar='true'>"
                         + "</td><td><input type='checkbox'></td><td><input type='checkbox'></td><td><button class='btn btn-danger' onclick='removetr(" + count + ")'><@spring.message 'hap.delete'/></button></td>";
                 document.getElementById("tbody").appendChild(tr);

@@ -150,7 +150,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "fetchExecJobLogs").queryString(map)
 					.asJson();
-
+			System.out.println(response.getBody().getObject());
 		} catch (UnirestException e) {
 			logger.error("无法找到log！");
 			throw new IllegalArgumentException("无法找到log！", e);
