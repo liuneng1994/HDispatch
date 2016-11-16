@@ -126,8 +126,8 @@ public class SvnParameterController extends BaseController{
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
         IRequest requestContext = createRequestContext(request);
-        //数据是否存在过滤，如果已经存在，那么变为update
-        svnParameterService.preAddHandle(svnParameterList);
+//        //数据是否存在过滤，如果已经存在，那么变为update
+//        svnParameterService.preAddHandle(svnParameterList);
         try {
             List<SvnParameter> returnList = svnParameterService.batchUpdate(requestContext, svnParameterList);
 //            for(SvnParameter temp : returnList){
