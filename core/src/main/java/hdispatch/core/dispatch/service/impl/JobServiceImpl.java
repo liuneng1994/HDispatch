@@ -2,7 +2,6 @@ package hdispatch.core.dispatch.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
-import com.hand.hap.system.dto.BaseDTO;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.mapper.JobMapper;
@@ -10,6 +9,8 @@ import hdispatch.core.dispatch.service.JobService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,10 @@ public class JobServiceImpl implements JobService {
      * @return
      */
     @Override
+    @Transactional
     public List<Job> selectByJob(IRequest requestContext, Job job, int page, int pageSize) {
+        Assert.notNull(requestContext);
+        Assert.notNull(job);
         PageHelper.startPage(page, pageSize);
         List<Job> list;
         if (null == jobMapper) {
@@ -52,6 +56,7 @@ public class JobServiceImpl implements JobService {
      * @return
      */
     @Override
+    @Transactional
     public boolean[] checkIsExist(List<Job> jobList) {
         boolean[] isExist = new boolean[jobList.size()];
         int i = 0;
@@ -73,6 +78,7 @@ public class JobServiceImpl implements JobService {
      * @return
      */
     @Override
+    @Transactional
     public List<Job> batchUpdate(IRequest requestContext, List<Job> jobList) {
         for (Job job : jobList) {
             if (job.get__status() != null) {
