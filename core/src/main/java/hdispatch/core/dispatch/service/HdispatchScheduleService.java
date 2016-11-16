@@ -10,5 +10,5 @@ public interface HdispatchScheduleService{
 	List<HdispatchSchedule> selectAll(IRequest requestContext,HdispatchSchedule s);
 	int insert(HdispatchSchedule s);
 	int delete(HdispatchSchedule s);
-	HdispatchSchedule selectByFlowAndProject(HdispatchSchedule s);
+	int selectByFlowAndProject(HdispatchSchedule s);
 }

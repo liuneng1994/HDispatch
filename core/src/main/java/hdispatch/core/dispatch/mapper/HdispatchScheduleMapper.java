@@ -19,5 +19,5 @@ public interface HdispatchScheduleMapper {
 
 	List<HdispatchSchedule> selectAll(HdispatchSchedule s);
 
-	HdispatchSchedule selectByFlowAndProject(HdispatchSchedule s);
+    int selectByFlowAndProject(HdispatchSchedule s);
 }
