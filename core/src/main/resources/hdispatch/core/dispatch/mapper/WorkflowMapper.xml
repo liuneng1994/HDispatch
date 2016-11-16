@@ -215,6 +215,7 @@
         AND hw.active=1
         AND hw.project_name IS NOT NULL
         AND hw.flow_id IS NOT NULL
+        AND 'Y'=hasPermission(hw.theme_id,#{request.userId},NULL,'Y')
     </select>
     <!--add by yazheng.yang@hand-china.com
     2016.10.25
