@@ -13,6 +13,8 @@ import hdispatch.core.dispatch.service.LayerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +41,12 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
+    @Transactional
     public boolean create(Layer layer) {
+        Assert.notNull(layer);
+        Assert.notNull(layer.getLayerName());
+        Assert.isTrue(layer.getLayerName().equals(""));
+        Assert.notNull(layer.getThemeId());
         try{
             layerMapper.save(layer);
         } catch (Exception e) {
@@ -57,11 +64,16 @@ public class LayerServiceImpl implements LayerService {
      * @throws Exception
      */
     @Override
+    @Transactional
     public List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList) throws Exception {
         for (Layer layer : layerList) {
             if (layer.get__status() != null) {
                 switch (layer.get__status()) {
                     case DTOStatus.ADD:
+                        Assert.notNull(layer);
+                        Assert.notNull(layer.getLayerName());
+                        Assert.isTrue(layer.getLayerName().equals(""));
+                        Assert.notNull(layer.getThemeId());
                         layerMapper.save(layer);
                         layer.setLayerActive(1L);
                         break;
@@ -86,6 +98,8 @@ public class LayerServiceImpl implements LayerService {
                         }
                         break;
                     case DTOStatus.DELETE:
+                        Assert.notNull(layer);
+                        Assert.notNull(layer.getLayerId());
                         layerMapper.deleteInLogic(layer);
                         break;
                     default:
@@ -102,6 +116,7 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
+    @Transactional
     public boolean[] checkIsExist(List<Layer> layerList) {
         boolean[] isExist = new boolean[layerList.size()];
         int i = 0;
@@ -120,6 +135,7 @@ public class LayerServiceImpl implements LayerService {
      * @param layer
      */
     @Override
+    @Transactional
     public void deleteInLogic(Layer layer) {
         if(null != layer){
             layerMapper.deleteInLogic(layer);
@@ -135,7 +151,9 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
+    @Transactional
     public List<Layer> selectActiveLayersByThemeId(IRequest requestContext, int page, int pageSize, Layer layer) {
+        Assert.notNull(layer);
         PageHelper.startPage(page, pageSize);
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
         return layerList;
@@ -148,7 +166,9 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
+    @Transactional
     public List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext, Layer layer) {
+        Assert.notNull(layer);
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
         return layerList;
     }
@@ -159,6 +179,7 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
+    @Transactional
     public List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext) {
         List<Layer> layerList = layerMapper.selectAllActiveLayers();
         return layerList;
@@ -172,6 +193,7 @@ public class LayerServiceImpl implements LayerService {
      * @return 挂载任务或任务流的层次列表
      */
     @Override
+    @Transactional
     public List<Layer> checkIsMountJobOrWorkflow(List<Layer> layerList) {
         List<Layer> returnList = new ArrayList<>();
         for(Layer layer : layerList){

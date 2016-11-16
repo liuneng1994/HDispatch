@@ -11,6 +11,8 @@ import hdispatch.core.dispatch.service.ThemeGroupService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +42,9 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
+    @Transactional
     public List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize) {
+        Assert.notNull(themeGroup);
         PageHelper.startPage(page, pageSize);
         List<ThemeGroup> result = themeGroupMapper.selectByThemeGroup(themeGroup);
         return result;
@@ -53,6 +57,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
+    @Transactional
     public List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {
@@ -82,6 +87,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @param cannotRemoveList 不可以删除的列表
      */
     @Override
+    @Transactional
     public List<ThemeGroup> batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {

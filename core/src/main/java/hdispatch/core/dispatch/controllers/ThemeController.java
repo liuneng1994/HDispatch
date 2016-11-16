@@ -71,7 +71,6 @@ public class ThemeController extends BaseController {
     @ResponseBody
     public ResponseData getAllThemes_operate(HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
-        Long userId = requestContext.getUserId();
         List<Theme> themeList = themeService.selectAll_opt(requestContext);
         ResponseData responseData = new ResponseData(themeList);
         return responseData;
@@ -104,13 +103,6 @@ public class ThemeController extends BaseController {
     public ResponseData addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
 
         ResponseData rd = null;
-        //后台验证
-        getValidator().validate(themeList, result);
-        if (result.hasErrors()) {
-            rd = new ResponseData(false);
-            rd.setMessage(getErrorMessage(result, request));
-            return rd;
-        }
         //从后台判断是否存在
         boolean[] isExist = themeService.checkIsExist(themeList);
         StringBuilder sb = new StringBuilder();
@@ -129,7 +121,6 @@ public class ThemeController extends BaseController {
         Locale locale = RequestContextUtils.getLocale(request);
         if (flag) {
             rd = new ResponseData(false);
-            //
             String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.theme_name_already_exist", null, locale);
             rd.setMessage(errorMsg+":" + sb.toString());
             return rd;
