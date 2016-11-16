@@ -38,7 +38,6 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
     @Override
     @Transactional
     public List<ThemeGroupTheme> selectThemesNotInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
-        Assert.notNull(themeGroupTheme);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
         map.put("themeGroupId",themeGroupTheme.getThemeGroupId());
@@ -58,7 +57,6 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
     @Override
     @Transactional
     public List<ThemeGroupTheme> selectThemesInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
-        Assert.notNull(themeGroupTheme);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
         map.put("themeGroupId",themeGroupTheme.getThemeGroupId());

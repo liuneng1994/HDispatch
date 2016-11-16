@@ -40,8 +40,6 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Override
     @Transactional
     public List<HdispatchAuthority> selectInThemeGroup(IRequest requestContext, HdispatchAuthority hdispatchAuthority, int page, int pageSize) {
-        Assert.notNull(requestContext);
-        Assert.notNull(hdispatchAuthority);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap();
         map.put("themeGroupId",hdispatchAuthority.getThemeGroupId());
@@ -60,8 +58,6 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Override
     @Transactional
     public List<HdispatchAuthority> selectNotInThemeGroup(IRequest requestContext,HdispatchAuthority hdispatchAuthority, int page, int pageSize) {
-        Assert.notNull(requestContext);
-        Assert.notNull(hdispatchAuthority);
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap();
         map.put("themeGroupId",hdispatchAuthority.getThemeGroupId());
@@ -76,9 +72,6 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Override
     @Transactional
     public void save(HdispatchAuthority hdispatchAuthority) {
-        Assert.notNull(hdispatchAuthority);
-        Assert.notNull(hdispatchAuthority.getThemeGroupId());
-        Assert.notNull(hdispatchAuthority.getUserId());
         hdispatchAuthorityMapper.save(hdispatchAuthority);
     }
 
@@ -89,8 +82,6 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Override
     @Transactional
     public void updateAuthority(HdispatchAuthority hdispatchAuthority) {
-        Assert.notNull(hdispatchAuthority);
-        Assert.notNull(hdispatchAuthority.getAuthorityId());
         hdispatchAuthorityMapper.updateAuthority(hdispatchAuthority);
     }
 
@@ -101,8 +92,6 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Override
     @Transactional
     public void deleteUser(HdispatchAuthority hdispatchAuthority) {
-        Assert.notNull(hdispatchAuthority);
-        Assert.notNull(hdispatchAuthority.getAuthorityId());
         hdispatchAuthorityMapper.deleteUser(hdispatchAuthority);
     }
 
@@ -144,8 +133,6 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Override
     @Transactional
     public boolean hasReadPermission(Theme theme, User user) {
-        Assert.notNull(theme);
-        Assert.notNull(user);
         return hasReadPermission(theme.getThemeId(),user.getUserId());
     }
 
@@ -180,8 +167,6 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Override
     @Transactional
     public boolean hasOperatePermission(Theme theme, User user) {
-        Assert.notNull(theme);
-        Assert.notNull(user);
         return hasOperatePermission(theme.getThemeId(),user.getUserId());
     }
 

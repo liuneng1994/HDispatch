@@ -44,7 +44,6 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
     @Override
     @Transactional
     public List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize) {
-        Assert.notNull(themeGroup);
         PageHelper.startPage(page, pageSize);
         List<ThemeGroup> result = themeGroupMapper.selectByThemeGroup(themeGroup);
         return result;
