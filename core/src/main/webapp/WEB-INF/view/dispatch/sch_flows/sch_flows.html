@@ -146,6 +146,10 @@
                         width: 920,
                         height: 450,
                         modal: true,
+                        close:function()
+                        {
+                            $('#flowGrid').data('kendoGrid').dataSource.read();
+                        },
                         title: 'SLA 详情',
                         visible: false,
                         iframe: true,
