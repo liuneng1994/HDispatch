@@ -29,7 +29,7 @@
      and hdispatch_schedule.project_name=hwf.name
      and ('Y'=hasPermission(hwf.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hwf.theme_id,#{request.userId},NULL,'Y'))
      <if test="project_name != null" >
-        and project_name like CONCAT('%',#{project_name,jdbcType=VARCHAR},'%')
+        and hdispatch_schedule.project_name like CONCAT('%',#{project_name,jdbcType=VARCHAR},'%')
       </if>
        <if test="flow_id != null" >
         and hdispatch_schedule.flow_id  like CONCAT('%',#{flow_id,jdbcType=VARCHAR},'%')
