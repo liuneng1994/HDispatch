@@ -56,4 +56,10 @@ public interface SvnParameterService {
      */
     boolean hasReadPermission(IRequest requestContext);
 
+    /**
+     * 根据subjectName、mappingName、parameterName判断是否已经存在,
+     * @param svnParameter
+     * @return
+     */
+    boolean isExistParameter(SvnParameter svnParameter);
 }
