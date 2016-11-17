@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.controllers;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
@@ -70,7 +71,8 @@ public class ScheduleController extends BaseController {
         }
         PageHelper.startPage(page, pagesize);
         List<HdispatchSchedule> list = hdispatchScheduleService.selectAll(i,sch);
-        List<ScheduleFlow> list2 = new ArrayList<>();
+        List<ScheduleFlow> list2 = new Page<>();
+        ((Page)list2).setTotal(((Page)list).getTotal());
         Map<String, Object> map = new HashMap<>();
         for (HdispatchSchedule p : list) {
             map.put("projectId", p.getProject_id());
