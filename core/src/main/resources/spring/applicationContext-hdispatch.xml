@@ -33,7 +33,7 @@
 
     <!--配置SVN服务器-->
     <!--<context:property-placeholder location="classpath:svnFileSys.properties"/>-->
-    <bean id="svnConfig" class="hdispatch.core.dispatch.dto.job.SvnConfig" scope="singleton">
+    <bean id="svnConfig" name="svnConfig" class="hdispatch.core.dispatch.dto.job.SvnConfig" scope="singleton">
         <property name="ip" value="172.20.0.203"/>
         <property name="port" value="22"/>
         <property name="userName" value="hive"/>
