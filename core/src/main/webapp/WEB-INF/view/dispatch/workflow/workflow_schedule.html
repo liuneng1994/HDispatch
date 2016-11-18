@@ -174,6 +174,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             <div id="scheduleTab" kendo-tab-strip ng-hide="vm.scheduleInfo.loading>0">
                 <ul>
                     <li class="k-state-active">任务流计划</li>
+                    <li>任务流预览</li>
                     <li>通知</li>
                     <li>失败选项</li>
                     <li>并发策略</li>
@@ -251,6 +252,25 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                     </div>
                 </div>
                 <div style="padding: 1em">
+                    <div class="form-horizontal col-sm-11">
+                        <div class="form-group">
+                            <div class="control-label col-sm-3">任务流</div>
+                            <div class="col-sm-7 text-left control-label">{{vm.cronScheduleFlow.name}}</div>
+                        </div>
+                        <div class="form-group" ng-show="vm.showScheduleGraph == true">
+                            <div class="scheduleGraphScroll col-sm-10">
+                                <div class="scheduleGraph"></div>
+                            </div>
+                            <div class="col-sm-1">
+                                        <button ng-click="vm.enableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%">启用全部</button><br/>
+                                        <button ng-click="vm.disableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%">禁用全部</button><br/>
+                                        <button ng-click="vm.enable(vm.schedulePaint)" class="btn btn-default" style="width: 100%">启用</button><br/>
+                                        <button ng-click="vm.disable(vm.schedulePaint)" class="btn btn-default" style="width: 100%">禁用</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 1em">
                     <form name="notification" class="form-horizontal col-sm-11">
                         <div class="form-group">
                             <div class="control-label col-sm-3">通知时间</div>
@@ -278,7 +298,6 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                             <div class="control-label col-sm-3">成功通知邮件</div>
                             <div class="col-sm-7">
                             <textarea class="k-textbox" style="width:100%;" ng-model="vm.scheduleInfo.successEmails">
-
                             </textarea>
                                 <span class="help-block">
                                 成功时通知的邮件地址,以逗号(英文)分隔
@@ -289,7 +308,6 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                             <div class="control-label col-sm-3">失败通知邮件</div>
                             <div class="col-sm-7">
                             <textarea class="k-textbox" style="width:100%;" ng-model="vm.scheduleInfo.failureEmails">
-
                             </textarea>
                                 <span class="help-block">
                                 成功时通知的邮件地址,以逗号(英文)分隔
@@ -322,10 +340,10 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                         <div class="form-group">
                             <div class="control-label col-sm-3">跳过</div>
                             <div class="col-sm-7">
-                                <input id="skip" name="concurrentOption"
+                                <input id="scheduleskip" name="concurrentOption"
                                        type="radio" value="skip"
                                        class="k-radio" ng-model="vm.scheduleInfo.concurrentOption">
-                                <label for="skip" class="k-radio-label"></label>
+                                <label for="scheduleskip" class="k-radio-label"></label>
                                 <span class="help-block">跳过执行当前流</span>
                             </div>
 
@@ -333,10 +351,10 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                         <div class="form-group">
                             <div class="control-label col-sm-3">并发</div>
                             <div class="col-sm-7">
-                                <input id="concurrent" name="concurrentOption"
+                                <input id="scheduleconcurrent" name="concurrentOption"
                                        type="radio" value="ignore"
                                        class="k-radio" ng-model="vm.scheduleInfo.concurrentOption">
-                                <label for="concurrent" class="k-radio-label"></label>
+                                <label for="scheduleconcurrent" class="k-radio-label"></label>
                                 <span class="help-block">并发执行当前流</span>
                             </div>
                         </div>
@@ -412,7 +430,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
     <div kendo-window="vm.executeWindow"
          k-title="'执行任务流'"
          k-modal="true"
-         k-width="600"
+         k-width="800"
          k-actions="['Maximize', 'Close']"
          k-on-open="vm.executeWindow.visible=true"
          k-on-close="vm.executeWindow.visible=false"
@@ -432,13 +450,14 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                         <div class="col-sm-7 text-left control-label">{{vm.executeInfo.name}}</div>
                     </div>
                     <div class="form-group" ng-show="vm.showExecuteGraph == true">
-                        <div class="control-label col-sm-3">预览</div>
-                        <div id="graphScroll" class="col-sm-7">
+                        <div id="graphScroll" class="col-sm-9">
                             <div id="graph"></div>
-                            <ul id="cellMenu" style="width: 100px;">
-                                <li id="enable">启用</li>
-                                <li id="disable">禁用</li>
-                            </ul>
+                        </div>
+                        <div class="col-sm-1">
+                            <button ng-click="vm.enableAll(vm.paint)" class="btn btn-default" style="width: 100%">启用全部</button><br/>
+                            <button ng-click="vm.disableAll(vm.paint)" class="btn btn-default" style="width: 100%">禁用全部</button><br/>
+                            <button ng-click="vm.enable(vm.paint)" class="btn btn-default" style="width: 100%">启用</button><br/>
+                            <button ng-click="vm.disable(vm.paint)" class="btn btn-default" style="width: 100%">禁用</button>
                         </div>
                     </div>
                 </div>

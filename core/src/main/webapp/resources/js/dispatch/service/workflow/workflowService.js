@@ -203,6 +203,19 @@
             });
         };
 
+        function queryScheduleInfo(name) {
+            var params = {
+                project_name : name,
+                page:1,
+                pagesize:1
+            };
+            return httpService.get(_basePath + "/schedule/queryschedule",params,function(data, defered){
+                if (data.success) {
+                    defered.resolve(data.rows[0].cronExpression);
+                }
+            });
+        }
+
         return {
             themes: themes,
             layers: layers,
@@ -223,7 +236,8 @@
             queryWorkflowMutex: queryWorkflowMutex,
             createWorkflowMutex: createWorkflowMutex,
             deleteWorkflowMutex: deleteWorkflowMutex,
-            operateThemes: operateThemes
+            operateThemes: operateThemes,
+            queryScheduleInfo:queryScheduleInfo
         };
     }
 })();

@@ -11,17 +11,12 @@ import hdispatch.core.dispatch.utils.ConfigUtil;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -96,12 +91,19 @@ public class SvnParameterServiceImpl implements SvnParameterService {
             if (svnParameter.get__status() != null) {
                 switch (svnParameter.get__status()) {
                     case DTOStatus.ADD:
-                        svnParameter.setCreationDate(new Date());
-                        svnParameter.setLastUpdateDate(new Date());
-                        svnParameter.setEnableFlag("Y");
-                        svnParameter.setStartDateActive(new Date());
-                        svnParameterMapper.create(svnParameter);
-                        svnParameter.set__status("");
+                        if(isExistParameter(svnParameter)){
+                            svnParameter.setLastUpdateDate(new Date());
+                            svnParameterMapper.updateById(svnParameter);
+                            svnParameter.set__status("");
+                        }
+                        else {
+                            svnParameter.setCreationDate(new Date());
+                            svnParameter.setLastUpdateDate(new Date());
+                            svnParameter.setEnableFlag("Y");
+                            svnParameter.setStartDateActive(new Date());
+                            svnParameterMapper.create(svnParameter);
+                            svnParameter.set__status("");
+                        }
                         break;
                     case DTOStatus.UPDATE:
                         svnParameter.setLastUpdateDate(new Date());
@@ -295,7 +297,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
 //        }
 //        return batchUpdate(null,svnParameters);
         List<SvnParameter> list = excelFileToList(files[0]);
-        preAddHandle(list);
+//        preAddHandle(list);
         return batchUpdate(null,list);
     }
 
@@ -362,5 +364,22 @@ public class SvnParameterServiceImpl implements SvnParameterService {
             return false;
         }
         return true;
+    }
+
+
+    /**
+     * 根据subjectName、mappingName、parameterName判断是否已经存在,
+     * @param svnParameter
+     * @return
+     */
+    @Override
+    public boolean isExistParameter(SvnParameter svnParameter) {
+        SvnParameter temp = new SvnParameter();
+        temp.setSubjectName(svnParameter.getSubjectName()).
+                setMappingName(svnParameter.getMappingName()).
+                setParameterName(svnParameter.getParameterName());
+        List<SvnParameter> returnList = svnParameterMapper.selectForCheck_2(temp);
+
+        return null != returnList && 0 < returnList.size();
     }
 }
