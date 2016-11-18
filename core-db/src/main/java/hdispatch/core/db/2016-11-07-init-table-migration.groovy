@@ -2,7 +2,7 @@ package hdispatch.core.db
 
 
 import com.hand.hap.liquibase.MigrationHelper
-
+import com.hand.hap.db.excel.ExcelDataLoader
 def mhi = MigrationHelper.getInstance()
 
 databaseChangeLog(logicalFilePath:"2016-11-07-init-table-migration.groovy"){

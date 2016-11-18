@@ -17,7 +17,7 @@ import java.util.Map;
 import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:spring/test-appcontext.xml")
+@ContextConfiguration(locations = "classpath:spring/hdispatch-appcontext.xml")
 public class WorkflowServiceImplTest extends AbstractTransactionalJUnit4SpringContextTests {
     @Resource(name = "workflowService")
     private WorkflowService workflowService;
