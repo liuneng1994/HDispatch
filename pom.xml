@@ -19,7 +19,21 @@
         <gmaven.version>1.5</gmaven.version>
         <skipTests>true</skipTests>
     </properties>
+    <!--<distributionManagement>-->
+        <!--<repository>-->
+            <!--<id>releases</id>-->
+            <!--<url>http://nexus.saas.hand-china.com/content/repositories/rdc</url>-->
+        <!--</repository>-->
+
+        <!--<snapshotRepository>-->
+            <!--<id>snapshots</id>-->
+            <!--<name>Internal Snapshots</name>-->
+            <!--<url>http://nexus.saas.hand-china.com/content/repositories/rdcsnapshot</url>-->
+        <!--</snapshotRepository>-->
+    <!--</distributionManagement>-->
     <distributionManagement>
+        <!-- Altered by Allen.Liu on 2016/11/18 for Hmtc Repositories -->
+        <!--
         <repository>
             <id>releases</id>
             <url>http://nexus.saas.hand-china.com/content/repositories/rdc</url>
@@ -30,6 +44,19 @@
             <name>Internal Snapshots</name>
             <url>http://nexus.saas.hand-china.com/content/repositories/rdcsnapshot</url>
         </snapshotRepository>
+        -->
+        <repository>
+            <id>hmtc-releases</id>
+            <name>Hmtc Releases</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/hmtc-releases</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>hmtc-snapshots</id>
+            <name>Hmtc Snapshots</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/hmtc-snapshots</url>
+        </snapshotRepository>
+        <!-- The End -->
     </distributionManagement>
     <repositories>
         <repository>
@@ -47,6 +74,21 @@
             <name>RDC thirdparty Repository</name>
             <url>http://nexus.saas.hand-china.com/content/repositories/thirdparty</url>
         </repository>
+
+
+        <!--中台标准组件开发仓库-->
+        <!-- Added by Allen.Liu on 2016/11/18 for Hmtc Repositories -->
+        <repository>
+            <id>hmtc-releases</id>
+            <name>Hmtc Releases</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/hmtc-releases</url>
+        </repository>
+        <repository>
+            <id>hmtc-snapshots</id>
+            <name>Hmtc Snapshots</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/hmtc-snapshots</url>
+        </repository>
+        <!-- The End -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
