@@ -150,7 +150,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "fetchExecJobLogs").queryString(map)
 					.asJson();
-
+			System.out.println(response.getBody().getObject());
 		} catch (UnirestException e) {
 			logger.error("无法找到log！");
 			throw new IllegalArgumentException("无法找到log！", e);
@@ -173,8 +173,12 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("当前流已经运行完，无法重跑！");
 			throw new IllegalArgumentException("当前流已经运行完，无法重跑！", e);
 		}
+		if(response.getBody().getObject().has("error"))
 		obj.setMessage((String)response.getBody().getObject().get("error"));
-		System.out.println(response.getBody().getObject());
+		else
+		{
+			obj.setMessage("重跑成功，重跑3次后任务将失败！");
+		}
 		return obj;
 	}
 
@@ -190,7 +194,8 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		list=new ArrayList<>();
 		parentId=0;
 		version=0;
-		return parseJSON(response.getBody().getObject(),parentId);
+		list=parseJSON(response.getBody().getObject(),parentId);
+		return list;
 	}
 
 	public static List<ExecutionJobs> parseJSON(JSONObject obj,Integer parentId)

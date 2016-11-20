@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.controllers;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.controllers.BaseController;
@@ -70,7 +71,8 @@ public class ScheduleController extends BaseController {
         }
         PageHelper.startPage(page, pagesize);
         List<HdispatchSchedule> list = hdispatchScheduleService.selectAll(i,sch);
-        List<ScheduleFlow> list2 = new ArrayList<>();
+        List<ScheduleFlow> list2 = new Page<>();
+        ((Page)list2).setTotal(((Page)list).getTotal());
         Map<String, Object> map = new HashMap<>();
         for (HdispatchSchedule p : list) {
             map.put("projectId", p.getProject_id());
@@ -241,7 +243,38 @@ public class ScheduleController extends BaseController {
                               @RequestParam("flowId") String flowId,
                               @RequestParam("cronExpression") String cronExpression
     ) throws ParseException {
-        ResponseData obj=scheduleFlowService.scheduleCronFlow(projectName, flowId, cronExpression);
+        Map<String, Object> m = new HashMap<>();
+        String disabled=request.getParameter("disabled");
+        String successEmails=request.getParameter("successEmails");
+        String failureEmails=request.getParameter("failureEmails");
+        String successEmailsOverride=request.getParameter("successEmailsOverride");
+        String failureEmailsOverride =request.getParameter("failureEmailsOverride");
+        String notifyFailureFirst =request.getParameter("notifyFailureFirst");
+        String notifyFailureLast =request.getParameter("notifyFailureLast");
+        String failureAction=request.getParameter("failureAction");
+        String concurrentOption =request.getParameter("concurrentOption");
+        m.put("projectName",projectName);
+        m.put("flow",flowId);
+        m.put("cronExpression",cronExpression);
+        if(successEmails!=null)
+            m.put("successEmails", successEmails);
+        if(failureEmails!=null)
+            m.put("failureEmails",failureEmails);
+        if(successEmailsOverride!=null)
+            m.put("successEmailsOverride", successEmailsOverride);
+        if(failureEmailsOverride!=null)
+            m.put("failureEmailsOverride", failureEmailsOverride);
+        if(notifyFailureFirst!=null)
+            m.put("notifyFailureFirst", notifyFailureFirst);
+        if(notifyFailureLast!=null)
+            m.put("notifyFailureLast", notifyFailureLast);
+        if(failureAction!=null)
+            m.put("failureAction", failureAction);
+        if(concurrentOption!=null)
+            m.put("concurrentOption", concurrentOption);
+        if(disabled!=null)
+            m.put("disabled", disabled);
+        ResponseData obj=scheduleFlowService.scheduleCronFlow(m);
     	Long projectId=exeFlowService.Fetchflows(projectName);
         HdispatchSchedule hds=new HdispatchSchedule();
         Map<String, Object> map = new HashMap<>();

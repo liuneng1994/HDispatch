@@ -3,15 +3,13 @@ package hdispatch.core.dispatch.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import hdispatch.core.dispatch.azkaban.service.ProjectService;
+import hdispatch.core.dispatch.azkaban.service.ScheduleFlowService;
+import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.dto.job.Job;
-import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
-import hdispatch.core.dispatch.dto.workflow.Workflow;
-import hdispatch.core.dispatch.dto.workflow.WorkflowJob;
+import hdispatch.core.dispatch.dto.workflow.*;
 import hdispatch.core.dispatch.exception.CircularReferenceException;
-import hdispatch.core.dispatch.mapper.JobMapper;
-import hdispatch.core.dispatch.mapper.WorkflowJobMapper;
-import hdispatch.core.dispatch.mapper.WorkflowMapper;
-import hdispatch.core.dispatch.mapper.WorkflowPropertyMapper;
+import hdispatch.core.dispatch.mapper.*;
+import hdispatch.core.dispatch.service.HdispatchScheduleService;
 import hdispatch.core.dispatch.service.WorkflowService;
 import hdispatch.core.dispatch.utils.WorkflowUtils;
 import hdispatch.core.dispatch.utils.ZipUtils;
@@ -27,9 +25,11 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static hdispatch.core.dispatch.utils.Constants.RET_ERROR;
 import static hdispatch.core.dispatch.utils.Constants.RET_SUCCESS;
+import static org.drools.runtime.rule.Variable.v;
 
 /**
  * Created by 刘能 on 2016/9/12.
@@ -53,6 +53,12 @@ public class WorkflowServiceImpl implements WorkflowService {
     private JobMapper jobMapper;
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private WorkflowMutexMapper workflowMutexMapper;
+    @Autowired
+    private WorkflowDependencyMapper workflowDependencyMapper;
+    @Autowired
+    private HdispatchScheduleService hdispatchScheduleService;
 
     /**
      * 创建一个新的工作流，工作流中包含属性和Job.工作流的名称是唯一的。
@@ -136,7 +142,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             projectService.createProject(workflow.getName(), workflow.getDescription());
             result = projectService.uploadProjectFile(workflow.getName(), projectFile);
             if (!result.containsKey("error")) {
-                workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), "_"+workflow.getName());
+                workflowMapper.updateProjectNameAndFlowIdById(workflowId, workflow.getName(), "_" + workflow.getName());
             }
         }
         return result.get("error");
@@ -196,23 +202,57 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Override
     @Transactional
-    public List<SimpleWorkflow> queryWorkflow(IRequest request,Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
+    public List<SimpleWorkflow> queryWorkflow(IRequest request, Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         return workflowMapper.query(themeId, layerId, workflowName, decription);
     }
 
     @Override
     @Transactional
-    public List<SimpleWorkflow> queryOperateWorkflow(IRequest request,Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
+    public List<SimpleWorkflow> queryOperateWorkflow(IRequest request, Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         return workflowMapper.queryOperate(themeId, layerId, workflowName, decription);
     }
 
 
     @Override
-    public void deleteWorkflow(List<Integer> ids) {
-        Assert.notNull(ids,"Workflow ids can not be null");
-        workflowMapper.deleteByIds(ids);
+    @Transactional
+    public String deleteWorkflow(List<Long> ids) {
+        Assert.notNull(ids, "Workflow ids can not be null");
+        String result = null;
+        Workflow workflow = workflowMapper.getById(ids.get(0));
+        List<WorkflowDependency> dependencies1 = workflowDependencyMapper.queryDependencyed(workflow.getProjectName());
+        List<String> dependencies1ToName = dependencies1.parallelStream().map(WorkflowDependency::getWorkflowName).collect(Collectors.toList());
+        List<WorkflowDependency> dependencies2 = workflowDependencyMapper.queryDependency(workflow.getProjectName());
+        List<String> dependencies2ToName = dependencies2.parallelStream().map(WorkflowDependency::getDeptWorkflowName).collect(Collectors.toList());
+        List<WorkflowMutex> mutexList = workflowMutexMapper.queryMutex(workflow.getProjectName());
+        List<String> mutexName = mutexList.parallelStream().map(WorkflowMutex::getMutexProjectName).collect(Collectors.toList());
+        if (dependencies1ToName.isEmpty() && dependencies2ToName.isEmpty() && mutexName.isEmpty()) {
+//            if (workflow.getProjectName() != null) {
+//                result = projectService.deleteProject(workflow.getProjectName());
+//            }
+            if (workflow.getProjectName() != null) {
+                HdispatchSchedule schedule = new HdispatchSchedule();
+                schedule.setProject_name(workflow.getProjectName());
+                int count = hdispatchScheduleService.selectByFlowAndProject(schedule);
+                result = count > 0 ? "任务流存在计划,请移除" : null;
+            }
+            if (result == null)
+                workflowMapper.deleteByIds(ids);
+        } else {
+            result = "";
+            if (!dependencies1ToName.isEmpty()) {
+                result += "被" + String.join(" ", dependencies1ToName) + "依赖.<br/>";
+            }
+            if (!dependencies2ToName.isEmpty()) {
+                result += "存在依赖" + String.join("", dependencies2ToName) + ".<br/>";
+            }
+            if (!mutexName.isEmpty()) {
+                result += "存在互斥" + String.join("", mutexName) + ".<br/>";
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -253,7 +293,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     private void generateEmbededFlowFile(File parentFile, List<String> parentWorkflow, WorkflowJob job, Collection<Job> jobStore) {
         Workflow workflow = workflowMapper.getById(job.getJobSource());
-        WorkflowUtils.createFlowFile(parentFile, parentWorkflow, job.getWorkflowJobId() +"."+workflow.getName(), job, jobStore);
+        WorkflowUtils.createFlowFile(parentFile, parentWorkflow, job.getWorkflowJobId() + "." + workflow.getName(), job, jobStore);
         List<String> parentWorkflowCloning = new ArrayList<>();
         parentWorkflowCloning.addAll(parentWorkflow);
         parentWorkflowCloning.add(job.getWorkflowJobId());

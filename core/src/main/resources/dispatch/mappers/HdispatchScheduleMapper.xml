@@ -29,7 +29,7 @@
      and hdispatch_schedule.project_name=hwf.name
      and ('Y'=hasPermission(hwf.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hwf.theme_id,#{request.userId},NULL,'Y'))
      <if test="project_name != null" >
-        and project_name like CONCAT('%',#{project_name,jdbcType=VARCHAR},'%')
+        and hdispatch_schedule.project_name like CONCAT('%',#{project_name,jdbcType=VARCHAR},'%')
       </if>
        <if test="flow_id != null" >
         and hdispatch_schedule.flow_id  like CONCAT('%',#{flow_id,jdbcType=VARCHAR},'%')
@@ -38,14 +38,11 @@
         and hdispatch_schedule.submit_date > #{submit_date,jdbcType=VARCHAR}
       </if>
   </select>
-   <select id="selectByFlowAndProject" resultMap="BaseResultMap" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
-    select 
-    <include refid="Base_Column_List" />
+   <select id="selectByFlowAndProject"  resultMap="BaseResultMap" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
+    select
+       <include refid="Base_Column_List" />
     from hdispatch_schedule
     where  project_name = #{project_name,jdbcType=VARCHAR}
-    and flow_id = #{flow_id,jdbcType=VARCHAR}
-    and project_id=#{project_id,jdbcType=INTEGER}
-    
   </select>
   <delete id="deleteByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
     delete from hdispatch_schedule

@@ -140,7 +140,10 @@
         var deleteWorkflow = function (ids) {
             "use strict";
             return httpService.postJSON(_basePath + '/dispatcher/workflow/delete', ids, function (data, defered) {
-                defered.resolve("");
+                if (data.success)
+                    defered.resolve("");
+                else
+                    defered.reject(data.message);
             });
         };
 
@@ -200,6 +203,19 @@
             });
         };
 
+        function queryScheduleInfo(name) {
+            var params = {
+                project_name : name,
+                page:1,
+                pagesize:1
+            };
+            return httpService.get(_basePath + "/schedule/queryschedule",params,function(data, defered){
+                if (data.success) {
+                    defered.resolve(data.rows[0].cronExpression);
+                }
+            });
+        }
+
         return {
             themes: themes,
             layers: layers,
@@ -220,7 +236,8 @@
             queryWorkflowMutex: queryWorkflowMutex,
             createWorkflowMutex: createWorkflowMutex,
             deleteWorkflowMutex: deleteWorkflowMutex,
-            operateThemes: operateThemes
+            operateThemes: operateThemes,
+            queryScheduleInfo:queryScheduleInfo
         };
     }
 })();

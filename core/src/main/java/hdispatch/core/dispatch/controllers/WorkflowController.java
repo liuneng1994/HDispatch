@@ -202,8 +202,15 @@ public class WorkflowController extends BaseController {
     }
 
     @RequestMapping(path = "/delete", method = RequestMethod.POST)
-    public ResponseData updateWorkflow(@RequestBody List<Integer> ids) {
-        workflowService.deleteWorkflow(ids);
-        return new ResponseData(true);
+    public ResponseData updateWorkflow(@RequestBody List<Long> ids) {
+        ResponseData responseData;
+        String result = workflowService.deleteWorkflow(ids);
+        if (result == null) {
+            responseData = new ResponseData(true);
+        } else {
+            responseData = new ResponseData(false);
+            responseData.setMessage(result);
+        }
+        return responseData;
     }
 }

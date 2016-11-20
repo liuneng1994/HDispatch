@@ -12,4 +12,5 @@ public interface WorkflowMutexMapper {
     List<WorkflowMutex> queryMutex(String projectName);
     int batchInsert(List<AzkabanFlowMutex> dependencies);
     int delete(AzkabanFlowMutex dependency);
+    List<WorkflowMutex> queryMutexed(String projectName);
 }

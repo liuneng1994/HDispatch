@@ -16,7 +16,7 @@ public interface WorkflowMapper {
 
     int update(Workflow workflow);
 
-    int deleteByIds(List<Integer> ids);
+    int deleteByIds(List<Long> ids);
 
     Workflow getById(Long workflowId);
 
