@@ -129,6 +129,8 @@
       <artifactId>hap</artifactId>
       <type>war</type>
       <version>${hap.version}</version>
+        <!--测试add-->
+        <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.hand</groupId>
@@ -141,6 +143,8 @@
       <groupId>com.hand</groupId>
       <artifactId>hap-db</artifactId>
       <version>${hap.version}</version>
+        <!--测试add-->
+        <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
@@ -255,14 +259,30 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.6</version>
         <configuration>
-          <attachClasses>true</attachClasses>
-          <overlays>
-            <overlay>
-              <groupId>com.hand</groupId>
-              <artifactId>hap</artifactId>
-            </overlay>
-          </overlays>
+            <failOnMissingWebXml>false</failOnMissingWebXml>
+            <attachClasses>true</attachClasses>
+            <!--<packagingExcludes>-->
+                <!--WEB-INF/lib/*.*-->
+            <!--</packagingExcludes>-->
+            <!--<overlays>-->
+                <!--<overlay>-->
+                    <!--<groupId>com.hand</groupId>-->
+                    <!--<artifactId>hap</artifactId>-->
+                    <!--<excludes>-->
+                        <!--<exclude>**/*.*</exclude>-->
+                    <!--</excludes>-->
+                <!--</overlay>-->
+            <!--</overlays>-->
         </configuration>
+          <!--<configuration>-->
+              <!--<attachClasses>true</attachClasses>-->
+              <!--<overlays>-->
+                  <!--<overlay>-->
+                      <!--<groupId>com.hand</groupId>-->
+                      <!--<artifactId>hap</artifactId>-->
+                  <!--</overlay>-->
+              <!--</overlays>-->
+          <!--</configuration>-->
       </plugin>
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
