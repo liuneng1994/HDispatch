@@ -36,7 +36,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroupTheme> selectThemesNotInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
@@ -55,7 +55,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroupTheme> selectThemesInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
@@ -72,7 +72,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroupTheme> batchUpdate(IRequest requestContext, List<ThemeGroupTheme> filterList) {
         for (ThemeGroupTheme themeGroupTheme : filterList) {
             if (themeGroupTheme.get__status() != null) {

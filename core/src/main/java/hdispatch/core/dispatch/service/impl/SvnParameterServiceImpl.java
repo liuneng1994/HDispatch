@@ -44,7 +44,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<SvnParameter> selectBySvnParameter(IRequest requestContext, SvnParameter svnParameter, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         List<SvnParameter> list;
@@ -63,7 +63,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean[] checkIsExist(List<SvnParameter> svnParameterList) {
         boolean[] isExist = new boolean[svnParameterList.size()];
         int i = 0;
@@ -85,7 +85,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<SvnParameter> batchUpdate(IRequest requestContext,@StdWho List<SvnParameter> svnParameterList) {
         for (SvnParameter svnParameter : svnParameterList) {
             if (svnParameter.get__status() != null) {
@@ -288,7 +288,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<SvnParameter> batchCreateFromExcel(CommonsMultipartFile[] files) throws Exception{
 //        ArrayList<SvnParameter> svnParameters = new ArrayList<>();
 //        for(CommonsMultipartFile file : files){
@@ -308,7 +308,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public void preAddHandle(List<SvnParameter> svnParameterList) {
         for(SvnParameter parameter : svnParameterList){
             SvnParameter temp = new SvnParameter();
@@ -332,7 +332,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean hasOperatePermission(IRequest requestContext) {
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
@@ -352,7 +352,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean hasReadPermission(IRequest requestContext) {
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
