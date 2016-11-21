@@ -2,34 +2,59 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+<!-- middleware datasource  -->
+    <!-- jndi dataSource-->
+    <bean id="hdispathDataSource" class="com.hand.hap.core.JndiObjectFactoryBean">
+        <property name="jndiName" value="${db.hdispatchJndiName}"/>
+    </bean>
+
+    <!-- mapper definition -->
+    <bean id="mapperScannerConfigurer" class="com.hand.hap.mybatis.spring.MapperScannerConfigurer">
+        <property name="basePackage" value="*.**.mapper"/>
+        <property name="processPropertyPlaceHolders" value="true"/>
+        <property name="propertiesMap">
+            <map>
+                <entry key="mappers" value="com.hand.hap.mybatis.common.Mapper"/>
+                <entry key="IDENTITY" value="${mybatis.identity}"/>
+                <entry key="seqFormat" value="{3}_s.nextVal"/>
+            </map>
+        </property>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="hdispatchTM"/>
+
+    <!-- config mysql statements -->
+    <bean id="hdispatchTM" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="hdispathDataSource"/>
+    </bean>
 
 
-
-                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
-    <!--  <context:property-placeholder location="classpath:azkabanConfig.properties"></context:property-placeholder>
-
-      <bean id="azkabanDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" value="${azkaban.db.driverClass}"></property>
-        <property name="jdbcUrl" value="${azkaban.db.jdbcUrl}"></property>
-        <property name="user" value="${azkaban.db.username}"></property>
-        <property name="password" value="${azkaban.db.password}"></property>
-      </bean>
-      <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="hdispatch.azkaban.mappers"></property>
-        <property name="sqlSessionTemplateBeanName" value="azkabanSqlSession"></property>
-      </bean>
-
-      <bean id="azkabanSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="azkabanDataSource"/>
-        <property name="mapperLocations" value="classpath*:hdispatch/azkaban/mappers/*Mapper.xml"/>
-      </bean>
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="hdispathDataSource"/>
+        <property name="mapperLocations" value="classpath*:/**/*Mapper_hdispatch.xml"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.hand.hap.core.interceptor.RequestContextInterceptor"/>
+                <bean class="com.hand.hap.core.interceptor.MultiLanguageInterceptor"/>
+                <bean class="com.hand.hap.core.interceptor.SecurityTokenInterceptor"/>
+                <bean class="com.hand.hap.core.interceptor.OvnInterceptor"/>
+                <bean class="com.github.pagehelper.PageHelper"/>
+            </array>
+        </property>
+        <property name="configLocation" value="classpath:mybatis-configuration.xml"/>
+    </bean>
 
 
-      <bean id="azkabanSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" name="sqlSessionFactory" ref="sqlSessionFactory"/>
-      </bean>-->
+    </bean>
 
     <!--配置SVN服务器-->
     <!--<context:property-placeholder location="classpath:svnFileSys.properties"/>-->
