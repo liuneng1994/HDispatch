@@ -1,0 +1,22 @@
+description = ''
+dependencies {
+    compile group: 'org.liquibase', name: 'liquibase-groovy-dsl', version: '1.2.1'
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.1'
+    compile group: 'org.codehaus.groovy', name: 'groovy-xml', version: '2.4.1'
+    compile group: 'org.apache.poi', name: 'poi', version: '3.14'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.14'
+}
+
+task makeJar(type: Jar) {
+    dependsOn 'compileJava'
+    baseName project.name
+    from("src/main/java")
+}
+publishing {
+    publications {
+        coreDb(MavenPublication) {
+            artifactId 'core-db'
+            artifact makeJar
+        }
+    }
+}

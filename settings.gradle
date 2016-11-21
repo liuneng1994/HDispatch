@@ -1,0 +1,6 @@
+rootProject.name = 'HDispatch'
+include ':core'
+include ':core-db'
+
+project(':core').projectDir = "$rootDir/core" as File
+project(':core-db').projectDir = "$rootDir/core-db" as File
