@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class HdispatchScheduleServiceImpl implements HdispatchScheduleService {
 @Autowired
 HdispatchScheduleMapper mapper;

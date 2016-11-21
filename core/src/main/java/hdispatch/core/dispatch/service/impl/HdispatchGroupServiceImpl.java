@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class HdispatchGroupServiceImpl implements HdispatchGroupService {
     @Autowired
     private HdispatchGroupMapper mapper;

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class DepFlowsServiceImpl implements DepFlowsService {
 @Autowired
 DepFlowsMapper mapper;

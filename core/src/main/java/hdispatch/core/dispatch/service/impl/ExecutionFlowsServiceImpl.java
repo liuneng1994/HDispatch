@@ -12,7 +12,7 @@ import com.hand.hap.core.IRequest;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ExecutionFlowsServiceImpl implements ExecutionFlowsService {
 @Autowired
 ExecutionFlowsMapper mapper;

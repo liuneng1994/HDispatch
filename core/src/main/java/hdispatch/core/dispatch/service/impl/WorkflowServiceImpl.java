@@ -67,7 +67,7 @@ public class WorkflowServiceImpl implements WorkflowService {
      * @return 结果信息
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public Map<String, Object> createWorkflow(Workflow workflow) {
         logger.info("Creates workflow {}", workflow.toString());
         Assert.notNull(workflow, "Workflow can not be null");
@@ -101,7 +101,7 @@ public class WorkflowServiceImpl implements WorkflowService {
      * @return 结果信息
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public Map<String, Object> updateWorkFlow(Workflow workflow) {
         logger.info("update workflow " + workflow);
         Assert.notNull(workflow, "Workflow can not be null");
@@ -124,7 +124,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public String generateWorkflow(long workflowId) {
         Workflow workflow = workflowMapper.getById(workflowId);
         if (workflow == null || workflow.getJobs() == null) return "";
@@ -173,19 +173,19 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public Workflow getWorkflowById(long workflowId) {
         return workflowMapper.getById(workflowId);
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public Workflow getWorkflowByName(String name) {
         return workflowMapper.getByName(name);
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean saveGraph(long workflowId, String graph) {
         if (StringUtils.isEmpty(graph)) {
             return false;
@@ -195,20 +195,20 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public String getGraph(long workflowId) {
         return workflowMapper.getGraph(workflowId);
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<SimpleWorkflow> queryWorkflow(IRequest request, Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         return workflowMapper.query(themeId, layerId, workflowName, decription);
     }
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<SimpleWorkflow> queryOperateWorkflow(IRequest request, Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         return workflowMapper.queryOperate(themeId, layerId, workflowName, decription);
@@ -216,7 +216,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
 
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public String deleteWorkflow(List<Long> ids) {
         Assert.notNull(ids, "Workflow ids can not be null");
         String result = null;

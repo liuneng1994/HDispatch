@@ -9,7 +9,7 @@ import hdispatch.core.dispatch.dto.ProjectFlows;
 import hdispatch.core.dispatch.mapper.ProjectFlowsMapper;
 import hdispatch.core.dispatch.service.ProjectFlowsService;
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ProjectFlowsServiceImpl implements ProjectFlowsService {
 @Autowired
 ProjectFlowsMapper mapper;

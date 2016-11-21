@@ -43,7 +43,7 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/spring/applicationContext.xml","classpath:/spring/applicationContext-*.xml","classpath:/spring/appServlet/servlet-context.xml"})
-@Transactional
+@Transactional("hdispatchTM")
 @Rollback
 public class ThemeControllerTest {
     @InjectMocks
