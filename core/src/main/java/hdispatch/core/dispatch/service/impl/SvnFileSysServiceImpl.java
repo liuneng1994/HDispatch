@@ -49,7 +49,7 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
      * @throws Exception
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<TreeNode> fetchSubNodes(TreeNode treeNode) throws Exception {
         List<TreeNode> list = new ArrayList<TreeNode>();
         ChannelSftp sftp = null;

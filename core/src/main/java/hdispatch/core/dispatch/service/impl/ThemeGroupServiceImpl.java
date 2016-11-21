@@ -42,7 +42,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         List<ThemeGroup> result = themeGroupMapper.selectByThemeGroup(themeGroup);
@@ -56,7 +56,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {
@@ -86,7 +86,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @param cannotRemoveList 不可以删除的列表
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroup> batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {

@@ -35,7 +35,7 @@ public class JobServiceImpl implements JobService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Job> selectByJob(IRequest requestContext, Job job, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         List<Job> list;
@@ -54,7 +54,7 @@ public class JobServiceImpl implements JobService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean[] checkIsExist(List<Job> jobList) {
         boolean[] isExist = new boolean[jobList.size()];
         int i = 0;
@@ -76,7 +76,7 @@ public class JobServiceImpl implements JobService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Job> batchUpdate(IRequest requestContext, List<Job> jobList) {
         for (Job job : jobList) {
             if (job.get__status() != null) {
