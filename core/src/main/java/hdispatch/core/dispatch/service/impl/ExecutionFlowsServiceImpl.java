@@ -1,7 +1,7 @@
 package hdispatch.core.dispatch.service.impl;
 
 import hdispatch.core.dispatch.dto.ExecutionFlows;
-import hdispatch.core.dispatch.mapper.ExecutionFlowsMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ExecutionFlowsMapper;
 import hdispatch.core.dispatch.service.ExecutionFlowsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import com.hand.hap.core.IRequest;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ExecutionFlowsServiceImpl implements ExecutionFlowsService {
 @Autowired
 ExecutionFlowsMapper mapper;

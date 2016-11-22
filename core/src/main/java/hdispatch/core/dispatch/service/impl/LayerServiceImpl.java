@@ -6,20 +6,17 @@ import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.layer.Layer;
 import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
-import hdispatch.core.dispatch.mapper.JobMapper;
-import hdispatch.core.dispatch.mapper.LayerMapper;
-import hdispatch.core.dispatch.mapper.WorkflowMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.JobMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.LayerMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.WorkflowMapper;
 import hdispatch.core.dispatch.service.LayerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 层次service接口实现类<br>

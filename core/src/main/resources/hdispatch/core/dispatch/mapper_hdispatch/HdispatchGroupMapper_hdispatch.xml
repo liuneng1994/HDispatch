@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.HdispatchGroupMapper" >
+  <resultMap id="BaseResultMap" type="hdispatch.core.dispatch.dto.HdispatchGroup" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="group_name" property="group_name" jdbcType="VARCHAR" />
+    <result column="layer_id" property="layer_id" jdbcType="BIGINT" />
+    <result column="schedule_expression" property="schedule_expression" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flow_id" jdbcType="VARCHAR" />
+    <result column="active" property="active" jdbcType="TINYINT" />
+    <result column="create_at" property="create_at" jdbcType="TIMESTAMP" />
+    <result column="update_at" property="update_at" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, group_name, layer_id, schedule_expression, flow_id, active, create_at, update_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from hdispatch_group
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectWithAll" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from hdispatch_group
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from hdispatch_group
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="hdispatch.core.dispatch.dto.HdispatchGroup" >
+    insert into hdispatch_group (id, group_name, layer_id, 
+      schedule_expression, flow_id, active, 
+      create_at, update_at)
+    values (#{id,jdbcType=BIGINT}, #{group_name,jdbcType=VARCHAR}, #{layer_id,jdbcType=BIGINT}, 
+      #{schedule_expression,jdbcType=VARCHAR}, #{flow_id,jdbcType=VARCHAR}, #{active,jdbcType=TINYINT}, 
+      #{create_at,jdbcType=TIMESTAMP}, #{update_at,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="hdispatch.core.dispatch.dto.HdispatchGroup" >
+    insert into hdispatch_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="group_name != null" >
+        group_name,
+      </if>
+      <if test="layer_id != null" >
+        layer_id,
+      </if>
+      <if test="schedule_expression != null" >
+        schedule_expression,
+      </if>
+      <if test="flow_id != null" >
+        flow_id,
+      </if>
+      <if test="active != null" >
+        active,
+      </if>
+      <if test="create_at != null" >
+        create_at,
+      </if>
+      <if test="update_at != null" >
+        update_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="group_name != null" >
+        #{group_name,jdbcType=VARCHAR},
+      </if>
+      <if test="layer_id != null" >
+        #{layer_id,jdbcType=BIGINT},
+      </if>
+      <if test="schedule_expression != null" >
+        #{schedule_expression,jdbcType=VARCHAR},
+      </if>
+      <if test="flow_id != null" >
+        #{flow_id,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        #{active,jdbcType=TINYINT},
+      </if>
+      <if test="create_at != null" >
+        #{create_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_at != null" >
+        #{update_at,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="hdispatch.core.dispatch.dto.HdispatchGroup" >
+    update hdispatch_group
+    <set >
+      <if test="group_name != null" >
+        group_name = #{group_name,jdbcType=VARCHAR},
+      </if>
+      <if test="layer_id != null" >
+        layer_id = #{layer_id,jdbcType=BIGINT},
+      </if>
+      <if test="schedule_expression != null" >
+        schedule_expression = #{schedule_expression,jdbcType=VARCHAR},
+      </if>
+      <if test="flow_id != null" >
+        flow_id = #{flow_id,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        active = #{active,jdbcType=TINYINT},
+      </if>
+      <if test="create_at != null" >
+        create_at = #{create_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_at != null" >
+        update_at = #{update_at,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.HdispatchGroup" >
+    update hdispatch_group
+    set group_name = #{group_name,jdbcType=VARCHAR},
+      layer_id = #{layer_id,jdbcType=BIGINT},
+      schedule_expression = #{schedule_expression,jdbcType=VARCHAR},
+      flow_id = #{flow_id,jdbcType=VARCHAR},
+      active = #{active,jdbcType=TINYINT},
+      create_at = #{create_at,jdbcType=TIMESTAMP},
+      update_at = #{update_at,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

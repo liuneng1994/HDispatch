@@ -5,7 +5,7 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.core.annotation.StdWho;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
-import hdispatch.core.dispatch.mapper.SvnParameterMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.SvnParameterMapper;
 import hdispatch.core.dispatch.service.SvnParameterService;
 import hdispatch.core.dispatch.utils.ConfigUtil;
 import org.apache.log4j.Logger;
