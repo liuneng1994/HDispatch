@@ -25,33 +25,25 @@ yazheng.yang@hand-china.com
     获取主题组下已经分配权限的用户
     -->
     <select id="selectInThemeGroup" parameterType="java.util.Map" resultMap="baseMap">
-        SELECT authority_id,theme_group_id,auth.user_id,sys_user.user_name,auth_read,auth_operate
-        FROM hdispatch_authority auth JOIN sys_user
-        ON auth.user_id=sys_user.user_id
+        SELECT authority_id,theme_group_id,auth.user_id,auth_read,auth_operate
+        FROM hdispatch_authority auth
         <where>
             AND theme_group_id = #{themeGroupId}
-            <if test="userName != null">
-                <bind name="pattern_userName" value="'%' + _parameter.userName + '%'" />
-                AND sys_user.user_name like #{pattern_userName}
+            <if test="userIdCollection != null">
+                AND user_id IN
+                <foreach collection="userIdCollection" open="(" separator="," close=")" item="userId">
+                    #{userId}
+                </foreach>
             </if>
         </where>
     </select>
 
     <!--获取主题组没有分配权限的用户列表-->
     <select id="selectNotInThemeGroup" parameterType="java.util.Map" resultMap="baseMap">
-        SELECT user_id,user_name
-        FROM sys_user
-        <where>
-            AND user_id NOT IN (
-            SELECT DISTINCT user_id FROM hdispatch_authority
-            WHERE theme_group_id = #{themeGroupId}
-            )
-            <if test="userName != null">
-                <bind name="pattern_userName" value="'%' + _parameter.userName + '%'" />
-                AND user_name like #{pattern_userName}
-            </if>
-        </where>
+        SELECT DISTINCT user_id FROM hdispatch_authority
+        WHERE theme_group_id = #{themeGroupId}
     </select>
+
     <!--新建-->
     <insert id="save" useGeneratedKeys="true" keyProperty="authorityId">
         INSERT INTO hdispatch_authority(theme_group_id,user_id,auth_read,auth_operate)
