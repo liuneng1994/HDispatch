@@ -1,7 +1,7 @@
 package hdispatch.core.dispatch.service.impl;
 
 import hdispatch.core.dispatch.dto.ExecutionJobs;
-import hdispatch.core.dispatch.mapper.ExecutionJobsMapper;
+import hdispatch.core.dispatch.mappers.ExecutionJobsMapper;
 import hdispatch.core.dispatch.service.ExecutionJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

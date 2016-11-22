@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="hdispatch.core.dispatch.mapper.ExecutionJobsMapper" >
+<mapper namespace="hdispatch.core.dispatch.mappers.ExecutionJobsMapper" >
   <resultMap id="BaseResultMap" type="hdispatch.core.dispatch.dto.ExecutionJobs" >
     <id column="attempt" property="attempt" jdbcType="INTEGER" />
     <id column="exec_id" property="exec_id" jdbcType="INTEGER" />

@@ -16,8 +16,8 @@
     </bean>
 
     <!-- mapper definition -->
-    <bean id="mapperScannerConfigurer" class="com.hand.hap.mybatis.spring.MapperScannerConfigurer">
-        <property name="basePackage" value="*.**.mapper"/>
+    <bean id="hdispatchMapperScannerConfigurer" class="com.hand.hap.mybatis.spring.MapperScannerConfigurer">
+        <property name="basePackage" value="*.**.mappers"/>
         <property name="processPropertyPlaceHolders" value="true"/>
         <property name="propertiesMap">
             <map>
@@ -26,6 +26,7 @@
                 <entry key="seqFormat" value="{3}_s.nextVal"/>
             </map>
         </property>
+        <property name="sqlSessionTemplateBeanName" value="hdispatchSqlSession"></property>
     </bean>
 
     <tx:annotation-driven transaction-manager="hdispatchTM"/>
@@ -36,7 +37,7 @@
     </bean>
 
 
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <bean id="hdispatchSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="hdispathDataSource"/>
         <property name="mapperLocations" value="classpath*:/**/*Mapper_hdispatch.xml"/>
         <property name="plugins">
@@ -48,12 +49,12 @@
                 <bean class="com.github.pagehelper.PageHelper"/>
             </array>
         </property>
-        <property name="configLocation" value="classpath:mybatis-configuration.xml"/>
+        <property name="configLocation" value="classpath:hdispatch-mybatis-configuration.xml"/>
     </bean>
 
 
-    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg index="0" name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    <bean id="hdispatchSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" name="sqlSessionFactory" ref="hdispatchSqlSessionFactory"/>
     </bean>
 
     <!--配置SVN服务器-->

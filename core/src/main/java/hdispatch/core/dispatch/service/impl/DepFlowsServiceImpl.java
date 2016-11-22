@@ -2,10 +2,9 @@ package hdispatch.core.dispatch.service.impl;
 
 
 import hdispatch.core.dispatch.dto.DepFlows;
-import hdispatch.core.dispatch.mapper.DepFlowsMapper;
+import hdispatch.core.dispatch.mappers.DepFlowsMapper;
 import hdispatch.core.dispatch.service.DepFlowsService;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

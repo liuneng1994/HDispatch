@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Created by yyz on 2016/9/24.
+yazheng.yang@hand-china.com
+-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mappers.SvnParameterMapper">
+    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.svn.SvnParameter" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="SCHEDULE_PARA_ID" property="scheduleParaId"/>
+        <result column="PARAMETER_NAME" property="parameterName"/>
+        <result column="PARAMETER_VALUE" property="parameterValue"/>
+        <result column="PARAMETER_SORT" property="parameterSort"/>
+        <result column="SUBJECT_NAME" property="subjectName"/>
+        <result column="MAPPING_NAME" property="mappingName"/>
+        <result column="SESSION_NAME" property="sessionName"/>
+        <result column="WORKFLOW_NAME" property="workFlowName"/>
+        <result column="FORMAT_MASK" property="formatMask"/>
+        <result column="PARA_OFFSET" property="paraOffset"/>
+        <result column="FREQUENCY" property="frequency"/>
+        <result column="ENABLE_FLAG" property="enableFlag"/>
+        <result column="START_DATE_ACTIVE" property="startDateActive"/>
+        <result column="END_DATE_ACTIVE" property="endDateActive"/>
+        <result column="CREATION_DATE" property="creationDate"/>
+        <result column="PARAMETER_DESC" property="parameterDesc"/>
+        <result column="CREATED_BY" property="createdBy"/>
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy"/>
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate"/>
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin"/>
+        <result column="PARAMETER_VALUE_INI" property="parameterValueIni"/>
+    </resultMap>
+
+    <select id="selectBySvnParameter" resultMap="baseMap">
+        SELECT * FROM hdispatch_fnd_schedule_parameter
+        <where>
+            <if test="scheduleParaId != null">
+                and SCHEDULE_PARA_ID = #{scheduleParaId}
+            </if>
+            <if test="parameterName != null">
+                <bind name="pattern_parameterName" value="'%' + _parameter.parameterName + '%'"/>
+                AND PARAMETER_NAME like #{pattern_parameterName}
+            </if>
+            <if test="subjectName != null">
+                <bind name="pattern_subjectName" value="'%' + _parameter.subjectName + '%'"/>
+                AND SUBJECT_NAME like #{pattern_subjectName}
+            </if>
+            <if test="mappingName != null">
+                <bind name="pattern_mappingName" value="'%' + _parameter.mappingName + '%'"/>
+                AND MAPPING_NAME like #{pattern_mappingName}
+            </if>
+            <if test="sessionName != null">
+                <bind name="pattern_sessionName" value="'%' + _parameter.sessionName + '%'"/>
+                AND SESSION_NAME like #{pattern_sessionName}
+            </if>
+            <if test="workFlowName != null">
+                <bind name="pattern_workFlowName" value="'%' + _parameter.workFlowName + '%'"/>
+                AND WORKFLOW_NAME like #{pattern_workFlowName}
+            </if>
+        </where>
+    </select>
+    <select id="selectForCheck" resultMap="baseMap">
+        SELECT * FROM hdispatch_fnd_schedule_parameter
+        WHERE PARAMETER_NAME=#{parameterName}
+        AND SUBJECT_NAME = #{subjectName}
+        AND MAPPING_NAME = #{mappingName}
+        AND SESSION_NAME = #{sessionName}
+        AND WORKFLOW_NAME = #{workFlowName}
+    </select>
+
+    <!--2016.10.24需求变更，只需要检查SUBJECT_NAME、MAPPING_NAME、PARAMETER_NAME-->
+    <select id="selectForCheck_2" resultMap="baseMap">
+        SELECT * FROM hdispatch_fnd_schedule_parameter
+        WHERE PARAMETER_NAME=#{parameterName}
+        AND SUBJECT_NAME = #{subjectName}
+        AND MAPPING_NAME = #{mappingName}
+    </select>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="scheduleParaId">
+        INSERT INTO hdispatch_fnd_schedule_parameter (PARAMETER_NAME, PARAMETER_SORT, SUBJECT_NAME, MAPPING_NAME, SESSION_NAME, WORKFLOW_NAME, PARAMETER_VALUE, FORMAT_MASK, PARA_OFFSET, FREQUENCY, ENABLE_FLAG, START_DATE_ACTIVE, END_DATE_ACTIVE, CREATION_DATE, LAST_UPDATE_DATE)
+        VALUES (#{parameterName},#{parameterSort},#{subjectName},#{mappingName},#{sessionName},#{workFlowName},#{parameterValue},#{formatMask},#{paraOffset},#{frequency},#{enableFlag},#{startDateActive},#{endDateActive},#{creationDate},#{lastUpdateDate})
+    </insert>
+    <update id="updateById">
+        UPDATE hdispatch_fnd_schedule_parameter
+        <set >
+            <if test="parameterName != null" >
+                PARAMETER_NAME = #{parameterName,jdbcType=VARCHAR},
+            </if>
+            <if test="parameterSort != null" >
+                PARAMETER_SORT = #{parameterSort,jdbcType=BIGINT},
+            </if>
+            <if test="subjectName != null" >
+                SUBJECT_NAME = #{subjectName,jdbcType=VARCHAR},
+            </if>
+            <if test="mappingName != null" >
+                MAPPING_NAME = #{mappingName,jdbcType=VARCHAR},
+            </if>
+            <if test="sessionName != null" >
+                SESSION_NAME = #{sessionName,jdbcType=VARCHAR},
+            </if>
+            <if test="workFlowName != null" >
+                WORKFLOW_NAME = #{workFlowName,jdbcType=VARCHAR},
+            </if>
+            <if test="parameterValue != null" >
+                PARAMETER_VALUE = #{parameterValue,jdbcType=VARCHAR},
+            </if>
+            <if test="formatMask != null" >
+                FORMAT_MASK = #{formatMask,jdbcType=VARCHAR},
+            </if>
+            <if test="paraOffset != null" >
+                PARA_OFFSET = #{paraOffset,jdbcType=BIGINT},
+            </if>
+
+            <if test="frequency != null" >
+                FREQUENCY = #{frequency,jdbcType=VARCHAR},
+            </if>
+            <if test="enableFlag != null" >
+                ENABLE_FLAG = #{enableFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="startDateActive != null" >
+                START_DATE_ACTIVE = #{startDateActive,jdbcType=VARCHAR},
+            </if>
+            <if test="endDateActive != null" >
+                END_DATE_ACTIVE = #{endDateActive,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE SCHEDULE_PARA_ID = #{scheduleParaId}
+    </update>
+    <delete id="deleteById">
+      DELETE FROM hdispatch_fnd_schedule_parameter
+      WHERE SCHEDULE_PARA_ID = #{scheduleParaId}
+    </delete>
+
+    <!--检查当前用户是否有操作任务运行时参数的权限-->
+    <select id="hasOperatePermission" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM hdispatch_authority authority JOIN hdispatch_themegroup themegroup
+        ON authority.theme_group_id = themegroup.theme_group_id
+        WHERE themegroup.theme_group_name=#{themeGroupName}
+        AND authority.auth_operate='Y'
+        AND authority.user_id=#{request.userId}
+    </select>
+    <!--检查当前用户是否有任务运行时参数的读权限-->
+    <select id="hasReadPermission" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM hdispatch_authority authority JOIN hdispatch_themegroup themegroup
+        ON authority.theme_group_id = themegroup.theme_group_id
+        WHERE themegroup.theme_group_name=#{themeGroupName}
+        AND (authority.auth_read='Y' OR authority.auth_operate='Y')
+        AND authority.user_id=#{request.userId}
+    </select>
+</mapper>

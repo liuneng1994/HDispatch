@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Created by yyz on 2016/10/14.
+yazheng.yang@hand-china.com
+-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mappers.ThemeGroupMapper">
+    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.authority.ThemeGroup" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="theme_group_id" property="themeGroupId"/>
+        <result column="theme_group_name" property="themeGroupName"/>
+        <result column="theme_group_desc" property="themeGroupDesc"/>
+    </resultMap>
+
+    <insert id="save"  useGeneratedKeys="true" keyProperty="themeGroupId">
+        INSERT INTO hdispatch_themegroup(theme_group_name,theme_group_desc)
+        VALUES (#{themeGroupName},#{themeGroupDesc})
+    </insert>
+    <select id="selectAll" resultMap="baseMap">
+        SELECT * FROM hdispatch_themegroup
+    </select>
+
+    <select id="selectByThemeGroup" resultMap="baseMap">
+        SELECT * FROM hdispatch_themegroup
+        <where>
+            <if test="themeGroupId != null">
+                and theme_group_id = #{themeGroupId}
+            </if>
+            <if test="themeGroupName != null">
+                <bind name="themeGroupName_pattern" value="'%' + _parameter.themeGroupName + '%'"/>
+                AND theme_group_name like #{themeGroupName_pattern}
+            </if>
+            <if test="themeGroupDesc != null">
+                <bind name="themeGroupDesc_pattern" value="'%' + _parameter.themeGroupDesc + '%'"/>
+                AND theme_group_desc like #{themeGroupDesc_pattern}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateById">
+        UPDATE hdispatch_themegroup
+        SET theme_group_name=#{themeGroupName},
+        theme_group_desc=#{themeGroupDesc}
+        WHERE theme_group_id=#{themeGroupId}
+    </update>
+
+    <delete id="deleteThemeGroup">
+        DELETE FROM hdispatch_themegroup
+        WHERE theme_group_id=#{themeGroupId}
+    </delete>
+</mapper>

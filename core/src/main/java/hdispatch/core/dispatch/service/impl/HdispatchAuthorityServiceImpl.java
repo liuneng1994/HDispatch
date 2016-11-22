@@ -6,13 +6,12 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.HdispatchAuthority;
 import hdispatch.core.dispatch.dto.theme.Theme;
-import hdispatch.core.dispatch.mapper.HdispatchAuthorityMapper;
+import hdispatch.core.dispatch.mappers.HdispatchAuthorityMapper;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
