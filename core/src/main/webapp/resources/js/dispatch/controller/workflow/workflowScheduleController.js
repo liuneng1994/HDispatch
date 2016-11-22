@@ -229,7 +229,7 @@
                             for (var link of vm.schedulePaint._graph.getLinks()) {
                                 link.attr('.link-tools/display', 'none');
                             }
-                        }, 2000);
+                        }, 500);
                     }
                     if (data.projectName && data.flowId) {
                         vm.cronScheduleFlow.flows[data.workflowId] = {};
@@ -277,6 +277,7 @@
                 }
             });
             $compile($('div.modal-body table'))($scope);
+            $('#scheduleTab').data('kendoTabStrip').select(1);
         };
         vm.cronScheduleSubmit = function () {
             vm.scheduleInfo.successEmailsOverride = true;

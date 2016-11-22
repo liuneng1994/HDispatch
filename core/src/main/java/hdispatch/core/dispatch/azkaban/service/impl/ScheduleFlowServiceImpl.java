@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by 邓志龙 on 2016/8/31.
  */
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ScheduleFlowServiceImpl implements ScheduleFlowService {
     private static Logger logger = Logger.getLogger(ScheduleFlowService.class);
     private HttpResponse<JsonNode> response;

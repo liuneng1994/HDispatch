@@ -25,7 +25,7 @@ import java.util.Map;
  * Created by 邓志龙 on 2016/8/31.
  */
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ExeFlowServiceImpl implements ExeFlowService {
 	private static Logger logger = Logger.getLogger(ExeFlowService.class);
 	private HttpResponse<JsonNode> response;

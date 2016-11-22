@@ -6,20 +6,17 @@ import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.layer.Layer;
 import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
-import hdispatch.core.dispatch.mapper.JobMapper;
-import hdispatch.core.dispatch.mapper.LayerMapper;
-import hdispatch.core.dispatch.mapper.WorkflowMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.JobMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.LayerMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.WorkflowMapper;
 import hdispatch.core.dispatch.service.LayerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 层次service接口实现类<br>
@@ -41,7 +38,7 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean create(Layer layer) {
         try{
             layerMapper.save(layer);
@@ -60,7 +57,7 @@ public class LayerServiceImpl implements LayerService {
      * @throws Exception
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList) throws Exception {
         for (Layer layer : layerList) {
             if (layer.get__status() != null) {
@@ -106,7 +103,7 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean[] checkIsExist(List<Layer> layerList) {
         boolean[] isExist = new boolean[layerList.size()];
         int i = 0;
@@ -125,7 +122,7 @@ public class LayerServiceImpl implements LayerService {
      * @param layer
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public void deleteInLogic(Layer layer) {
         if(null != layer){
             layerMapper.deleteInLogic(layer);
@@ -141,7 +138,7 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Layer> selectActiveLayersByThemeId(IRequest requestContext, int page, int pageSize, Layer layer) {
         PageHelper.startPage(page, pageSize);
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
@@ -155,7 +152,7 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext, Layer layer) {
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
         return layerList;
@@ -167,7 +164,7 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext) {
         List<Layer> layerList = layerMapper.selectAllActiveLayers();
         return layerList;
@@ -181,7 +178,7 @@ public class LayerServiceImpl implements LayerService {
      * @return 挂载任务或任务流的层次列表
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Layer> checkIsMountJobOrWorkflow(List<Layer> layerList) {
         List<Layer> returnList = new ArrayList<>();
         for(Layer layer : layerList){

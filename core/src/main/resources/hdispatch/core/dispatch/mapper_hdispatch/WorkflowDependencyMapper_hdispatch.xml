@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.WorkflowDependencyMapper">
+    <resultMap id="workflowDependency" type="hdispatch.core.dispatch.dto.workflow.WorkflowDependency">
+        <id property="workflowId" column="workflow_id"></id>
+        <result property="deptWorkflowId" column="dept_workflow_id"></result>
+        <result property="deptWorkflowName" column="dept_workflow_name"></result>
+        <result property="deptTheme" column="dept_theme"></result>
+        <result property="deptLayer" column="dept_layer"></result>
+        <result property="deptProjectName" column="dept_project_name"></result>
+        <result property="deptFlowId" column="dept_flow_id"></result>
+        <result property="workflowName" column="workflow_name"></result>
+    </resultMap>
+    <select id="queryDependency" resultMap="workflowDependency">
+        SELECT
+            dhw.workflow_id     AS dept_workflow_id,
+            dhw.name            AS dept_workflow_name,
+            dht.name            AS dept_theme,
+            dht.name            AS dept_layer,
+            df.dep_project_name AS dept_project_name,
+            df.dep_flow_id      AS dept_flow_id,
+            hw.name             AS workflow_name,
+            hw.workflow_id      AS workflow_id
+        FROM
+            dep_flows df
+            LEFT JOIN
+            hdispatch_workflow dhw
+                ON
+                    df.dep_project_name = dhw.name
+            LEFT JOIN
+            hdispatch_workflow hw
+                ON
+                    df.project_name = hw.name
+            LEFT JOIN
+            hdispatch_theme dht
+                ON
+                    dhw.theme_id = dht.theme_id
+            LEFT JOIN
+            hdispatch_layer dhl
+                ON
+                    dhw.layer_id = dhl.layer_id
+        WHERE
+            df.project_name = #{projectName}
+    </select>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO
+        dep_flows(project_name,project_id,flow_id,dep_project_name,dep_project_id,dep_flow_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.projectName},#{item.projectId},#{item.flowId},#{item.deptProjectName},#{item.deptProjectId},#{item.deptFlowId})
+        </foreach>
+    </insert>
+
+    <delete id="delete" parameterType="hdispatch.core.dispatch.dto.workflow.AzkabanFlowDependency">
+        DELETE FROM
+            dep_flows
+        WHERE
+            dep_project_name = #{deptProjectName}
+            AND project_name = #{projectName}
+    </delete>
+
+    <select id="queryDependencyed" resultMap="workflowDependency">
+        SELECT
+        dhw.workflow_id     AS dept_workflow_id,
+        dhw.name            AS dept_workflow_name,
+        dht.name            AS dept_theme,
+        dht.name            AS dept_layer,
+        df.dep_project_name AS dept_project_name,
+        df.dep_flow_id      AS dept_flow_id,
+        hw.name             AS workflow_name,
+        hw.workflow_id      AS workflow_id
+        FROM
+        dep_flows df
+        LEFT JOIN
+        hdispatch_workflow dhw
+        ON
+        df.dep_project_name = dhw.name
+        LEFT JOIN
+        hdispatch_workflow hw
+        ON
+        df.project_name = hw.name
+        LEFT JOIN
+        hdispatch_theme dht
+        ON
+        dhw.theme_id = dht.theme_id
+        LEFT JOIN
+        hdispatch_layer dhl
+        ON
+        dhw.layer_id = dhl.layer_id
+        WHERE
+        df.dep_project_name = #{projectName}
+    </select>
+</mapper>

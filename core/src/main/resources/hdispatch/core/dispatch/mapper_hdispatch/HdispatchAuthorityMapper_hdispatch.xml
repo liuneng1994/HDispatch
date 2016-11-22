@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Created by yyz on 2016/9/20.
+yazheng.yang@hand-china.com
+-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.HdispatchAuthorityMapper">
+    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.authority.HdispatchAuthority" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="authority_id" property="authorityId"/>
+        <result column="theme_group_id" property="themeGroupId"/>
+        <result column="user_id" property="userId"/>
+        <result column="auth_read" property="authRead"/>
+        <result column="auth_operate" property="authOperate"/>
+        <!--冗余信息-->
+        <result column="user_name" property="userName"/>
+    </resultMap>
+    <resultMap id="themeMap" type="hdispatch.core.dispatch.dto.theme.Theme" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="theme_id" property="themeId"/>
+        <result column="name" property="themeName"/>
+    </resultMap>
+
+    <!--使用Map类型传入参数
+    获取主题组下已经分配权限的用户
+    -->
+    <select id="selectInThemeGroup" parameterType="java.util.Map" resultMap="baseMap">
+        SELECT authority_id,theme_group_id,auth.user_id,auth_read,auth_operate
+        FROM hdispatch_authority auth
+        <where>
+            AND theme_group_id = #{themeGroupId}
+            <if test="userIdCollection != null">
+                AND user_id IN
+                <foreach collection="userIdCollection" open="(" separator="," close=")" item="userId">
+                    #{userId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!--获取主题组没有分配权限的用户列表-->
+    <select id="selectNotInThemeGroup" parameterType="java.util.Map" resultMap="baseMap">
+        SELECT DISTINCT user_id FROM hdispatch_authority
+        WHERE theme_group_id = #{themeGroupId}
+    </select>
+
+    <!--新建-->
+    <insert id="save" useGeneratedKeys="true" keyProperty="authorityId">
+        INSERT INTO hdispatch_authority(theme_group_id,user_id,auth_read,auth_operate)
+        VALUES (#{themeGroupId},#{userId},#{authRead},#{authOperate})
+    </insert>
+
+    <!--修改权限-->
+    <update id="updateAuthority">
+        UPDATE hdispatch_authority
+        SET auth_read = #{authRead},auth_operate = #{authOperate}
+        WHERE authority_id = #{authorityId}
+    </update>
+
+    <!--删除用户-->
+    <delete id="deleteUser">
+        DELETE FROM hdispatch_authority
+        WHERE authority_id = #{authorityId}
+    </delete>
+
+    <!--权限校验-->
+    <select id="selectAuthorityForValidate" parameterType="java.util.Map" resultMap="baseMap">
+        SELECT
+        FROM hdispatch_themegroup_theme relation JOIN hdispatch_authority authority
+        ON relation.theme_group_id = authority.theme_group_id
+        <where>
+            AND user_id = #{userId}
+            AND theme_id = #{themeId}
+            <if test="authRead != null">
+                AND auth_read = "Y"
+            </if>
+            <if test="authOperate != null">
+                AND auth_operate = "Y"
+            </if>
+        </where>
+    </select>
+
+    <select id="selectThemesUnderUser" parameterType="java.util.Map" resultMap="themeMap">
+        SELECT theme_id
+        FROM hdispatch_authority auth JOIN hdispatch_themegroup_theme relation
+        ON auth.theme_group_id = relation.theme_group_id
+        <where>
+            AND user_id = #{userId}
+            <if test="authRead != null">
+                AND auth_read = "Y"
+            </if>
+            <if test="authOperate != null">
+                AND auth_operate = "Y"
+            </if>
+        </where>
+    </select>
+</mapper>

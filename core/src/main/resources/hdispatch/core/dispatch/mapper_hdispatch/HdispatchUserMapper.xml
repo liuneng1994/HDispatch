@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+用于分离数据源(分离HAP和本系统的数据源)，将原先表的关联查询变换为分别查询。
+涉及到的是本系统的权限控制（在分配权限中涉及到）
+Created by yyz on 2016/11/2.
+yazheng.yang@hand-china.com
+-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mapper.HdispatchUserMapper">
+    <resultMap id="baseMap" type="com.hand.hap.account.dto.User" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+    </resultMap>
+    <resultMap id="authorityResultMap" type="hdispatch.core.dispatch.dto.authority.HdispatchAuthority" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="authority_id" property="authorityId"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+    </resultMap>
+    <!--使用Map类型传入参数
+    获取主题组下已经分配权限的用户
+    -->
+    <select id="selectUser" resultMap="authorityResultMap">
+        SELECT user_id,user_name
+        FROM sys_user
+        <where>
+            <if test="userId != null">
+                AND user_id=#{userId}
+            </if>
+            <if test="userName != null">
+                <bind name="pattern_userName" value="'%' + _parameter.userName + '%'" />
+                AND sys_user.user_name like #{pattern_userName}
+            </if>
+        </where>
+    </select>
+
+    <!--获取主题组没有分配权限的用户列表-->
+    <select id="selectNotInThemeGroup" resultMap="authorityResultMap">
+        SELECT user_id,user_name
+        FROM sys_user
+        <where>
+            AND user_id NOT IN
+            <foreach collection="userIdCollection" open="(" separator="," close=")" item="userId">
+                #{userId}
+            </foreach>
+            <if test="userName != null">
+                <bind name="pattern_userName" value="'%' + _parameter.userName + '%'" />
+                AND user_name like #{pattern_userName}
+            </if>
+        </where>
+    </select>
+</mapper>

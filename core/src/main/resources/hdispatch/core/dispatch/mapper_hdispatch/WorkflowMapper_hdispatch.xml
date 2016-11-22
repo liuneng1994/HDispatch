@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.WorkflowMapper">
+
+    <resultMap id="simpleWorkflow" type="hdispatch.core.dispatch.dto.workflow.SimpleWorkflow">
+        <id property="workflowId" column="workflow_id"></id>
+        <result property="theme" column="theme"></result>
+        <result property="themeId" column="theme_id"></result>
+        <result property="layer" column="layer"></result>
+        <result property="layerId" column="layer_id"></result>
+        <result property="name" column="workflow_name"></result>
+        <result property="project" column="project_name"></result>
+        <result property="flowId" column="flow_id"></result>
+        <result property="description" column="workflow_description"></result>
+    </resultMap>
+
+    <resultMap id="workflow" type="hdispatch.core.dispatch.dto.workflow.Workflow">
+        <id property="workflowId" column="workflow_id"></id>
+        <result property="themeId" column="theme_id"></result>
+        <result property="layerId" column="layer_id"></result>
+        <result property="name" column="name"></result>
+        <result property="projectName" column="project_name"></result>
+        <result property="flowId" column="flow_id"></result>
+        <result property="description" column="description"></result>
+        <result property="graph" column="graph"></result>
+        <collection property="properties" column="workflow_id" select="getProperties" javaType="java.util.List"
+                    ofType="hdispatch.core.dispatch.dto.workflow.WorkflowProperty">
+        </collection>
+        <collection property="jobs" column="workflow_id" select="getJobs" javaType="java.util.List"
+                    ofType="hdispatch.core.dispatch.dto.workflow.WorkflowJob">
+        </collection>
+    </resultMap>
+
+    <resultMap id="property" type="hdispatch.core.dispatch.dto.workflow.WorkflowProperty">
+        <id property="workflowId" column="workflow_id"></id>
+        <result property="workflowPropertyName" column="workflow_property_name"></result>
+        <result property="workflowPropertyValue" column="workflow_property_value"></result>
+    </resultMap>
+
+    <resultMap id="job" type="hdispatch.core.dispatch.dto.workflow.WorkflowJob">
+        <id property="workflowJobId" column="workflow_job_id"></id>
+        <result property="workflowId" column="workflow_id"></result>
+        <result property="jobSource" column="job_source_id"></result>
+        <result property="jobType" column="job_type"></result>
+        <result property="parentsJobId" column="parents_job_id"></result>
+    </resultMap>
+
+    <select id="getByName" parameterType="string" resultMap="workflow">
+        SELECT
+            *
+        FROM
+            hdispatch_workflow
+        WHERE
+            `name` = #{name}
+    </select>
+
+    <select id="getById" parameterType="long" resultMap="workflow">
+        SELECT
+        *
+        FROM
+            hdispatch_workflow
+        WHERE
+            `workflow_id` = #{workflowId}
+    </select>
+
+    <select id="getJobs" parameterType="long" resultMap="job">
+        SELECT
+            *
+        FROM
+            hdispatch_workflow_job
+        WHERE
+            workflow_id = #{id}
+    </select>
+
+    <select id="getProperties" parameterType="long" resultMap="property">
+        SELECT
+            *
+        FROM
+            hdispatch_workflow_property
+        WHERE
+            workflow_id = #{id}
+    </select>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="workflowId"
+            parameterType="hdispatch.core.dispatch.dto.workflow.Workflow">
+        INSERT INTO
+            hdispatch_workflow
+            (
+                `name`,
+                `description`,
+                `theme_id`,
+                `layer_id`,
+                `graph`
+            )
+        VALUES
+            (
+              #{name},
+              #{description},
+              #{themeId},
+              #{layerId},
+              #{graph}
+            )
+    </insert>
+    <update id="updateProjectNameAndFlowIdById">
+        UPDATE
+            hdispatch_workflow
+        SET
+            project_name=#{projectName},
+            flow_id=#{flowId}
+        WHERE
+            workflow_id=#{workflowId}
+    </update>
+
+    <update id="saveGraph">
+      UPDATE
+            hdispatch_workflow
+      SET
+            graph = #{graph}
+      WHERE
+            workflow_id=#{workflowId}
+    </update>
+
+    <update id="deleteByIds" parameterType="list">
+        DELETE
+        FROM
+            hdispatch_workflow
+        WHERE
+            workflow_id IN
+            <foreach collection="list" open="(" index="index" item="id" separator="," close=")">
+                #{id}
+            </foreach>
+    </update>
+
+    <update id="update" parameterType="hdispatch.core.dispatch.dto.workflow.Workflow">
+        UPDATE
+            hdispatch_workflow
+        SET
+            theme_id=#{themeId},
+            layer_id=#{layerId},
+            description=#{description},
+            graph=#{graph}
+        WHERE
+            workflow_id=#{workflowId} AND active=1
+    </update>
+    
+    <select id="getGraph" resultType="string">
+        SELECT
+            graph
+        FROM
+            hdispatch_workflow
+        WHERE
+            workflow_id=#{workflowId}
+    </select>
+
+    <select id="query" resultMap="simpleWorkflow">
+        SELECT
+            hw.workflow_id,
+            ht.`name` AS theme,
+            ht.`theme_id`,
+            hl.`name` AS layer,
+            hl.`layer_id`,
+            hw.`name` AS workflow_name,
+            hw.`project_name`,
+            hw.`flow_id`,
+            hw.`description` AS workflow_description
+        FROM
+            hdispatch_workflow hw
+        LEFT JOIN
+            hdispatch_theme ht
+        ON
+            hw.theme_id = ht.theme_id
+        LEFT JOIN
+            hdispatch_layer hl
+        ON
+            hw.layer_id = hl.layer_id
+        WHERE
+            1 = 1
+        <if test="themeId!=null">AND hw.theme_id = #{themeId}</if>
+        <if test="layerId!=null">AND hw.layer_id = #{layerId}</if>
+        AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
+        <if test='description != "" and description != null'>AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')</if>
+        AND hw.active=1
+        AND ('Y'=hasPermission(hw.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hw.theme_id,#{request.userId},NULL,'Y'))
+    </select>
+
+    <select id="queryOperate" resultMap="simpleWorkflow">
+        SELECT
+        hw.workflow_id,
+        ht.`name` AS theme,
+        ht.`theme_id`,
+        hl.`name` AS layer,
+        hl.`layer_id`,
+        hw.`name` AS workflow_name,
+        hw.`project_name`,
+        hw.`flow_id`,
+        hw.`description` AS workflow_description
+        FROM
+        hdispatch_workflow hw
+        LEFT JOIN
+        hdispatch_theme ht
+        ON
+        hw.theme_id = ht.theme_id
+        LEFT JOIN
+        hdispatch_layer hl
+        ON
+        hw.layer_id = hl.layer_id
+        WHERE
+        1 = 1
+        <if test="themeId!=null">AND hw.theme_id = #{themeId}</if>
+        <if test="layerId!=null">AND hw.layer_id = #{layerId}</if>
+        AND hw.`name` REGEXP CONCAT(CONCAT('[\\s\\S]*',#{workflowName}),'[\\s\\S]*')
+        <if test='description != "" and description != null'>AND hw.description REGEXP CONCAT(CONCAT('[\\s\\S]*',#{description}),'[\\s\\S]*')</if>
+        AND hw.active=1
+        AND hw.project_name IS NOT NULL
+        AND hw.flow_id IS NOT NULL
+        AND 'Y'=hasPermission(hw.theme_id,#{request.userId},NULL,'Y')
+    </select>
+    <!--add by yazheng.yang@hand-china.com
+    2016.10.25
+    -->
+    <select id="queryWorkflowUnderLayer" resultMap="simpleWorkflow">
+        SELECT workflow_id
+        FROM hdispatch_workflow
+        WHERE layer_id = #{layerId}
+        AND active=1
+    </select>
+</mapper>

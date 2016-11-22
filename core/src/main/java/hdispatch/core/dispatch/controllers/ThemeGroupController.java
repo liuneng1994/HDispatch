@@ -330,7 +330,8 @@ public class ThemeGroupController  extends BaseController {
             userName = null;
         }
         hdispatchAuthority.setUserName(userName);
-        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectInThemeGroup(requestContext, hdispatchAuthority, page, pageSize);
+        List<HdispatchAuthority> users = hdispatchAuthorityService.selectUsers(requestContext, hdispatchAuthority);
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectInThemeGroup(requestContext, hdispatchAuthority, users, page, pageSize);
         responseData = new ResponseData(authorityList);
         return responseData;
     }
@@ -365,7 +366,8 @@ public class ThemeGroupController  extends BaseController {
             userName = null;
         }
         hdispatchAuthority.setUserName(userName);
-        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectNotInThemeGroup(requestContext, hdispatchAuthority, page, pageSize);
+        List<HdispatchAuthority> users = hdispatchAuthorityService.selectUsersInThemeGroup(requestContext, hdispatchAuthority);
+        List<HdispatchAuthority> authorityList = hdispatchAuthorityService.selectNotInThemeGroup(requestContext, hdispatchAuthority, users, page, pageSize);
         responseData = new ResponseData(authorityList);
         return responseData;
     }

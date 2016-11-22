@@ -16,17 +16,35 @@ import java.util.List;
 public interface HdispatchAuthorityService {
     /**
      * 模糊查询主题组下面的所有已分配权限的用户
-     * @param hdispatchAuthority 用到：(themeGroupId、userName),
+     * @param requestContext
+     * @param hdispatchAuthority 用到：(themeGroupId),
+     * @param usersMatchUserName 已经匹配userName的用户列表
      * @return
      */
-    List<HdispatchAuthority> selectInThemeGroup(IRequest requestContext, HdispatchAuthority hdispatchAuthority, int page, int pageSize);
+    List<HdispatchAuthority> selectInThemeGroup(IRequest requestContext, HdispatchAuthority hdispatchAuthority, List<HdispatchAuthority> usersMatchUserName, int page, int pageSize);
 
     /**
      * 模糊查询不在当前主题组的所有主题
-     * @param hdispatchAuthority 用到：(themeGroupId、userName),
+     * @param hdispatchAuthority 用到：(userName),
+     * @param usersInThemeGroup 在主题组中已经分配权限的用户id列表
      * @return
      */
-    List<HdispatchAuthority> selectNotInThemeGroup(IRequest requestContext,HdispatchAuthority hdispatchAuthority, int page, int pageSize);
+    List<HdispatchAuthority> selectNotInThemeGroup(IRequest requestContext,HdispatchAuthority hdispatchAuthority, List<HdispatchAuthority> usersInThemeGroup, int page, int pageSize);
+
+    /**
+     * 模糊查询用户列表
+     * @param requestContext
+     * @param hdispatchAuthorit 用到userId、userName
+     * @return
+     */
+    List<HdispatchAuthority> selectUsers(IRequest requestContext, HdispatchAuthority hdispatchAuthorit);
+
+    /**
+     * 获取主题组下的所有用户id
+     * @param hdispatchAuthority 用到：(themeGroupId),
+     * @return
+     */
+    List<HdispatchAuthority> selectUsersInThemeGroup(IRequest requestContext,HdispatchAuthority hdispatchAuthority);
 
 
     /**

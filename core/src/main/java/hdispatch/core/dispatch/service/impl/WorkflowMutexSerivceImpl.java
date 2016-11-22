@@ -2,8 +2,8 @@ package hdispatch.core.dispatch.service.impl;
 
 import hdispatch.core.dispatch.dto.workflow.AzkabanFlowMutex;
 import hdispatch.core.dispatch.dto.workflow.WorkflowMutex;
-import hdispatch.core.dispatch.mapper.AzkabanProjectMapper;
-import hdispatch.core.dispatch.mapper.WorkflowMutexMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.AzkabanProjectMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.WorkflowMutexMapper;
 import hdispatch.core.dispatch.service.WorkflowMutexService;
 import hdispatch.core.dispatch.utils.StringUtils;
 import javafx.util.Pair;
@@ -24,7 +24,7 @@ public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
     @Autowired
     private WorkflowMutexMapper workflowMutexMapper;
 
-    @Transactional
+    @Transactional("hdispatchTM")
     @Override
     public List<WorkflowMutex> query(String projectName) {
         List<WorkflowMutex> mutexList = new ArrayList<>();
@@ -34,7 +34,7 @@ public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
         return mutexList;
     }
 
-    @Transactional
+    @Transactional("hdispatchTM")
     @Override
     public int batchInsert(List<AzkabanFlowMutex> mutexList) {
         if (mutexList.isEmpty()) return 0;
@@ -60,7 +60,7 @@ public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
         return 0;
     }
 
-    @Transactional
+    @Transactional("hdispatchTM")
     @Override
     public int batchDelete(List<AzkabanFlowMutex> mutexList) {
         mutexList.forEach(mutex -> {
