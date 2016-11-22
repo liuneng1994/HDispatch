@@ -9,7 +9,7 @@
          * 请求错误处理函数
          */
         function errorHandler() {
-            alert("net error");
+            kendo.ui.showErrorDialog("网络错误");
         };
         return {
             /**
