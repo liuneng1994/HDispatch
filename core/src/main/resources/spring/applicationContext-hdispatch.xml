@@ -17,7 +17,7 @@
 
     <!-- mapper definition -->
     <bean id="hdispatchMapperScannerConfigurer" class="com.hand.hap.mybatis.spring.MapperScannerConfigurer">
-        <property name="basePackage" value="*.**.mappers"/>
+        <property name="basePackage" value="*.**.mapper_hdispatch"/>
         <property name="processPropertyPlaceHolders" value="true"/>
         <property name="propertiesMap">
             <map>

@@ -2,8 +2,8 @@ package hdispatch.core.dispatch.service.impl;
 
 import hdispatch.core.dispatch.dto.workflow.AzkabanFlowMutex;
 import hdispatch.core.dispatch.dto.workflow.WorkflowMutex;
-import hdispatch.core.dispatch.mappers.AzkabanProjectMapper;
-import hdispatch.core.dispatch.mappers.WorkflowMutexMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.AzkabanProjectMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.WorkflowMutexMapper;
 import hdispatch.core.dispatch.service.WorkflowMutexService;
 import hdispatch.core.dispatch.utils.StringUtils;
 import javafx.util.Pair;

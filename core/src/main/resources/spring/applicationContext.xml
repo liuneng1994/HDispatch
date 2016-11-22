@@ -34,7 +34,7 @@
                 <entry key="seqFormat" value="{3}_s.nextVal"/>
             </map>
         </property>
-        <property name="sqlSessionTemplateBeanName" value="sqlSession">   </property>
+        <property name="sqlSessionTemplateBeanName" value="sqlSession"></property>
     </bean>
 
 

@@ -26,7 +26,7 @@
 			<property name="enableSubPackages" value="false" />
 		</sqlMapGenerator>
 		<javaClientGenerator type="XMLMAPPER"
-                             targetPackage="hdispatch.core.dispatch.mappers" targetProject="core\src\main\java">
+							 targetPackage="hdispatch.core.dispatch.mapper_hdispatch" targetProject="core\src\main\java">
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
 		<table schema="" tableName="dep_flows" enableCountByExample="false"

@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.ThemeGroupTheme;
-import hdispatch.core.dispatch.mappers.ThemeGroupThemeMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ThemeGroupThemeMapper;
 import hdispatch.core.dispatch.service.ThemeGroupThemeService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

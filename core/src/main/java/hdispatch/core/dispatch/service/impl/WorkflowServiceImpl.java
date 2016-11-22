@@ -6,7 +6,7 @@ import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.*;
-import hdispatch.core.dispatch.mappers.*;
+import hdispatch.core.dispatch.mapper_hdispatch.*;
 import hdispatch.core.dispatch.service.HdispatchScheduleService;
 import hdispatch.core.dispatch.service.WorkflowService;
 import hdispatch.core.dispatch.utils.WorkflowUtils;

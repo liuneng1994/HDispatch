@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.job.Job;
-import hdispatch.core.dispatch.mappers.JobMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.JobMapper;
 import hdispatch.core.dispatch.service.JobService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

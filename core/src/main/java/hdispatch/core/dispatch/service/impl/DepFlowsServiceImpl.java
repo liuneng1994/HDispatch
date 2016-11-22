@@ -2,7 +2,7 @@ package hdispatch.core.dispatch.service.impl;
 
 
 import hdispatch.core.dispatch.dto.DepFlows;
-import hdispatch.core.dispatch.mappers.DepFlowsMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.DepFlowsMapper;
 import hdispatch.core.dispatch.service.DepFlowsService;
 
 import org.springframework.beans.factory.annotation.Autowired;

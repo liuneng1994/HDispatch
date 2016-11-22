@@ -42,7 +42,7 @@
   </bean>
 
   <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-    <property name="basePackage" value="hdispatch.core.dispatch.mappers"></property>
+    <property name="basePackage" value="hdispatch.core.dispatch.mapper_hdispatch"></property>
     <property name="sqlSessionTemplateBeanName" value="sqlSession"></property>
   </bean>
 

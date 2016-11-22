@@ -1,7 +1,7 @@
 package hdispatch.core.dispatch.service.impl;
 
 import hdispatch.core.dispatch.dto.HdispatchGroup;
-import hdispatch.core.dispatch.mappers.HdispatchGroupMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.HdispatchGroupMapper;
 import hdispatch.core.dispatch.service.HdispatchGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

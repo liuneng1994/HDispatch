@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="hdispatch.core.dispatch.mappers.AzkabanProjectMapper">
-    <select id="getIdByName" resultType="int" parameterType="string">
-        SELECT id FROM projects WHERE `name`=#{projectName}
-    </select>
-</mapper>
