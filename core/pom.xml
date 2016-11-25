@@ -264,6 +264,9 @@
                   <!--<overlay>-->
                       <!--<groupId>com.hand</groupId>-->
                       <!--<artifactId>hap</artifactId>-->
+                      <!--<excludes>-->
+                          <!--<exclude>**/*.jar</exclude>-->
+                      <!--</excludes>-->
                   <!--</overlay>-->
               <!--</overlays>-->
           </configuration>
