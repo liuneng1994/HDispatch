@@ -40,10 +40,12 @@ yazheng.yang@hand-china.com
         SELECT user_id,user_name
         FROM sys_user
         <where>
-            AND user_id NOT IN
-            <foreach collection="userIdCollection" open="(" separator="," close=")" item="userId">
-                #{userId}
-            </foreach>
+            <if test="userIdCollection != null">
+                AND user_id NOT IN
+                <foreach collection="userIdCollection" open="(" separator="," close=")" item="userId">
+                    #{userId}
+                </foreach>
+            </if>
             <if test="userName != null">
                 <bind name="pattern_userName" value="'%' + _parameter.userName + '%'" />
                 AND user_name like #{pattern_userName}
