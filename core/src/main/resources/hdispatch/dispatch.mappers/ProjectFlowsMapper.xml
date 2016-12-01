@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="hdispatch.core.dispatch.mapper.ProjectFlowsMapper">
 	<resultMap id="BaseResultMap" type="hdispatch.core.dispatch.dto.ProjectFlows">
-		<id column="flow_id" property="flow_id" jdbcType="VARCHAR" />
-		<id column="project_id" property="project_id" jdbcType="INTEGER" />
+		<id column="flow_id" property="flowId" jdbcType="VARCHAR" />
+		<id column="project_id" property="projectId" jdbcType="INTEGER" />
 		<id column="version" property="version" jdbcType="INTEGER" />
-		<result column="modified_time" property="modified_time"
+		<result column="modified_time" property="modifiedTime"
 			jdbcType="BIGINT" />
-		<result column="encoding_type" property="encoding_type"
+		<result column="encoding_type" property="encodingType"
 			jdbcType="TINYINT" />
-			<result column="project_name" property="project_name"
+			<result column="project_name" property="projectName"
 			jdbcType="VARCHAR" />
 	</resultMap>
 	<resultMap id="ResultMapWithBLOBs" type="hdispatch.core.dispatch.dto.ProjectFlows"
@@ -29,8 +29,8 @@
 		,
 		<include refid="Blob_Column_List" />
 		from project_flows
-		where flow_id = #{flow_id,jdbcType=VARCHAR}
-		and project_id = #{project_id,jdbcType=INTEGER}
+		where flow_id = #{flowId,jdbcType=VARCHAR}
+		and project_id = #{projectId,jdbcType=INTEGER}
 		and version = #{version,jdbcType=INTEGER}
 	</select>
 
@@ -41,94 +41,34 @@
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.ProjectFlowsKey">
 		delete from project_flows
-		where flow_id = #{flow_id,jdbcType=VARCHAR}
-		and project_id = #{project_id,jdbcType=INTEGER}
+		where flow_id = #{flowId,jdbcType=VARCHAR}
+		and project_id = #{projectId,jdbcType=INTEGER}
 		and version = #{version,jdbcType=INTEGER}
 	</delete>
 	<insert id="insert" parameterType="hdispatch.core.dispatch.dto.ProjectFlows">
 		insert into project_flows (flow_id, project_id, version,
 		modified_time, encoding_type, json
 		)
-		values (#{flow_id,jdbcType=VARCHAR}, #{project_id,jdbcType=INTEGER},
+		values (#{flowId,jdbcType=VARCHAR}, #{projectId,jdbcType=INTEGER},
 		#{version,jdbcType=INTEGER},
-		#{modified_time,jdbcType=BIGINT}, #{encoding_type,jdbcType=TINYINT}, #{json,jdbcType=LONGVARBINARY}
+		#{modifiedTime,jdbcType=BIGINT}, #{encodingType,jdbcType=TINYINT}, #{json,jdbcType=LONGVARBINARY}
 		)
 	</insert>
-	<insert id="insertSelective" parameterType="hdispatch.core.dispatch.dto.ProjectFlows">
-		insert into project_flows
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="flow_id != null">
-				flow_id,
-			</if>
-			<if test="project_id != null">
-				project_id,
-			</if>
-			<if test="version != null">
-				version,
-			</if>
-			<if test="modified_time != null">
-				modified_time,
-			</if>
-			<if test="encoding_type != null">
-				encoding_type,
-			</if>
-			<if test="json != null">
-				json,
-			</if>
-		</trim>
-		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="flow_id != null">
-				#{flow_id,jdbcType=VARCHAR},
-			</if>
-			<if test="project_id != null">
-				#{project_id,jdbcType=INTEGER},
-			</if>
-			<if test="version != null">
-				#{version,jdbcType=INTEGER},
-			</if>
-			<if test="modified_time != null">
-				#{modified_time,jdbcType=BIGINT},
-			</if>
-			<if test="encoding_type != null">
-				#{encoding_type,jdbcType=TINYINT},
-			</if>
-			<if test="json != null">
-				#{json,jdbcType=LONGVARBINARY},
-			</if>
-		</trim>
-	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="hdispatch.core.dispatch.dto.ProjectFlows">
-		update project_flows
-		<set>
-			<if test="modified_time != null">
-				modified_time = #{modified_time,jdbcType=BIGINT},
-			</if>
-			<if test="encoding_type != null">
-				encoding_type = #{encoding_type,jdbcType=TINYINT},
-			</if>
-			<if test="json != null">
-				json = #{json,jdbcType=LONGVARBINARY},
-			</if>
-		</set>
-		where flow_id = #{flow_id,jdbcType=VARCHAR}
-		and project_id = #{project_id,jdbcType=INTEGER}
-		and version = #{version,jdbcType=INTEGER}
-	</update>
 	<update id="updateByPrimaryKeyWithBLOBs" parameterType="hdispatch.core.dispatch.dto.ProjectFlows">
 		update project_flows
-		set modified_time = #{modified_time,jdbcType=BIGINT},
-		encoding_type = #{encoding_type,jdbcType=TINYINT},
+		set modified_time = #{modifiedTime,jdbcType=BIGINT},
+		encoding_type = #{encodingType,jdbcType=TINYINT},
 		json = #{json,jdbcType=LONGVARBINARY}
-		where flow_id = #{flow_id,jdbcType=VARCHAR}
-		and project_id = #{project_id,jdbcType=INTEGER}
+		where flow_id = #{flowId,jdbcType=VARCHAR}
+		and project_id = #{projectId,jdbcType=INTEGER}
 		and version = #{version,jdbcType=INTEGER}
 	</update>
 	<update id="updateByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.ProjectFlows">
 		update project_flows
-		set modified_time = #{modified_time,jdbcType=BIGINT},
-		encoding_type = #{encoding_type,jdbcType=TINYINT}
-		where flow_id = #{flow_id,jdbcType=VARCHAR}
-		and project_id = #{project_id,jdbcType=INTEGER}
+		set modified_time = #{modifiedTime,jdbcType=BIGINT},
+		encoding_type = #{encodingType,jdbcType=TINYINT}
+		where flow_id = #{flowId,jdbcType=VARCHAR}
+		and project_id = #{projectId,jdbcType=INTEGER}
 		and version = #{version,jdbcType=INTEGER}
 	</update>
 </mapper>

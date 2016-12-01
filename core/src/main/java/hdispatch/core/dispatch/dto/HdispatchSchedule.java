@@ -2,73 +2,73 @@ package hdispatch.core.dispatch.dto;
 
 
 public class HdispatchSchedule {
-    private Long sch_id;
+    private Long schId;
 
-    private Integer schedule_id;
+    private Integer scheduleId;
 
-    private Integer project_id;
+    private Integer projectId;
 
-    private String flow_id;
+    private String flowId;
 
-    private String submit_date;
+    private String submitDate;
 
-    private String project_name;
+    private String projectName;
     
-    private Long theme_id;
+    private Long themeId;
 
     public Long getTheme_id() {
-        return theme_id;
+        return themeId;
     }
 
     public void setTheme_id(Long theme_id) {
-        this.theme_id = theme_id;
+        this.themeId = theme_id;
     }
 
     public String getProject_name() {
-		return project_name;
+		return projectName;
 	}
 
 	public void setProject_name(String project_name) {
-		this.project_name = project_name;
+		this.projectName = project_name;
 	}
 
 	public Long getSch_id() {
-        return sch_id;
+        return schId;
     }
 
     public void setSch_id(Long sch_id) {
-        this.sch_id = sch_id;
+        this.schId = sch_id;
     }
 
     public Integer getSchedule_id() {
-        return schedule_id;
+        return scheduleId;
     }
 
     public void setSchedule_id(Integer schedule_id) {
-        this.schedule_id = schedule_id;
+        this.scheduleId = schedule_id;
     }
 
     public Integer getProject_id() {
-        return project_id;
+        return projectId;
     }
 
     public void setProject_id(Integer project_id) {
-        this.project_id = project_id;
+        this.projectId = project_id;
     }
 
     public String getFlow_id() {
-        return flow_id;
+        return flowId;
     }
 
     public void setFlow_id(String flow_id) {
-        this.flow_id = flow_id == null ? null : flow_id.trim();
+        this.flowId = flow_id == null ? null : flow_id.trim();
     }
 
     public String getSubmit_date() {
-        return submit_date;
+        return submitDate;
     }
 
     public void setSubmit_date(String submit_date) {
-        this.submit_date = submit_date;
+        this.submitDate = submit_date;
     }
 }

@@ -3,9 +3,9 @@ package hdispatch.core.dispatch.dto;
 public class ExecutionJobsKey {
     private Integer attempt;
 
-    private Integer exec_id;
+    private Integer execId;
 
-    private String job_id;
+    private String jobId;
 
     public Integer getAttempt() {
         return attempt;
@@ -16,18 +16,18 @@ public class ExecutionJobsKey {
     }
 
     public Integer getExec_id() {
-        return exec_id;
+        return execId;
     }
 
     public void setExec_id(Integer exec_id) {
-        this.exec_id = exec_id;
+        this.execId = exec_id;
     }
 
     public String getJob_id() {
-        return job_id;
+        return jobId;
     }
 
     public void setJob_id(String job_id) {
-        this.job_id = job_id == null ? null : job_id.trim();
+        this.jobId = job_id == null ? null : job_id.trim();
     }
 }
