@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>core</artifactId>
+  <artifactId>hdispatch-core</artifactId>
   <packaging>war</packaging>
   <name>core</name>
   <url>http://maven.apache.org</url>
@@ -264,6 +264,9 @@
                   <!--<overlay>-->
                       <!--<groupId>com.hand</groupId>-->
                       <!--<artifactId>hap</artifactId>-->
+                      <!--<excludes>-->
+                          <!--<exclude>**/*.jar</exclude>-->
+                      <!--</excludes>-->
                   <!--</overlay>-->
               <!--</overlays>-->
           </configuration>
