@@ -9,12 +9,10 @@
                 $.each(data.rows, function (key,value) {
                     filter_to_operate_themeIds.push(value.themeId);
                 });
-                console.log(filter_to_operate_themeIds);
             },
             async:false,
             dataType: "json"
         });
-        console.log("加载权限验证数组完毕");
 
         var hasOperationPermission_themeLayer = false;
         $.ajax({
@@ -30,7 +28,6 @@
             async:false,
             dataType: "json"
         });
-        console.log("加载权限验证完毕");
     </script>
     <div>
         <div id="content-container">
@@ -87,56 +84,6 @@
                 $("#btn_parameter_save").removeAttr("disabled","disabled");
                 $("#btn_parameter_calcel").removeAttr("disabled","disabled");
             }
-
-           /* function getSaveOperationType_hdispatch() {
-                return "SAVE_OPERATION_HDISPATCH";
-            }
-            function getDeleteOperationType_hdispatch() {
-                return "DELETE_OPERATION_HDISPATCH";
-            }
-            function saveFunction_grid_hdispatch(gridDivId, gridViewModel) {
-                gridViewModel.grid_operation_type = getSaveOperationType_hdispatch();
-                $("#"+gridDivId).data('kendoGrid').dataSource.sync();
-            }
-            function deleteFunction_grid_hdispatch(gridDivId, gridViewModel,event) {
-//                if(!gridViewModel.grid_operation_type){
-//                    gridViewModel.put("grid_operation_type",getDeleteOperationType_hdispatch());
-//                }
-                event.preventDefault();
-                kendo.ui.showConfirmDialog({
-                    title:$l('hap.tip.info'),
-                    message: $l('hap.tip.delete_confirm')
-                }).done(function(e){
-                    if(e.button == 'OK'){
-                        gridViewModel.grid_operation_type = getDeleteOperationType_hdispatch();
-                        var data = $("#"+gridDivId).data("kendoGrid").dataItem($(event.target).closest("tr"));
-                        $("#"+gridDivId).data("kendoGrid").dataSource.remove(data);
-                        $("#"+gridDivId).data("kendoGrid").dataSource.sync();
-                    }
-                });
-            }
-            function showFeedbackMsg_callback_hdispatch(gridDivId, gridViewModel, responseData) {
-                console.log("回调");
-                console.log(responseData);
-                console.log(gridViewModel.grid_operation_type);
-
-                if((getDeleteOperationType_hdispatch()==gridViewModel.grid_operation_type || getSaveOperationType_hdispatch()==gridViewModel.grid_operation_type) && responseData.success){
-                    kendo.ui.showInfoDialog({
-                        message:'<@spring.message "hap.tip.success"/>'
-                    });
-                    gridViewModel.grid_operation_type = '';
-                }
-                if(getDeleteOperationType_hdispatch()==gridViewModel.grid_operation_type && !responseData.success){
-                    $("#"+gridDivId).data('kendoGrid').cancelChanges();
-                    gridViewModel.grid_operation_type = '';
-                }
-            }
-            function showFeedbackMsgForError_callback_hdispatch(gridDivId, gridViewModel,responseData) {
-                if(getDeleteOperationType_hdispatch()==gridViewModel.grid_operation_type && !responseData.success){
-                    gridViewModel.grid_operation_type = '';
-                    $("#"+gridDivId).data('kendoGrid').cancelChanges();
-                }
-            }*/
 
             var wnd, detailsTemplate;
             var baseUrl_theme = "${base.contextPath}/dispatcher/theme/";
@@ -216,8 +163,6 @@
                                 url: baseUrl_theme+"query" ,
                                 data: map,
                                 success: function (data) {
-                                    console.log("读取的数据");
-                                    console.log(data);
                                     args.success(data);
                                 },
                                 async:true,
@@ -434,7 +379,6 @@
                             }
                         }
                     ],
-                    editable: true,
                     editable: hasOperationPermission_themeLayer,
                     edit: function (e) {
                         if(e.model.themeId){
