@@ -328,23 +328,12 @@
                         {
                             'field': 'themeName',
                             'title':'<@spring.message "hdispatch.theme_name"/>',
-                            'width': "150px",
-//                            editor:themeNameEditor,
-//                            template:"#=themeName#"
+                            'width': "150px"
                         },
-//                        {
-//                            'field': 'themeSequence',
-//                            'title':'<@spring.message "hdispatch.layer.layer_create.layer_sequence"/>',
-//                            'width': "100px",
-//                            editor:themeSequenceEditor,
-//                            template:"#=themeSequence#"
-//                        },
                         {
                             'field': 'themeDescription',
                             'title':'<@spring.message "hdispatch.theme.theme_description"/>',
-                            'width': "200px",
-//                            editor:themeDescEditor,
-//                            template:"#=themeDescription#"
+                            'width': "200px"
                         },
                         {
                             attributes: {style: "text-align:center;padding:0px"},
@@ -379,29 +368,10 @@
                             }
                         }
                     ],
-                    editable: hasOperationPermission_themeLayer,
-                    edit: function (e) {
-                        if(e.model.themeId){
-                            $("#themeName_grid_input").attr("readonly","readonly");
-                            $("#themeDesc_grid_input").attr("readonly","readonly");
-//                            $("#themeSequence_grid_input").attr("readonly","readonly");
-                        }
-                    }
+                    editable: hasOperationPermission_themeLayer
                 });
                 kendo.bind($('#theme-content'),viewModel);
             });
-            function themeDescEditor(container, options) {
-                $('<span class="k-textbox" style="width: 100%;"><input id="themeDesc_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
-                        .appendTo(container);
-            }
-            function themeNameEditor(container, options) {
-                $('<span class="k-textbox" style="width: 100%;"><input id="themeName_grid_input" type="text" name="' + options.field + '" class="k-input k-textbox"/></span>')
-                        .appendTo(container);
-            }
-            function themeSequenceEditor(container, options) {
-                $('<span class="k-textbox" style="width: 100%;"><input id="themeSequence_grid_input" type="number" name="' + options.field + '" class="k-input k-textbox"/></span>')
-                        .appendTo(container);
-            }
 
             function getEdictingRowData(index)
             {
