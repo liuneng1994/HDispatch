@@ -34,7 +34,9 @@
                 <entry key="seqFormat" value="{3}_s.nextVal"/>
             </map>
         </property>
+        <!-- Add by neng.liu@hand-china.com 2016/12/1 reason:由于多个sqlSessionTemplate冲突,需要通过name注入-->
         <property name="sqlSessionTemplateBeanName" value="sqlSession"></property>
+        <!-- End add by -->
     </bean>
 
 

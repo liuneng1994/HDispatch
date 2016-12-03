@@ -1,6 +1,7 @@
 package hdispatch.core.dispatch.controllers;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.util.RequestUtil;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -41,13 +43,14 @@ public class WorkflowController extends BaseController {
      * @return 结果信息
      */
     @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public ResponseData createWorkflow(@RequestBody Workflow workflow) {
+    public ResponseData createWorkflow(@RequestBody Workflow workflow, HttpServletRequest request) {
         logger.info("create workflow {}", workflow);
+        Locale locale = RequestContextUtils.getLocale(request);
         ResponseData responseData;
         if (workflowService.getWorkflowByName(workflow.getName()) != null) {
             logger.info("workflow {} exits", workflow.getName());
             responseData = new ResponseData(false);
-            responseData.setMessage("任务流已存在");
+            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.exist",null,locale));
             return responseData;
         }
         Set<String> jobs = new HashSet<>();
@@ -57,7 +60,7 @@ public class WorkflowController extends BaseController {
         if (jobs.size() < workflow.getJobs().size()) {
             logger.info("workflow {} has duplicated job", workflow);
             responseData = new ResponseData(false);
-            responseData.setMessage("任务流中存在重复的job");
+            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.jobDuplicate",null,locale));
             return responseData;
         }
         Map<String, Object> result = workflowService.createWorkflow(workflow);
@@ -97,20 +100,21 @@ public class WorkflowController extends BaseController {
      * @return 创建是否成功
      */
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
-    public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId) {
+    public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId,HttpServletRequest request) {
         ResponseData responseData;
+        Locale locale = RequestContextUtils.getLocale(request);
         try {
             String result = workflowService.generateWorkflow(workflowId);
             if (StringUtils.isEmpty(result)) {
                 responseData = new ResponseData(true);
-                responseData.setMessage("任务流生成成功");
+                responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.generateSuccess",null,locale));
             } else {
                 responseData = new ResponseData(false);
                 responseData.setMessage(result);
             }
         } catch (JobAbsentException e) {
             responseData = new ResponseData(false);
-            responseData.setMessage(e.getMessage() + "不存在");
+            responseData.setMessage(e.getMessage() + getMessageSource().getMessage("hdispatch.notexist", null, locale));
         }
         return responseData;
     }
@@ -173,12 +177,13 @@ public class WorkflowController extends BaseController {
      * @return
      */
     @RequestMapping(path = "/get", method = RequestMethod.GET)
-    public ResponseData getWorkflow(@RequestParam(name = "workflowId") long workflowId) {
+    public ResponseData getWorkflow(@RequestParam(name = "workflowId") long workflowId, HttpServletRequest request) {
         ResponseData responseData = null;
+        Locale locale = RequestContextUtils.getLocale(request);
         Workflow workflow = workflowService.getWorkflowById(workflowId);
         if (workflow == null) {
             responseData = new ResponseData(false);
-            responseData.setMessage("任务流不存在");
+            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.notexist",null,locale));
         } else {
             responseData = new ResponseData(true);
             responseData.setRows(Collections.singletonList(workflow));
@@ -193,11 +198,12 @@ public class WorkflowController extends BaseController {
      * @return
      */
     @RequestMapping(path = "/update", method = RequestMethod.POST)
-    public ResponseData updateWorkflow(@RequestBody Workflow workflow) {
+    public ResponseData updateWorkflow(@RequestBody Workflow workflow,HttpServletRequest request) {
         ResponseData responseData = null;
+        Locale locale = RequestContextUtils.getLocale(request);
         workflowService.updateWorkFlow(workflow);
         responseData = new ResponseData(true);
-        responseData.setMessage("更新成功");
+        responseData.setMessage(getMessageSource().getMessage("hap.tip.success",null,locale));
         return responseData;
     }
 

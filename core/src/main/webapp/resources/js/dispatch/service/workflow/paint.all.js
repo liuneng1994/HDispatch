@@ -1,5 +1,5 @@
 /**
- * Created by hasee on 2016/10/13.
+ * Created by liuneng on 2016/10/13.
  */
 var Paint = (function (mode) {
     'use strict';
@@ -546,7 +546,7 @@ var Paint = (function (mode) {
     Paint.prototype.addJobNode = function (job, x, y) {
         "use strict";
         if (!this.editable) return;
-        if (this.jobs.getNodeId(job.name)) return;
+        if (this.jobs.getNodeId(job.name)) return -1;
         var node = null;
         switch (job.type) {
             case 'job':

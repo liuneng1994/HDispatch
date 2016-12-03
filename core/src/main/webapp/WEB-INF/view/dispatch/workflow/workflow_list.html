@@ -25,6 +25,7 @@
         });
     </script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/config/ml.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
@@ -60,7 +61,7 @@
                             <div class="panel-body col-sm-offset-0">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">任务组</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.theme_name"/></label>
                                         <div class="col-sm-8 ">
                                             <select name="theme"
                                                     k-ng-model="vm.workflow.themeId"
@@ -76,7 +77,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">层次</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.layer"/></label>
                                         <div class="col-sm-8 ">
                                             <select name="layer"
                                                     k-ng-model="vm.workflow.layerId"
@@ -91,7 +92,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">任务流名称</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.flowname"/></label>
                                         <div class="col-sm-8 ">
                                             <input class="k-textbox" name="workflowName"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -101,7 +102,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">任务流描述</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.description"/></label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="description"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -113,8 +114,8 @@
                         </div>
                     </div>
                     <div class="panel-footer text-right">
-						<span class="btn btn-success" ng-click="vm.search()">查询</span>
-                        <span class="btn btn-default" ng-click="vm.resetQuery()">重置</span>
+						<span class="btn btn-success" ng-click="vm.search()"><@spring.message "hdispatch.query"/></span>
+                        <span class="btn btn-default" ng-click="vm.resetQuery()"><@spring.message "hap.reset"/></span>
                     </div>
                 </form>
             </div>
@@ -124,7 +125,7 @@
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
                         <button class="btn btn-success"
-                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">新建
+                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')"><@spring.message "hdispatch.create"/>
                         </button>
                     </div>
                     <div style="clear:both">

@@ -26,18 +26,19 @@
     <script src="${base.contextPath}/lib/jointJS/joint.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/paint.all.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/config/ml.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowUpdateController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <body ng-app="dispatch" ng-controller="workflowUpdateController as vm">
     <div id="content-container">
-        <div kendo-window="vm.jobWindow" k-title="'添加任务'" k-modal="true" k-width="600"
+        <div kendo-window="vm.jobWindow" k-title="'<@spring.message "hdispatch.workflow.addJob "/>'" k-modal="true" k-width="600"
              k-on-open="vm.jobWindow.visible = true"
              k-on-close="vm.jobWindow.visible = false" k-visible="false">
             <form name="job" class="form-horizontal" style="width:100%" novalidate>
                 <div class="col-sm-10">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">任务名称</label>
+                        <label class="col-sm-2 control-label"><@spring.message "hdispatch.job.job_name"/></label>
                         <div class="col-sm-8">
                             <input type="text" ng-model="vm.newJob.name"
                                    name="jobName" class="k-textbox col-sm-12"
@@ -47,20 +48,20 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">类型</label>
+                        <label class="col-sm-2 control-label"><@spring.message "resource.type"/></label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="theme"
                                     ng-model="vm.newJob.type"
                                     k-on-change="vm.jobTypeChange()"
                                     kendo-drop-down-list
                                     style="padding-left:0;padding-right:0;width:100%;">
-                                <option value="job">任务</option>
-                                <option value="flow">任务流</option>
+                                <option value="job"><@spring.message "hdispatch.workflow.job"/></option>
+                                <option value="flow"><@spring.message "hdispatch.workflow"/></option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group" ng-show="vm.newJob.type=='flow'">
-                        <label class="col-sm-2 control-label">任务组</label>
+                        <label class="col-sm-2 control-label"><@spring.message "hdispatch.theme_name"/></label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="theme"
                                     ng-model="vm.newJob.themeId"
@@ -73,7 +74,7 @@
                         </div>
                     </div>
                     <div class="form-group" ng-show="vm.newJob.type=='flow'">
-                        <label class="col-sm-2 control-label">层次</label>
+                        <label class="col-sm-2 control-label"><@spring.message "hdispatch.layer"/></label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="layer"
                                     ng-model="vm.newJob.layerId"
@@ -86,7 +87,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">源任务</label>
+                        <label class="col-sm-2 control-label"><@spring.message "hdispatch.workflow.jobSource"/></label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="jobSource"
                                     kendo-drop-down-list
@@ -100,9 +101,9 @@
                     <div class="form-group">
                         <div class="text-center">
                             <button class="btn btn-primary" ng-click="vm.createJob()"
-                                    ng-disabled="job.$invalid||!vm.newJob.jobSource">确认
+                                    ng-disabled="job.$invalid||!vm.newJob.jobSource"><@spring.message "hap.confirm"/>
                             </button>
-                            <button class="btn btn-danger" ng-click="vm.resetWindow()">取消</button>
+                            <button class="btn btn-danger" ng-click="vm.resetWindow()"><@spring.message "hap.cancel"/></button>
                         </div>
                     </div>
                 </div>
@@ -115,7 +116,7 @@
                         <div class="panel-body col-sm-offset-0">
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label">任务组</label>
+                                    <label class="col-sm-4 control-label"><@spring.message "hdispatch.theme_name"/></label>
                                     <div class="col-sm-8 ">
                                         <select class="col-sm-12" name="theme"
                                                 k-ng-model="vm.workflow.themeId"
@@ -126,13 +127,13 @@
                                                 k-data-value-field="'themeId'"
                                                 k-data-source="vm.optThemes"
                                                 style="padding-left:0;padding-right:0;width:100%;"></select>
-                                        <span style="color:red;" ng-show="flow.theme.$dirty&&!vm.workflow.themeId">请选择任务组</span>
+                                        <span style="color:red;" ng-show="flow.theme.$dirty&&!vm.workflow.themeId"><@spring.message "hdispatch.workflow.theme.select"/></span>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label">层次</label>
+                                    <label class="col-sm-4 control-label"><@spring.message "hdispatch.layer"/></label>
                                     <div class="col-sm-8 ">
                                         <select name="layer" class="col-sm-12"
                                                 ng-model="vm.workflow.layerId"
@@ -145,7 +146,7 @@
                                                 k-data-source="vm.layers"
                                                 style="padding-left:0;padding-right:0;width:100%;"></select>
                                         <span style="color:red;"
-                                              ng-show="flow.layer.$dirty&&!vm.workflow.layerId">请选择层级</span>
+                                              ng-show="flow.layer.$dirty&&!vm.workflow.layerId"><@spring.message "hdispatch.workflow.layer.select"/></span>
                                     </div>
                                 </div>
                             </div>
@@ -155,7 +156,7 @@
                         <div class="panel-body col-sm-offset-0">
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label">任务流名称</label>
+                                    <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.flowname"/></label>
                                     <div class="col-sm-8 ">
                                         <input class="col-sm-12 k-textbox" name="workflowName"
                                                style="padding-left:0;padding-right:0;width:100%;"
@@ -165,7 +166,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label">任务流描述</label>
+                                    <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.description"/></label>
                                     <div class="col-sm-8 ">
                                         <input class="col-sm-12 k-textbox" name="description"
                                                style="padding-left:0;padding-right:0;width:100%;"
@@ -177,22 +178,22 @@
                     </div>
                 </form>
                 <div class="row">
-                    <button class="btn btn-info" ng-click="vm.jobWindow.center().open()">添加任务</button>
-                    <button class="btn btn-success" ng-click="vm.format()">格式化</button>
-                    <button class="btn btn-danger" ng-click="vm.paint.deleteSelectedNode()">删除</button>
+                    <button class="btn btn-info" ng-click="vm.jobWindow.center().open()"><@spring.message "hdispatch.workflow.addJob "/></button>
+                    <button class="btn btn-success" ng-click="vm.format()"><@spring.message "hdispatch.workflow.format"/></button>
+                    <button class="btn btn-danger" ng-click="vm.paint.deleteSelectedNode()"><@spring.message "hdispatch.delete"/></button>
                     <button class="btn btn-primary" ng-click="vm.save()"
-                            ng-disabled="flow.$invalid||!vm.workflow.themeId||!vm.workflow.layerId">保存
+                            ng-disabled="flow.$invalid||!vm.workflow.themeId||!vm.workflow.layerId"><@spring.message "hap.save"/>
                     </button>
                     <button class="btn btn-info" ng-click="vm.generateWorkflow()" ng-disabled="!vm.workflow.workflowId">
-                        生成
+                        <@spring.message "hdispatch.workflow.generate"/>
                     </button>
-                    <a href="${base.contextPath}/dispatch/workflow/workflow_list.html" class="btn btn-danger">返回列表</a>
+                    <a href="${base.contextPath}/dispatch/workflow/workflow_list.html" class="btn btn-danger"><@spring.message "hdispatch.workflow.returnlist"/></a>
                 </div>
             </div>
             <div id="graphScroll" class="panel col-sm-offset-0" style="overflow: scroll; height:600px;">
                 <div id="graph"></div>
                 <ul id="blankMenu">
-                    <li id="createJob">添加job</li>
+                    <li id="createJob"><@spring.message "hdispatch.workflow.addJob"/></li>
                 </ul>
             </div>
         </div>
