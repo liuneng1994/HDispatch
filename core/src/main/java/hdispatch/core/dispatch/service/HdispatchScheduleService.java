@@ -1,6 +1,7 @@
 package hdispatch.core.dispatch.service;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.ProxySelf;
 import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * created by dengzhilong
  * zhilong.deng@hand-china.com
  */
-public interface HdispatchScheduleService{
+public interface HdispatchScheduleService extends IBaseService<HdispatchSchedule>,ProxySelf<HdispatchScheduleService> {
 
 	/**
 	 * 查询所有的调度计划
@@ -20,20 +21,6 @@ public interface HdispatchScheduleService{
      * @return
      */
 	List<HdispatchSchedule> selectAll(IRequest requestContext,HdispatchSchedule s);
-
-	/**
-	 * 插入调度计划
-	 * @param s
-	 * @return
-     */
-	int insert(HdispatchSchedule s);
-
-	/**
-	 * 删除调度计划
-	 * @param s
-	 * @return
-     */
-	int delete(HdispatchSchedule s);
 
 	/**
 	 * 通过flow和peoject查询调度计划

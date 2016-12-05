@@ -18,17 +18,10 @@ import java.util.List;
  * zhilong.deng@hand-china.com
  */
 @Service
-<<<<<<< HEAD
-@Transactional
-public class HdispatchScheduleServiceImpl implements HdispatchScheduleService{
-	@Autowired
-	HdispatchScheduleMapper mapper;
-=======
 @Transactional("hdispatchTM")
-public class HdispatchScheduleServiceImpl implements HdispatchScheduleService {
+public class HdispatchScheduleServiceImpl extends HdispatchBaseServiceImpl<HdispatchSchedule> implements HdispatchScheduleService {
 @Autowired
 HdispatchScheduleMapper mapper;
->>>>>>> refs/remotes/origin/master
 
 	/**
 	 * 查询所有调度计划
@@ -41,31 +34,6 @@ HdispatchScheduleMapper mapper;
 	public List<HdispatchSchedule> selectAll(IRequest requestContext,HdispatchSchedule s) {
 		// TODO Auto-generated method stub
 		return mapper.selectAll(s);
-	}
-
-	/**
-	 * 插入调度计划
-	 * @param s
-     * @return
-     */
-	@Override
-	@Transactional
-	public int insert(HdispatchSchedule s) {
-		// TODO Auto-generated method stub
-		System.out.println(s.getObjectVersionNumber());
-		return mapper.insert(s);
-	}
-
-	/**
-	 * 删除调度计划
-	 * @param s
-     * @return
-     */
-	@Override
-	@Transactional
-	public int delete(HdispatchSchedule s) {
-		// TODO Auto-generated method stub
-		return mapper.deleteByPrimaryKey(s);
 	}
 
 	/**
