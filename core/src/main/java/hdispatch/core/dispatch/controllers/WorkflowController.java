@@ -60,7 +60,7 @@ public class WorkflowController extends BaseController {
         if (jobs.size() < workflow.getJobs().size()) {
             logger.info("workflow {} has duplicated job", workflow);
             responseData = new ResponseData(false);
-            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.jobDuplicate",null,locale));
+            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.job_duplicate",null,locale));
             return responseData;
         }
         Map<String, Object> result = workflowService.createWorkflow(workflow);
@@ -107,7 +107,7 @@ public class WorkflowController extends BaseController {
             String result = workflowService.generateWorkflow(workflowId);
             if (StringUtils.isEmpty(result)) {
                 responseData = new ResponseData(true);
-                responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.generateSuccess",null,locale));
+                responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.generate_success",null,locale));
             } else {
                 responseData = new ResponseData(false);
                 responseData.setMessage(result);

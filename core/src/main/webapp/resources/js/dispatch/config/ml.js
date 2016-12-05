@@ -8,7 +8,7 @@ function $$l(code, zh, en) {
             $l(code, zh);
             break;
         case 'en_GB' :
-            $l(code.en);
+            $l(code, en);
             break;
     }
 }
@@ -34,3 +34,4 @@ $$l('hdispatch.tip.noAuthority', '没有操作权限', 'do not have operation au
 $$l('hdispatch.tip.noflow','未生成工作流', 'No generated workflow');
 $$l('hdispatch.workflow.scheduleFail','计划失败', 'schedule fail');
 $$l('hdispatch.workflow.scheduleSuccess','计划成功', 'schedule success');
+console.log($l('hdispatch.workflow.scheduleSuccess'));

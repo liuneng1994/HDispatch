@@ -14,7 +14,7 @@
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <body ng-app="dispatch" ng-controller="workflowCreateController as vm">
     <div id="content-container">
-        <div kendo-window="vm.jobWindow" k-title="'<@spring.message "hdispatch.workflow.addJob "/>'" k-modal="true" k-width="600"
+        <div kendo-window="vm.jobWindow" k-title="'<@spring.message "hdispatch.workflow.add_job "/>'" k-modal="true" k-width="600"
              k-on-open="vm.jobWindow.visible = true"
              k-on-close="vm.jobWindow.visible = false" k-visible="false">
             <form name="job" class="form-horizontal" style="width:100%" novalidate>
@@ -66,7 +66,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label"><@spring.message "hdispatch.workflow.jobSource"/></label>
+                        <label class="col-sm-2 control-label"><@spring.message "hdispatch.workflow.job_source"/></label>
                         <div class="col-sm-8 ">
                             <select class="col-sm-12" name="jobSource"
                                     kendo-drop-down-list
@@ -159,7 +159,7 @@
                     </div>
                 </form>
                 <div class="row">
-                    <button class="btn btn-info" ng-click="vm.jobWindow.center().open()"><@spring.message "hdispatch.workflow.addJob "/></button>
+                    <button class="btn btn-info" ng-click="vm.jobWindow.center().open()"><@spring.message "hdispatch.workflow.add_job"/></button>
                     <button class="btn btn-danger" ng-click="vm.paint.deleteSelectedNode()"><@spring.message "hdispatch.delete"/></button>
                     <button class="btn btn-success" ng-click="vm.format()"><@spring.message "hdispatch.workflow.format"/></button>
                     <button class="btn btn-primary" ng-click="vm.save()"
@@ -174,7 +174,7 @@
             <div id="graphScroll" class="panel col-sm-offset-0" style="overflow: scroll; height:600px;">
                 <div id="graph"></div>
                 <ul id="blankMenu">
-                    <li id="createJob"><@spring.message "hdispatch.workflow.addJob"/></li>
+                    <li id="createJob"><@spring.message "hdispatch.workflow.add_job"/></li>
                 </ul>
             </div>
         </div>

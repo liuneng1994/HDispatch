@@ -174,11 +174,11 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
         <div style="width:100%" ng-hide="vm.scheduleFlow.loading>0">
             <div id="scheduleTab" kendo-tab-strip ng-hide="vm.scheduleInfo.loading>0">
                 <ul>
-                    <li class="k-state-active"><@spring.message "hdispatch.workflow.workflowSchedule"/></li>
+                    <li class="k-state-active"><@spring.message "hdispatch.workflow.workflow_schedule"/></li>
                     <li><@spring.message "hdispatch.workflow.preview"/></li>
                     <li><@spring.message "hdispatch.workflow.notification"/></li>
-                    <li><@spring.message "hdispatch.workflow.failureOption"/></li>
-                    <li><@spring.message "hdispatch.workflow.failureOption"/></li>
+                    <li><@spring.message "hdispatch.workflow.failure_option"/></li>
+                    <li><@spring.message "hdispatch.workflow.concurrency_option"/></li>
                 </ul>
                 <div style="padding: 1em">
                     <div class="form-horizontal col-sm-11">
@@ -264,7 +264,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                             </div>
                             <div class="col-sm-1">
                                         <button ng-click="vm.enableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enableall"/></button><br/>
-                                        <button ng-click="vm.disableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disablealll"/></button><br/>
+                                        <button ng-click="vm.disableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disableall"/></button><br/>
                                         <button ng-click="vm.enable(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enable"/></button><br/>
                                         <button ng-click="vm.disable(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disable"/></button>
                             </div>
@@ -319,7 +319,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                 </div>
 
                 <div style="padding: 1em">
-                    <h3><@spring.message "hdispatch.workflow.failureOption"/></h3>
+                    <h3><@spring.message "hdispatch.workflow.failure_option"/></h3>
                     <p>选择一个在流执行时首次失败时的行为</p>
                     <hr>
                     <ul>
@@ -334,7 +334,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                     </select>
                 </div>
                 <div style="padding:1em">
-                    <h3><@spring.message "hdispatch.workflow.failureOption"/></h3>
+                    <h3><@spring.message "hdispatch.workflow.concurrency_option"/></h3>
                     <p>选择流执行时的并发策略</p>
                     <hr>
                     <form action="" class="form-horizontal col-sm-11">
@@ -377,8 +377,8 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             <ul>
                 <li class="k-state-active"><@spring.message "hdispatch.workflow.preview"/></li>
                 <li><@spring.message "hdispatch.workflow.notification"/></li>
-                <li><@spring.message "hdispatch.workflow.failureOption"/></li>
-                <li><@spring.message "hdispatch.workflow.failureOption"/></li>
+                <li><@spring.message "hdispatch.workflow.failure_option"/></li>
+                <li><@spring.message "hdispatch.workflow.concurrency_option"/></li>
             </ul>
             <div style="padding: 1em">
                 <div class="form-horizontal col-sm-11">
@@ -392,7 +392,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                         </div>
                         <div class="col-sm-1">
                             <button ng-click="vm.enableAll(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enableall"/></button><br/>
-                            <button ng-click="vm.disableAll(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disablealll"/></button><br/>
+                            <button ng-click="vm.disableAll(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disableall"/></button><br/>
                             <button ng-click="vm.enable(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enable"/></button><br/>
                             <button ng-click="vm.disable(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disable"/></button>
                         </div>
@@ -449,7 +449,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             </div>
 
             <div style="padding: 1em">
-                <h3><@spring.message "hdispatch.workflow.failureOption"/></h3>
+                <h3><@spring.message "hdispatch.workflow.failure_option"/></h3>
                 <p>选择一个在流执行时首次失败时的行为</p>
                 <hr>
                 <ul>
@@ -464,7 +464,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                 </select>
             </div>
             <div style="padding:1em">
-                <h3><@spring.message "hdispatch.workflow.failureOption"/></h3>
+                <h3><@spring.message "hdispatch.workflow.concurrency_option"/></h3>
                 <p>选择流执行时的并发策略</p>
                 <hr>
                 <form action="" class="form-horizontal col-sm-11">
@@ -570,7 +570,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             <div class="panel">
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
-                        <div class="btn btn-primary" ng-click="vm.cronSchedule()"><@spring.message "hdispatch.workflow.schedule.cronSchedule"/></div>
+                        <div class="btn btn-primary" ng-click="vm.cronSchedule()"><@spring.message "hdispatch.workflow.schedule.cron_schedule"/></div>
                         <div class="btn btn-success" ng-click="vm.execute()"><@spring.message "hdispatch.workflow.execute"/></div>
                     </div>
                     <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
