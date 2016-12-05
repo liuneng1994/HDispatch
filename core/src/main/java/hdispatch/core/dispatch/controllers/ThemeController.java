@@ -5,7 +5,6 @@ import com.hand.hap.core.exception.TokenException;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.theme.Theme;
-import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeService;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
@@ -28,10 +27,6 @@ public class ThemeController extends BaseController {
     private Logger logger = Logger.getLogger(ThemeController.class);
     @Autowired
     private ThemeService themeService;
-    @Autowired
-    private HdispatchAuthorityService hdispatchAuthorityService;
-
-    private  Map<String,String> feedbackMsg;
 
     /**
      * 带分页功能的主题搜索（支持themeName、themeDescription模糊搜索）
@@ -104,14 +99,11 @@ public class ThemeController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/theme/submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
-        if(null == feedbackMsg){
-            initFeedbackMsg(request);
-        }
+    public ResponseData addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) throws Exception {
 
         ResponseData rd = null;
         IRequest requestContext = createRequestContext(request);
-        return new ResponseData(themeService.batchUpdate(requestContext,themeList,feedbackMsg));
+        return new ResponseData(themeService.batchUpdate(requestContext,themeList,initFeedbackMsg(request)));
     }
 
     /**
@@ -123,10 +115,7 @@ public class ThemeController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/theme/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
-        if(null == feedbackMsg){
-            initFeedbackMsg(request);
-        }
+    public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) throws Exception {
 
         ResponseData rd = null;
         IRequest requestContext = createRequestContext(request);
@@ -156,7 +145,7 @@ public class ThemeController extends BaseController {
             return rd;
         }
 
-        return new ResponseData(themeService.batchUpdate(requestContext,themeList,feedbackMsg));
+        return new ResponseData(themeService.batchUpdate(requestContext,themeList,initFeedbackMsg(request)));
     }
 
     /**
@@ -193,10 +182,7 @@ public class ThemeController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/theme/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData updateThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) throws TokenException {
-        if(null == feedbackMsg){
-            initFeedbackMsg(request);
-        }
+    public ResponseData updateThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) throws Exception {
 
         checkToken(request, themeList);
         getValidator().validate(themeList, result);
@@ -210,13 +196,14 @@ public class ThemeController extends BaseController {
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
         IRequest requestContext = createRequestContext(request);
-        rd = new ResponseData(themeService.batchUpdate(requestContext,themeList,feedbackMsg));
+        rd = new ResponseData(themeService.batchUpdate(requestContext,themeList,initFeedbackMsg(request)));
         return rd;
     }
 
-    private void initFeedbackMsg(HttpServletRequest request){
-        feedbackMsg = new HashedMap();
+    private Map<String,String> initFeedbackMsg(HttpServletRequest request){
+        Map<String,String> feedbackMsg = new HashedMap();
         Locale locale = RequestContextUtils.getLocale(request);
         feedbackMsg.put("ALREADY_EXIST",getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale));
+        return feedbackMsg;
     }
 }
