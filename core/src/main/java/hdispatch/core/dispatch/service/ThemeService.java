@@ -47,7 +47,7 @@ public interface ThemeService extends IBaseService<Theme>, ProxySelf<ThemeServic
      * @return
      * @throws Exception
      */
-    List<Theme> batchUpdate(IRequest requestContext, @StdWho List<Theme> themeList, Map<String,String> feedbackMsg);
+    List<Theme> batchUpdate(IRequest requestContext, @StdWho List<Theme> themeList, Map<String,String> feedbackMsg) throws Exception;
 
     /**
      * 逻辑删除主题

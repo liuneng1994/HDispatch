@@ -82,7 +82,7 @@ public class ThemeServiceImpl extends HdispatchBaseServiceImpl<Theme> implements
 
     @Override
     @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
-    public List<Theme> batchUpdate(IRequest requestContext, @StdWho List<Theme> themeList, Map<String, String> feedbackMsg) {
+    public List<Theme> batchUpdate(IRequest requestContext, @StdWho List<Theme> themeList, Map<String, String> feedbackMsg) throws Exception {
         IBaseService<Theme> self = ((IBaseService<Theme>) AopContext.currentProxy());
         Theme themeReturn = null;
         for (Theme theme : themeList) {
@@ -91,7 +91,7 @@ public class ThemeServiceImpl extends HdispatchBaseServiceImpl<Theme> implements
                     case DTOStatus.ADD:
                         themeReturn = themeMapper.selectByNameAndActiveAndId(theme);
                         if(null != themeReturn){
-                            throw new RuntimeException(feedbackMsg.get("ALREADY_EXIST")+":"+theme.getThemeName());
+                            throw new Exception(feedbackMsg.get("ALREADY_EXIST")+":"+theme.getThemeName());
                         }
                         self.insert(requestContext,theme);
                         theme.setThemeActive(1L);
@@ -99,7 +99,7 @@ public class ThemeServiceImpl extends HdispatchBaseServiceImpl<Theme> implements
                     case DTOStatus.UPDATE:
                         themeReturn = themeMapper.selectByNameAndActiveAndId(theme);
                         if(null != themeReturn){
-                            throw new RuntimeException(feedbackMsg.get("ALREADY_EXIST")+":"+theme.getThemeName());
+                            throw new Exception(feedbackMsg.get("ALREADY_EXIST")+":"+theme.getThemeName());
                         }
                         if (useSelectiveUpdate()) {
                             self.updateByPrimaryKeySelective(requestContext, theme);
@@ -161,7 +161,7 @@ public class ThemeServiceImpl extends HdispatchBaseServiceImpl<Theme> implements
         String themeGroupName = ConfigUtil.getThemeLayer_themeGroupName();
         if(null == themeGroupName){
             logger.error("主题和层次（权限控制）：读取不到挂载主题和层次的主题组名称",
-                    new RuntimeException("主题和层次（权限控制）：读取不到挂载主题和层次的主题组名称"));
+                    new Exception("主题和层次（权限控制）：读取不到挂载主题和层次的主题组名称"));
         }
         Long rows = themeMapper.hasOperatePermission(themeGroupName);
         if(null == rows || rows < 1){
