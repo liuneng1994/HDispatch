@@ -1,10 +1,11 @@
 package hdispatch.core.dispatch.mapper;
 
+import com.hand.hap.mybatis.common.BaseMapper;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 
 import java.util.List;
 
-public interface HdispatchScheduleMapper {
+public interface HdispatchScheduleMapper{
     int deleteByPrimaryKey(HdispatchSchedule s);
 
     int insert(HdispatchSchedule record);

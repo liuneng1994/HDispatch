@@ -1,7 +1,9 @@
 package hdispatch.core.dispatch.dto;
 
 
-public class HdispatchSchedule {
+import com.hand.hap.system.dto.BaseDTO;
+
+public class HdispatchSchedule extends BaseDTO{
     private Long schId;
 
     private Integer scheduleId;

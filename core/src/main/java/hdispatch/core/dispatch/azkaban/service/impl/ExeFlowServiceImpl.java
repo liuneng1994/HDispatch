@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * azkaban任务流实现类
  * Created by 邓志龙 on 2016/8/31.
+ * zhilong.deng@hand-china.com
  */
 @Service
 @Transactional
@@ -32,7 +34,14 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 	private static List<ExecutionJobs> list;
 	private static Integer parentId;
 	private static Integer version;
+
+	/**
+	 * 通过projectname获取peojectid
+	 * @param projectName
+	 * @return
+     */
 	@Override
+	@Transactional
 	public Long Fetchflows(String projectName) {
 		try {
 			response = RequestUtils.get(RequestUrl.MANAGER).queryString("ajax", "fetchprojectflows")
@@ -45,7 +54,16 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return response.getBody().getObject().getLong("projectId");
 	}
 
+	/**
+	 * 查询任务流
+	 * @param projectName
+	 * @param flowId
+	 * @param start
+	 * @param length
+     * @return
+     */
 	@Override
+	@Transactional
 	public Object FetchExeFlows(String projectName, String flowId, Integer start, Integer length) {
 		try {
 			response = RequestUtils.get(RequestUrl.MANAGER).queryString("ajax", "fetchFlowExecutions")
@@ -59,11 +77,14 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return response.getBody().getObject();
 	}
 
+	/**
+	 * 执行任务流
+	 * @param map
+	 * @return
+     */
 	@Override
+	@Transactional
 	public ExeFlow ExecuteFlow(Map<String, Object> map) {
-		System.out.println("--------------------------");
-		System.out.println(map);
-		
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "executeFlow").queryString(map)
 					.asJson();
@@ -76,7 +97,13 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return new ExeFlow(response.getBody().getObject());
 	}
 
+	/**
+	 * 查询所有job
+	 * @param map
+     * @return
+     */
 	@Override
+	@Transactional
 	public ExeFlow FetchJobs(Map<String, Object> map) {
 		try {
 			response = RequestUtils.get(RequestUrl.MANAGER).queryString("ajax", "fetchflowgraph").queryString(map)
@@ -89,7 +116,13 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return new ExeFlow(response.getBody().getObject());
 	}
 
+	/**
+	 * 查询正在运行的任务流
+	 * @param map
+     * @return
+     */
 	@Override
+	@Transactional
 	public ExeFlow FetchRunningFlow(Map<String, Object> map) {
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "getRunning").queryString(map)
@@ -102,7 +135,13 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return new ExeFlow(response.getBody().getObject());
 	}
 
+	/**
+	 * 取消任务流的运行
+	 * @param map
+     * @return
+     */
 	@Override
+	@Transactional
 	public ExeFlow CancelFlow(Map<String, Object> map) {
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "cancelFlow").queryString(map)
@@ -112,13 +151,17 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("流不在运行中！");
 			throw new IllegalArgumentException("流不在运行中！", e);
 		}
-
 		return new ExeFlow(response.getBody().getObject());
 	}
 
+	/**
+	 * 暂停任务流的运行
+	 * @param map
+     * @return
+     */
 	@Override
+	@Transactional
 	public ExeFlow PauseFlow(Map<String, Object> map) {
-		System.out.println(map);
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "pauseFlow").queryString(map).asJson();
 
@@ -126,11 +169,16 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 			logger.error("流不在运行中！");
 			throw new IllegalArgumentException("流不在运行中！", e);
 		}
-		System.out.println(response.getBody().getObject());
 		return new ExeFlow(response.getBody().getObject());
 	}
 
+	/**
+	 * 恢复暂停的任务流
+	 * @param map
+     * @return
+     */
 	@Override
+	@Transactional
 	public ExeFlow ResumeFlow(Map<String, Object> map) {
 		try {
 			response = RequestUtils.get(RequestUrl.EXECUTOR).queryString("ajax", "resumeFlow").queryString(map)
@@ -144,7 +192,13 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return new ExeFlow(response.getBody().getObject());
 	}
 
+	/**
+	 * 查找job的日志
+	 * @param map
+     * @return
+     */
 	@Override
+	@Transactional
 	public ResultObj fetchJobLogs(Map<String, Object> map) {
 		ResultObj obj=new ResultObj();
 		try {
@@ -163,6 +217,7 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 	 * 重跑失败流
 	 */
 	@Override
+	@Transactional
 	public ResultObj retryFlow(Map<String, Object> map) {
 		ResultObj obj=new ResultObj();
 		try {
@@ -182,7 +237,13 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return obj;
 	}
 
+	/**
+	 * 获取任务流的job 并解析出来
+	 * @param map
+     * @return
+     */
 	@Override
+	@Transactional
 	public List<ExecutionJobs> getJobsOfFlow(Map<String, Object> map) {
 		ResultObj obj=new ResultObj();
 		try {
@@ -198,6 +259,12 @@ public class ExeFlowServiceImpl implements ExeFlowService {
 		return list;
 	}
 
+	/**
+	 * 递归解析json
+	 * @param obj
+	 * @param parentId
+     * @return
+     */
 	public static List<ExecutionJobs> parseJSON(JSONObject obj,Integer parentId)
 	{
 		if(new exejob(obj).hasNodes())

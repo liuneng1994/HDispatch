@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @RequestMapping("/depflows")
@@ -31,6 +33,7 @@ public class DepFlowsController extends BaseController {
 	@ResponseBody
 	public ResponseData insertDep(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
+		Locale locale = RequestContextUtils.getLocale(request);
 		ResponseData result = null;
 		result = new ResponseData(true);
 		String message="";
@@ -38,11 +41,11 @@ public class DepFlowsController extends BaseController {
 			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			if(service.isExitDep(flow)>0)
 			{
-				message+=flow.getFlow_id()+"设置依赖重复  ";
+				message+=flow.getFlow_id()+getMessageSource().getMessage("hdispatch.depflow.set_dep.error_duplicate", null, locale);
 			}else
 			{
 			int i=service.insertDep(flow);
-			message+=flow.getFlow_id()+"设置成功  ";
+			message+=flow.getFlow_id()+getMessageSource().getMessage("hdispatch.create_success", null, locale);
 			}
 		}
 		result.setMessage(message);
@@ -58,6 +61,7 @@ public class DepFlowsController extends BaseController {
 	@ResponseBody
 	public ResponseData insertMut(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
+		Locale locale = RequestContextUtils.getLocale(request);
 		ResponseData obj= null;
 		obj = new ResponseData(true);
 		String message="";
@@ -65,11 +69,11 @@ public class DepFlowsController extends BaseController {
 			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			if(service.isExitMut(flow)>0)
 			{
-				message+=flow.getFlow_id()+"设置互斥重复  ";
+				message+=flow.getFlow_id()+getMessageSource().getMessage("hdispatch.depflow.set_dep.error_duplicate", null, locale);
 			}else
 			{
 			int i=service.insertMut(flow);
-			message+=flow.getFlow_id()+"设置成功  ";
+			message+=flow.getFlow_id()+getMessageSource().getMessage("hdispatch.create_success", null, locale);
 			}
 		}
 		obj.setMessage(message);
@@ -85,12 +89,13 @@ public class DepFlowsController extends BaseController {
 	@ResponseBody
 	public ResponseData deleteDep(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
+		Locale locale = RequestContextUtils.getLocale(request);
 		ResponseData obj= null;
 		String message="";
 		for (DepFlows flow:flows) {
 			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			service.deleteDep(flow);
-			message+=flow.getFlow_id()+"刪除成功  ";
+			message+=flow.getFlow_id()+getMessageSource().getMessage("hdispatch.tip.delete_success",null,locale);
 			obj=new ResponseData(true);
 		}
 		obj.setMessage(message);
@@ -106,12 +111,13 @@ public class DepFlowsController extends BaseController {
 	@ResponseBody
 	public ResponseData deleteMut(HttpServletRequest request, @RequestBody List<DepFlows>flows)
 	{
+		Locale locale = RequestContextUtils.getLocale(request);
 		ResponseData obj= null;
 		String message="";
 		for (DepFlows flow:flows) {
 			flow.setProject_id(service.selectIdByName(flow.getProject_name()));
 			service.deleteMut(flow);
-			message+=flow.getFlow_id()+"刪除成功  ";
+			message+=flow.getFlow_id()+getMessageSource().getMessage("hdispatch.tip.delete_success",null,locale);
 			obj=new ResponseData(true);
 		}
 		obj.setMessage(message);

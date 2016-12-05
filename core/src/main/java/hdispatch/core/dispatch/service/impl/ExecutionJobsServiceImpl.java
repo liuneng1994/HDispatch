@@ -9,17 +9,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * azkaban作业实现类
+ * created by dengzhilong
+ * zhilong.deng@hand-china.com
+ */
 @Service
 @Transactional
 public class ExecutionJobsServiceImpl implements ExecutionJobsService {
-@Autowired
-ExecutionJobsMapper mapper;
+	@Autowired
+	ExecutionJobsMapper mapper;
 
-@Override
-public List<ExecutionJobs> selectJobsByFlow(ExecutionJobs exe) {
-	// TODO Auto-generated method stub
-	return mapper.selectJobsByFlow(exe);
-}
+	/**
+	 * 通过流查询作业列表
+	 * @param exe
+     * @return
+     */
+	@Override
+	@Transactional
+	public List<ExecutionJobs> selectJobsByFlow(ExecutionJobs exe) {
+		// TODO Auto-generated method stub
+		return mapper.selectJobsByFlow(exe);
+	}
 
 
 

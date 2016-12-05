@@ -11,14 +11,26 @@ import com.hand.hap.core.IRequest;
 
 import java.util.List;
 
+/**
+ * 任务流实现类
+ * created by dengzhilong
+ * zhilong.deng@hand-china.com
+ */
 @Service
 @Transactional
 public class ExecutionFlowsServiceImpl implements ExecutionFlowsService {
-@Autowired
-ExecutionFlowsMapper mapper;
+	@Autowired
+	ExecutionFlowsMapper mapper;
 
-@Override
-public List<ExecutionFlows> selectAll(IRequest requestContext,ExecutionFlows exe) {
-	return mapper.selectAllExes(exe);
-}
+	/**
+	 * 查询所有流
+ 	 * @param requestContext
+	 * @param exe
+     * @return
+     */
+	@Override
+	@Transactional
+	public List<ExecutionFlows> selectAll(IRequest requestContext,ExecutionFlows exe) {
+		return mapper.selectAllExes(exe);
+	}
 }

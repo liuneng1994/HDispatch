@@ -1,6 +1,8 @@
 package hdispatch.core.dispatch.service.impl;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.annotation.StdWho;
+import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.mapper.HdispatchScheduleMapper;
 import hdispatch.core.dispatch.service.HdispatchScheduleService;
@@ -10,35 +12,64 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * 调度实现类
+ * created by dengzhilong
+ * zhilong.deng@hand-china.com
+ */
 @Service
 @Transactional
-public class HdispatchScheduleServiceImpl implements HdispatchScheduleService {
-@Autowired
-HdispatchScheduleMapper mapper;
+public class HdispatchScheduleServiceImpl implements HdispatchScheduleService{
+	@Autowired
+	HdispatchScheduleMapper mapper;
 
-@Override
-public List<HdispatchSchedule> selectAll(IRequest requestContext,HdispatchSchedule s) {
-	// TODO Auto-generated method stub
-	return mapper.selectAll(s);
-}
+	/**
+	 * 查询所有调度计划
+	 * @param requestContext
+	 * @param s
+     * @return
+     */
+	@Override
+	@Transactional
+	public List<HdispatchSchedule> selectAll(IRequest requestContext,HdispatchSchedule s) {
+		// TODO Auto-generated method stub
+		return mapper.selectAll(s);
+	}
 
-@Override
-public int insert(HdispatchSchedule s) {
-	// TODO Auto-generated method stub
-	return mapper.insert(s);
-}
+	/**
+	 * 插入调度计划
+	 * @param s
+     * @return
+     */
+	@Override
+	@Transactional
+	public int insert(HdispatchSchedule s) {
+		// TODO Auto-generated method stub
+		System.out.println(s.getObjectVersionNumber());
+		return mapper.insert(s);
+	}
 
-@Override
-public int delete(HdispatchSchedule s) {
-	// TODO Auto-generated method stub
-	return mapper.deleteByPrimaryKey(s);
-}
+	/**
+	 * 删除调度计划
+	 * @param s
+     * @return
+     */
+	@Override
+	@Transactional
+	public int delete(HdispatchSchedule s) {
+		// TODO Auto-generated method stub
+		return mapper.deleteByPrimaryKey(s);
+	}
 
-@Override
-public int selectByFlowAndProject(HdispatchSchedule s) {
-	// TODO Auto-generated method stub
-	return mapper.selectByFlowAndProject(s).size();
-}
-
-
+	/**
+	 * 通过flow和project查询调度计划的数量
+	 * @param
+     * @return
+     */
+	@Override
+	@Transactional
+	public int selectByFlowAndProject(HdispatchSchedule s) {
+		// TODO Auto-generated method stub
+		return mapper.selectByFlowAndProject(s).size();
+	}
 }
