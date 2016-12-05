@@ -6,6 +6,7 @@ import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.layer.Layer;
 import hdispatch.core.dispatch.service.LayerService;
 import hdispatch.core.dispatch.service.ThemeService;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 层次控制器<br>
@@ -102,7 +104,7 @@ public class LayerController extends BaseController {
      */
     @RequestMapping(path = "/dispatcher/layer/submit",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData addLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request){
+    public ResponseData addLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) throws Exception {
         ResponseData rd = null;
         //后台验证
         getValidator().validate(layerList, result);
@@ -111,39 +113,40 @@ public class LayerController extends BaseController {
             rd.setMessage(getErrorMessage(result, request));
             return rd;
         }
-        //从后台判断是否存在
-        boolean[] isExist = layerService.checkIsExist(layerList);
-        StringBuilder sb = new StringBuilder();
-        boolean flag = false;
-        for(int i = 0; i < layerList.size(); i++){
-            if(isExist[i]){
-                if(!flag){
-                    sb.append(layerList.get(i).getLayerName());
-                }
-                else {
-                    sb.append(","+layerList.get(i).getLayerName());
-                }
-                flag = true;
-            }
-        }
-        //获取语言环境
-        Locale locale = RequestContextUtils.getLocale(request);
-        if(flag){
-            rd = new ResponseData(false);
-            //以下层已经存在
-//            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.layer_already_exist",null,locale);
-            String errorMsg = getMessageSource().getMessage("hdispatch.server.error_tips.already_exist",null,locale);
-            rd.setMessage(errorMsg+":"+sb.toString());
-            return rd;
-        }
+//        //从后台判断是否存在
+//        boolean[] isExist = layerService.checkIsExist(layerList);
+//        StringBuilder sb = new StringBuilder();
+//        boolean flag = false;
+//        for(int i = 0; i < layerList.size(); i++){
+//            if(isExist[i]){
+//                if(!flag){
+//                    sb.append(layerList.get(i).getLayerName());
+//                }
+//                else {
+//                    sb.append(","+layerList.get(i).getLayerName());
+//                }
+//                flag = true;
+//            }
+//        }
+//        //获取语言环境
+//        Locale locale = RequestContextUtils.getLocale(request);
+//        if(flag){
+//            rd = new ResponseData(false);
+//            //以下层已经存在
+////            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.layer_already_exist",null,locale);
+//            String errorMsg = getMessageSource().getMessage("hdispatch.server.error_tips.already_exist",null,locale);
+//            rd.setMessage(errorMsg+":"+sb.toString());
+//            return rd;
+//        }
         IRequest requestContext = createRequestContext(request);
 
-        try {
-            rd = new ResponseData(layerService.batchUpdate(requestContext, layerList));
-        } catch (Exception e) {
-            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_during_create_layer",null,locale);
-            logger.error(errorMsg,e);
-        }
+//        try {
+//            rd = new ResponseData(layerService.batchUpdate(requestContext, layerList));
+//        } catch (Exception e) {
+//            String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_during_create_layer",null,locale);
+//            logger.error(errorMsg,e);
+//        }
+        rd = new ResponseData(layerService.batchUpdate(requestContext,layerList,initFeedbackMsg(request)));
         return rd;
     }
 
@@ -158,7 +161,6 @@ public class LayerController extends BaseController {
     @RequestMapping(value = "/dispatcher/layer/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) throws Exception {
-
         ResponseData rd = null;
         //后台验证
         getValidator().validate(layerList, result);
@@ -170,21 +172,22 @@ public class LayerController extends BaseController {
         IRequest requestContext = createRequestContext(request);
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
-        try{
-            rd = new ResponseData(layerService.batchUpdate(requestContext,layerList));
-        }catch (Exception e){
-            rd = new ResponseData(false);
-            if(LayerService.DUPLICATE_LAYER_NAME_UNDER_THEME.equals(e.getMessage())){
-                String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_duplicate_layer_under_theme",null,locale);
-                logger.error(errorMsg,e);
-                rd.setMessage(errorMsg);
-
-//                throw new Exception(errorMsg,e);
-            }else {
-//                throw e;
-            }
-            return rd;
-        }
+//        try{
+//            rd = new ResponseData(layerService.batchUpdate(requestContext,layerList));
+//        }catch (Exception e){
+//            rd = new ResponseData(false);
+//            if(LayerService.DUPLICATE_LAYER_NAME_UNDER_THEME.equals(e.getMessage())){
+//                String errorMsg = getMessageSource().getMessage("hdispatch.layer.layer_create.error_duplicate_layer_under_theme",null,locale);
+//                logger.error(errorMsg,e);
+//                rd.setMessage(errorMsg);
+//
+////                throw new Exception(errorMsg,e);
+//            }else {
+////                throw e;
+//            }
+//            return rd;
+//        }
+        rd = new ResponseData(layerService.batchUpdate(requestContext,layerList,initFeedbackMsg(request)));
         return rd;
     }
 
@@ -193,8 +196,7 @@ public class LayerController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/layer/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData deleteLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) {
-
+    public ResponseData deleteLayers(@RequestBody List<Layer> layerList, BindingResult result, HttpServletRequest request) throws Exception {
         ResponseData rd = null;
 
         IRequest requestContext = createRequestContext(request);
@@ -216,17 +218,28 @@ public class LayerController extends BaseController {
             return rd;
         }
 
-        try {
-            layerService.batchUpdate(requestContext, layerList);
-            rd = new ResponseData(true);
-            rd.setMessage("success");
-        } catch (Exception e) {
-            String errorMsg = getMessageSource().getMessage("hdispatch.error_during_deleting", null, locale);
-            logger.error(errorMsg, e);
-            rd = new ResponseData(false);
-            rd.setMessage(errorMsg);
-            return rd;
-        }
+//        try {
+//            layerService.batchUpdate(requestContext, layerList);
+//            rd = new ResponseData(true);
+//            rd.setMessage("success");
+//        } catch (Exception e) {
+//            String errorMsg = getMessageSource().getMessage("hdispatch.error_during_deleting", null, locale);
+//            logger.error(errorMsg, e);
+//            rd = new ResponseData(false);
+//            rd.setMessage(errorMsg);
+//            return rd;
+//        }
+        rd = new ResponseData(layerService.batchUpdate(requestContext,layerList,initFeedbackMsg(request)));
         return rd;
+    }
+
+
+    private Map<String,String> initFeedbackMsg(HttpServletRequest request){
+        Map<String,String> feedbackMsg = new HashedMap();
+        Locale locale = RequestContextUtils.getLocale(request);
+        feedbackMsg.put("ALREADY_EXIST",getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale));
+        feedbackMsg.put("ALREADY_EXIST_LAYER_UNDER_THEME",getMessageSource().getMessage("hdispatch.layer.layer_create.error_duplicate_layer_under_theme",null,locale));
+
+        return feedbackMsg;
     }
 }

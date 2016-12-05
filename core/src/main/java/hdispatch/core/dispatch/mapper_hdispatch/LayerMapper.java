@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.mapper_hdispatch;
 
+import com.hand.hap.mybatis.common.Mapper;
 import hdispatch.core.dispatch.dto.layer.Layer;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by yyz on 2016/9/7.
  * @author yazheng.yang@hand-china.com
  */
-public interface LayerMapper {
+public interface LayerMapper extends Mapper<Layer> {
     /**
      * 新建层
      * @param layer

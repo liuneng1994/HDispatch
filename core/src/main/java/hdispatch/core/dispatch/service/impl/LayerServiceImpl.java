@@ -3,20 +3,25 @@ package hdispatch.core.dispatch.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
+import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.layer.Layer;
+import hdispatch.core.dispatch.dto.theme.Theme;
 import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.mapper_hdispatch.JobMapper;
 import hdispatch.core.dispatch.mapper_hdispatch.LayerMapper;
 import hdispatch.core.dispatch.mapper_hdispatch.WorkflowMapper;
 import hdispatch.core.dispatch.service.LayerService;
 import org.apache.log4j.Logger;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 层次service接口实现类<br>
@@ -24,7 +29,7 @@ import java.util.List;
  * yazheng.yang@hand-china.com
  */
 @Service
-public class LayerServiceImpl implements LayerService {
+public class LayerServiceImpl extends HdispatchBaseServiceImpl<Layer> implements LayerService {
     private Logger logger = Logger.getLogger(LayerServiceImpl.class);
     @Autowired
     private LayerMapper layerMapper;
@@ -32,22 +37,22 @@ public class LayerServiceImpl implements LayerService {
     private JobMapper jobMapper;
     @Autowired
     private WorkflowMapper workflowMapper;
-    /**
-     * 创建层次
-     * @param layer
-     * @return
-     */
-    @Override
-    @Transactional("hdispatchTM")
-    public boolean create(Layer layer) {
-        try{
-            layerMapper.save(layer);
-        } catch (Exception e) {
-            logger.error("保存层失败",e);
-            return false;
-        }
-        return true;
-    }
+//    /**
+//     * 创建层次
+//     * @param layer
+//     * @return
+//     */
+//    @Override
+//    @Transactional("hdispatchTM")
+//    public boolean create(Layer layer) {
+//        try{
+//            layerMapper.save(layer);
+//        } catch (Exception e) {
+//            logger.error("保存层失败",e);
+//            return false;
+//        }
+//        return true;
+//    }
 
     /**
      * 批量编辑（增、删、改）
@@ -57,13 +62,17 @@ public class LayerServiceImpl implements LayerService {
      * @throws Exception
      */
     @Override
-    @Transactional("hdispatchTM")
-    public List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList) throws Exception {
+    @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
+    public List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList, Map<String,String> feedbackMsg) throws Exception {
+        IBaseService<Layer> self = ((IBaseService<Layer>) AopContext.currentProxy());
         for (Layer layer : layerList) {
             if (layer.get__status() != null) {
                 switch (layer.get__status()) {
                     case DTOStatus.ADD:
-                        layerMapper.save(layer);
+                        if(isAlreadyExistLayer(layer)){
+                            throw new Exception(feedbackMsg.get("ALREADY_EXIST")+":"+layer.getLayerName());
+                        }
+                        self.insert(requestContext,layer);
                         layer.setLayerActive(1L);
                         break;
                     case DTOStatus.UPDATE:
@@ -72,16 +81,17 @@ public class LayerServiceImpl implements LayerService {
                         Layer layer1FromDb = layerMapper.selectById(layer);
                         if(null == layer1FromDb){
                             logger.error("illegal access for missing layer_id",new Exception("illegal access for missing layer_id"));
+                            throw new RuntimeException("illegal access for missing layer_id");
                         }else {
                             if(layer.getLayerName().equals(layer1FromDb.getLayerName())){
-                                layerMapper.update(layer);
+                                self.updateByPrimaryKey(requestContext,layer);
                             }else {
                                 Layer layerReturn = layerMapper.selectByNameAndActiveAndThemeId(layer);
                                 if(null != layerReturn){
-                                    throw new Exception(DUPLICATE_LAYER_NAME_UNDER_THEME);
+                                    throw new RuntimeException(feedbackMsg.get("ALREADY_EXIST")+":"+layer.getLayerName());
                                 }
                                 else {
-                                    layerMapper.update(layer);
+                                    self.updateByPrimaryKey(requestContext,layer);
                                 }
                             }
                         }
@@ -98,31 +108,11 @@ public class LayerServiceImpl implements LayerService {
     }
 
     /**
-     * 检查在当前主题下是否已经存在同名的层
-     * @param layerList
-     * @return
-     */
-    @Override
-    @Transactional("hdispatchTM")
-    public boolean[] checkIsExist(List<Layer> layerList) {
-        boolean[] isExist = new boolean[layerList.size()];
-        int i = 0;
-        for(Layer layer : layerList){
-            Layer layerReturn = layerMapper.selectByNameAndActiveAndThemeId(layer);
-            if(null != layerReturn){
-                isExist[i] = true;
-            }
-            i ++;
-        }
-        return isExist;
-    }
-
-    /**
      * 逻辑删除（在数据库中将active字段设置为1）
      * @param layer
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
     public void deleteInLogic(Layer layer) {
         if(null != layer){
             layerMapper.deleteInLogic(layer);
@@ -138,11 +128,10 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public List<Layer> selectActiveLayersByThemeId(IRequest requestContext, int page, int pageSize, Layer layer) {
-        PageHelper.startPage(page, pageSize);
-        List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
-        return layerList;
+        layer.setLayerActive(1L);
+        return super.select(requestContext,layer,page,pageSize);
     }
 
     /**
@@ -152,21 +141,10 @@ public class LayerServiceImpl implements LayerService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext, Layer layer) {
         List<Layer> layerList = layerMapper.selectActiveLayersUnderTheme(layer);
-        return layerList;
-    }
 
-    /**
-     * 获取所有主题下的所有层次
-     * @param requestContext
-     * @return
-     */
-    @Override
-    @Transactional("hdispatchTM")
-    public List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext) {
-        List<Layer> layerList = layerMapper.selectAllActiveLayers();
         return layerList;
     }
 
@@ -178,7 +156,7 @@ public class LayerServiceImpl implements LayerService {
      * @return 挂载任务或任务流的层次列表
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public List<Layer> checkIsMountJobOrWorkflow(List<Layer> layerList) {
         List<Layer> returnList = new ArrayList<>();
         for(Layer layer : layerList){
@@ -195,5 +173,10 @@ public class LayerServiceImpl implements LayerService {
             }
         }
         return returnList;
+    }
+
+    private boolean isAlreadyExistLayer(Layer layer){
+        Layer layerReturn = layerMapper.selectByNameAndActiveAndThemeId(layer);
+        return null != layerReturn;
     }
 }
