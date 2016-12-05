@@ -9,6 +9,7 @@ import hdispatch.core.dispatch.dto.authority.ThemeGroupTheme;
 import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeGroupService;
 import hdispatch.core.dispatch.service.ThemeGroupThemeService;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 任务组控制器<br>
@@ -91,14 +93,7 @@ public class ThemeGroupController  extends BaseController {
         IRequest requestContext = createRequestContext(request);
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
-        rd = new ResponseData(themeGroupService.batchUpdate(requestContext, themeList));
-//        try {
-//            rd = new ResponseData(themeGroupService.batchUpdate(requestContext, themeList));
-//        } catch (Exception e) {
-//            //保存主题中途失败
-//            String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.error_during_saving", null, locale);
-//            logger.error(errorMsg, e);
-//        }
+        rd = new ResponseData(themeGroupService.batchUpdate(requestContext, themeList,initFeedbackMsg(request)));
         return rd;
     }
 
@@ -122,7 +117,7 @@ public class ThemeGroupController  extends BaseController {
             return rd;
         }
         IRequest requestContext = createRequestContext(request);
-        rd = new ResponseData(themeGroupService.batchUpdate(requestContext,themeGroupList));
+        rd = new ResponseData(themeGroupService.batchUpdate(requestContext,themeGroupList,initFeedbackMsg(request)));
         return rd;
     }
 
@@ -147,7 +142,9 @@ public class ThemeGroupController  extends BaseController {
             return rd;
         }
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("无法移除，挂载的主题或用户需要先移除掉：");
+        Locale locale = RequestContextUtils.getLocale(request);
+        String tipsMsg = getMessageSource().getMessage("hdispatch.themegroup.delete.tips", null, locale);
+        stringBuilder.append(tipsMsg+":");
         for(ThemeGroup group : cannotRemove){
             stringBuilder.append(group.getThemeGroupName()+",");
         }
@@ -400,5 +397,12 @@ public class ThemeGroupController  extends BaseController {
         rd = new ResponseData(hdispatchAuthorityService.batchUpdate(requestContext, filterList));
         return rd;
     }
+    private Map<String,String> initFeedbackMsg(HttpServletRequest request){
+        Map<String,String> feedbackMsg = new HashedMap();
+        Locale locale = RequestContextUtils.getLocale(request);
+        feedbackMsg.put("ALREADY_EXIST",getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale));
+        feedbackMsg.put("DELETE_MOUNT_THINGS_FIRST",getMessageSource().getMessage("hdispatch.themegroup.delete.tips", null, locale));
 
+        return feedbackMsg;
+    }
 }

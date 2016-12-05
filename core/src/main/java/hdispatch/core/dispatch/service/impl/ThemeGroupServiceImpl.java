@@ -3,14 +3,17 @@ package hdispatch.core.dispatch.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
+import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.authority.ThemeGroup;
 import hdispatch.core.dispatch.mapper_hdispatch.HdispatchAuthorityMapper;
 import hdispatch.core.dispatch.mapper_hdispatch.ThemeGroupMapper;
 import hdispatch.core.dispatch.mapper_hdispatch.ThemeGroupThemeMapper;
 import hdispatch.core.dispatch.service.ThemeGroupService;
 import org.apache.log4j.Logger;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -23,7 +26,7 @@ import java.util.Map;
  * @author yazheng.yang@hand-china.com
  */
 @Service
-public class ThemeGroupServiceImpl implements ThemeGroupService {
+public class ThemeGroupServiceImpl extends HdispatchBaseServiceImpl<ThemeGroup> implements ThemeGroupService {
     private Logger logger = Logger.getLogger(ThemeGroupServiceImpl.class);
     @Autowired
     private ThemeGroupMapper themeGroupMapper;
@@ -41,11 +44,9 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize) {
-        PageHelper.startPage(page, pageSize);
-        List<ThemeGroup> result = themeGroupMapper.selectByThemeGroup(themeGroup);
-        return result;
+        return super.select(requestContext,themeGroup,page,pageSize);
     }
 
     /**
@@ -55,19 +56,19 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
-    public List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList) {
+    @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
+    public List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList, Map<String,String> feedbackMsg) {
+        IBaseService<ThemeGroup> self = ((IBaseService<ThemeGroup>) AopContext.currentProxy());
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {
                 switch (themeGroup.get__status()) {
                     case DTOStatus.ADD:
-                        themeGroupMapper.save(themeGroup);
+                        self.insert(requestContext,themeGroup);
                         break;
                     case DTOStatus.UPDATE:
-                        themeGroupMapper.updateById(themeGroup);
+                        self.updateByPrimaryKey(requestContext,themeGroup);
                         break;
                     case DTOStatus.DELETE:
-
                         break;
                     default:
                         break;
@@ -85,7 +86,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @param cannotRemoveList 不可以删除的列表
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
     public List<ThemeGroup> batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {
@@ -110,6 +111,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @param themeGroup
      * @return false:can not remove;true:can remove
      */
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     private boolean canRemove(ThemeGroup themeGroup){
         Map<String,Object> themeMap = new HashMap();
         themeMap.put("themeGroupId",themeGroup.getThemeGroupId());

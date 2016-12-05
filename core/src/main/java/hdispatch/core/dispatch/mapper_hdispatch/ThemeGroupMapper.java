@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.mapper_hdispatch;
 
+import com.hand.hap.mybatis.common.Mapper;
 import hdispatch.core.dispatch.dto.authority.ThemeGroup;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by yyz on 2016/10/14.
  * @author yazheng.yang@hand-china.com
  */
-public interface ThemeGroupMapper {
+public interface ThemeGroupMapper extends Mapper<ThemeGroup> {
 
     void save(ThemeGroup themeGroup);
     List<ThemeGroup> selectAll();

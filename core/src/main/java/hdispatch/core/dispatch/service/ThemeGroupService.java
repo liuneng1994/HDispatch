@@ -1,16 +1,19 @@
 package hdispatch.core.dispatch.service;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.ProxySelf;
+import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.authority.ThemeGroup;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务组service接口<br>
  * Created by yyz on 2016/10/17.
  * @author yazheng.yang@hand-china.com
  */
-public interface ThemeGroupService {
+public interface ThemeGroupService extends IBaseService<ThemeGroup>, ProxySelf<ThemeGroupService> {
     /**
      * 根据任务组模糊查询
      * @param requestContext
@@ -27,7 +30,7 @@ public interface ThemeGroupService {
      * @param themeGroupList
      * @return
      */
-    List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList);
+    List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList, Map<String,String> feedbackMsg);
 
     /**
      * 批量删除任务组,<br>
