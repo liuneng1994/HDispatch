@@ -2,8 +2,8 @@ package hdispatch.core.dispatch.service.impl;
 
 import hdispatch.core.dispatch.dto.workflow.AzkabanFlowDependency;
 import hdispatch.core.dispatch.dto.workflow.WorkflowDependency;
-import hdispatch.core.dispatch.mapper.AzkabanProjectMapper;
-import hdispatch.core.dispatch.mapper.WorkflowDependencyMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.AzkabanProjectMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.WorkflowDependencyMapper;
 import hdispatch.core.dispatch.service.WorkflowDependencyService;
 import hdispatch.core.dispatch.utils.StringUtils;
 import javafx.util.Pair;

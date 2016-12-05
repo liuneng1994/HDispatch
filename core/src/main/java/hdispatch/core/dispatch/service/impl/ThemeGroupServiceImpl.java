@@ -4,15 +4,14 @@ import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.ThemeGroup;
-import hdispatch.core.dispatch.mapper.HdispatchAuthorityMapper;
-import hdispatch.core.dispatch.mapper.ThemeGroupMapper;
-import hdispatch.core.dispatch.mapper.ThemeGroupThemeMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.HdispatchAuthorityMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ThemeGroupMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ThemeGroupThemeMapper;
 import hdispatch.core.dispatch.service.ThemeGroupService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +41,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroup> selectByThemeGroup(IRequest requestContext, ThemeGroup themeGroup, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         List<ThemeGroup> result = themeGroupMapper.selectByThemeGroup(themeGroup);
@@ -56,7 +55,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroup> batchUpdate(IRequest requestContext, List<ThemeGroup> themeGroupList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {
@@ -86,7 +85,7 @@ public class ThemeGroupServiceImpl implements ThemeGroupService {
      * @param cannotRemoveList 不可以删除的列表
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroup> batchDelete(IRequest requestContext, List<ThemeGroup> themeGroupList, List<ThemeGroup> cannotRemoveList) {
         for (ThemeGroup themeGroup : themeGroupList) {
             if (themeGroup.get__status() != null) {

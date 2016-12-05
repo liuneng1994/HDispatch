@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import hdispatch.core.dispatch.dto.ProjectFlows;
-import hdispatch.core.dispatch.mapper.ProjectFlowsMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ProjectFlowsMapper;
 import hdispatch.core.dispatch.service.ProjectFlowsService;
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ProjectFlowsServiceImpl implements ProjectFlowsService {
 @Autowired
 ProjectFlowsMapper mapper;

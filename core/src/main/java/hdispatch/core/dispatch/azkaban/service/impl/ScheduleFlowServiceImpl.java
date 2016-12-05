@@ -22,7 +22,7 @@ import java.util.Map;
  * zhilong.deng@hand-china.com
  */
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ScheduleFlowServiceImpl implements ScheduleFlowService {
     private static Logger logger = Logger.getLogger(ScheduleFlowService.class);
     private HttpResponse<JsonNode> response;

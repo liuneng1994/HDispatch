@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.DepFlowsMapper" >
+  <resultMap id="BaseResultMap" type="hdispatch.core.dispatch.dto.DepFlows" >
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="dep_flow_id" property="depFlowId" jdbcType="VARCHAR" />
+     <result column="mut_flow_id" property="mutFlowId" jdbcType="VARCHAR" />
+    <result column="submit_date" property="submitDate" jdbcType="DATE" />
+    <result column="project_id" property="projectId" jdbcType="INTEGER" />
+    <result column="dep_project_id" property="depProjectId" jdbcType="INTEGER" />
+     <result column="mut_project_id" property="mutProjectId" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="selectDepWithId" resultMap="BaseResultMap">
+  		select flow_id, dep_flow_id, submit_date, 
+      project_id, dep_project_id from dep_flows where flow_id=#{param1}
+      and project_id=#{param2}
+      and TO_DAYS(submit_date)=TO_DAYS(now())
+  </select>
+ <select id="selectMutWithId" resultMap="BaseResultMap">
+  		select flow_id, mut_flow_id, submit_date, 
+      project_id, mut_project_id from mut_flows where flow_id=#{param1}
+      and project_id=#{param2}
+      and TO_DAYS(submit_date)=TO_DAYS(now())
+  </select>
+  <select id="isExitDep" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  select count(*)from dep_flows where flow_id=#{flowId,jdbcType=VARCHAR}
+        and dep_flow_id=#{depFlowId,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{projectId,jdbcType=INTEGER}
+        and dep_project_id=#{depProjectId,jdbcType=INTEGER}
+  </select>
+   <select id="isExitMut" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  select count(*)from mut_flows where flow_id=#{flowId,jdbcType=VARCHAR}
+        and mut_flow_id=#{mutFlowId,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{projectId,jdbcType=INTEGER}
+        and mut_project_id=#{mutProjectId,jdbcType=INTEGER}
+  </select>
+
+    <select id="selectIdByName">
+        select id from projects where name=#{param1}
+    </select>
+  <delete id="deleteDep" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  delete from dep_flows where flow_id=#{flowId,jdbcType=VARCHAR}
+        and dep_flow_id=#{depFlowId,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{projectId,jdbcType=INTEGER}
+        and dep_project_id=#{depProjectId,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteMut" parameterType="hdispatch.core.dispatch.dto.DepFlows">
+  delete from mut_flows where  flow_id=#{flowId,jdbcType=VARCHAR}
+        and mut_flow_id=#{mutFlowId,jdbcType=VARCHAR}
+        and submit_date=now()
+        and project_id=#{projectId,jdbcType=INTEGER}
+        and mut_project_id=#{mutProjectId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertDep" parameterType="hdispatch.core.dispatch.dto.DepFlows" >
+    insert into dep_flows (flow_id, dep_flow_id, submit_date, 
+      project_id, dep_project_id)
+    values (#{flowId,jdbcType=VARCHAR}, #{depFlowId,jdbcType=VARCHAR}, now(),
+      #{projectId,jdbcType=INTEGER}, #{depProject_id,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertMut" parameterType="hdispatch.core.dispatch.dto.DepFlows" >
+    insert into mut_flows (flow_id, mut_flow_id, submit_date,
+      project_id, mut_project_id)
+    values (#{flowId,jdbcType=VARCHAR}, #{mutFlowId,jdbcType=VARCHAR}, now(),
+      #{projectId,jdbcType=INTEGER}, #{mutProjectId,jdbcType=INTEGER})
+  </insert>
+</mapper>

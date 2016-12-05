@@ -27,7 +27,7 @@ import java.util.Map;
  * zhilong.deng@hand-china.com
  */
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ExeFlowServiceImpl implements ExeFlowService {
 	private static Logger logger = Logger.getLogger(ExeFlowService.class);
 	private HttpResponse<JsonNode> response;

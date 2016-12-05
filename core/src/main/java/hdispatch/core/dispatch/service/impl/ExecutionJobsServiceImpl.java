@@ -1,7 +1,7 @@
 package hdispatch.core.dispatch.service.impl;
 
 import hdispatch.core.dispatch.dto.ExecutionJobs;
-import hdispatch.core.dispatch.mapper.ExecutionJobsMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ExecutionJobsMapper;
 import hdispatch.core.dispatch.service.ExecutionJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
  * zhilong.deng@hand-china.com
  */
 @Service
-@Transactional
+@Transactional("hdispatchTM")
 public class ExecutionJobsServiceImpl implements ExecutionJobsService {
 	@Autowired
 	ExecutionJobsMapper mapper;

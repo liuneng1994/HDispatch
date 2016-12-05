@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.ExecutionFlowsMapper" >
+  <resultMap id="BaseResultMap" type="hdispatch.core.dispatch.dto.ExecutionFlows" >
+    <id column="exec_id" property="execId" jdbcType="INTEGER" />
+    <result column="project_id" property="projectId" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="submit_user" property="submitUser" jdbcType="VARCHAR" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+     <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+      <result column="lang" property="lang" jdbcType="VARCHAR" />
+       <result column="meaning" property="meaning" jdbcType="VARCHAR" />
+    <result column="submit_time" property="submitTime" jdbcType="BIGINT" />
+    <result column="update_time" property="updateTime" jdbcType="BIGINT" />
+    <result column="start_time" property="startTime" jdbcType="BIGINT" />
+    <result column="theme_id" property="themeId" jdbcType="BIGINT" />
+    <result column="end_time" property="endTime" jdbcType="BIGINT" />
+    <result column="enc_type" property="encType" jdbcType="TINYINT" />
+    <result column="executor_id" property="executorId" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="hdispatch.core.dispatch.dto.ExecutionFlows" extends="BaseResultMap" >
+    <result column="flow_data" property="flow_data" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    exec_id, project_id, version, flow_id, status, submit_user, submit_time, update_time, 
+    start_time, end_time, enc_type, executor_id
+  </sql>
+  <sql id="Blob_Column_List" >
+    flow_data
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from execution_flows
+    where exec_id = #{execId,jdbcType=INTEGER}
+  </select>
+  
+   <select id="selectAllExes" resultMap="ResultMapWithBLOBs" parameterType="hdispatch.core.dispatch.dto.ExecutionFlows" >
+    select 
+    scvb.meaning as meaning,exec_id, project_id, execution_flows.version, execution_flows.flow_id, execution_flows.status, execution_flows.submit_user, execution_flows.submit_time, execution_flows.update_time, 
+    execution_flows.start_time, execution_flows.end_time, execution_flows.enc_type, execution_flows.executor_id
+    ,projects.name as project_name,
+     hwf.theme_id,hwf.description,
+    <include refid="Blob_Column_List" />
+    from execution_flows,projects,sys_code_b scb,sys_code_value_b scvb,sys_code_value_tl scv,hdispatch_workflow hwf
+    where execution_flows.project_id=projects.id
+    and scb.CODE_ID = scvb.CODE_ID
+	and execution_flows.status=scvb.value
+	and scvb.CODE_VALUE_ID = scv.CODE_VALUE_ID
+	and scb.CODE = 'HDISPATCH.JOB_STATUS'
+	and SCV.LANG = #{lang,jdbcType=VARCHAR}
+	and projects.name=hwf.name
+	and ('Y'=hasPermission(hwf.theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(hwf.theme_id,#{request.userId},NULL,'Y'))
+    <if test="start_time != null" >
+        and execution_flows.start_time > #{startTime,jdbcType=BIGINT}
+      </if>
+      <if test="description != null" >
+        and hwf.description like CONCAT('%',#{description},'%')
+      </if>
+      <if test="flow_id != null" >
+        and execution_flows.flow_id like CONCAT('%',#{flowId},'%')
+      </if>
+      order by exec_id desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from execution_flows
+    where exec_id = #{execId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="hdispatch.core.dispatch.dto.ExecutionFlows" >
+    insert into execution_flows (exec_id, project_id, version, 
+      flow_id, status, submit_user, 
+      submit_time, update_time, start_time, 
+      end_time, enc_type, executor_id, 
+      flow_data)
+    values (#{execId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, #{version,jdbcType=INTEGER},
+      #{flowId,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{submitUser,jdbcType=VARCHAR},
+      #{submitTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, #{startTime,jdbcType=BIGINT},
+      #{endTime,jdbcType=BIGINT}, #{encType,jdbcType=TINYINT}, #{executorId,jdbcType=INTEGER},
+      #{flowData,jdbcType=LONGVARBINARY})
+  </insert>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="hdispatch.core.dispatch.dto.ExecutionFlows" >
+    update execution_flows
+    set project_id = #{projectId,jdbcType=INTEGER},
+      version = #{version,jdbcType=INTEGER},
+      flow_id = #{flowId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      submit_user = #{submitUser,jdbcType=VARCHAR},
+      submit_time = #{submitTime,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=BIGINT},
+      start_time = #{startTime,jdbcType=BIGINT},
+      end_time = #{endTime,jdbcType=BIGINT},
+      enc_type = #{encType,jdbcType=TINYINT},
+      executor_id = #{executorId,jdbcType=INTEGER},
+      flow_data = #{flowData,jdbcType=LONGVARBINARY}
+    where exec_id = #{execId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.ExecutionFlows" >
+    update execution_flows
+    set project_id = #{projectId,jdbcType=INTEGER},
+      version = #{version,jdbcType=INTEGER},
+      flow_id = #{flowId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      submit_user = #{submitUser,jdbcType=VARCHAR},
+      submit_time = #{submitTime,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=BIGINT},
+      start_time = #{startTime,jdbcType=BIGINT},
+      end_time = #{endTime,jdbcType=BIGINT},
+      enc_type = #{encType,jdbcType=TINYINT},
+      executor_id = #{executorId,jdbcType=INTEGER}
+    where exec_id = #{execId,jdbcType=INTEGER}
+  </update>
+</mapper>

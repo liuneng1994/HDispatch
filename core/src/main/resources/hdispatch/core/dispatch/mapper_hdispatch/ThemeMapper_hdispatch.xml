@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Created by yyz on 2016/9/11.
+yazheng.yang@hand-china.com
+-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.ThemeMapper">
+    <resultMap id="baseMap" type="hdispatch.core.dispatch.dto.theme.Theme" extends="com.hand.hap.mapper.StdMapper.STD">
+        <id column="theme_id" property="themeId"/>
+        <result column="name" property="themeName"/>
+        <result column="description" property="themeDescription"/>
+        <result column="active" property="themeActive"/>
+        <result column="display_sequence" property="themeSequence"/>
+    </resultMap>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="themeId" parameterType="hdispatch.core.dispatch.dto.theme.Theme">
+        INSERT INTO hdispatch_theme(name,description,display_sequence)
+        VALUES (#{themeName},#{themeDescription},#{themeSequence})
+    </insert>
+
+    <!--获取全部可以操作的主题-->
+    <select id="selectAll_opt" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme WHERE active=1
+        AND 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y')
+    </select>
+
+    <!--获取全部可以读(具有读、操作权限)的主题-->
+    <select id="selectAll_read" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme WHERE active=1
+        AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
+    </select>
+    <!--模糊查询可以读(具有读、操作权限)的主题-->
+    <select id="selectByTheme" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        <where>
+            <if test="themeId != null and themeId>0">
+                and theme_id = #{themeId,jdbcType=DECIMAL}
+            </if>
+            <if test="themeName != null">
+                <bind name="pattern_themeName" value="'%' + _parameter.themeName + '%'" />
+                AND name like #{pattern_themeName}
+            </if>
+            <if test="themeDescription != null">
+                <bind name="pattern_themeDescription" value="'%' + _parameter.themeDescription + '%'" />
+                AND description like #{pattern_themeDescription}
+            </if>
+            AND active=1
+            AND ('Y'=hasPermission(theme_id,#{request.userId},'Y',NULL) OR 'Y'=hasPermission(theme_id,#{request.userId},NULL,'Y'))
+        </where>
+    </select>
+
+    <!--用于查重，不需要权限验证-->
+    <select id="selectByNameAndActive" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE name=#{themeName,jdbcType=VARCHAR} AND active=1
+    </select>
+
+    <!--逻辑删除-->
+    <update id="deleteInLogic">
+        UPDATE hdispatch_theme SET active=0
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+        AND 'Y'=hasPermission(#{themeId},#{request.userId},NULL,'Y')
+    </update>
+    <select id="selectById" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+    </select>
+
+    <!--检查当前用户是否有创建主题的权限-->
+    <select id="hasOperatePermission" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM hdispatch_authority authority JOIN hdispatch_themegroup themegroup
+        ON authority.theme_group_id = themegroup.theme_group_id
+        WHERE themegroup.theme_group_name=#{themeGroupName}
+        AND authority.auth_operate='Y'
+        AND authority.user_id=#{request.userId}
+    </select>
+
+    <!--更新主题：名称和描述-->
+    <update id="updateById">
+        UPDATE hdispatch_theme
+        SET hdispatch_theme.name=#{themeName},description=#{themeDescription}
+        WHERE theme_id=#{themeId,jdbcType=DECIMAL}
+    </update>
+
+    <!--用于更新查重（查找是否已经存在同名的主题且id不同）-->
+    <select id="selectByNameAndActiveAndId" resultMap="baseMap">
+        SELECT * FROM hdispatch_theme
+        WHERE name=#{themeName,jdbcType=VARCHAR} AND active=1
+        AND theme_id!=theme_id=#{themeId,jdbcType=DECIMAL}
+    </select>
+</mapper>

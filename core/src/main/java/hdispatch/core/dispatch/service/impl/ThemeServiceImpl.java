@@ -5,8 +5,8 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.layer.Layer;
 import hdispatch.core.dispatch.dto.theme.Theme;
-import hdispatch.core.dispatch.mapper.LayerMapper;
-import hdispatch.core.dispatch.mapper.ThemeMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.LayerMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ThemeMapper;
 import hdispatch.core.dispatch.service.ThemeService;
 import hdispatch.core.dispatch.utils.ConfigUtil;
 import org.apache.log4j.Logger;
@@ -40,7 +40,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Theme> selectByTheme(IRequest requestContext, Theme theme, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         List<Theme> list;
@@ -60,7 +60,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Theme> selectAll_read(IRequest requestContext) {
         List<Theme> list;
         if(null == themeMapper){
@@ -79,7 +79,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Theme> selectAll_opt(IRequest requestContext) {
         List<Theme> list;
         if(null == themeMapper){
@@ -100,7 +100,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @throws Exception
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Theme> batchUpdate(IRequest requestContext, List<Theme> themeList) throws Exception {
         for (Theme theme : themeList) {
             if (theme.get__status() != null) {
@@ -128,7 +128,7 @@ public class ThemeServiceImpl implements ThemeService {
      * 用于新增主题之前检测是否已经有同名的主题存在
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean[] checkIsExist(List<Theme> themeList) {
         boolean[] isExist = new boolean[themeList.size()];
         int i = 0;
@@ -172,7 +172,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Theme> checkIsMountThemes(IRequest requestContext, List<Theme> themeList) {
         List<Theme> listFiltered = new ArrayList<>();
         for(Theme temp : themeList){
@@ -192,7 +192,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public boolean hasOperatePermission(IRequest requestContext) {
         String themeGroupName = ConfigUtil.getThemeLayer_themeGroupName();
         if(null == themeGroupName){
@@ -214,7 +214,7 @@ public class ThemeServiceImpl implements ThemeService {
      * @return List<Theme> duplicateThemesReturn——返回的重复主题列表
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<Theme> batchModify(IRequest requestContext, List<Theme> themesToModify) {
         List<Theme> duplicateThemesReturn = new ArrayList<>();
         for (Theme theme : themesToModify) {

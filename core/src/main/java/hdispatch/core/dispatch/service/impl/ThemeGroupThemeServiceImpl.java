@@ -4,13 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.system.dto.DTOStatus;
 import hdispatch.core.dispatch.dto.authority.ThemeGroupTheme;
-import hdispatch.core.dispatch.mapper.ThemeGroupThemeMapper;
+import hdispatch.core.dispatch.mapper_hdispatch.ThemeGroupThemeMapper;
 import hdispatch.core.dispatch.service.ThemeGroupThemeService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroupTheme> selectThemesNotInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
@@ -55,7 +54,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroupTheme> selectThemesInThemeGroup(IRequest requestContext, ThemeGroupTheme themeGroupTheme, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         Map<String,Object> map = new HashMap<>();
@@ -72,7 +71,7 @@ public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {
      * @return
      */
     @Override
-    @Transactional
+    @Transactional("hdispatchTM")
     public List<ThemeGroupTheme> batchUpdate(IRequest requestContext, List<ThemeGroupTheme> filterList) {
         for (ThemeGroupTheme themeGroupTheme : filterList) {
             if (themeGroupTheme.get__status() != null) {

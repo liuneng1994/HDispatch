@@ -3,7 +3,7 @@ package hdispatch.core.dispatch.azkaban.service.impl;
 
 import hdispatch.core.dispatch.azkaban.dto.Flow;
 import hdispatch.core.dispatch.azkaban.entity.flow.DBFlow;
-import hdispatch.core.dispatch.azkaban.mappers.FlowMapper;
+import hdispatch.core.dispatch.azkaban.mapper_hdispatch.FlowMapper;
 import hdispatch.core.dispatch.azkaban.service.FlowService;
 import org.json.JSONObject;
 
