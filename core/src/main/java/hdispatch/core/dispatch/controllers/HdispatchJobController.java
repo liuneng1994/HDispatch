@@ -55,9 +55,15 @@ public class HdispatchJobController extends BaseController {
         if(!jobName.trim().equals("")){
             job.setJobName(jobName.trim());
         }
+        if(-100L == themeId.longValue()){
+            themeId = null;
+        }
+        if(-100L == layerId.longValue()){
+            layerId = null;
+        }
         job.setThemeId(themeId);
         job.setLayerId(layerId);
-        job.setJobId(-100L);
+        job.setJobId(null);
         List<Job> jobList = jobService.selectByJob(requestContext, job, page, pageSize);
 
         ResponseData responseData = new ResponseData(jobList);
