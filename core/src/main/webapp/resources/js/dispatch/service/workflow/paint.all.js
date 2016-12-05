@@ -247,7 +247,7 @@ var Paint = (function (mode) {
     }
 
     Paint.prototype.toJSON = function () {
-        var json = {};
+        var json = {version: '1.0'};
         json.graph = this._graph.toJSON();
         json.jobs = {};
         json.jobs.jobs = map2json(this.jobs.jobs);
@@ -551,7 +551,7 @@ var Paint = (function (mode) {
         switch (job.type) {
             case 'job':
                 node = new this.node.job(job.name, x, y);
-                node.prop("jobId",job.jobSource);
+                node.prop("jobId", job.jobSource);
                 this._graph.addCell(node);
                 this.jobs.addJob(node.id, job);
                 break;
@@ -571,7 +571,7 @@ var Paint = (function (mode) {
         this._graph.getCell(id).remove();
 
     };
-    Paint.prototype.deleteSelectedNode = function() {
+    Paint.prototype.deleteSelectedNode = function () {
         var $this = this;
         this.selected.forEach(function (cell) {
             $this.deleteNode(cell.id);

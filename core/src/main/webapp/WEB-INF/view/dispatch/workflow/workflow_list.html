@@ -24,13 +24,26 @@
             dataType: "json"
         });
     </script>
+    <link rel="stylesheet" href="../../lib/jointJS/joint.css"/>
+    <script src="${base.contextPath}/lib/jointJS/lodash.min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/backbone-min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/dagre.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/graphlib.min.js"></script>
+    <script src="${base.contextPath}/lib/jointJS/joint.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/service/workflow/paint.all.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/ml.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowListController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <script src="${base.contextPath}/lib/moment.min.js"></script>
-
+    <script id="workflowDetail" type="text/html">
+        <div style="width:100%;text-align:center;">
+            <div id="graphScroll" class="panel col-sm-offset-0" style="overflow: scroll; height:600px;">
+                <div id="graph"></div>
+            </div>
+        </div>
+    </script>
     <body ng-app="dispatch" ng-controller="workflowListController as vm">
     <div kendo-window="vm.dependencyWindow"
          k-title="'依赖管理'"
@@ -61,7 +74,8 @@
                             <div class="panel-body col-sm-offset-0">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.theme_name"/></label>
+                                        <label class="col-sm-4 control-label"><@spring.message
+                                            "hdispatch.theme_name"/></label>
                                         <div class="col-sm-8 ">
                                             <select name="theme"
                                                     k-ng-model="vm.workflow.themeId"
@@ -77,7 +91,8 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.layer"/></label>
+                                        <label class="col-sm-4 control-label"><@spring.message
+                                            "hdispatch.layer"/></label>
                                         <div class="col-sm-8 ">
                                             <select name="layer"
                                                     k-ng-model="vm.workflow.layerId"
@@ -92,7 +107,8 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.flowname"/></label>
+                                        <label class="col-sm-4 control-label"><@spring.message
+                                            "hdispatch.flowlist.flowname"/></label>
                                         <div class="col-sm-8 ">
                                             <input class="k-textbox" name="workflowName"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -102,7 +118,8 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.description"/></label>
+                                        <label class="col-sm-4 control-label"><@spring.message
+                                            "hdispatch.flowlist.description"/></label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="description"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -114,7 +131,7 @@
                         </div>
                     </div>
                     <div class="panel-footer text-right">
-						<span class="btn btn-success" ng-click="vm.search()"><@spring.message "hdispatch.query"/></span>
+                        <span class="btn btn-success" ng-click="vm.search()"><@spring.message "hdispatch.query"/></span>
                         <span class="btn btn-default" ng-click="vm.resetQuery()"><@spring.message "hap.reset"/></span>
                     </div>
                 </form>
@@ -125,7 +142,8 @@
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
                         <button class="btn btn-success"
-                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')"><@spring.message "hdispatch.create"/>
+                                ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">
+                            <@spring.message "hdispatch.create"/>
                         </button>
                     </div>
                     <div style="clear:both">

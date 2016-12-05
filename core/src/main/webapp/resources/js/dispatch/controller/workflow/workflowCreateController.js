@@ -1,3 +1,6 @@
+/**
+ * Created by liuneng on 2016/10/25.
+ */
 (function () {
     'use strict';
     angular.module('dispatch').controller('workflowCreateController', ['$window', '$scope', 'workflowService', workflowCreateController]);

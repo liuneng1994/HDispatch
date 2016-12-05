@@ -14,7 +14,6 @@
         vm.jobLayers = [];
         vm.jobSources = [];
         vm.paint = new Paint('edit');
-        window.paint = vm.paint;
         vm.paint.init({
             el: '#graph',
             elScroll: '#graphScroll',
