@@ -6,6 +6,7 @@ import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.service.SvnParameterService;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 任务运行时参数控制器<br>
@@ -91,57 +93,9 @@ public class SvnParameterController extends BaseController{
     @RequestMapping(value = "/dispatcher/svnParameter/submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData addSvnParameters(@RequestBody @StdWho List<SvnParameter> svnParameterList, BindingResult result, HttpServletRequest request) {
-
         ResponseData rd = null;
-//        //后台验证
-//        getValidator().validate(svnParameterList, result);
-//        if (result.hasErrors()) {
-//            rd = new ResponseData(false);
-//            rd.setMessage(getErrorMessage(result, request));
-//            return rd;
-//        }
-//
-//        //从后台判断是否存在
-//        boolean[] isExist = svnParameterService.checkIsExist(svnParameterList);
-//        StringBuilder sb = new StringBuilder();
-//        boolean flag = false;
-//        for (int i = 0; i < svnParameterList.size(); i++) {
-//            if (isExist[i]) {
-//                if (!flag) {
-//                    sb.append(svnParameterList.get(i).getParameterName());
-//                } else {
-//                    sb.append("," + svnParameterList.get(i).getParameterName());
-//                }
-//                flag = true;
-//            }
-//        }
-//
-//        if (flag) {
-//            rd = new ResponseData(false);
-//            //以下任务已经存在
-//            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.job_name_already_exist", null, locale);
-//            rd.setMessage(errorMsg+":" + sb.toString());
-//            return rd;
-//        }
-        //获取语言环境
-        Locale locale = RequestContextUtils.getLocale(request);
         IRequest requestContext = createRequestContext(request);
-//        //数据是否存在过滤，如果已经存在，那么变为update
-//        svnParameterService.preAddHandle(svnParameterList);
-        try {
-            List<SvnParameter> returnList = svnParameterService.batchUpdate(requestContext, svnParameterList);
-//            for(SvnParameter temp : returnList){
-//                temp.set__status(DTOStatus.ADD);
-//            }
-            rd = new ResponseData(returnList);
-        } catch (Exception e) {
-            //保存任务中途失败
-            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_saving", null, locale);
-            logger.error(errorMsg, e);
-            rd = new ResponseData(false);
-            rd.setMessage(errorMsg);
-            return rd;
-        }
+        rd = new ResponseData(svnParameterService.batchUpdate(requestContext,svnParameterList,initFeedbackMsg(request)));
         return rd;
     }
 
@@ -151,7 +105,6 @@ public class SvnParameterController extends BaseController{
     @RequestMapping(value = "/dispatcher/svnParameter/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData deleteSvnParameters(@RequestBody List<SvnParameter> svnParameterList, BindingResult result, HttpServletRequest request) {
-
         ResponseData rd = null;
         //后台验证
         getValidator().validate(svnParameterList, result);
@@ -162,20 +115,7 @@ public class SvnParameterController extends BaseController{
         }
 
         IRequest requestContext = createRequestContext(request);
-        //获取语言环境
-        Locale locale = RequestContextUtils.getLocale(request);
-        try {
-            List<SvnParameter> svnParameterListReturn = svnParameterService.batchUpdate(requestContext, svnParameterList);
-            rd = new ResponseData(svnParameterListReturn);
-        } catch (Exception e) {
-            //删除任务中途失败
-            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_deleting", null, locale);
-            logger.error(errorMsg, e);
-            rd = new ResponseData(false);
-            rd.setMessage(errorMsg);
-            return rd;
-        }
-        return rd;
+        return new ResponseData(svnParameterService.batchUpdate(requestContext,svnParameterList,initFeedbackMsg(request)));
     }
 
     /**
@@ -188,7 +128,6 @@ public class SvnParameterController extends BaseController{
     @RequestMapping(value = "/dispatcher/svnParameter/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
     public ResponseData updateSvnParameters(@RequestBody List<SvnParameter> svnParameterList, BindingResult result, HttpServletRequest request) {
-
         ResponseData rd = null;
         //后台验证
         getValidator().validate(svnParameterList, result);
@@ -198,7 +137,7 @@ public class SvnParameterController extends BaseController{
             return rd;
         }
         IRequest requestContext = createRequestContext(request);
-        rd = new ResponseData(svnParameterService.batchUpdate(requestContext,svnParameterList));
+        rd = new ResponseData(svnParameterService.batchUpdate(requestContext,svnParameterList,initFeedbackMsg(request)));
         return rd;
     }
 
@@ -207,16 +146,16 @@ public class SvnParameterController extends BaseController{
      * 从excel文件中导入参数。
      * 根据subjectName、mappingName、parameterName判断是否已经存在，若存在，直接更新；若不存在，执行插入
      * @param files
-     * @param req
+     * @param request
      * @return
      */
     @RequestMapping(value = "/dispatcher/svnParameter/importFromExcel",method = RequestMethod.POST)
-    public ResponseData addSvnParametersFromExcel(@RequestParam("excelFiles") CommonsMultipartFile[] files, HttpServletRequest req){
-
+    public ResponseData addSvnParametersFromExcel(@RequestParam("excelFiles") CommonsMultipartFile[] files, HttpServletRequest request){
         List<SvnParameter> svnParameterList = null;
         ResponseData rd = null;
+        IRequest requestContext = createRequestContext(request);
         try {
-            svnParameterList = svnParameterService.batchCreateFromExcel(files);
+            svnParameterList = svnParameterService.batchCreateFromExcel(requestContext,files,initFeedbackMsg(request));
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("从Excel中批量导入SVN 参数中途出错",e);
@@ -251,5 +190,15 @@ public class SvnParameterController extends BaseController{
         }
         rd = new ResponseData(list);
         return rd;
+    }
+
+    private Map<String,String> initFeedbackMsg(HttpServletRequest request){
+        Map<String,String> feedbackMsg = new HashedMap();
+        Locale locale = RequestContextUtils.getLocale(request);
+        feedbackMsg.put("ALREADY_EXIST",getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale));
+        feedbackMsg.put("ERROR_DURING_SAVE",getMessageSource().getMessage("hdispatch.job.job_create.error_during_saving",null,locale));
+        feedbackMsg.put("ERROR_DURING_DELETE",getMessageSource().getMessage("hdispatch.job.job_create.error_during_deleting",null,locale));
+
+        return feedbackMsg;
     }
 }

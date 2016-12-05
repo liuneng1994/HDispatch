@@ -1,9 +1,9 @@
 package hdispatch.core.dispatch.service.impl;
 
-import com.github.pagehelper.PageHelper;
 import com.hand.hap.core.IRequest;
 import com.hand.hap.core.annotation.StdWho;
 import com.hand.hap.system.dto.DTOStatus;
+import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.mapper_hdispatch.SvnParameterMapper;
 import hdispatch.core.dispatch.service.SvnParameterService;
@@ -12,8 +12,10 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -23,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务运行时参数service接口实现类<br>
@@ -30,7 +33,7 @@ import java.util.List;
  * @author yazheng.yang@hand-china.com
  */
 @Service
-public class SvnParameterServiceImpl implements SvnParameterService {
+public class SvnParameterServiceImpl extends HdispatchBaseServiceImpl<SvnParameter> implements SvnParameterService {
     private Logger logger = Logger.getLogger(SvnParameterServiceImpl.class);
     @Autowired
     private SvnParameterMapper svnParameterMapper;
@@ -44,17 +47,9 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public List<SvnParameter> selectBySvnParameter(IRequest requestContext, SvnParameter svnParameter, int page, int pageSize) {
-        PageHelper.startPage(page, pageSize);
-        List<SvnParameter> list;
-        if (null == svnParameterMapper) {
-            list = new ArrayList<SvnParameter>();
-            logger.error("svnParameterMapper没有注入");
-        } else {
-            list = svnParameterMapper.selectBySvnParameter(svnParameter);
-        }
-        return list;
+        return super.select(requestContext,svnParameter,page,pageSize);
     }
 
     /**
@@ -63,7 +58,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public boolean[] checkIsExist(List<SvnParameter> svnParameterList) {
         boolean[] isExist = new boolean[svnParameterList.size()];
         int i = 0;
@@ -85,29 +80,26 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
-    public List<SvnParameter> batchUpdate(IRequest requestContext,@StdWho List<SvnParameter> svnParameterList) {
+    @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
+    public List<SvnParameter> batchUpdate(IRequest requestContext,@StdWho List<SvnParameter> svnParameterList, Map<String,String> feedbackMsg) {
+        IBaseService<SvnParameter> self = ((IBaseService<SvnParameter>) AopContext.currentProxy());
         for (SvnParameter svnParameter : svnParameterList) {
             if (svnParameter.get__status() != null) {
                 switch (svnParameter.get__status()) {
                     case DTOStatus.ADD:
                         if(isExistParameter(svnParameter)){
-                            svnParameter.setLastUpdateDate(new Date());
-                            svnParameterMapper.updateById(svnParameter);
+                            self.updateByPrimaryKey(requestContext,svnParameter);
                             svnParameter.set__status("");
                         }
                         else {
-                            svnParameter.setCreationDate(new Date());
-                            svnParameter.setLastUpdateDate(new Date());
                             svnParameter.setEnableFlag("Y");
                             svnParameter.setStartDateActive(new Date());
-                            svnParameterMapper.create(svnParameter);
+                            self.insert(requestContext,svnParameter);
                             svnParameter.set__status("");
                         }
                         break;
                     case DTOStatus.UPDATE:
-                        svnParameter.setLastUpdateDate(new Date());
-                        svnParameterMapper.updateById(svnParameter);
+                        self.updateByPrimaryKey(requestContext,svnParameter);
                         svnParameter.set__status("");
                         break;
                     case DTOStatus.DELETE:
@@ -288,17 +280,23 @@ public class SvnParameterServiceImpl implements SvnParameterService {
     }
 
     @Override
-    @Transactional("hdispatchTM")
-    public List<SvnParameter> batchCreateFromExcel(CommonsMultipartFile[] files) throws Exception{
+    @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
+    public List<SvnParameter> batchCreateFromExcel(IRequest requestContext,CommonsMultipartFile[] files, Map<String,String> feedbackMsg) throws Exception {
 //        ArrayList<SvnParameter> svnParameters = new ArrayList<>();
 //        for(CommonsMultipartFile file : files){
 //            List<SvnParameter> parameterList = excelFileToList(file);
 //            svnParameters.addAll(parameterList);
 //        }
 //        return batchUpdate(null,svnParameters);
-        List<SvnParameter> list = excelFileToList(files[0]);
+        List<SvnParameter> list = null;
+        try {
+            list = excelFileToList(files[0]);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new Exception(feedbackMsg.get("ERROR_DURING_SAVE"));
+        }
 //        preAddHandle(list);
-        return batchUpdate(null,list);
+        return batchUpdate(requestContext,list,feedbackMsg);
     }
 
     /**
@@ -332,7 +330,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public boolean hasOperatePermission(IRequest requestContext) {
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
@@ -352,7 +350,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
-    @Transactional("hdispatchTM")
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public boolean hasReadPermission(IRequest requestContext) {
         String themeGroupName = ConfigUtil.getJobRuntimeParameter_themeGroupName();
         if(null == themeGroupName){
@@ -373,6 +371,7 @@ public class SvnParameterServiceImpl implements SvnParameterService {
      * @return
      */
     @Override
+    @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public boolean isExistParameter(SvnParameter svnParameter) {
         SvnParameter temp = new SvnParameter();
         temp.setSubjectName(svnParameter.getSubjectName()).
