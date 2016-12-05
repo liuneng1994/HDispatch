@@ -1,7 +1,7 @@
 package hdispatch.core.dispatch.dto.workflow;
 
 /**
- * Created by hasee on 2016/9/21.
+ * Created by liuneng on 2016/9/21.
  */
 public class SimpleWorkflow {
     private String theme;

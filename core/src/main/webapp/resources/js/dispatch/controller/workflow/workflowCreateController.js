@@ -1,3 +1,6 @@
+/**
+ * Created by liuneng on 2016/10/25.
+ */
 (function () {
     'use strict';
     angular.module('dispatch').controller('workflowCreateController', ['$window', '$scope', 'workflowService', workflowCreateController]);
@@ -57,7 +60,7 @@
         vm.createJob = function () {
             console.log(jobPosition);
             if (vm.paint.addJobNode(vm.newJob, jobPosition.x, jobPosition.y) == -1) {
-                window.alert("任务名称已存在");
+                window.alert($l('hdispatch.workflow.tip.jobName'));
                 return;
             }
             vm.newJob = angular.copy(vm.newJob);
@@ -88,11 +91,11 @@
             workflowService.createWorkflow(workflow).then(function (data) {
                 vm.workflow.workflowId = parseInt(data);
                 kendo.ui.showDialog({
-                    title: '生成新任务流',
+                    title: $l('hdispatch.workflow.generateFlow'),
                     width: 400,
-                    message: '任务流新建成功,是否立即生成',
+                    message: $l('hdispatch.workflow.tip.createflow'),
                     buttons: [{
-                        text: "是",
+                        text: $l('hap.confirm'),
                         type: 'success',
                         click: function(e) {
                             e.dialog.destroy();
@@ -101,7 +104,7 @@
                             });
                         }
                     }, {
-                        text: "否",
+                        text: $l('hap.cancel'),
                         type: 'danger',
                         click: function(e) {
                             e.dialog.destroy();

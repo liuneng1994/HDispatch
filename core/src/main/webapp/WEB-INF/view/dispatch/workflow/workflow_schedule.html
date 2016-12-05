@@ -111,6 +111,7 @@
     <script src="${base.contextPath}/lib/jointJS/joint.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/paint.all.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/config/ml.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowScheduleController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
@@ -169,51 +170,51 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
         </pre>
     </script>
     <script id="cronScheduleWindow" type="text/html">
-        <p class="text-center" ng-show="vm.scheduleFlow.loading>0">加载中</p>
+        <p class="text-center" ng-show="vm.scheduleFlow.loading>0"><@spring.message "hdispatch.loading"/></p>
         <div style="width:100%" ng-hide="vm.scheduleFlow.loading>0">
             <div id="scheduleTab" kendo-tab-strip ng-hide="vm.scheduleInfo.loading>0">
                 <ul>
-                    <li class="k-state-active">任务流计划</li>
-                    <li>任务流预览</li>
-                    <li>通知</li>
-                    <li>失败选项</li>
-                    <li>并发策略</li>
+                    <li class="k-state-active"><@spring.message "hdispatch.workflow.workflow_schedule"/></li>
+                    <li><@spring.message "hdispatch.workflow.preview"/></li>
+                    <li><@spring.message "hdispatch.workflow.notification"/></li>
+                    <li><@spring.message "hdispatch.workflow.failure_option"/></li>
+                    <li><@spring.message "hdispatch.workflow.concurrency_option"/></li>
                 </ul>
                 <div style="padding: 1em">
                     <div class="form-horizontal col-sm-11">
                         <div class="form-horizontal col-sm-6">
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">分钟</label>
+                                <label class="col-sm-3 control-label"><@spring.message "hdispatch.minute"/></label>
                                 <div class="col-sm-6">
                                     <input type="text" id="minute_input" ng-model="vm.cronExp[1]" class="k-textbox">
                                 </div>
                             </div>
                             <diV class="form-group">
-                                <label class="col-sm-3 control-label">小时</label>
+                                <label class="col-sm-3 control-label"><@spring.message "hdispatch.hour"/></label>
                                 <div class="col-sm-6">
                                     <input type="text" id="hour_input" ng-model="vm.cronExp[2]" class="k-textbox">
                                 </div>
                             </diV>
                             <diV class="form-group">
-                                <label class="col-sm-3 control-label">日</label>
+                                <label class="col-sm-3 control-label"><@spring.message "hdispatch.day"/></label>
                                 <div class="col-sm-6">
                                     <input type="text" id="dom_input" ng-model="vm.cronExp[3]" class="k-textbox">
                                 </div>
                             </diV>
                             <diV class="form-group">
-                                <label class="col-sm-3 control-label">月份</label>
+                                <label class="col-sm-3 control-label"><@spring.message "hdispatch.month"/></label>
                                 <div class="col-sm-6">
                                     <input type="text" id="month_input" ng-model="vm.cronExp[4]" class="k-textbox">
                                 </div>
                             </diV>
                             <diV class="form-group">
-                                <label class="col-sm-3 control-label">星期</label>
+                                <label class="col-sm-3 control-label"><@spring.message "hdispatch.week"/></label>
                                 <div class="col-sm-6">
                                     <input type="text" id="dow_input" ng-model="vm.cronExp[5]" class="k-textbox">
                                 </div>
                             </diV>
                             <diV class="form-group">
-                                <label class="col-sm-3 control-label">cron表达式</label>
+                                <label class="col-sm-3 control-label"><@spring.message "hdispatch.workflow.cronexp"/></label>
                                 <div class="col-sm-6 control-label text-left">
                                     <span type="text" ng-bind="vm.cronExp.join(' ')"></span>
                                 </div>
@@ -254,7 +255,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                 <div style="padding: 1em">
                     <div class="form-horizontal col-sm-11">
                         <div class="form-group">
-                            <div class="control-label col-sm-3">任务流</div>
+                            <div class="control-label col-sm-3"><@spring.message "hdispatch.workflow"/></div>
                             <div class="col-sm-7 text-left control-label">{{vm.cronScheduleFlow.name}}</div>
                         </div>
                         <div class="form-group" ng-show="vm.showScheduleGraph == true">
@@ -262,10 +263,10 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                                 <div class="scheduleGraph"></div>
                             </div>
                             <div class="col-sm-1">
-                                        <button ng-click="vm.enableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%">启用全部</button><br/>
-                                        <button ng-click="vm.disableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%">禁用全部</button><br/>
-                                        <button ng-click="vm.enable(vm.schedulePaint)" class="btn btn-default" style="width: 100%">启用</button><br/>
-                                        <button ng-click="vm.disable(vm.schedulePaint)" class="btn btn-default" style="width: 100%">禁用</button>
+                                        <button ng-click="vm.enableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enableall"/></button><br/>
+                                        <button ng-click="vm.disableAll(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disableall"/></button><br/>
+                                        <button ng-click="vm.enable(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enable"/></button><br/>
+                                        <button ng-click="vm.disable(vm.schedulePaint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disable"/></button>
                             </div>
                         </div>
                     </div>
@@ -318,7 +319,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                 </div>
 
                 <div style="padding: 1em">
-                    <h3>失败选项</h3>
+                    <h3><@spring.message "hdispatch.workflow.failure_option"/></h3>
                     <p>选择一个在流执行时首次失败时的行为</p>
                     <hr>
                     <ul>
@@ -333,7 +334,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                     </select>
                 </div>
                 <div style="padding:1em">
-                    <h3>并发策略</h3>
+                    <h3><@spring.message "hdispatch.workflow.concurrency_option"/></h3>
                     <p>选择流执行时的并发策略</p>
                     <hr>
                     <form action="" class="form-horizontal col-sm-11">
@@ -363,70 +364,6 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             </div>
         </div>
     </script>
-    <div kendo-window="vm.scheduleWindow"
-         k-title="'调度任务流'"
-         k-actions="['Maximize', 'Close']"
-         k-modal="true"
-         k-width="600"
-         k-on-open="vm.scheduleWindow.visible = true"
-         k-on-close="vm.scheduleWindow.visible = false"
-         k-visible="false">
-        <p class="text-center" ng-show="vm.scheduleFlow.loading>0">加载中</p>
-        <form name="schedule" class="form-horizontal" role="form"
-              style="width:100%" novalidate ng-hide="vm.scheduleFlow.loading>0">
-            <div class="col-sm-10">
-                <div class="form-group">
-                    <label class="control-label col-sm-3">任务流</label>
-                    <span class="control-label col-sm-6 text-left">{{vm.scheduleFlow.name}}</span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3">开始时间</label>
-                    <div class="col-sm-6">
-                        <input kendo-date-time-picker name="startTime"
-                               k-ng-model="vm.scheduleFlow.startTime"
-                               ng-required="true"
-                               style="padding-left:0;padding-right:0;width:100%;"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3">是否重复</label>
-                    <div class="col-sm-6" style="height: 100%">
-                        <input type="checkbox" id="recurring"
-                               class="k-checkbox"
-                               ng-model="vm.scheduleFlow.isrecurring"/>
-                        <label class="k-checkbox-label"
-                               for="recurring"></label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3">周期</label>
-                    <div class="col-sm-5" style="padding-right:0;">
-                        <input type="number" class="k-textbox"
-                               ng-model="vm.scheduleFlow.periodVal"
-                               ng-required="vm.scheduleFlow.isrecurring"
-                               ng-disabled="!vm.scheduleFlow.isrecurring"
-                               style="padding-left:0;padding-right:0;width:100%"/>
-                    </div>
-                    <div class="col-sm-1" style="padding-left:0;">
-                        <select
-                                kendo-drop-down-list
-                                k-ng-model="vm.scheduleFlow.period"
-                                k-value-primitive="true"
-                                k-data-text-field="'name'"
-                                k-data-value-field="'value'"
-                                k-data-source="vm.periods"
-                                style="padding-left:0;padding-right:0;width:100%"></select>
-                    </div>
-                </div>
-                <div class="form-group text-center" style="margin-top: 20px;">
-                    <button class="btn btn-info" ng-click="vm.scheduleSubmit()"
-                            ng-disabled="schedule.$invalid||!vm.scheduleFlow.startTime">提交
-                    </button>
-                    <button class="btn btn-danger" ng-click="vm.scheduleCancel()">取消</button>
-                </div>
-            </div>
-        </form>
-    </div>
     <div kendo-window="vm.executeWindow"
          k-title="'执行任务流'"
          k-modal="true"
@@ -435,18 +372,18 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
          k-on-open="vm.executeWindow.visible=true"
          k-on-close="vm.executeWindow.visible=false"
          k-visible="false">
-        <div class="text-center" ng-show="vm.executeInfo.loading>0">加载中</div>
+        <div class="text-center" ng-show="vm.executeInfo.loading>0"><@spring.message "hdispatch.loading"/></div>
         <div id="executeTab" kendo-tab-strip ng-hide="vm.executeInfo.loading>0">
             <ul>
-                <li class="k-state-active">任务流预览</li>
-                <li>通知</li>
-                <li>失败选项</li>
-                <li>并发策略</li>
+                <li class="k-state-active"><@spring.message "hdispatch.workflow.preview"/></li>
+                <li><@spring.message "hdispatch.workflow.notification"/></li>
+                <li><@spring.message "hdispatch.workflow.failure_option"/></li>
+                <li><@spring.message "hdispatch.workflow.concurrency_option"/></li>
             </ul>
             <div style="padding: 1em">
                 <div class="form-horizontal col-sm-11">
                     <div class="form-group">
-                        <div class="control-label col-sm-3">任务流</div>
+                        <div class="control-label col-sm-3"><@spring.message "hdispatch.workflow"/></div>
                         <div class="col-sm-7 text-left control-label">{{vm.executeInfo.name}}</div>
                     </div>
                     <div class="form-group" ng-show="vm.showExecuteGraph == true">
@@ -454,10 +391,10 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                             <div id="graph"></div>
                         </div>
                         <div class="col-sm-1">
-                            <button ng-click="vm.enableAll(vm.paint)" class="btn btn-default" style="width: 100%">启用全部</button><br/>
-                            <button ng-click="vm.disableAll(vm.paint)" class="btn btn-default" style="width: 100%">禁用全部</button><br/>
-                            <button ng-click="vm.enable(vm.paint)" class="btn btn-default" style="width: 100%">启用</button><br/>
-                            <button ng-click="vm.disable(vm.paint)" class="btn btn-default" style="width: 100%">禁用</button>
+                            <button ng-click="vm.enableAll(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enableall"/></button><br/>
+                            <button ng-click="vm.disableAll(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disableall"/></button><br/>
+                            <button ng-click="vm.enable(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.enable"/></button><br/>
+                            <button ng-click="vm.disable(vm.paint)" class="btn btn-default" style="width: 100%"><@spring.message "hdispatch.workflow.disable"/></button>
                         </div>
                     </div>
                 </div>
@@ -512,7 +449,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             </div>
 
             <div style="padding: 1em">
-                <h3>失败选项</h3>
+                <h3><@spring.message "hdispatch.workflow.failure_option"/></h3>
                 <p>选择一个在流执行时首次失败时的行为</p>
                 <hr>
                 <ul>
@@ -527,7 +464,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                 </select>
             </div>
             <div style="padding:1em">
-                <h3>并发策略</h3>
+                <h3><@spring.message "hdispatch.workflow.concurrency_option"/></h3>
                 <p>选择流执行时的并发策略</p>
                 <hr>
                 <form action="" class="form-horizontal col-sm-11">
@@ -556,8 +493,8 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             </div>
         </div>
         <div class="text-center" style="margin-top:20px;">
-            <button class="btn btn-primary" ng-click="vm.executeSubmit()">确认</button>
-            <button class="btn btn-danger" ng-click="vm.executeCancel()">取消</button>
+            <button class="btn btn-primary" ng-click="vm.executeSubmit()"><@spring.message "hap.confirm"/></button>
+            <button class="btn btn-danger" ng-click="vm.executeCancel()"><@spring.message "hap.cancel"/></button>
         </div>
     </div>
     <div id="content-container">
@@ -570,7 +507,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                             <div class="panel-body col-sm-offset-0">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">任务组</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.theme_name"/></label>
                                         <div class="col-sm-8 ">
                                             <select name="theme"
                                                     k-ng-model="vm.workflow.themeId"
@@ -586,7 +523,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">层次</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.layer"/></label>
                                         <div class="col-sm-8 ">
                                             <select name="layer"
                                                     k-ng-model="vm.workflow.layerId"
@@ -595,13 +532,13 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                                                     k-data-text-field="'layerName'"
                                                     k-data-value-field="'layerId'"
                                                     k-data-source="vm.layers"
-                                                    style="padding-left:0;padding-right:0;width:100%;">123123</select>
+                                                    style="padding-left:0;padding-right:0;width:100%;"></select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">任务流名称</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.flowname"/></label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="workflowName"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -611,7 +548,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label class="col-sm-4 control-label">任务流描述</label>
+                                        <label class="col-sm-4 control-label"><@spring.message "hdispatch.flowlist.description"/></label>
                                         <div class="col-sm-8 ">
                                             <input class="col-sm-12 k-textbox" name="description"
                                                    style="padding-left:0;padding-right:0;width:100%;"
@@ -624,8 +561,8 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                     </div>
                     <div class="panel-footer text-right">
 						<span class="btn btn-success" ng-click="vm.search()"
-                              type="submit">查询</span>
-                        <span class="btn btn-default" ng-click="vm.resetQuery()">重置</span>
+                              type="submit"><@spring.message "hdispatch.query"/></span>
+                        <span class="btn btn-default" ng-click="vm.resetQuery()"><@spring.message "hap.reset"/></span>
                     </div>
                 </form>
             </div>
@@ -633,9 +570,8 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
             <div class="panel">
                 <div class="panel-body">
                     <div class="row" style="margin-bottom:1em;">
-                        <!--<div class="btn btn-primary" ng-click="vm.schedule()">计划</div>-->
-                        <div class="btn btn-primary" ng-click="vm.cronSchedule()">cron计划</div>
-                        <div class="btn btn-success" ng-click="vm.execute()">执行</div>
+                        <div class="btn btn-primary" ng-click="vm.cronSchedule()"><@spring.message "hdispatch.workflow.schedule.cron_schedule"/></div>
+                        <div class="btn btn-success" ng-click="vm.execute()"><@spring.message "hdispatch.workflow.execute"/></div>
                     </div>
                     <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
                 </div>

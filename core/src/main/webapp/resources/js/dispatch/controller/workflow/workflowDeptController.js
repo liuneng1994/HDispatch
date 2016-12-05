@@ -1,5 +1,5 @@
 /**
- * Created by hasee on 2016/10/25.
+ * Created by liuneng on 2016/10/25.
  */
 (function () {
     "use strict";
@@ -42,7 +42,7 @@
                                 workflowService.createWorkflowDependency(dependencies).then(function () {
                                     options.success('');
                                     kendo.ui.showInfoDialog({
-                                        message: '成功'
+                                        message: $l('hap.tip.success')
                                     });
                                 });
                             },
@@ -59,7 +59,7 @@
                                 workflowService.deleteWorkflowDependency(dependencies).then(function () {
                                     options.success('');
                                     kendo.ui.showInfoDialog({
-                                        message: '成功'
+                                        message: $l('hap.tip.success')
                                     });
                                 });
                             }
@@ -88,40 +88,40 @@
                         refresh: true,
                         buttonCount: 5,
                         messages: {
-                            noRecords: "未找到任何数据",
-                            display: "{0} - {1} 共 {2} 条数据",
-                            empty: "没有数据",
-                            page: "页",
+                            noRecords: $l('hdispatch.grid_find_no_data'),
+                            display: "{0} - {1} " + $l('hdispatch.grid_data_total_num') + " {2} " + $l('hdispatch.grid_data_records'),
+                            empty: $l('hdispatch.grid_find_no_data'),
+                            page: $l('hdispatch.grid_page'),
                             of: "/ {0}",
-                            itemsPerPage: "条每页",
-                            first: "第一页",
-                            previous: "前一页",
-                            next: "下一页",
-                            last: "最后一页",
-                            refresh: "刷新"
+                            itemsPerPage: $l('hdispatch.grid_pages_per_page'),
+                            first: $l('hdispatch.grid_first_page'),
+                            previous: $l('hdispatch.grid_pre_page'),
+                            next: $l('hdispatch.grid_next_page'),
+                            last: $l('hdispatch.grid_last_page'),
+                            refresh: $l('hdispatch.grid_refreshff')
                         }
                     },
                     columns: [
                         {
                             field: "deptWorkflowName",
-                            title: '任务流',
+                            title: $l('hdispatch.workflow'),
                             width: 100
                         },
                         {
                             field: "deptTheme",
-                            title: '任务组',
+                            title: $l('hdispatch.theme'),
                             width: 100
                         },
                         {
                             field: "deptLayer",
-                            title: '层次',
+                            title: $l('hdispatch.layer'),
                             width: 100
                         }]
                 };
                 vm.themeOptions = {
                     dataTextField: "themeName",
                     dataValueField: "themeId",
-                    optionLabel: "请选择主题",
+                    optionLabel: "",
                     autoBind: false,
                     dataSource: {
                         transport: {
@@ -136,7 +136,7 @@
                 vm.layerOptions = {
                     dataTextField: "layerName",
                     dataValueField: "layerId",
-                    optionLabel: "请选择层级",
+                    optionLabel: "",
                     autoBind: false,
                     dataSource: {
                         transport: {
@@ -155,7 +155,7 @@
                 vm.workflowOptions = {
                     dataTextField: "name",
                     dataValueField: "workflowId",
-                    optionLabel: "请选择任务流",
+                    optionLabel: "",
                     autoBind: false,
                     dataSource: {
                         transport: {
@@ -172,7 +172,7 @@
                                     page: 1,
                                     pageSize: 2147483647
                                 }).then(function (data) {
-                                    options.success(data.rows.filter(function(item) {
+                                    options.success(data.rows.filter(function (item) {
                                         return item.workflowId != vm.workflowId;
                                     }));
                                 });
@@ -185,7 +185,7 @@
                         deptProjectName: vm.deptWorkflow.project,
                         deptFlowId: vm.deptWorkflow.flowId
                     });
-                    $('#grid').data('kendoGrid').dataSource.sync().then(function() {
+                    $('#grid').data('kendoGrid').dataSource.sync().then(function () {
                         $('#grid').data('kendoGrid').dataSource.page(1);
                     });
                     vm.resetDeptWindow();
@@ -194,8 +194,8 @@
                     vm.deptWorkflow = null;
                     vm.createDependencyWindow.close();
                 };
-                vm.deleteDeptWorkflow = function() {
-                    Hap.deleteGridSelection({grid:$("#grid")});
+                vm.deleteDeptWorkflow = function () {
+                    Hap.deleteGridSelection({grid: $("#grid")});
                 };
                 vm.themeChange = function () {
                     vm.layer = null;
