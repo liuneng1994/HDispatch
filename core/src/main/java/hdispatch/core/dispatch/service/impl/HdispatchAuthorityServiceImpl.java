@@ -96,7 +96,7 @@ public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService 
     @Transactional("hdispatchTM")
     public List<HdispatchAuthority> selectNotInThemeGroup(IRequest requestContext,HdispatchAuthority hdispatchAuthority, List<HdispatchAuthority> usersInThemeGroup, int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
-        if(null == usersInThemeGroup && 0 == usersInThemeGroup.size()){
+        if(null == usersInThemeGroup || 0 == usersInThemeGroup.size()){
             return hdispatchUserMapper.selectNotInThemeGroup(null,hdispatchAuthority.getUserName());
         }
         Set<Long> userIdsInThemeGroup = new HashSet<>();
