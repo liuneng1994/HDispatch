@@ -9,10 +9,11 @@ import hdispatch.core.dispatch.dto.job.TreeNode;
 import hdispatch.core.dispatch.service.JobService;
 import hdispatch.core.dispatch.service.SvnFileSysService;
 import hdispatch.core.dispatch.utils.group.Create;
-import org.apache.log4j.Logger;
+import org.apache.commons.collections.map.HashedMap;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 任务控制器<br>
@@ -32,7 +34,7 @@ import java.util.Locale;
  */
 @Controller
 public class HdispatchJobController extends BaseController {
-    private Logger logger = Logger.getLogger(HdispatchJobController.class);
+    private Logger logger = LoggerFactory.getLogger(HdispatchJobController.class);
     @Autowired
     private JobService jobService;
     @Autowired
@@ -127,17 +129,7 @@ public class HdispatchJobController extends BaseController {
         }
         IRequest requestContext = createRequestContext(request);
 
-        try {
-            rd = new ResponseData(jobService.batchUpdate(requestContext, jobList));
-        } catch (Exception e) {
-            //保存任务中途失败
-            String errorMsg = getMessageSource().getMessage("hdispatch.job.job_create.error_during_saving", null, locale);
-            logger.error(errorMsg, e);
-            rd = new ResponseData(false);
-            rd.setMessage(errorMsg);
-            return rd;
-        }
-
+            rd = new ResponseData(jobService.batchUpdate(requestContext, jobList,initFeedbackMsg(request)));
         return rd;
     }
 
@@ -161,7 +153,7 @@ public class HdispatchJobController extends BaseController {
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
         try {
-            List<Job> jobListReturn = jobService.batchUpdate(requestContext, jobList);
+            List<Job> jobListReturn = jobService.batchUpdate(requestContext, jobList,initFeedbackMsg(request));
             rd = new ResponseData(jobListReturn);
         } catch (Exception e) {
             //删除任务中途失败
@@ -265,7 +257,14 @@ public class HdispatchJobController extends BaseController {
             return rd;
         }
         IRequest requestContext = createRequestContext(request);
-        rd = new ResponseData(jobService.batchUpdate(requestContext,jobList));
+        rd = new ResponseData(jobService.batchUpdate(requestContext,jobList,initFeedbackMsg(request)));
         return rd;
+    }
+
+    private Map<String,String> initFeedbackMsg(HttpServletRequest request){
+        Map<String,String> feedbackMsg = new HashedMap();
+        Locale locale = RequestContextUtils.getLocale(request);
+        feedbackMsg.put("ALREADY_EXIST",getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale));
+        return feedbackMsg;
     }
 }
