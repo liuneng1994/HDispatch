@@ -72,8 +72,8 @@ public class LayerServiceImpl extends HdispatchBaseServiceImpl<Layer> implements
                         if(isAlreadyExistLayer(layer)){
                             throw new Exception(feedbackMsg.get("ALREADY_EXIST")+":"+layer.getLayerName());
                         }
-                        self.insert(requestContext,layer);
                         layer.setLayerActive(1L);
+                        self.insert(requestContext,layer);
                         break;
                     case DTOStatus.UPDATE:
                         //获取当前ID的layer，判断如果名称改变，那么需要查看是否会引起重复冲突
@@ -81,14 +81,14 @@ public class LayerServiceImpl extends HdispatchBaseServiceImpl<Layer> implements
                         Layer layer1FromDb = layerMapper.selectById(layer);
                         if(null == layer1FromDb){
                             logger.error("illegal access for missing layer_id",new Exception("illegal access for missing layer_id"));
-                            throw new RuntimeException("illegal access for missing layer_id");
+                            throw new Exception("illegal access for missing layer_id");
                         }else {
                             if(layer.getLayerName().equals(layer1FromDb.getLayerName())){
                                 self.updateByPrimaryKey(requestContext,layer);
                             }else {
                                 Layer layerReturn = layerMapper.selectByNameAndActiveAndThemeId(layer);
                                 if(null != layerReturn){
-                                    throw new RuntimeException(feedbackMsg.get("ALREADY_EXIST")+":"+layer.getLayerName());
+                                    throw new Exception(feedbackMsg.get("ALREADY_EXIST")+":"+layer.getLayerName());
                                 }
                                 else {
                                     self.updateByPrimaryKey(requestContext,layer);
