@@ -86,8 +86,8 @@ public class JobServiceImpl extends HdispatchBaseServiceImpl<Job> implements Job
             if (job.get__status() != null) {
                 switch (job.get__status()) {
                     case DTOStatus.ADD:
-                        jobMapper.create(job);
                         job.setJobActive(1L);
+                        jobMapper.create(job);
                         job.set__status("");
                         break;
                     case DTOStatus.UPDATE:
