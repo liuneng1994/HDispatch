@@ -93,8 +93,8 @@ public class ThemeServiceImpl extends HdispatchBaseServiceImpl<Theme> implements
                         if(null != themeReturn){
                             throw new Exception(feedbackMsg.get("ALREADY_EXIST")+":"+theme.getThemeName());
                         }
-                        self.insert(requestContext,theme);
                         theme.setThemeActive(1L);
+                        self.insert(requestContext,theme);
                         break;
                     case DTOStatus.UPDATE:
                         themeReturn = themeMapper.selectByNameAndActiveAndId(theme);
