@@ -20,6 +20,11 @@ import java.util.stream.Collectors;
 /**
  * Created by liuneng on 2016/10/26.
  */
+
+/**
+ * 任务流依赖服务
+ * @author neng.liu@hand-china.com
+ */
 @Service
 public class WorkflowDependencySerivceImpl implements WorkflowDependencyService {
     @Autowired

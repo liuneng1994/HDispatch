@@ -10,6 +10,11 @@ import java.util.Map;
 /**
  * Created by 刘能 on 2016/9/12.
  */
+
+/**
+ * 任务流服务
+ * @author neng.liu@hand-china.com
+ */
 public interface WorkflowService {
     Map<String, Object> createWorkflow(Workflow workflow);
 
