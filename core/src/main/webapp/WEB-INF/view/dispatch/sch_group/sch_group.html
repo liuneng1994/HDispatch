@@ -449,6 +449,15 @@
                                                             template: function (dataItem) {
                                                                 var v = dataItem.end_time
                                                                         - dataItem.start_time;
+                                                                //added by yazheng.yang.hand-china.com
+                                                                if(-1==dataItem.end_time){
+                                                                    v = new Date().getTime()
+                                                                            - dataItem.start_time;
+                                                                }
+                                                                if(-1 == dataItem.start_time){
+                                                                    v = 0;
+                                                                }
+                                                                //added end
                                                                 if (v < 0)
                                                                     v = 0;
                                                                 var days = Math
