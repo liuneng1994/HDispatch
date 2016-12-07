@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by hasee on 2016/10/26.
+ * Created by liuneng on 2016/10/26.
  */
 @Service
 public class WorkflowMutexSerivceImpl implements WorkflowMutexService {

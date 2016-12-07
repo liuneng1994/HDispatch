@@ -9,6 +9,7 @@ import hdispatch.core.dispatch.utils.StringUtils;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by hasee on 2016/10/26.
+ * Created by liuneng on 2016/10/26.
  */
 @Service
 public class WorkflowDependencySerivceImpl implements WorkflowDependencyService {
@@ -36,6 +37,7 @@ public class WorkflowDependencySerivceImpl implements WorkflowDependencyService 
     }
 
     @Override
+    @Transactional("hdispatchTM")
     public int batchInsert(List<AzkabanFlowDependency> dependencies) {
         if (dependencies.isEmpty()) return 0;
         dependencies.forEach(dependency -> {
@@ -52,6 +54,7 @@ public class WorkflowDependencySerivceImpl implements WorkflowDependencyService 
     }
 
     @Override
+    @Transactional("hdispatchTM")
     public int batchDelete(List<AzkabanFlowDependency> dependencies) {
         dependencies.forEach(dependency -> workflowDependencyMapper.delete(dependency));
         return 0;

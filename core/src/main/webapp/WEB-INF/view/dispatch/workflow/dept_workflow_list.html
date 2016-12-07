@@ -1,11 +1,12 @@
 <#include "../../include/hdispatch_header.html">
     <script src="${base.contextPath}/resources/js/dispatch/config/module.js"></script>
+    <script src="${base.contextPath}/resources/js/dispatch/config/ml.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/workflow/workflowService.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/controller/workflow/workflowDeptController.js"></script>
     <script src="${base.contextPath}/resources/js/dispatch/service/common/httpService.js"></script>
     <body ng-app="dispatch" ng-controller="workflowDeptController as vm">
     <div kendo-window="vm.createDependencyWindow"
-         k-title="'增加依赖流'"
+         k-title="'<@spring.message "hdispatch.deptworklfowlist.addDept"/>'"
          k-actions="['Close']"
          k-modal="true"
          k-width="600"
@@ -15,7 +16,7 @@
         <form name="job" class="form-horizontal" style="width:100%" novalidate>
             <div class="col-sm-10">
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">任务组</label>
+                    <label class="col-sm-2 control-label"><@spring.message "hdispatch.theme_name"/></label>
                     <div class="col-sm-8 ">
                         <select class="col-sm-12" id="theme"
                                 k-ng-model="vm.theme"
@@ -26,7 +27,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">层次</label>
+                    <label class="col-sm-2 control-label"><@spring.message "hdispatch.layer"/></label>
                     <div class="col-sm-8 ">
                         <select class="col-sm-12" id="layer"
                                 k-ng-model="vm.layer"
@@ -37,7 +38,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">任务流</label>
+                    <label class="col-sm-2 control-label"><@spring.message "hdispatch.workflow"/></label>
                     <div class="col-sm-8 ">
                         <select class="col-sm-12" id="deptWorkflow"
                                 kendo-drop-down-list
@@ -48,8 +49,8 @@
                 </div>
                 <div class="form-group">
                     <div class="text-center">
-                        <button class="btn btn-primary" ng-click="vm.createDeptWorkflow()" ng-disabled="!vm.deptWorkflow">确认</button>
-                        <button class="btn btn-danger" ng-click="vm.resetDeptWindow()">取消</button>
+                        <button class="btn btn-primary" ng-click="vm.createDeptWorkflow()" ng-disabled="!vm.deptWorkflow"><@spring.message "hap.confirm"/></button>
+                        <button class="btn btn-danger" ng-click="vm.resetDeptWindow()"><@spring.message "hap.cancel"/></button>
                     </div>
                 </div>
             </div>
@@ -58,10 +59,10 @@
     <div id="content-container">
         <div class="panel">
             <div class="panel-body">
-                <h3>{{vm.projectName}}依赖流</h3>
+                <h3>{{vm.projectName}}<@spring.message "hdispatch.dependentflow"/></h3>
                 <div class="row" style="margin-bottom:1em;">
-                    <button class="btn btn-success" ng-click="vm.openDeptWindow()">增加</button>
-                    <button class="btn btn-danger" ng-click="vm.deleteDeptWorkflow()">删除</button>
+                    <button class="btn btn-success" ng-click="vm.openDeptWindow()"><@spring.message "hdispatch.add"/></button>
+                    <button class="btn btn-danger" ng-click="vm.deleteDeptWorkflow()"><@spring.message "hdispatch.delete"/></button>
                 </div>
                 <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>
             </div>

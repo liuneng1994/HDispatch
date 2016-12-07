@@ -14,7 +14,6 @@
         vm.jobLayers = [];
         vm.jobSources = [];
         vm.paint = new Paint('edit');
-        window.paint = vm.paint;
         vm.paint.init({
             el: '#graph',
             elScroll: '#graphScroll',
@@ -60,7 +59,7 @@
         var jobPosition = {x: 100, y: 100};
         vm.createJob = function () {
             if (vm.paint.addJobNode(vm.newJob, jobPosition.x, jobPosition.y) == -1) {
-                window.alert("任务名称已存在");
+                window.alert($l('hdispatch.workflow.tip.jobName'));
                 return;
             }
             vm.newJob = angular.copy(vm.newJob);
@@ -94,11 +93,11 @@
             workflow.graph = JSON.stringify(graphJson);
             workflowService.updateWorkflow(workflow).then(function (data) {
                 kendo.ui.showDialog({
-                    title: '生成新任务流',
+                    title: $l('hdispatch.workflow.generateFlow'),
                     width: 400,
-                    message: '任务流保存成功,是否立即生成',
+                    message: $l('hdispatch.workflow.tip.saveflow'),
                     buttons: [{
-                        text: "是",
+                        text: $l('hap.ok'),
                         type: 'success',
                         click: function(e) {
                             e.dialog.destroy();
@@ -107,7 +106,7 @@
                             });
                         }
                     }, {
-                        text: "否",
+                        text: $l('hap.cancel'),
                         type: 'danger',
                         click: function(e) {
                             e.dialog.destroy();

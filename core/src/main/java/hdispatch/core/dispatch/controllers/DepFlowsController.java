@@ -3,6 +3,8 @@ package hdispatch.core.dispatch.controllers;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.DepFlows;
+import hdispatch.core.dispatch.dto.workflow.Workflow;
+import hdispatch.core.dispatch.dto.workflow.WorkflowDependency;
 import hdispatch.core.dispatch.service.DepFlowsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

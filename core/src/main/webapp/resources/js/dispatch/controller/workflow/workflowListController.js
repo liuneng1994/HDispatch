@@ -1,5 +1,5 @@
 /**
- * Created by hasee on 2016/9/21.
+ * Created by liuneng on 2016/9/21.
  */
 (function () {
     'use strict;';
@@ -31,7 +31,7 @@
                         workflowService.deleteWorkflow(ids).then(function () {
                             options.success();
                             kendo.ui.showInfoDialog({
-                                message: '成功'
+                                message: $l('hap.tip.success')
                             });
                         },function (data) {
                             $("#grid").data("kendoGrid").dataSource.cancelChanges();
@@ -70,43 +70,43 @@
                 refresh: true,
                 buttonCount: 5,
                 messages: {
-                    noRecords: "未找到任何数据",
-                    display: "{0} - {1} 共 {2} 条数据",
-                    empty: "没有数据",
-                    page: "页",
+                    noRecords: $l('hdispatch.grid_find_no_data'),
+                    display: "{0} - {1} " + $l('hdispatch.grid_data_total_num') + " {2} " + $l('hdispatch.grid_data_records'),
+                    empty: $l('hdispatch.grid_find_no_data'),
+                    page: $l('hdispatch.grid_page'),
                     of: "/ {0}",
-                    itemsPerPage: "条每页",
-                    first: "第一页",
-                    previous: "前一页",
-                    next: "下一页",
-                    last: "最后一页",
-                    refresh: "刷新"
+                    itemsPerPage: $l('hdispatch.grid_pages_per_page'),
+                    first: $l('hdispatch.grid_first_page'),
+                    previous: $l('hdispatch.grid_pre_page'),
+                    next: $l('hdispatch.grid_next_page'),
+                    last: $l('hdispatch.grid_last_page'),
+                    refresh: $l('hdispatch.grid_refreshff')
                 }
             },
             columns: [
                 {
                     field: "name",
-                    title: '任务流',
+                    title: $l('hdispatch.workflow'),
                     width: 100
                 },
                 {
                     field: "theme",
-                    title: '任务组',
+                    title: $l('hdispatch.theme'),
                     width: 100
                 },
                 {
                     field: "layer",
-                    title: '层次',
+                    title: $l('hdispatch.layer'),
                     width: 100
                 },
                 {
                     field: "description",
-                    title: '描述',
+                    title: $l('hap.description'),
                     width: 200
                 },
                 {
                     field: "",
-                    title: '操作',
+                    title: $l('hap.action'),
                     attributes: {style: "padding-top:0;padding-bottom:0"},
                     width: 200,
                     template: function (item) {
@@ -116,6 +116,7 @@
                             disabled = "";
                         }
                         var html = "<button style='margin-left:4px' class='btn btn-info' " + disabled + " ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
+                        html += "<button style='margin-left:4px' class='btn btn-info' " + " ng-click='vm.showWorkflow(" + item.workflowId + ")'>查看</button>";
                         html += "<button style='margin-left:4px' class='btn btn-warning' " + disabled + " ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
                         html += "<button style='margin-left:4px' class='btn btn-success' " + disabled + "  ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
                         html += "<button style='margin-left:4px' class='btn btn-danger' " + disabled + "  ng-click='vm.delete(" + item.id + ")'>删除</button>"
@@ -175,6 +176,34 @@
             var item = $('#grid').data('kendoGrid').dataSource.get(id);
             $('#mutexFrame').attr('src', _basePath + '/dispatch/workflow/mutex_workflow_list.html?workflowId=' + item.workflowId + "&projectName=" + item.project + "&flowId=" + item.flowId);
             vm.mutexWindow.maximize().open();
+        };
+        vm.showWorkflow = function(id) {
+            workflowService.workflow(id).then(function(workflow) {
+                kendo.ui.showDialog({
+                    title: workflow.name,
+                    width: 700,
+                    message: $('#workflowDetail').html(),
+                    buttons: [{
+                        text: $l('hap.ok'),
+                        type: 'success',
+                        click: function (e) {
+                            e.dialog.destroy();
+                            e.deferred.resolve({
+                                button: "yes"
+                            });
+                        }
+                    }]
+                });
+                var paint = new Paint();
+                paint.init({
+                    el: '#graph',
+                    elScroll: '#graphScroll',
+                    height: 500,
+                    width: 630
+                });
+                paint.initScroll();
+                paint.parse(workflow.graph);
+            });
         };
 
         refreshThemes();

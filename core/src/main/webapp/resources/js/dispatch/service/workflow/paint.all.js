@@ -1,5 +1,5 @@
 /**
- * Created by hasee on 2016/10/13.
+ * Created by liuneng on 2016/10/13.
  */
 var Paint = (function (mode) {
     'use strict';
@@ -247,7 +247,7 @@ var Paint = (function (mode) {
     }
 
     Paint.prototype.toJSON = function () {
-        var json = {};
+        var json = {version: '1.0'};
         json.graph = this._graph.toJSON();
         json.jobs = {};
         json.jobs.jobs = map2json(this.jobs.jobs);
@@ -546,12 +546,12 @@ var Paint = (function (mode) {
     Paint.prototype.addJobNode = function (job, x, y) {
         "use strict";
         if (!this.editable) return;
-        if (this.jobs.getNodeId(job.name)) return;
+        if (this.jobs.getNodeId(job.name)) return -1;
         var node = null;
         switch (job.type) {
             case 'job':
                 node = new this.node.job(job.name, x, y);
-                node.prop("jobId",job.jobSource);
+                node.prop("jobId", job.jobSource);
                 this._graph.addCell(node);
                 this.jobs.addJob(node.id, job);
                 break;
@@ -571,7 +571,7 @@ var Paint = (function (mode) {
         this._graph.getCell(id).remove();
 
     };
-    Paint.prototype.deleteSelectedNode = function() {
+    Paint.prototype.deleteSelectedNode = function () {
         var $this = this;
         this.selected.forEach(function (cell) {
             $this.deleteNode(cell.id);

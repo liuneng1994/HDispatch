@@ -1,7 +1,7 @@
 package hdispatch.core.dispatch.exception;
 
 /**
- * Created by hasee on 2016/10/14.
+ * Created by liuneng on 2016/10/14.
  */
 public class CircularReferenceException extends RuntimeException {
     public CircularReferenceException() {
