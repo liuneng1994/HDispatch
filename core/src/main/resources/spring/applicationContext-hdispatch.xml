@@ -9,7 +9,7 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
                            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
-<!-- middleware datasource  -->
+    <context:component-scan base-package="hdispatch.core.dispatch.manager"/>
     <!-- jndi dataSource-->
     <bean id="hdispathDataSource" class="com.hand.hap.core.JndiObjectFactoryBean">
         <property name="jndiName" value="${db.hdispatchJndiName}"/>
@@ -26,7 +26,7 @@
                 <entry key="seqFormat" value="{3}_s.nextVal"/>
             </map>
         </property>
-        <property name="sqlSessionTemplateBeanName" value="hdispatchSqlSession"></property>
+        <property name="sqlSessionTemplateBeanName" value="hdispatchSqlSession"/>
     </bean>
 
     <tx:annotation-driven transaction-manager="hdispatchTM"/>
@@ -72,5 +72,15 @@
         <property name="defaultEncoding" value="UTF-8"/>
         <property name="maxInMemorySize" value="4098"/>
         <property name="maxUploadSize" value="10485760000"/>
+    </bean>
+
+    <bean id="hdispatchRedisCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+        <constructor-arg index="0" ref="v2redisTemplate"/>
+    </bean>
+    <bean id="hdispatchDeptListCache" factory-bean="hdispatchRedisCacheManager" factory-method="getCache">
+        <constructor-arg index="0" value="hdispatchDepetListCache"/>
+    </bean>
+    <bean id="hdispatchDeptMapCache" factory-bean="hdispatchRedisCacheManager" factory-method="getCache">
+        <constructor-arg index="0" value="hdispatchDeptMapCache"/>
     </bean>
 </beans>

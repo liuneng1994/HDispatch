@@ -219,6 +219,15 @@
             });
         }
 
+        function deptGraph(name) {
+            var params = {
+                workflowName: name
+            };
+            return httpService.get(_basePath + "/dispatcher/workflow/deptGraph",params,function(data, defered){
+                    defered.resolve(data);
+            });
+        }
+
         return {
             themes: themes,
             layers: layers,
@@ -240,7 +249,8 @@
             createWorkflowMutex: createWorkflowMutex,
             deleteWorkflowMutex: deleteWorkflowMutex,
             operateThemes: operateThemes,
-            queryScheduleInfo:queryScheduleInfo
+            queryScheduleInfo:queryScheduleInfo,
+            deptGraph: deptGraph
         };
     }
 })();

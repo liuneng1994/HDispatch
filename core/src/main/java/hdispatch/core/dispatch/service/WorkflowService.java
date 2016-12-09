@@ -35,4 +35,6 @@ public interface WorkflowService {
     List<SimpleWorkflow> queryOperateWorkflow(IRequest request,Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
 
     String deleteWorkflow(List<Long> ids);
+
+    Map<String, List<String>> getDeptGraph(String flowName);
 }

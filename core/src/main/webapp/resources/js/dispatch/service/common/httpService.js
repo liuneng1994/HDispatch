@@ -9,7 +9,7 @@
          * 请求错误处理函数
          */
         function errorHandler() {
-            kendo.ui.showErrorDialog("网络错误");
+            kendo.ui.showErrorDialog({message:"网络错误"});
         };
         return {
             /**
@@ -25,8 +25,13 @@
                     url: url,
                     method: 'GET',
                     params: params,
-                }).success(function(data){
-                    successFunc(data,defered);
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                }).success(function (data) {
+                    if (data.success === false) {
+                        kendo.ui.showErrorDialog({message:data.message});
+                        return;
+                    }
+                    successFunc(data, defered);
                 }).error(errorHandler);
                 return defered.promise;
             },
@@ -44,7 +49,10 @@
                     url: url,
                     method: 'POST',
                     data: data,
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     transformRequest: function (obj) {
                         var str = [];
                         for (var p in obj) {
@@ -52,8 +60,12 @@
                         }
                         return str.join("&");
                     }
-                }).success(function(data){
-                    successFunc(data,defered);
+                }).success(function (data) {
+                    if (data.success === false) {
+                        kendo.ui.showErrorDialog({message:data.message});
+                        return;
+                    }
+                    successFunc(data, defered);
                 }).error(errorHandler);
                 return defered.promise;
             },
@@ -70,11 +82,16 @@
                     url: url,
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     data: JSON.stringify(JSONdata)
-                }).success(function(data){
-                    successFunc(data,defered);
+                }).success(function (data) {
+                    if (data.success === false) {
+                        kendo.ui.showErrorDialog({message:data.message});
+                        return;
+                    }
+                    successFunc(data, defered);
                 }).error(errorHandler);
                 return defered.promise;
             }
