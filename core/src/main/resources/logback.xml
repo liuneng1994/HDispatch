@@ -11,7 +11,44 @@
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+<!--    <appender name="PLATFORM-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{accountId}] [%X{requestId}] %logger -  %msg%n</pattern>
+        </encoder>
+        <file>${catalina.base}/logs/hap.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/hap-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+    </appender>-->
+
+    <!-- <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{accountId}] [%X{requestId}] %logger -  %msg%n</pattern>
+        </encoder>
+        <destination>elk-hap:4560</destination>
+    </appender> -->
+
+
+    <root level="TRACE">
         <appender-ref ref="STDOUT" />
+        <!-- <appender-ref ref="stash" /> -->
     </root>
+    <logger name="org.activiti.engine" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="org.activiti.spring.SpringTransactionInterceptor" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="org.apache.ibatis.transaction.managed.ManagedTransaction" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="org.quartz.core.QuartzSchedulerThread" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="org.springframework.scheduling.quartz.LocalDataSourceJobStore" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="org.quartz.impl.jdbcjobstore.StdRowLockSemaphore" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
 </configuration>

@@ -380,6 +380,7 @@
             vm.workflow.layerId = null;
             vm.workflow.workflowName = '';
             vm.workflow.description = '';
+            vm.layers = [];
         };
 
         vm.paint = new Paint();

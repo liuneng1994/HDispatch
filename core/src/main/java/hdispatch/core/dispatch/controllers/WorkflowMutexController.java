@@ -14,6 +14,10 @@ import java.util.List;
  * Created by liuneng on 2016/10/26.
  */
 
+/**
+ * 任务流互斥控制器
+ * @author neng.liu@hand-china.com
+ */
 @RestController
 @RequestMapping("/dispatcher/workflow_mutex")
 public class WorkflowMutexController {

@@ -17,6 +17,11 @@ import java.util.stream.Collectors;
 /**
  * Created by liuneng on 2016/10/26.
  */
+
+/**
+ * 任务流互斥服务
+ * @author neng.liu@hand-china.com
+ */
 @Service
 public class WorkflowMutexSerivceImpl implements WorkflowMutexService {
     @Autowired

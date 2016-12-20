@@ -24,6 +24,7 @@ public class AzkabanFlowDependency {
         return projectId;
     }
 
+
     public AzkabanFlowDependency setProjectId(Integer projectId) {
         this.projectId = projectId;
         return this;

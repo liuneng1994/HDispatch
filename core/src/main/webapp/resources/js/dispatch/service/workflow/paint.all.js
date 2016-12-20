@@ -256,6 +256,25 @@ var Paint = (function (mode) {
         return json;
     };
 
+    Paint.prototype.fromDeptGraph = function (deptGraph) {
+        var $this = this;
+        var flowSet = new Set;
+        for (var flow in deptGraph) {
+            flowSet.add(flow);
+            deptGraph[flow].forEach(function (flow) {
+                flowSet.add(flow);
+            });
+        }
+        flowSet.forEach(function(flow) {
+            $this.addJobNode({name:flow,type:'flow'},0,0);
+        });
+        for (var flow in deptGraph) {
+            deptGraph[flow].forEach(function (flowName) {
+                $this.linkNode($this.jobs.getNodeId(flowName),$this.jobs.getNodeId(flow),false);
+            });
+        }
+    };
+
     Paint.prototype.parse = function (json) {
         var object = JSON.parse(json);
         this._graph.clear();
@@ -545,7 +564,7 @@ var Paint = (function (mode) {
     };
     Paint.prototype.addJobNode = function (job, x, y) {
         "use strict";
-        if (!this.editable) return;
+        // if (!this.editable) return;
         if (this.jobs.getNodeId(job.name)) return -1;
         var node = null;
         switch (job.type) {

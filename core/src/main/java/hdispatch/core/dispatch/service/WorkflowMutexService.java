@@ -8,6 +8,11 @@ import java.util.List;
 /**
  * Created by liuneng on 2016/10/26.
  */
+
+/**
+ * 任务流互斥控制器
+ * @author neng.liu@hand-china.com
+ */
 public interface WorkflowMutexService {
     List<WorkflowMutex> query(String projectName);
 

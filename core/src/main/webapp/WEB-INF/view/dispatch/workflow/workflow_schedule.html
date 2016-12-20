@@ -311,7 +311,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                             <textarea class="k-textbox" style="width:100%;" ng-model="vm.scheduleInfo.failureEmails">
                             </textarea>
                                 <span class="help-block">
-                                成功时通知的邮件地址,以逗号(英文)分隔
+                                失败时通知的邮件地址,以逗号(英文)分隔
                             </span>
                             </div>
                         </div>
@@ -441,7 +441,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
 
                             </textarea>
                             <span class="help-block">
-                                成功时通知的邮件地址,以逗号(英文)分隔
+                                失败时通知的邮件地址,以逗号(英文)分隔
                             </span>
                         </div>
                     </div>
@@ -525,7 +525,7 @@ C 指和calendar联系后计算过的值。例：在day-of-month 字段用“5C�
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label"><@spring.message "hdispatch.layer"/></label>
                                         <div class="col-sm-8 ">
-                                            <select name="layer"
+                                            <select name="layer" id="layer"
                                                     k-ng-model="vm.workflow.layerId"
                                                     kendo-combo-box
                                                     k-value-primitive="true"

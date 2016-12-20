@@ -6,6 +6,7 @@ import hdispatch.core.dispatch.azkaban.service.ProjectService;
 import hdispatch.core.dispatch.dto.HdispatchSchedule;
 import hdispatch.core.dispatch.dto.job.Job;
 import hdispatch.core.dispatch.dto.workflow.*;
+import hdispatch.core.dispatch.manager.DepencencyManager;
 import hdispatch.core.dispatch.mapper_hdispatch.*;
 import hdispatch.core.dispatch.service.HdispatchScheduleService;
 import hdispatch.core.dispatch.service.WorkflowService;
@@ -56,6 +57,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     private WorkflowDependencyMapper workflowDependencyMapper;
     @Autowired
     private HdispatchScheduleService hdispatchScheduleService;
+    @Autowired
+    private DepencencyManager depencencyManager;
 
     /**
      * 创建一个新的工作流，工作流中包含属性和Job.工作流的名称是唯一的。
@@ -250,6 +253,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
 
         return result;
+    }
+
+    @Override
+    public Map<String, List<String>> getDeptGraph(String flowName) {
+        return depencencyManager.getDeptGraph(flowName);
     }
 
     /**

@@ -14,6 +14,10 @@ import java.util.List;
  * Created by liuneng on 2016/10/26.
  */
 
+/**
+ * 任务流依赖控制器
+ * @author neng.liu@hand-china.com
+ */
 @RestController
 @RequestMapping("/dispatcher/workflow_dependency")
 public class WorkflowDependencyController {
