@@ -1,19 +1,39 @@
 package hdispatch.core.dispatch.dto.theme;
 
-import com.hand.hap.mybatis.annotation.ExtensionAttribute;
+import com.hand.hap.mybatis.annotation.Condition;
 import com.hand.hap.system.dto.BaseDTO;
 import sun.font.TrueTypeFont;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 主题类dto<br>
  * Created by yyz on 2016/9/5.
  * @author yazheng.yang@hand-china.com
  */
+@Table(name = "HDISPATCH_THEME")
 public class Theme extends BaseDTO{
+    @Id
+    @GeneratedValue(generator = GENERATOR_TYPE)
+    @Column(name = "theme_id")
     private Long themeId;
+
+    @Condition(operator = LIKE)
+    @Column(name = "name",nullable = false)
     private String themeName;
+
+    @Condition(operator = LIKE)
+    @Column(name = "description")
     private String themeDescription;
+
+    @Condition(operator = LIKE)
+    @Column(name = "active")
     private Long themeActive;
+
+    @Column(name = "display_sequence")
     private Long themeSequence;
 
     public Long getThemeId() {

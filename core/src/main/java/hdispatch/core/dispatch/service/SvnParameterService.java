@@ -1,18 +1,21 @@
 package hdispatch.core.dispatch.service;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.ProxySelf;
 import com.hand.hap.core.annotation.StdWho;
+import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务运行时参数service接口<br>
  * Created by yyz on 2016/9/24.
  * @author yazheng.yang@hand-china.com
  */
-public interface SvnParameterService {
+public interface SvnParameterService extends IBaseService<SvnParameter>, ProxySelf<SvnParameterService> {
     /**
      * 根据SvnParameter进行模糊查询
      */
@@ -25,14 +28,14 @@ public interface SvnParameterService {
     /**
      * 批量操作：插入、删除、更新
      */
-    List<SvnParameter> batchUpdate(IRequest requestContext, @StdWho List<SvnParameter> svnParameterList);
+    List<SvnParameter> batchUpdate(IRequest requestContext, @StdWho List<SvnParameter> svnParameterList, Map<String,String> feedbackMsg);
 
     /**
      * 从excel文件中导入数据，批量创建 SVN参数
      * @param excelFiles
      * @return
      */
-    List<SvnParameter> batchCreateFromExcel(CommonsMultipartFile[] excelFiles) throws Exception;
+    List<SvnParameter> batchCreateFromExcel(IRequest requestContext,CommonsMultipartFile[] excelFiles, Map<String,String> feedbackMsg) throws Exception;
 
     /**
      * 根据subjectName、mappingName、parameterName判断是否已经存在,

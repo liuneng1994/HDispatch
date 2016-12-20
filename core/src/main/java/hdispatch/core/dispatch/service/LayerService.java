@@ -1,22 +1,25 @@
 package hdispatch.core.dispatch.service;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.ProxySelf;
+import com.hand.hap.system.service.IBaseService;
 import hdispatch.core.dispatch.dto.layer.Layer;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 层次service接口<br>
  * Created by yyz on 2016/9/7.
  * yazheng.yang@hand-china.com
  */
-public interface LayerService {
-    /**
-     * 创建层次
-     * @param layer
-     * @return
-     */
-    boolean create(Layer layer);
+public interface LayerService extends IBaseService<Layer>, ProxySelf<LayerService> {
+//    /**
+//     * 创建层次
+//     * @param layer
+//     * @return
+//     */
+//    boolean create(Layer layer);
 
     /**
      * 批量编辑（增、删、改）
@@ -25,14 +28,14 @@ public interface LayerService {
      * @return
      * @throws Exception
      */
-    List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList) throws Exception;
+    List<Layer> batchUpdate(IRequest requestContext, List<Layer> layerList, Map<String,String> feedbackMsg) throws Exception;
 
-    /**
-     * 检查在当前主题下是否已经存在同名的层
-     * @param layerList
-     * @return
-     */
-    boolean[] checkIsExist(List<Layer> layerList);
+//    /**
+//     * 检查在当前主题下是否已经存在同名的层
+//     * @param layerList
+//     * @return
+//     */
+//    boolean[] checkIsExist(List<Layer> layerList);
 
     /**
      * 逻辑删除（在数据库中将active字段设置为1）
@@ -58,12 +61,12 @@ public interface LayerService {
      */
     List<Layer> selectActiveLayersByThemeIdWithoutPaging(IRequest requestContext,Layer layer);
 
-    /**
-     * 获取所有主题下的所有层次
-     * @param requestContext
-     * @return
-     */
-    List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext);
+//    /**
+//     * 获取所有主题下的所有层次
+//     * @param requestContext
+//     * @return
+//     */
+//    List<Layer> selectAllActiveLayersWithoutPaging(IRequest requestContext);
 
     public static final String DUPLICATE_LAYER_NAME_UNDER_THEME="duplicate layer name under same theme";
 

@@ -1,7 +1,12 @@
 package hdispatch.core.dispatch.dto.svn;
 
+import com.hand.hap.mybatis.annotation.Condition;
 import com.hand.hap.system.dto.BaseDTO;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -9,22 +14,69 @@ import java.util.Date;
  * Created by yyz on 2016/9/23.
  * @author yazheng.yang@hand-china.com
  */
+@Table(name = "HDISPATCH_FND_SCHEDULE_PARAMETER")
 public class SvnParameter extends BaseDTO {
+    @Id
+    @Column(name = "SCHEDULE_PARA_ID")
+    @GeneratedValue(generator = GENERATOR_TYPE)
     private Long scheduleParaId;
+
+    @Column(name = "PARAMETER_NAME")
+    @Condition(operator = LIKE)
     private String parameterName;
+
+    @Column(name = "PARAMETER_VALUE")
+    @Condition(operator = LIKE)
     private String parameterValue;
+
+    @Column(name = "PARAMETER_SORT")
+    @Condition(operator = LIKE)
     private Long parameterSort;
+
+    @Column(name = "SUBJECT_NAME")
+    @Condition(operator = LIKE)
     private String subjectName;
+
+    @Column(name = "MAPPING_NAME")
+    @Condition(operator = LIKE)
     private String mappingName;
+
+    @Column(name = "SESSION_NAME")
+    @Condition(operator = LIKE)
     private String sessionName;
+
+    @Column(name = "WORKFLOW_NAME")
+    @Condition(operator = LIKE)
     private String workFlowName;
+
+    @Column(name = "FORMAT_MASK")
     private String formatMask;
+
+    @Column(name = "PARA_OFFSET")
     private Long paraOffset;
+
+    @Column(name = "FREQUENCY")
+    @Condition(operator = LIKE)
     private String frequency;
+
+    @Column(name = "ENABLE_FLAG")
+    @Condition(operator = LIKE)
     private String enableFlag;
+
+    @Column(name = "START_DATE_ACTIVE")
+    @Condition(operator = LIKE)
     private Date startDateActive;
+
+    @Column(name = "END_DATE_ACTIVE")
+    @Condition(operator = LIKE)
     private Date endDateActive;
+
+    @Column(name = "PARAMETER_DESC")
+    @Condition(operator = LIKE)
     private String parameterDesc;
+
+    @Column(name = "PARAMETER_VALUE_INI")
+    @Condition(operator = LIKE)
     private String parameterValueIni;
 //    父类中已经存在
 //private Date creationDate;

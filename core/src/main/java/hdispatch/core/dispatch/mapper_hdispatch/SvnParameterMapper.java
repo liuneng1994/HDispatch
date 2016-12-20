@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.mapper_hdispatch;
 
+import com.hand.hap.mybatis.common.Mapper;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by yyz on 2016/9/24.
  * @author yazheng.yang@hand-china.com
  */
-public interface SvnParameterMapper {
+public interface SvnParameterMapper extends Mapper<SvnParameter>{
     /**
      * 根据svnParameter对象进行查询
      * @param svnParameter

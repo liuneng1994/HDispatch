@@ -1,11 +1,12 @@
 package hdispatch.core.dispatch.controllers;
 
 import com.hand.hap.core.IRequest;
+import com.hand.hap.core.exception.TokenException;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.theme.Theme;
-import hdispatch.core.dispatch.service.HdispatchAuthorityService;
 import hdispatch.core.dispatch.service.ThemeService;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,8 +27,6 @@ public class ThemeController extends BaseController {
     private Logger logger = Logger.getLogger(ThemeController.class);
     @Autowired
     private ThemeService themeService;
-    @Autowired
-    private HdispatchAuthorityService hdispatchAuthorityService;
 
     /**
      * 带分页功能的主题搜索（支持themeName、themeDescription模糊搜索）
@@ -100,41 +99,11 @@ public class ThemeController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/theme/submit", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
+    public ResponseData addThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) throws Exception {
 
         ResponseData rd = null;
-        //从后台判断是否存在
-        boolean[] isExist = themeService.checkIsExist(themeList);
-        StringBuilder sb = new StringBuilder();
-        boolean flag = false;
-        for (int i = 0; i < themeList.size(); i++) {
-            if (isExist[i]) {
-                if (!flag) {
-                    sb.append(themeList.get(i).getThemeName());
-                } else {
-                    sb.append("," + themeList.get(i).getThemeName());
-                }
-                flag = true;
-            }
-        }
-        //获取语言环境
-        Locale locale = RequestContextUtils.getLocale(request);
-        if (flag) {
-            rd = new ResponseData(false);
-            String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.theme_name_already_exist", null, locale);
-            rd.setMessage(errorMsg+":" + sb.toString());
-            return rd;
-        }
         IRequest requestContext = createRequestContext(request);
-
-        try {
-            rd = new ResponseData(themeService.batchUpdate(requestContext, themeList));
-        } catch (Exception e) {
-            //保存主题中途失败
-            String errorMsg = getMessageSource().getMessage("hdispatch.theme.theme_create.error_during_saving", null, locale);
-            logger.error(errorMsg, e);
-        }
-        return rd;
+        return new ResponseData(themeService.batchUpdate(requestContext,themeList,initFeedbackMsg(request)));
     }
 
     /**
@@ -146,10 +115,9 @@ public class ThemeController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/theme/remove", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
+    public ResponseData deleteThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) throws Exception {
 
         ResponseData rd = null;
-
         IRequest requestContext = createRequestContext(request);
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
@@ -159,8 +127,15 @@ public class ThemeController extends BaseController {
         if(0 < themeListExist.size()){
             String warningMsg = getMessageSource().getMessage("hdispatch.theme.delete.tips", null, locale);
             StringBuilder sb = new StringBuilder(warningMsg+":");
+            boolean isFirstFlag = true;
             for(Theme temp : themeListExist){
-                sb.append(temp.getThemeName()+",");
+                if(isFirstFlag){
+                    sb.append(temp.getThemeName());
+                    isFirstFlag = false;
+                }
+                else {
+                    sb.append(","+temp.getThemeName());
+                }
             }
 
             rd = new ResponseData(themeListExist);
@@ -170,17 +145,7 @@ public class ThemeController extends BaseController {
             return rd;
         }
 
-        try {
-
-            rd = new ResponseData(themeService.batchUpdate(requestContext, themeList));
-        } catch (Exception e) {
-            String errorMsg = getMessageSource().getMessage("hdispatch.error_during_deleting", null, locale);
-            logger.error(errorMsg, e);
-            rd = new ResponseData(false);
-            rd.setMessage(errorMsg);
-            return rd;
-        }
-        return rd;
+        return new ResponseData(themeService.batchUpdate(requestContext,themeList,initFeedbackMsg(request)));
     }
 
     /**
@@ -217,30 +182,28 @@ public class ThemeController extends BaseController {
      */
     @RequestMapping(value = "/dispatcher/theme/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public ResponseData updateThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) {
+    public ResponseData updateThemes(@RequestBody List<Theme> themeList, BindingResult result, HttpServletRequest request) throws Exception {
+
+        checkToken(request, themeList);
+        getValidator().validate(themeList, result);
+        if (result.hasErrors()) {
+            ResponseData rd = new ResponseData(false);
+            rd.setMessage(getErrorMessage(result, request));
+            return rd;
+        }
+
         ResponseData rd = null;
         //获取语言环境
         Locale locale = RequestContextUtils.getLocale(request);
         IRequest requestContext = createRequestContext(request);
-        List<Theme> duplicateThemes = themeService.batchModify(requestContext, themeList);
-        StringBuilder sb = null;
-        if(null != duplicateThemes && duplicateThemes.size() > 0){
-            String errorMsg = getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale);
-            sb = new StringBuilder(errorMsg+":");
-            boolean flag = false;
-            for (int i = 0; i < themeList.size(); i++) {
-                if (!flag) {
-                    sb.append(themeList.get(i).getThemeName());
-                    flag = true;
-                } else {
-                    sb.append("," + themeList.get(i).getThemeName());
-                }
-            }
-            rd = new ResponseData(false);
-            rd.setMessage(sb.toString());
-        }
-        rd = new ResponseData(true);
-        rd.setRows(themeList);
+        rd = new ResponseData(themeService.batchUpdate(requestContext,themeList,initFeedbackMsg(request)));
         return rd;
+    }
+
+    private Map<String,String> initFeedbackMsg(HttpServletRequest request){
+        Map<String,String> feedbackMsg = new HashedMap();
+        Locale locale = RequestContextUtils.getLocale(request);
+        feedbackMsg.put("ALREADY_EXIST",getMessageSource().getMessage("hdispatch.server.error_tips.already_exist", null, locale));
+        return feedbackMsg;
     }
 }

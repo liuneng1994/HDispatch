@@ -4,6 +4,7 @@ import com.jcraft.jsch.*;
 import hdispatch.core.dispatch.dto.job.SvnConfig;
 import hdispatch.core.dispatch.dto.job.TreeNode;
 import hdispatch.core.dispatch.service.SvnFileSysService;
+import hdispatch.core.dispatch.utils.ConfigUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,24 +24,19 @@ import java.util.Vector;
  */
 @Service
 public class SvnFileSysServiceImpl implements SvnFileSysService {
-//    public static final String SVN_CONFIG_FILE = "svnFileSys.properties";
-//    public static String SVN_FILE_SYS_IP = "172.20.0.203";
-//    public static int SVN_FILE_SYS_PORT = 22;
-//    public static String SVN_FILE_SYS_USERNAME = "hive";
-//    public static String SVN_FILE_SYS_PASSWORD = "handoracle";
-//    public static String SVN_FILE_SYS_ROOTPATH = "/home/ETL";
 //    //    @Autowired
 //    public static SvnConfig svnConfig = new SvnConfig();
     private Logger logger = Logger.getLogger(SvnFileSysServiceImpl.class);
-    @Resource(name = "svnConfig")
-    private SvnConfig svnConfig;
-//    static {
-//        svnConfig.setIp(SVN_FILE_SYS_IP).
-//                setPort(SVN_FILE_SYS_PORT).
-//                setUserName(SVN_FILE_SYS_USERNAME).
-//                setPassword(SVN_FILE_SYS_PASSWORD).
-//                setRootPath(SVN_FILE_SYS_ROOTPATH);
-//    }
+//    @Resource(name = "svnConfig")
+    private static SvnConfig svnConfig;
+    static {
+        svnConfig = new SvnConfig();
+        svnConfig.setIp(ConfigUtil.getKettle_file_system_server_ip()).
+                setPort(Integer.parseInt(ConfigUtil.getKettle_file_system_server_port())).
+                setUserName(ConfigUtil.getKettle_file_system_server_login_userName()).
+                setPassword(ConfigUtil.getKettle_file_system_server_login_password()).
+                setRootPath(ConfigUtil.getKettle_file_system_server_relative_rootPath());
+    }
 
     /**
      * 根据节点获取子节点
