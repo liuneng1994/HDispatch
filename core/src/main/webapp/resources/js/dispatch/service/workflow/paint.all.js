@@ -270,7 +270,7 @@ var Paint = (function (mode) {
         });
         for (var flow in deptGraph) {
             deptGraph[flow].forEach(function (flowName) {
-                $this.linkNode($this.jobs.getNodeId(flow),$this.jobs.getNodeId(flowName),false);
+                $this.linkNode($this.jobs.getNodeId(flowName),$this.jobs.getNodeId(flow),false);
             });
         }
     };

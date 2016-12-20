@@ -1,6 +1,8 @@
 package hdispatch.core.dispatch.dto.theme;
 
+import com.hand.hap.mybatis.annotation.ExtensionAttribute;
 import com.hand.hap.system.dto.BaseDTO;
+import sun.font.TrueTypeFont;
 
 /**
  * 主题类dto<br>

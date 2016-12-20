@@ -73,14 +73,14 @@
         <property name="maxInMemorySize" value="4098"/>
         <property name="maxUploadSize" value="10485760000"/>
     </bean>
+    
+    <bean id="dependencyListCache" class="hdispatch.core.dispatch.cache.String2ObjectCache">
+        <constructor-arg index="0" value="dependencyList"></constructor-arg>
+        <constructor-arg index="1" ref="v2redisConnectionFactory"></constructor-arg>
+    </bean>
 
-    <bean id="hdispatchRedisCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
-        <constructor-arg index="0" ref="v2redisTemplate"/>
-    </bean>
-    <bean id="hdispatchDeptListCache" factory-bean="hdispatchRedisCacheManager" factory-method="getCache">
-        <constructor-arg index="0" value="hdispatchDepetListCache"/>
-    </bean>
-    <bean id="hdispatchDeptMapCache" factory-bean="hdispatchRedisCacheManager" factory-method="getCache">
-        <constructor-arg index="0" value="hdispatchDeptMapCache"/>
+    <bean id="dependencyMapCache" class="hdispatch.core.dispatch.cache.String2ObjectCache">
+        <constructor-arg index="0" value="dependencyMap"></constructor-arg>
+        <constructor-arg index="1" ref="v2redisConnectionFactory"></constructor-arg>
     </bean>
 </beans>
