@@ -33,7 +33,7 @@ HdispatchScheduleMapper mapper;
 	@Transactional
 	public List<HdispatchSchedule> selectAll(IRequest requestContext,HdispatchSchedule s) {
 		// TODO Auto-generated method stub
-		return mapper.selectAll(s);
+		return mapper.selectAllSchedule(s);
 	}
 
 	/**
