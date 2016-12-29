@@ -12,4 +12,5 @@
         <mapper resource="com/hand/hap/StdMapper.xml"></mapper>
     </mappers>
 
+
 </configuration>
