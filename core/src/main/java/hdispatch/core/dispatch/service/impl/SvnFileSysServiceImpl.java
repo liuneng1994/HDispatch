@@ -6,11 +6,9 @@ import hdispatch.core.dispatch.dto.job.TreeNode;
 import hdispatch.core.dispatch.service.SvnFileSysService;
 import hdispatch.core.dispatch.utils.ConfigUtil;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -30,12 +28,16 @@ public class SvnFileSysServiceImpl implements SvnFileSysService {
 //    @Resource(name = "svnConfig")
     private static SvnConfig svnConfig;
     static {
-        svnConfig = new SvnConfig();
-        svnConfig.setIp(ConfigUtil.getKettle_file_system_server_ip()).
-                setPort(Integer.parseInt(ConfigUtil.getKettle_file_system_server_port())).
-                setUserName(ConfigUtil.getKettle_file_system_server_login_userName()).
-                setPassword(ConfigUtil.getKettle_file_system_server_login_password()).
-                setRootPath(ConfigUtil.getKettle_file_system_server_relative_rootPath());
+        try {
+            svnConfig = new SvnConfig();
+            svnConfig.setIp(ConfigUtil.getKettle_file_system_server_ip()).
+                    setPort(Integer.parseInt(ConfigUtil.getKettle_file_system_server_port())).
+                    setUserName(ConfigUtil.getKettle_file_system_server_login_userName()).
+                    setPassword(ConfigUtil.getKettle_file_system_server_login_password()).
+                    setRootPath(ConfigUtil.getKettle_file_system_server_relative_rootPath());
+        }catch (Exception e){
+            new Exception("config.properties ETL调度文件目录服务器配置错误",e).printStackTrace();
+        }
     }
 
     /**

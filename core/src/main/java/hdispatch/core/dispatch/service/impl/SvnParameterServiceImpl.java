@@ -8,10 +8,11 @@ import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.mapper_hdispatch.SvnParameterMapper;
 import hdispatch.core.dispatch.service.SvnParameterService;
 import hdispatch.core.dispatch.utils.ConfigUtil;
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ import java.util.Map;
  */
 @Service
 public class SvnParameterServiceImpl extends HdispatchBaseServiceImpl<SvnParameter> implements SvnParameterService {
-    private Logger logger = Logger.getLogger(SvnParameterServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(SvnParameterServiceImpl.class);
     @Autowired
     private SvnParameterMapper svnParameterMapper;
 
@@ -292,10 +293,9 @@ public class SvnParameterServiceImpl extends HdispatchBaseServiceImpl<SvnParamet
         try {
             list = excelFileToList(files[0]);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getMessage(),e);
             throw new Exception(feedbackMsg.get("ERROR_DURING_SAVE"));
         }
-//        preAddHandle(list);
         return batchUpdate(requestContext,list,feedbackMsg);
     }
 

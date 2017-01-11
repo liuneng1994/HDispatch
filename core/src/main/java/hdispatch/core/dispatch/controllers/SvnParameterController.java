@@ -7,6 +7,10 @@ import com.hand.hap.system.dto.ResponseData;
 import hdispatch.core.dispatch.dto.svn.SvnParameter;
 import hdispatch.core.dispatch.service.SvnParameterService;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -145,22 +149,43 @@ public class SvnParameterController extends BaseController{
     /**
      * 从excel文件中导入参数。
      * 根据subjectName、mappingName、parameterName判断是否已经存在，若存在，直接更新；若不存在，执行插入
-     * @param files
      * @param request
      * @return
      */
     @RequestMapping(value = "/dispatcher/svnParameter/importFromExcel",method = RequestMethod.POST)
-    public ResponseData addSvnParametersFromExcel(@RequestParam("excelFiles") CommonsMultipartFile[] files, HttpServletRequest request){
+    public ResponseData addSvnParametersFromExcel(HttpServletRequest request) throws FileUploadException {
+        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+        Locale locale = RequestContextUtils.getLocale(request);
+        // 不是文件上传
+        if (!isMultipart) {
+            ResponseData responseData = new ResponseData(false);
+            String errorMessage = getMessageSource().getMessage("hdispatch.upload_file.no_file", null, locale);
+            responseData.setMessage(errorMessage);
+            return responseData;
+        }
+        // 初始化执行链
+        ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
+        List<FileItem> items = upload.parseRequest(request);
+        if(null == items || 0 == items.size()){
+            ResponseData responseData = new ResponseData(false);
+            String errorMessage = getMessageSource().getMessage("hdispatch.upload_file.no_file", null, locale);
+            responseData.setMessage(errorMessage);
+            return responseData;
+        }
+        FileItem item = items.get(0);
+        CommonsMultipartFile[] filesFromHap = new CommonsMultipartFile[1];
+        filesFromHap[0] = new CommonsMultipartFile(item);
+
         List<SvnParameter> svnParameterList = null;
         ResponseData rd = null;
         IRequest requestContext = createRequestContext(request);
         try {
-            svnParameterList = svnParameterService.batchCreateFromExcel(requestContext,files,initFeedbackMsg(request));
+            svnParameterList = svnParameterService.batchCreateFromExcel(requestContext,filesFromHap,initFeedbackMsg(request));
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("从Excel中批量导入SVN 参数中途出错",e);
+            String errorTips = getMessageSource().getMessage("hdispatch.error.job_parameter.error_during_import_from_excel",null,locale);
+            logger.error(errorTips,e);
             rd = new ResponseData(false);
-            rd.setMessage("从Excel中批量导入SVN 参数中途出错");
+            rd.setMessage(errorTips);
             return rd;
         }
 
