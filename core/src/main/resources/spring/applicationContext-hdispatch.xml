@@ -68,12 +68,12 @@
     </bean>
 
     <!--文件上传设置-->
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="defaultEncoding" value="UTF-8"/>
-        <property name="maxInMemorySize" value="4098"/>
-        <property name="maxUploadSize" value="10485760000"/>
-    </bean>
-    
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+        <!--<property name="defaultEncoding" value="UTF-8"/>-->
+        <!--<property name="maxInMemorySize" value="4098"/>-->
+        <!--<property name="maxUploadSize" value="10485760000"/>-->
+    <!--</bean>-->
+
     <bean id="dependencyListCache" class="hdispatch.core.dispatch.cache.String2ObjectCache">
         <constructor-arg index="0" value="dependencyList"></constructor-arg>
         <constructor-arg index="1" ref="v2redisConnectionFactory"></constructor-arg>
