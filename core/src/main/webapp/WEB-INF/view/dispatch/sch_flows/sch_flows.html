@@ -140,6 +140,7 @@
                 if (!hasOperatePermission(themeid)) {
                     alert("您没有权限操作此调度任务！");
                 }else {
+                    window.clwindow=$("#dialog");
                     var dialog = $("#dialog").kendoWindow({
                         //actions : [ "Maximize", "Minimize", "Close" ],
                         width: 920,

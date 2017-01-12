@@ -253,7 +253,7 @@
                     },
                     success: function (json) {
                         alert(json.message);
-                        window.close();
+                        window.parent.clwindow.data("kendoWindow").close();
                     },
                     error: function () {
 
