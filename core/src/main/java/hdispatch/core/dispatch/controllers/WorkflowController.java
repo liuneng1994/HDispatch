@@ -50,7 +50,7 @@ public class WorkflowController extends BaseController {
         if (workflowService.getWorkflowByName(workflow.getName()) != null) {
             logger.info("workflow {} exits", workflow.getName());
             responseData = new ResponseData(false);
-            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.exist",null,locale));
+            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.exist", null, locale));
             return responseData;
         }
         Set<String> jobs = new HashSet<>();
@@ -60,7 +60,7 @@ public class WorkflowController extends BaseController {
         if (jobs.size() < workflow.getJobs().size()) {
             logger.info("workflow {} has duplicated job", workflow);
             responseData = new ResponseData(false);
-            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.job_duplicate",null,locale));
+            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.job_duplicate", null, locale));
             return responseData;
         }
         Map<String, Object> result = workflowService.createWorkflow(workflow);
@@ -100,14 +100,14 @@ public class WorkflowController extends BaseController {
      * @return 创建是否成功
      */
     @RequestMapping(path = "/generateWorkflow", method = RequestMethod.GET)
-    public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId,HttpServletRequest request) {
+    public ResponseData generateWorkflow(@RequestParam(name = "workflowId") long workflowId, HttpServletRequest request) {
         ResponseData responseData;
         Locale locale = RequestContextUtils.getLocale(request);
         try {
             String result = workflowService.generateWorkflow(workflowId);
             if (StringUtils.isEmpty(result)) {
                 responseData = new ResponseData(true);
-                responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.generate_success",null,locale));
+                responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.generate_success", null, locale));
             } else {
                 responseData = new ResponseData(false);
                 responseData.setMessage(result);
@@ -183,7 +183,7 @@ public class WorkflowController extends BaseController {
         Workflow workflow = workflowService.getWorkflowById(workflowId);
         if (workflow == null) {
             responseData = new ResponseData(false);
-            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.notexist",null,locale));
+            responseData.setMessage(getMessageSource().getMessage("hdispatch.workflow.notexist", null, locale));
         } else {
             responseData = new ResponseData(true);
             responseData.setRows(Collections.singletonList(workflow));
@@ -198,12 +198,12 @@ public class WorkflowController extends BaseController {
      * @return
      */
     @RequestMapping(path = "/update", method = RequestMethod.POST)
-    public ResponseData updateWorkflow(@RequestBody Workflow workflow,HttpServletRequest request) {
+    public ResponseData updateWorkflow(@RequestBody Workflow workflow, HttpServletRequest request) {
         ResponseData responseData = null;
         Locale locale = RequestContextUtils.getLocale(request);
         workflowService.updateWorkFlow(workflow);
         responseData = new ResponseData(true);
-        responseData.setMessage(getMessageSource().getMessage("hap.tip.success",null,locale));
+        responseData.setMessage(getMessageSource().getMessage("hap.tip.success", null, locale));
         return responseData;
     }
 
@@ -218,5 +218,10 @@ public class WorkflowController extends BaseController {
             responseData.setMessage(result);
         }
         return responseData;
+    }
+
+    @RequestMapping(path = "/deptGraph", method = RequestMethod.GET)
+    public Map<String, List<String>> getDeptGraph(@RequestParam("workflowName") String name) {
+        return workflowService.getDeptGraph(name);
     }
 }

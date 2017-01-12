@@ -38,6 +38,8 @@ public abstract class HdispatchBaseServiceImpl<T> implements IBaseService<T> {
     @Override
     @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
     public T insert(IRequest request, T record) {
+        BaseDTO baseDTO = (BaseDTO)record;
+        baseDTO.setObjectVersionNumber(1L);
         mapper.insert(record);
         return record;
     }
@@ -45,6 +47,8 @@ public abstract class HdispatchBaseServiceImpl<T> implements IBaseService<T> {
     @Override
     @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
     public T insertSelective(IRequest request, T record) {
+        BaseDTO baseDTO = (BaseDTO)record;
+        baseDTO.setObjectVersionNumber(1L);
         mapper.insertSelective(record);
         return record;
     }

@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.service;
 
+import com.hand.hap.core.ProxySelf;
 import hdispatch.core.dispatch.dto.job.TreeNode;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by yyz on 2016/9/14.
  * @author yazheng.yang@hand-china.com
  */
-public interface SvnFileSysService {
+public interface SvnFileSysService extends ProxySelf<SvnFileSysService> {
     /**
      * 获取子节点
      */

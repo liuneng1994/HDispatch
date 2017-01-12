@@ -10,6 +10,11 @@ import java.util.Map;
 /**
  * Created by 刘能 on 2016/9/12.
  */
+
+/**
+ * 任务流服务
+ * @author neng.liu@hand-china.com
+ */
 public interface WorkflowService {
     Map<String, Object> createWorkflow(Workflow workflow);
 
@@ -30,4 +35,6 @@ public interface WorkflowService {
     List<SimpleWorkflow> queryOperateWorkflow(IRequest request,Long themeId, Long layerId, String workflowName, String decription, int page, int pageSize);
 
     String deleteWorkflow(List<Long> ids);
+
+    Map<String, List<String>> getDeptGraph(String flowName);
 }

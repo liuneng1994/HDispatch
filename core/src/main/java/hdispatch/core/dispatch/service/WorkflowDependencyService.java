@@ -8,6 +8,10 @@ import java.util.List;
 /**
  * Created by liuneng on 2016/10/26.
  */
+/**
+ * 任务流依赖服务
+ * @author neng.liu@hand-china.com
+ */
 public interface WorkflowDependencyService {
     List<WorkflowDependency> query(String projectName);
 

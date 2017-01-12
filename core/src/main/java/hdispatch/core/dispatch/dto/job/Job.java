@@ -1,31 +1,48 @@
 package hdispatch.core.dispatch.dto.job;
 
+import com.hand.hap.mybatis.annotation.Condition;
 import com.hand.hap.system.dto.BaseDTO;
-import hdispatch.core.dispatch.utils.group.Create;
-import hdispatch.core.dispatch.utils.group.Delete;
-import hdispatch.core.dispatch.utils.group.Update;
-import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 任务类<br>
  * Created by yyz on 2016/9/11.
  * @author yazheng.yang@hand-china.com
  */
+@Table(name = "HDISPATCH_JOB")
 public class Job extends BaseDTO {
-    @NotNull(groups = {Delete.class, Update.class})
+    @Id
+    @Column(name = "job_id")
+    @GeneratedValue(generator = GENERATOR_TYPE)
     private Long jobId;
-    @NotNull(groups = {Create.class,Update.class})
-    @NotEmpty(groups = {Create.class,Update.class})
+
+    @Column(name = "name")
+    @Condition(operator = LIKE)
     private String jobName;
-    @NotNull(groups = {Create.class,Update.class})
+
+    @Column(name = "svn")
+    @Condition(operator = LIKE)
     private String jobSvn;
+
+    @Column(name = "active")
+    @Condition(operator = LIKE)
     private Long jobActive;
-    @NotNull(groups = {Create.class,Update.class})
+
+    @Column(name = "theme_id")
+    @Condition(operator = LIKE)
     private Long themeId;
-    @NotNull(groups = {Create.class,Update.class})
+
+    @Column(name = "layer_id")
+    @Condition(operator = LIKE)
     private Long layerId;
+
+    @Column(name = "job_type")
+    @Condition(operator = LIKE)
+    private String jobType;
 
     //冗余信息
     private String themeName;
@@ -94,5 +111,14 @@ public class Job extends BaseDTO {
 
     public void setLayerName(String layerName) {
         this.layerName = layerName;
+    }
+
+    public String getJobType() {
+        return jobType;
+    }
+
+    public Job setJobType(String jobType) {
+        this.jobType = jobType;
+        return this;
     }
 }

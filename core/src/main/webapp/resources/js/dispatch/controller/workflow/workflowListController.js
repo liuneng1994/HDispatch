@@ -33,7 +33,7 @@
                             kendo.ui.showInfoDialog({
                                 message: $l('hap.tip.success')
                             });
-                        },function (data) {
+                        }, function (data) {
                             $("#grid").data("kendoGrid").dataSource.cancelChanges();
                             kendo.ui.showErrorDialog({
                                 message: data
@@ -117,10 +117,11 @@
                         }
                         var html = "<button style='margin-left:4px' class='btn btn-info' " + disabled + " ng-click='vm.edit(" + item.workflowId + ")'>编辑</button>";
                         html += "<button style='margin-left:4px' class='btn btn-info' " + " ng-click='vm.showWorkflow(" + item.workflowId + ")'>查看</button>";
+                        html += "<button style='margin-left:4px' class='btn btn-info' " + " ng-click='vm.showDeptGraph(" + '"' + item.project + '"' + ")'>查看依赖</button>";
                         html += "<button style='margin-left:4px' class='btn btn-warning' " + disabled + " ng-click='vm.mutex(" + item.id + ")'>互斥</button>";
                         html += "<button style='margin-left:4px' class='btn btn-success' " + disabled + "  ng-click='vm.dependency(" + item.id + ")'>依赖</button>";
                         html += "<button style='margin-left:4px' class='btn btn-danger' " + disabled + "  ng-click='vm.delete(" + item.id + ")'>删除</button>"
-                        html = "<div class='row'>"+html+"</div>";
+                        html = "<div class='row'>" + html + "</div>";
                         return html;
                     }
                 }]
@@ -138,12 +139,13 @@
             location = _basePath + '/dispatch/workflow/workflow_update.html';
         };
 
-        vm.resetQuery = function() {
+        vm.resetQuery = function () {
             "use strict";
             vm.workflow.themeId = null;
             vm.workflow.layerId = null;
             vm.workflow.workflowName = '';
             vm.workflow.description = '';
+            vm.layers = [];
         };
 
         vm.delete = function (id) {
@@ -177,8 +179,8 @@
             $('#mutexFrame').attr('src', _basePath + '/dispatch/workflow/mutex_workflow_list.html?workflowId=' + item.workflowId + "&projectName=" + item.project + "&flowId=" + item.flowId);
             vm.mutexWindow.maximize().open();
         };
-        vm.showWorkflow = function(id) {
-            workflowService.workflow(id).then(function(workflow) {
+        vm.showWorkflow = function (id) {
+            workflowService.workflow(id).then(function (workflow) {
                 kendo.ui.showDialog({
                     title: workflow.name,
                     width: 700,
@@ -203,6 +205,37 @@
                 });
                 paint.initScroll();
                 paint.parse(workflow.graph);
+            });
+        };
+
+        vm.showDeptGraph = function (workflowName) {
+            workflowService.deptGraph(workflowName).then(function (graph) {
+                kendo.ui.showDialog({
+                    title: workflowName,
+                    width: 700,
+                    message: $('#workflowDetail').html(),
+                    buttons: [{
+                        text: $l('hap.ok'),
+                        type: 'success',
+                        click: function (e) {
+                            e.dialog.destroy();
+                            e.deferred.resolve({
+                                button: "yes"
+                            });
+                        }
+                    }]
+                });
+                var paint = new Paint();
+                paint.init({
+                    el: '#graph',
+                    elScroll: '#graphScroll',
+                    height: 500,
+                    width: 630
+                });
+                paint.initScroll();
+                paint.fromDeptGraph(graph);
+                paint.format();
+                paint.setNodeColor(paint.jobs.getNodeId(workflowName),'yellow')
             });
         };
 

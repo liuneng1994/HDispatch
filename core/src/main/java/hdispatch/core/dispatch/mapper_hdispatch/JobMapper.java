@@ -1,5 +1,6 @@
 package hdispatch.core.dispatch.mapper_hdispatch;
 
+import com.hand.hap.mybatis.common.Mapper;
 import hdispatch.core.dispatch.dto.job.Job;
 
 import java.util.Collection;
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by yyz on 2016/9/11.
  * @author yazheng.yang@hand-china.com
  */
-public interface JobMapper {
+public interface JobMapper extends Mapper<Job>{
     /**
      * 根据job对象进行查询
      * @param job

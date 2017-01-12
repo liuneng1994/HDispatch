@@ -71,4 +71,152 @@
       #{inputParams,jdbcType=LONGVARBINARY}, #{outputParams,jdbcType=LONGVARBINARY},
       #{attachments,jdbcType=LONGVARBINARY})
   </insert>
+
+  <insert id="insertSelective" parameterType="hdispatch.core.dispatch.dto.ExecutionJobsWithBLOBs" >
+    insert into execution_jobs
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="attempt != null" >
+        attempt,
+      </if>
+      <if test="exec_id != null" >
+        exec_id,
+      </if>
+      <if test="job_id != null" >
+        job_id,
+      </if>
+      <if test="project_id != null" >
+        project_id,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="flow_id != null" >
+        flow_id,
+      </if>
+      <if test="start_time != null" >
+        start_time,
+      </if>
+      <if test="end_time != null" >
+        end_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="input_params != null" >
+        input_params,
+      </if>
+      <if test="output_params != null" >
+        output_params,
+      </if>
+      <if test="attachments != null" >
+        attachments,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="attempt != null" >
+        #{attempt,jdbcType=INTEGER},
+      </if>
+      <if test="exec_id != null" >
+        #{exec_id,jdbcType=INTEGER},
+      </if>
+      <if test="job_id != null" >
+        #{job_id,jdbcType=VARCHAR},
+      </if>
+      <if test="project_id != null" >
+        #{project_id,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="flow_id != null" >
+        #{flow_id,jdbcType=VARCHAR},
+      </if>
+      <if test="start_time != null" >
+        #{start_time,jdbcType=BIGINT},
+      </if>
+      <if test="end_time != null" >
+        #{end_time,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="input_params != null" >
+        #{input_params,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="output_params != null" >
+        #{output_params,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="attachments != null" >
+        #{attachments,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="hdispatch.core.dispatch.dto.ExecutionJobsWithBLOBs" >
+    update execution_jobs
+    <set >
+      <if test="project_id != null" >
+        project_id = #{project_id,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="flow_id != null" >
+        flow_id = #{flow_id,jdbcType=VARCHAR},
+      </if>
+      <if test="start_time != null" >
+        start_time = #{start_time,jdbcType=BIGINT},
+      </if>
+      <if test="end_time != null" >
+        end_time = #{end_time,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="input_params != null" >
+        input_params = #{input_params,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="output_params != null" >
+        output_params = #{output_params,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="attachments != null" >
+        attachments = #{attachments,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where attempt = #{attempt,jdbcType=INTEGER}
+      and exec_id = #{exec_id,jdbcType=INTEGER}
+      and job_id = #{job_id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="hdispatch.core.dispatch.dto.ExecutionJobsWithBLOBs" >
+    update execution_jobs
+    set project_id = #{project_id,jdbcType=INTEGER},
+      version = #{version,jdbcType=INTEGER},
+      flow_id = #{flow_id,jdbcType=VARCHAR},
+      start_time = #{start_time,jdbcType=BIGINT},
+      end_time = #{end_time,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT},
+      input_params = #{input_params,jdbcType=LONGVARBINARY},
+      output_params = #{output_params,jdbcType=LONGVARBINARY},
+      attachments = #{attachments,jdbcType=LONGVARBINARY}
+    where attempt = #{attempt,jdbcType=INTEGER}
+      and exec_id = #{exec_id,jdbcType=INTEGER}
+      and job_id = #{job_id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.ExecutionJobs" >
+    update execution_jobs
+    set project_id = #{project_id,jdbcType=INTEGER},
+      version = #{version,jdbcType=INTEGER},
+      flow_id = #{flow_id,jdbcType=VARCHAR},
+      start_time = #{start_time,jdbcType=BIGINT},
+      end_time = #{end_time,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT}
+    where attempt = #{attempt,jdbcType=INTEGER}
+      and exec_id = #{exec_id,jdbcType=INTEGER}
+      and job_id = #{job_id,jdbcType=VARCHAR}
+  </update>
+    <!--add by yazheng.yang@hand-china.com-->
+    <delete id="cleanLogsBefore" parameterType="java.util.Date">
+        DELETE FROM execution_jobs
+        WHERE #{dateBefore} > end_time
+    </delete>
+    <!--add end-->
 </mapper>

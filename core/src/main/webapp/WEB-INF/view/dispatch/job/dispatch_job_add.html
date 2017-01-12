@@ -9,12 +9,10 @@
             $.each(data.rows, function (key,value) {
                 filter_to_operate_themeIds.push(value.themeId);
             });
-            console.log(filter_to_operate_themeIds);
         },
         async:false,
         dataType: "json"
     });
-    console.log("加载权限验证数组完毕");
 </script>
     <div>
         <div id="content-container">
@@ -152,6 +150,8 @@
                         for ( var k in formData) {
                             viewModel.model.set(k, null);
                         }
+                        //清空层次下拉框的数据源
+                        clearLayerDropDownList();
                     }
                 });
 
@@ -481,7 +481,7 @@
                                     dataTextField: "layerName",
                                     dataValueField: "layerId",
                                     dataBound:onGridLayerDataBound,
-                                    open:onGridLayerChange,
+                                    open:onGridLayerOpen(options.model.themeId),
                                     select:onGridLayerSelect,
                                     close:onGridLayerClose,
                                     dataSource:grid_layerDropDown_dataSource
@@ -532,6 +532,11 @@
 
 //                    //设置当前行的layerName
 //                    setEditingRowLayerName(rowIndex_grid_edicting,layerName_grid_line);
+                };
+                function onGridLayerOpen(this_row_themeId) {
+                    grid_dropdown_themeId = this_row_themeId?this_row_themeId:$("#grid_dropdown_theme_input").val();
+
+                    grid_layerDropDown_dataSource.read();
                 };
                 function onGridLayerChange(e) {
                     grid_dropdown_layerId = $("#grid_dropdown_layer_input").val();
@@ -630,7 +635,7 @@
                     }
                 });
                 $("#input_themeId").kendoDropDownList({
-//                    optionLabel: '<@spring.message "hdispatch.select_theme"/>',
+                    optionLabel: '<@spring.message "hdispatch.select_theme"/>',
                     autoBind:true,
                     dataTextField: "themeName",
                     dataValueField: "themeId",
@@ -673,13 +678,17 @@
                         }
                     });
                 $("#input_layerId").kendoDropDownList({
-//                    optionLabel: '<@spring.message "hdispatch.select_layer"/>',
+                    optionLabel: '<@spring.message "hdispatch.select_layer"/>',
                     autoBind:true,
                     dataTextField: "layerName",
                     dataValueField: "layerId",
                     dataSource: input_layerId_dataSource,
                     dataBound:onDataBound_2
                 });
+
+                function clearLayerDropDownList() {
+                    input_layerId_dataSource.read();
+                }
 
                 //绑定主页面的数据和视图
                 kendo.bind($('#theme-content'),viewModel);
@@ -695,7 +704,12 @@
                     input_layerId_dataSource.read();
                 };
                 function onDataBound_2(e) {
-                    viewModel.model.layerId=$("#input_layerId").val();
+//                    if($("#input_layerId").val()){
+//                        viewModel.model.layerId=$("#input_layerId").val();
+//                    }
+//                    else {
+//                        viewModel.model.layerId='';
+//                    }
                 }
             });
 
@@ -1025,17 +1039,14 @@
                 var batchCreateUrl = "${base.contextPath}/dispatcher/job/batchSubmit";
 
                 if(!themeId_temp_batchCreateJob || themeId_temp_batchCreateJob < 0){
-//                    console.log("没有填写theeId");
                     alert('<@spring.message "hdispatch.theme.please_select_theme"/>');
                     return;
                 }
                 if(!layerId_temp_batchCreateJob || layerId_temp_batchCreateJob < 0){
-//                    console.log("没有填写layerId");
                     alert('<@spring.message "hdispatch.layer.please_select_layer"/>');
                     return;
                 }
                 if(!jobSvn_temp_batchCreateJob || jobSvn_temp_batchCreateJob.length <= 0){
-//                    console.log("没有选择SVN文件");
                     alert('<@spring.message "hdispatch.job.not_yet_select_any_svn_file"/>');
                     return;
                 }
