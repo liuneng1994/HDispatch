@@ -72,9 +72,9 @@ public class SvnParameterController extends BaseController{
             parameterName = null;
         }
         SvnParameter svnParameter = new SvnParameter();
-        svnParameter.setSubjectName(subjectName).
-                setMappingName(mappingName).
-                setParameterName(parameterName);
+        svnParameter.setSubjectName(subjectName);
+        svnParameter.setMappingName(mappingName);
+        svnParameter.setParameterName(parameterName);
         List<SvnParameter> svnParameterList = svnParameterService.selectBySvnParameter(requestContext,svnParameter,page,pageSize);
         ResponseData rd = new ResponseData(svnParameterList);
 

@@ -310,9 +310,9 @@ public class SvnParameterServiceImpl extends HdispatchBaseServiceImpl<SvnParamet
     public void preAddHandle(List<SvnParameter> svnParameterList) {
         for(SvnParameter parameter : svnParameterList){
             SvnParameter temp = new SvnParameter();
-            temp.setSubjectName(parameter.getSubjectName()).
-                    setMappingName(parameter.getMappingName()).
-                    setParameterName(parameter.getParameterName());
+            temp.setSubjectName(parameter.getSubjectName());
+            temp.setMappingName(parameter.getMappingName());
+            temp.setParameterName(parameter.getParameterName());
             List<SvnParameter> returnList = svnParameterMapper.selectForCheck_2(temp);
             if(null != returnList && 0 < returnList.size()){
                 parameter.set__status(DTOStatus.UPDATE);
@@ -374,11 +374,15 @@ public class SvnParameterServiceImpl extends HdispatchBaseServiceImpl<SvnParamet
     @Transactional(transactionManager = "hdispatchTM",propagation = Propagation.SUPPORTS)
     public boolean isExistParameter(SvnParameter svnParameter) {
         SvnParameter temp = new SvnParameter();
-        temp.setSubjectName(svnParameter.getSubjectName()).
-                setMappingName(svnParameter.getMappingName()).
-                setParameterName(svnParameter.getParameterName());
+        temp.setSubjectName(svnParameter.getSubjectName());
+        temp.setMappingName(svnParameter.getMappingName());
+        temp.setParameterName(svnParameter.getParameterName());
         List<SvnParameter> returnList = svnParameterMapper.selectForCheck_2(temp);
 
-        return null != returnList && 0 < returnList.size();
+        if(null != returnList && 0 < returnList.size()){
+            svnParameter.setScheduleParaId(returnList.get(0).getScheduleParaId());
+            return true;
+        }
+        return false;
     }
 }
