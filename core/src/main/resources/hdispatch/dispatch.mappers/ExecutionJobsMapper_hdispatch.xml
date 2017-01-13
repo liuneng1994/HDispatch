@@ -3,20 +3,20 @@
 <mapper namespace="hdispatch.core.dispatch.mapper_hdispatch.ExecutionJobsMapper" >
   <resultMap id="BaseResultMap" type="hdispatch.core.dispatch.dto.ExecutionJobs" >
     <id column="attempt" property="attempt" jdbcType="INTEGER" />
-    <id column="exec_id" property="exec_id" jdbcType="INTEGER" />
-    <id column="job_id" property="job_id" jdbcType="VARCHAR" />
-    <result column="project_id" property="project_id" jdbcType="INTEGER" />
+    <id column="exec_id" property="execId" jdbcType="INTEGER" />
+    <id column="job_id" property="jobId" jdbcType="VARCHAR" />
+    <result column="project_id" property="projectId" jdbcType="INTEGER" />
     <result column="version" property="version" jdbcType="INTEGER" />
-    <result column="flow_id" property="flow_id" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
     <result column="lang" property="lang" jdbcType="VARCHAR" />
     <result column="meaning" property="meaning" jdbcType="VARCHAR" />
-    <result column="start_time" property="start_time" jdbcType="BIGINT" />
-    <result column="end_time" property="end_time" jdbcType="BIGINT" />
+    <result column="start_time" property="startTime" jdbcType="BIGINT" />
+    <result column="end_time" property="endTime" jdbcType="BIGINT" />
     <result column="status" property="status" jdbcType="TINYINT" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="hdispatch.core.dispatch.dto.ExecutionJobsWithBLOBs" extends="BaseResultMap" >
-    <result column="input_params" property="input_params" jdbcType="LONGVARBINARY" />
-    <result column="output_params" property="output_params" jdbcType="LONGVARBINARY" />
+    <result column="input_params" property="inputParams" jdbcType="LONGVARBINARY" />
+    <result column="output_params" property="outputParams" jdbcType="LONGVARBINARY" />
     <result column="attachments" property="attachments" jdbcType="LONGVARBINARY" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -32,8 +32,8 @@
     <include refid="Blob_Column_List" />
     from execution_jobs
     where attempt = #{attempt,jdbcType=INTEGER}
-      and exec_id = #{exec_id,jdbcType=INTEGER}
-      and job_id = #{job_id,jdbcType=VARCHAR}
+      and exec_id = #{execId,jdbcType=INTEGER}
+      and job_id = #{jobId,jdbcType=VARCHAR}
       
   </select>
     <select id="selectJobsByFlow" resultMap="ResultMapWithBLOBs" parameterType="hdispatch.core.dispatch.dto.ExecutionJobs" >
@@ -50,14 +50,14 @@
 	and scvb.CODE_VALUE_ID = scv.CODE_VALUE_ID
 	and scb.CODE = 'HDISPATCH.JOB_STATUS'
 	and SCV.LANG = #{lang,jdbcType=VARCHAR}
-      and exec_id = #{exec_id,jdbcType=INTEGER}
+      and exec_id = #{execId,jdbcType=INTEGER}
       order by start_time asc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.ExecutionJobsKey" >
     delete from execution_jobs
     where attempt = #{attempt,jdbcType=INTEGER}
-      and exec_id = #{exec_id,jdbcType=INTEGER}
-      and job_id = #{job_id,jdbcType=VARCHAR}
+      and exec_id = #{execId,jdbcType=INTEGER}
+      and job_id = #{jobId,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="hdispatch.core.dispatch.dto.ExecutionJobsWithBLOBs" >
     insert into execution_jobs (attempt, exec_id, job_id, 
@@ -65,12 +65,13 @@
       start_time, end_time, status, 
       input_params, output_params, 
       attachments)
-    values (#{attempt,jdbcType=INTEGER}, #{exec_id,jdbcType=INTEGER}, #{job_id,jdbcType=VARCHAR}, 
-      #{project_id,jdbcType=INTEGER}, #{version,jdbcType=INTEGER}, #{flow_id,jdbcType=VARCHAR}, 
-      #{start_time,jdbcType=BIGINT}, #{end_time,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, 
-      #{input_params,jdbcType=LONGVARBINARY}, #{output_params,jdbcType=LONGVARBINARY}, 
+    values (#{attempt,jdbcType=INTEGER}, #{execId,jdbcType=INTEGER}, #{jobId,jdbcType=VARCHAR},
+      #{projectId,jdbcType=INTEGER}, #{version,jdbcType=INTEGER}, #{flowId,jdbcType=VARCHAR},
+      #{startTime,jdbcType=BIGINT}, #{endTime,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
+      #{inputParams,jdbcType=LONGVARBINARY}, #{outputParams,jdbcType=LONGVARBINARY},
       #{attachments,jdbcType=LONGVARBINARY})
   </insert>
+
   <insert id="insertSelective" parameterType="hdispatch.core.dispatch.dto.ExecutionJobsWithBLOBs" >
     insert into execution_jobs
     <trim prefix="(" suffix=")" suffixOverrides="," >

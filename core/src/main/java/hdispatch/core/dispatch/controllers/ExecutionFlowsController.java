@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -242,6 +243,7 @@ public class ExecutionFlowsController extends BaseController {
     @RequestMapping("/resumeflow")
     @ResponseBody
     public ResultObj resume(HttpServletRequest request, @RequestBody List<ExecutionFlows> list) {
+        Locale locale = RequestContextUtils.getLocale(request);
         ResultObj obj = new ResultObj();
         for (ExecutionFlows e : list) {
             Map<String, Object> map = new HashMap<String, Object>();
@@ -251,7 +253,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getResume());
                 obj.setCode(0);
             } else {
-                obj.setMessage("恢复成功");
+                obj.setMessage(getMessageSource().getMessage("hdispatch.depflow.success_resume",null,locale));
                 obj.setCode(1);
             }
         }
@@ -268,6 +270,7 @@ public class ExecutionFlowsController extends BaseController {
     @RequestMapping("/pauseflow")
     @ResponseBody
     public ResultObj pause(HttpServletRequest request, @RequestBody List<ExecutionFlows> list) {
+        Locale locale = RequestContextUtils.getLocale(request);
         ResultObj obj = new ResultObj();
         for (ExecutionFlows e : list) {
             Map<String, Object> map = new HashMap<String, Object>();
@@ -277,7 +280,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getError());
                 obj.setCode(0);
             } else {
-                obj.setMessage("暂停成功");
+                obj.setMessage(getMessageSource().getMessage("hdispatch.depflow.success_pause",null,locale));
                 obj.setCode(1);
             }
         }
@@ -294,6 +297,7 @@ public class ExecutionFlowsController extends BaseController {
     @RequestMapping("/stopflow")
     @ResponseBody
     public ResultObj stop(HttpServletRequest request, @RequestBody List<ExecutionFlows> list) {
+        Locale locale = RequestContextUtils.getLocale(request);
         ResultObj obj = new ResultObj();
         for (ExecutionFlows e : list) {
             Map<String, Object> map = new HashMap<String, Object>();
@@ -303,7 +307,7 @@ public class ExecutionFlowsController extends BaseController {
                 obj.setMessage(f.getError());
                 obj.setCode(0);
             } else {
-                obj.setMessage("停止成功");
+                obj.setMessage(getMessageSource().getMessage("hdispatch.depflow.success_stop",null,locale));
                 obj.setCode(1);
             }
         }

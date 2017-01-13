@@ -228,6 +228,12 @@
             });
         }
 
+        function generateAll() {
+            return httpService.get(_basePath + "/dispatcher/workflow/generateAll",{},function(data, defered){
+                defered.resolve(data);
+            });
+        }
+
         return {
             themes: themes,
             layers: layers,
@@ -235,6 +241,7 @@
             createWorkflow: createWorkflow,
             updateWorkflow: updateWorkflow,
             generateWorkflow: generateWorkflow,
+            generateAll: generateAll,
             query: query,
             queryOperate: queryOperate,
             workflow: workflow,

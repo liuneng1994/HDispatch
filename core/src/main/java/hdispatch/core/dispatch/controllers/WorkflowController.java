@@ -4,6 +4,7 @@ import com.hand.hap.core.IRequest;
 import com.hand.hap.core.util.RequestUtil;
 import com.hand.hap.system.controllers.BaseController;
 import com.hand.hap.system.dto.ResponseData;
+import hdispatch.core.dispatch.dto.workflow.SimpleWorkflow;
 import hdispatch.core.dispatch.dto.workflow.Workflow;
 import hdispatch.core.dispatch.exception.JobAbsentException;
 import hdispatch.core.dispatch.service.WorkflowService;
@@ -223,5 +224,19 @@ public class WorkflowController extends BaseController {
     @RequestMapping(path = "/deptGraph", method = RequestMethod.GET)
     public Map<String, List<String>> getDeptGraph(@RequestParam("workflowName") String name) {
         return workflowService.getDeptGraph(name);
+    }
+
+    @RequestMapping(path = "/generateAll", method = RequestMethod.GET)
+    public ResponseData generateAll(HttpServletRequest servletRequest) {
+        IRequest request = createRequestContext(servletRequest);
+        List<SimpleWorkflow> workflows = workflowService.queryWorkflow(request, null, null, "", "", 1, Integer.MAX_VALUE);
+        StringBuilder results = new StringBuilder();
+        workflows.forEach(workflow -> {
+            String result = workflowService.generateWorkflow(workflow.getWorkflowId());
+            results.append(StringUtils.isEmpty(result) ? "" : result).append(StringUtils.isEmpty(result) ? "" : "  ");
+        });
+        ResponseData responseData = new ResponseData();
+        responseData.setMessage(results.toString());
+        return responseData;
     }
 }

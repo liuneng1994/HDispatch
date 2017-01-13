@@ -19,6 +19,7 @@ import java.util.Map;
 
 /**
  * Created by 邓志龙 on 2016/8/31.
+ * zhilong.deng@hand-china.com
  */
 @Service
 @Transactional("hdispatchTM")
@@ -28,7 +29,6 @@ public class ScheduleFlowServiceImpl implements ScheduleFlowService {
 
     /**
      * 调度一个流
-     *
      * @param flow
      * @return
      */
@@ -74,6 +74,11 @@ public class ScheduleFlowServiceImpl implements ScheduleFlowService {
         return result;
     }
 
+    /**
+     * 取消调度流
+     * @param id
+     * @return
+     */
     @Override
     public ResultObj unscheduleFlow(Long id) {
         ResultObj result = new ResultObj();
@@ -171,7 +176,12 @@ public ResultObj slaInfo(Map<String, Object> map) {
 	return obj;
 }
 
-@Override
+    /**
+     * 调度流（通过调度表达式）
+     * @param map
+     * @return
+     */
+    @Override
 public ResponseData scheduleCronFlow(Map<String, Object> map) {
     System.out.println(map);
     ResponseData result = null;

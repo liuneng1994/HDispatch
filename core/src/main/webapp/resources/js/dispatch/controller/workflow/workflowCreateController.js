@@ -167,7 +167,8 @@
         });
 
         vm.paint._paper.on('cell:pointerdblclick', function (cellView) {
-            if (!cellView.model instanceof joint.shapes.node.flow) return;
+            debugger
+            if (!cellView.model.expandFlow) return;
             if (cellView.model.prop('expanded')) {
                 cellView.model.collapseFlow(vm.paint._graph);
             } else {

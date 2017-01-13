@@ -3,39 +3,39 @@ package hdispatch.core.dispatch.dto;
 import com.hand.hap.system.dto.BaseDTO;
 
 public class ExecutionFlows extends BaseDTO{
-    private Integer exec_id;
+    private Integer execId;
 
-    private Integer project_id;
+    private Integer projectId;
 
     private Integer version;
 
-    private String flow_id;
+    private String flowId;
 
     private Byte status;
 
-    private String submit_user;
+    private String submitUser;
 
-    private Long submit_time;
+    private Long submitTime;
 
-    private Long update_time;
+    private Long updateTime;
 
-    private Long theme_id;
+    private Long themeId;
 
 
-    private Long start_time;
+    private Long startTime;
 
-    private Long end_time;
+    private Long endTime;
 
-    private Byte enc_type;
+    private Byte encType;
 
-    private Integer executor_id;
+    private Integer executorId;
 
-    private byte[] flow_data;
+    private byte[] flowData;
 
     
-    private String project_name;
+    private String projectName;
     
-    private String group_name;
+    private String groupName;
 
     private Integer running;
     
@@ -56,11 +56,11 @@ public class ExecutionFlows extends BaseDTO{
 
 
     public Long getTheme_id() {
-        return theme_id;
+        return themeId;
     }
 
     public void setTheme_id(Long theme_id) {
-        this.theme_id = theme_id;
+        this.themeId = theme_id;
     }
 
     public String getMeaning() {
@@ -88,35 +88,35 @@ public class ExecutionFlows extends BaseDTO{
 	}
 
 	public String getProject_name() {
-		return project_name;
+		return projectName;
 	}
 
 	public void setProject_name(String project_name) {
-		this.project_name = project_name;
+		this.projectName = project_name;
 	}
 
 	public String getGroup_name() {
-		return group_name;
+		return groupName;
 	}
 
 	public void setGroup_name(String group_name) {
-		this.group_name = group_name;
+		this.groupName = group_name;
 	}
 
 	public Integer getExec_id() {
-        return exec_id;
+        return execId;
     }
 
     public void setExec_id(Integer exec_id) {
-        this.exec_id = exec_id;
+        this.execId = exec_id;
     }
 
     public Integer getProject_id() {
-        return project_id;
+        return projectId;
     }
 
     public void setProject_id(Integer project_id) {
-        this.project_id = project_id;
+        this.projectId = project_id;
     }
 
     public Integer getVersion() {
@@ -128,11 +128,11 @@ public class ExecutionFlows extends BaseDTO{
     }
 
     public String getFlow_id() {
-        return flow_id;
+        return flowId;
     }
 
     public void setFlow_id(String flow_id) {
-        this.flow_id = flow_id == null ? null : flow_id.trim();
+        this.flowId = flow_id == null ? null : flow_id.trim();
     }
 
     public Byte getStatus() {
@@ -144,66 +144,66 @@ public class ExecutionFlows extends BaseDTO{
     }
 
     public String getSubmit_user() {
-        return submit_user;
+        return submitUser;
     }
 
     public void setSubmit_user(String submit_user) {
-        this.submit_user = submit_user == null ? null : submit_user.trim();
+        this.submitUser = submit_user == null ? null : submit_user.trim();
     }
 
     public Long getSubmit_time() {
-        return submit_time;
+        return submitTime;
     }
 
     public void setSubmit_time(Long submit_time) {
-        this.submit_time = submit_time;
+        this.submitTime = submit_time;
     }
 
     public Long getUpdate_time() {
-        return update_time;
+        return updateTime;
     }
 
     public void setUpdate_time(Long update_time) {
-        this.update_time = update_time;
+        this.updateTime = update_time;
     }
 
     public Long getStart_time() {
-        return start_time;
+        return startTime;
     }
 
     public void setStart_time(Long start_time) {
-        this.start_time = start_time;
+        this.startTime = start_time;
     }
 
     public Long getEnd_time() {
-        return end_time;
+        return endTime;
     }
 
     public void setEnd_time(Long end_time) {
-        this.end_time = end_time;
+        this.endTime = end_time;
     }
 
     public Byte getEnc_type() {
-        return enc_type;
+        return encType;
     }
 
     public void setEnc_type(Byte enc_type) {
-        this.enc_type = enc_type;
+        this.encType = enc_type;
     }
 
     public Integer getExecutor_id() {
-        return executor_id;
+        return executorId;
     }
 
     public void setExecutor_id(Integer executor_id) {
-        this.executor_id = executor_id;
+        this.executorId = executor_id;
     }
 
     public byte[] getFlow_data() {
-        return flow_data;
+        return flowData;
     }
 
     public void setFlow_data(byte[] flow_data) {
-        this.flow_data = flow_data;
+        this.flowData = flow_data;
     }
 }

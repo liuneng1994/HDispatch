@@ -29,15 +29,14 @@
                             ids.push(item.workflowId);
                         });
                         workflowService.deleteWorkflow(ids).then(function () {
-                            options.success();
+                            options.success("");
                             kendo.ui.showInfoDialog({
                                 message: $l('hap.tip.success')
                             });
                         }, function (data) {
+                            debugger
                             $("#grid").data("kendoGrid").dataSource.cancelChanges();
-                            kendo.ui.showErrorDialog({
-                                message: data
-                            });
+                            options.error("");
                         });
                     }
                 },
@@ -58,6 +57,16 @@
                     }
                 }
             },
+            // dataBound: function () {
+            //     var grid = $("#grid").data("kendoGrid");
+            //     grid.autoFitColumn("name");
+            //     grid.autoFitColumn("theme");
+            //     grid.autoFitColumn("layer");
+            //     grid.autoFitColumn("description");
+            //     var old = grid.columns[4].width;
+            //     grid.columns[4].width = $("#grid div.k-grid-header").width() - grid.columns[0].width - grid.columns[1].width - grid.columns[2].width - grid.columns[3].width ;
+            //     window.console.log(grid);
+            // },
             //width:500,
             navigatable: true,
             columnMenu: true,
@@ -68,20 +77,7 @@
             pageable: {
                 pageSizes: [10, 20, 50, 100],
                 refresh: true,
-                buttonCount: 5,
-                messages: {
-                    noRecords: $l('hdispatch.grid_find_no_data'),
-                    display: "{0} - {1} " + $l('hdispatch.grid_data_total_num') + " {2} " + $l('hdispatch.grid_data_records'),
-                    empty: $l('hdispatch.grid_find_no_data'),
-                    page: $l('hdispatch.grid_page'),
-                    of: "/ {0}",
-                    itemsPerPage: $l('hdispatch.grid_pages_per_page'),
-                    first: $l('hdispatch.grid_first_page'),
-                    previous: $l('hdispatch.grid_pre_page'),
-                    next: $l('hdispatch.grid_next_page'),
-                    last: $l('hdispatch.grid_last_page'),
-                    refresh: $l('hdispatch.grid_refreshff')
-                }
+                buttonCount: 5
             },
             columns: [
                 {
@@ -235,7 +231,24 @@
                 paint.initScroll();
                 paint.fromDeptGraph(graph);
                 paint.format();
-                paint.setNodeColor(paint.jobs.getNodeId(workflowName),'yellow')
+                paint.setNodeColor(paint.jobs.getNodeId(workflowName), 'yellow')
+            });
+        };
+
+        vm.generateAll = function () {
+            kendo.ui.showConfirmDialog({
+                title: $l('hap.tip.info'),
+                message: $l('hdispatch.workflow.generateAll')
+            }).done(function (event) {
+                if (event.button == 'OK') {
+                    workflowService.generateAll().then(function (data) {
+                        if (data.message == "") {
+                            kendo.ui.showInfoDialog({message: "生成成功"})
+                        } else {
+                            kendo.ui.showErrorDialog({message: data.message + "生成失败"})
+                        }
+                    });
+                }
             });
         };
 
