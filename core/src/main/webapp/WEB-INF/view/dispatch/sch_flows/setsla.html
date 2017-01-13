@@ -26,7 +26,7 @@
                             <th><@spring.message
                                 'hdispatch.schedule.setsla.emailaction'/>
                             </th>
-                            <th><@spring.message 'hdispatch.schedule.setsla.kilaction'/></th>
+                            <!--<th><@spring.message 'hdispatch.schedule.setsla.kilaction'/></th>-->
                             <th><@spring.message 'hap.action'/></th>
                         </tr>
                         </thead>
@@ -177,16 +177,16 @@
                                         }
                                         cEmail.appendChild(emailCheck);
 
-                                        var cKill = rFlowRule.insertCell(-1);
-                                        var killCheck = document
-                                                .createElement("input");
-                                        killCheck.type = "checkbox";
-                                        for (var act in data.settings[setting].actions) {
-                                            if (data.settings[setting].actions[act] == "KILL") {
-                                                killCheck.checked = true;
-                                            }
-                                        }
-                                        cKill.appendChild(killCheck);
+//                                        var cKill = rFlowRule.insertCell(-1);
+//                                        var killCheck = document
+//                                                .createElement("input");
+//                                        killCheck.type = "checkbox";
+//                                        for (var act in data.settings[setting].actions) {
+//                                            if (data.settings[setting].actions[act] == "KILL") {
+//                                                killCheck.checked = true;
+//                                            }
+//                                        }
+//                                        cKill.appendChild(killCheck);
 
                                     }
                                 }
@@ -207,7 +207,7 @@
                 tr.innerHTML = "<td><select class='form-control' id='flow" + count + "' disabled='true'>"
                         + "</select></td><td><select class='form-control'disabled='true'><option value='FINISH'>FAILED</option></select></td><td>"
                         + "<input id='flatpickr" + count + "'class='form-control' data-default-date='' data-enable-time='true' value='00:01' data-enable-seconds='false' data-no-calendar='true'>"
-                        + "</td><td><input type='checkbox'></td><td><input type='checkbox'></td><td><button class='btn btn-danger' onclick='removetr(" + count + ")'><@spring.message 'hap.delete'/></button></td>";
+                        + "</td><td><input type='checkbox'></td><td><button class='btn btn-danger' onclick='removetr(" + count + ")'><@spring.message 'hap.delete'/></button></td>";
                 document.getElementById("tbody").appendChild(tr);
                 document.getElementById("flatpickr" + count).flatpickr();
                 var flow = document.getElementById("flow" + count);
@@ -237,9 +237,9 @@
                     var rule = rFlowRule.cells[1].firstChild.value;
                     var duration = rFlowRule.cells[2].firstChild.value;
                     var email = rFlowRule.cells[3].firstChild.checked;
-                    var kill = rFlowRule.cells[4].firstChild.checked;
+                   // var kill = rFlowRule.cells[4].firstChild.checked;
                     settings[row] = id + "," + rule + "," + duration + "," + email
-                            + "," + kill;
+                            + "," + false;
                 }
                 $.ajax({
                     url: "${base.contextPath}/schedule/setsla?settings="
