@@ -110,7 +110,7 @@ public class ScheduleController extends BaseController {
         HdispatchSchedule s = new HdispatchSchedule();
         s.setFlow_id(fid);
         s.setProject_id(pid);
-        hdispatchScheduleService.deleteByPrimaryKey(s);
+        hdispatchScheduleService.deleteByProject(s);
         return scheduleFlowService.unscheduleFlow(schId);
     }
 
