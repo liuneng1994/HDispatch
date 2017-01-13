@@ -87,28 +87,28 @@
                 {
                     field: "name",
                     title: $l('hdispatch.workflow'),
-                    width: 100
+                    width: 80
                 },
                 {
                     field: "theme",
                     title: $l('hdispatch.theme'),
-                    width: 100
+                    width: 80
                 },
                 {
                     field: "layer",
                     title: $l('hdispatch.layer'),
-                    width: 100
+                    width: 80
                 },
                 {
                     field: "description",
                     title: $l('hap.description'),
-                    width: 200
+                    width: 150
                 },
                 {
                     field: "",
                     title: $l('hap.action'),
                     attributes: {style: "padding-top:0;padding-bottom:0"},
-                    width: 200,
+                    width: 250,
                     template: function (item) {
                         var html = '';
                         var disabled = "disabled";
