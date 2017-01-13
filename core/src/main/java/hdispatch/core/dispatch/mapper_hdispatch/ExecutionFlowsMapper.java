@@ -21,7 +21,7 @@ public interface ExecutionFlowsMapper{
     /**
      * 清空日志,
      * add by yazheng.yang
-     * @param dateBefore
+     * @param dateBeforeMillisecond
      */
-    void cleanLogsBefore(@Param("dateBefore") Date dateBefore);
+    void cleanLogsBefore(@Param("dateBefore") Long dateBeforeMillisecond);
 }
