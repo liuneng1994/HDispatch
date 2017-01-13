@@ -25,6 +25,9 @@ public class ConfigUtil {
     //读取kettle文件目录结构的服务器-登录密码
     private static String kettle_file_system_server_login_password;
 
+    //日志保留时间（单位：天）
+    private static long logs_remain_days;
+
     static {
         properties = new Properties();
         try {
@@ -38,6 +41,7 @@ public class ConfigUtil {
             kettle_file_system_server_login_userName = properties.getProperty("kettle_file_system_server_login_userName");
             kettle_file_system_server_login_password = properties.getProperty("kettle_file_system_server_login_password");
 
+            logs_remain_days = Long.parseLong(properties.getProperty("hdispatch.logs_remain_days","30"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -106,5 +110,9 @@ public class ConfigUtil {
 
     public static String getKettle_file_system_server_login_password() {
         return kettle_file_system_server_login_password;
+    }
+
+    public static long getLogs_remain_days(){
+        return logs_remain_days;
     }
 }

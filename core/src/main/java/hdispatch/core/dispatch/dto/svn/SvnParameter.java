@@ -85,147 +85,132 @@ public class SvnParameter extends BaseDTO {
 //private Date lastUpdateDate;
 //private Long lastUpdateLogin;
 
+
     public Long getScheduleParaId() {
         return scheduleParaId;
     }
 
-    public SvnParameter setScheduleParaId(Long scheduleParaId) {
+    public void setScheduleParaId(Long scheduleParaId) {
         this.scheduleParaId = scheduleParaId;
-        return this;
     }
 
     public String getParameterName() {
         return parameterName;
     }
 
-    public SvnParameter setParameterName(String parameterName) {
+    public void setParameterName(String parameterName) {
         this.parameterName = parameterName;
-        return this;
     }
 
     public String getParameterValue() {
         return parameterValue;
     }
 
-    public SvnParameter setParameterValue(String parameterValue) {
+    public void setParameterValue(String parameterValue) {
         this.parameterValue = parameterValue;
-        return this;
     }
 
     public Long getParameterSort() {
         return parameterSort;
     }
 
-    public SvnParameter setParameterSort(Long parameterSort) {
+    public void setParameterSort(Long parameterSort) {
         this.parameterSort = parameterSort;
-        return this;
     }
 
     public String getSubjectName() {
         return subjectName;
     }
 
-    public SvnParameter setSubjectName(String subjectName) {
+    public void setSubjectName(String subjectName) {
         this.subjectName = subjectName;
-        return this;
     }
 
     public String getMappingName() {
         return mappingName;
     }
 
-    public SvnParameter setMappingName(String mappingName) {
+    public void setMappingName(String mappingName) {
         this.mappingName = mappingName;
-        return this;
     }
 
     public String getSessionName() {
         return sessionName;
     }
 
-    public SvnParameter setSessionName(String sessionName) {
+    public void setSessionName(String sessionName) {
         this.sessionName = sessionName;
-        return this;
     }
 
     public String getWorkFlowName() {
         return workFlowName;
     }
 
-    public SvnParameter setWorkFlowName(String workFlowName) {
+    public void setWorkFlowName(String workFlowName) {
         this.workFlowName = workFlowName;
-        return this;
     }
 
     public String getFormatMask() {
         return formatMask;
     }
 
-    public SvnParameter setFormatMask(String formatMask) {
+    public void setFormatMask(String formatMask) {
         this.formatMask = formatMask;
-        return this;
     }
 
     public Long getParaOffset() {
         return paraOffset;
     }
 
-    public SvnParameter setParaOffset(Long paraOffset) {
+    public void setParaOffset(Long paraOffset) {
         this.paraOffset = paraOffset;
-        return this;
     }
 
     public String getFrequency() {
         return frequency;
     }
 
-    public SvnParameter setFrequency(String frequency) {
+    public void setFrequency(String frequency) {
         this.frequency = frequency;
-        return this;
     }
 
     public String getEnableFlag() {
         return enableFlag;
     }
 
-    public SvnParameter setEnableFlag(String enableFlag) {
+    public void setEnableFlag(String enableFlag) {
         this.enableFlag = enableFlag;
-        return this;
     }
 
     public Date getStartDateActive() {
         return startDateActive;
     }
 
-    public SvnParameter setStartDateActive(Date startDateActive) {
+    public void setStartDateActive(Date startDateActive) {
         this.startDateActive = startDateActive;
-        return this;
     }
 
     public Date getEndDateActive() {
         return endDateActive;
     }
 
-    public SvnParameter setEndDateActive(Date endDateActive) {
+    public void setEndDateActive(Date endDateActive) {
         this.endDateActive = endDateActive;
-        return this;
     }
 
     public String getParameterDesc() {
         return parameterDesc;
     }
 
-    public SvnParameter setParameterDesc(String parameterDesc) {
+    public void setParameterDesc(String parameterDesc) {
         this.parameterDesc = parameterDesc;
-        return this;
     }
 
     public String getParameterValueIni() {
         return parameterValueIni;
     }
 
-    public SvnParameter setParameterValueIni(String parameterValueIni) {
+    public void setParameterValueIni(String parameterValueIni) {
         this.parameterValueIni = parameterValueIni;
-        return this;
     }
 }
