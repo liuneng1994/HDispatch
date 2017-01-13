@@ -47,4 +47,14 @@ HdispatchScheduleMapper mapper;
 		// TODO Auto-generated method stub
 		return mapper.selectByFlowAndProject(s).size();
 	}
+
+	@Override
+	public int deleteByProject(HdispatchSchedule s) {
+		return mapper.deleteByProject(s);
+	}
+
+	@Override
+	public int insertByProject(HdispatchSchedule s) {
+		return mapper.insertByProject(s);
+	}
 }

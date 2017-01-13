@@ -28,4 +28,8 @@ public interface HdispatchScheduleService extends IBaseService<HdispatchSchedule
 	 * @return
      */
 	int selectByFlowAndProject(HdispatchSchedule s);
+
+	int deleteByProject(HdispatchSchedule s);
+
+	int insertByProject(HdispatchSchedule s);
 }

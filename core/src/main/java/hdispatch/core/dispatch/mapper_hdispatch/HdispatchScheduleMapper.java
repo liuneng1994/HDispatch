@@ -11,4 +11,8 @@ public interface HdispatchScheduleMapper extends Mapper<HdispatchSchedule>{
 	List<HdispatchSchedule> selectAllSchedule(HdispatchSchedule s);
 
     List<HdispatchSchedule> selectByFlowAndProject(HdispatchSchedule s);
+
+    int deleteByProject(HdispatchSchedule s);
+
+    int insertByProject(HdispatchSchedule s);
 }

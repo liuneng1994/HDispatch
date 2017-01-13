@@ -44,17 +44,17 @@
     from hdispatch_schedule
     where  project_name = #{projectName,jdbcType=VARCHAR}
   </select>
-  <!--<delete id="deleteByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
+  <delete id="deleteByProject" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
     delete from hdispatch_schedule
     where flow_id = #{flowId,jdbcType=VARCHAR}
     and project_id= #{projectId,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
-    insert into hdispatch_schedule (sch_id, schedule_id, project_id, 
-      flow_id, submit_date,project_name)
-    values (#{schId,jdbcType=BIGINT}, #{scheduleId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER},
-      #{flowId,jdbcType=VARCHAR}, #{submitDate,jdbcType=VARCHAR},#{projectName,jdbcType=VARCHAR})
-  </insert>-->
+    <insert id="insertByProject" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
+      insert into hdispatch_schedule (sch_id, schedule_id, project_id,
+        flow_id, submit_date,project_name)
+      values (#{schId,jdbcType=BIGINT}, #{scheduleId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER},
+        #{flowId,jdbcType=VARCHAR}, now(),#{projectName,jdbcType=VARCHAR})
+    </insert>
  <!-- <update id="updateByPrimaryKey" parameterType="hdispatch.core.dispatch.dto.HdispatchSchedule" >
     update hdispatch_schedule
     set schedule_id = #{scheduleId,jdbcType=INTEGER},
