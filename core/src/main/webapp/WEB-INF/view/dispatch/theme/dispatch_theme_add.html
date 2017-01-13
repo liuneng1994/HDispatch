@@ -31,7 +31,7 @@
     </script>
     <div>
         <div id="content-container">
-            <div id="theme-content">
+            <div id="page-content">
                 <div class="panel">
                     <form class="form-horizontal" id="query-form">
                         <div class="panel-body col-sm-offset-0">
@@ -59,16 +59,20 @@
                         </div>
                     </form>
                 </div>
-                <div id="page-content" style="clear:both">
-                    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-                        <span id="btn_parameter_create" class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
-                        <!--<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>-->
-                        <span id="btn_parameter_save" class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
-                        <span id="btn_parameter_calcel" class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
-                        <!--<span  onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>-->
-                    </div>
-                    <div style="clear:both">
-                        <div id="themeListGrid" style="clear: both"></div>
+                <div class="panel">
+                    <div class="panel-body">
+                        <div style="clear:both">
+                            <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+                                <span id="btn_parameter_create" class="btn btn-primary" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                                <!--<span class="btn btn-danger" data-bind="click:batchDeleteFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.job.batch_delete"/></span>-->
+                                <span id="btn_parameter_save" class="btn btn-success"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
+                                <span id="btn_parameter_calcel" class="btn btn-default" data-bind="click:cancelFunction" style="float:left;margin-right:5px;"><@spring.message "hdispatch.cancel"/></span>
+                                <!--<span  onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>-->
+                            </div>
+                            <div style="clear:both">
+                                <div id="themeListGrid" style="clear: both"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -370,7 +374,7 @@
                     ],
                     editable: hasOperationPermission_themeLayer
                 });
-                kendo.bind($('#theme-content'),viewModel);
+                kendo.bind($('#page-content'),viewModel);
             });
 
             function getEdictingRowData(index)
