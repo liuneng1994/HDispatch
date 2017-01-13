@@ -207,12 +207,13 @@
             vm.workflow.workflowId = workflowId;
             workflowService.workflow(workflowId).then(function (data) {
                 refreshLayers('layers', data.themeId);
-                vm.workflow.themeId = data.themeId;
-                $timeout(function () {
-                    vm.workflow.layerId = data.layerId;
-                    vm.layerChange();
-                }, 200);
-
+                $timeout(function() {
+                    vm.workflow.themeId = data.themeId;
+                    $timeout(function () {
+                        vm.workflow.layerId = data.layerId;
+                        vm.layerChange();
+                    }, 100);
+                },100);
                 vm.workflow.workflowName = data.name;
                 vm.workflow.description = data.description;
                 vm.workflow.graph = data.graph;
