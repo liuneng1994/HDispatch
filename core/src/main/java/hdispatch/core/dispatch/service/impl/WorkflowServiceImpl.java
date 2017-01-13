@@ -260,6 +260,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         return depencencyManager.getDeptGraph(flowName);
     }
 
+    @Override
+    public long isJobUsed(Long jobId) {
+        return workflowJobMapper.getUsingCount(jobId);
+    }
+
     /**
      * 创建工作流的zip压缩文件
      *

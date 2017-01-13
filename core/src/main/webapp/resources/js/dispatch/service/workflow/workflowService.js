@@ -234,6 +234,12 @@
             });
         }
 
+        function queryUseCount(id) {
+            return httpService.get(_basePath + "/dispatcher/workflow/queryUseCount",{jobId:id},function(data, defered){
+                defered.resolve(parseInt(data.message));
+            });
+        }
+
         return {
             themes: themes,
             layers: layers,
@@ -257,7 +263,8 @@
             deleteWorkflowMutex: deleteWorkflowMutex,
             operateThemes: operateThemes,
             queryScheduleInfo:queryScheduleInfo,
-            deptGraph: deptGraph
+            deptGraph: deptGraph,
+            queryUseCount: queryUseCount
         };
     }
 })();

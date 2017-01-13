@@ -29,7 +29,7 @@
                 }).success(function (data) {
                     successFunc(data, defered);
                     if (data.success === false) {
-                        kendo.ui.showErrorDialog({message:data.message});
+                        kendo.ui.showErrorDialog({message:data.message||""});
                         return;
                     }
                 }).error(errorHandler);
@@ -63,7 +63,7 @@
                 }).success(function (data) {
                     successFunc(data, defered);
                     if (data.success === false) {
-                        kendo.ui.showErrorDialog({message:data.message});
+                        kendo.ui.showErrorDialog({message:data.message||""});
                         return;
                     }
                 }).error(errorHandler);
@@ -89,7 +89,7 @@
                 }).success(function (data) {
                     successFunc(data, defered);
                     if (data.success === false) {
-                        kendo.ui.showErrorDialog({message:data.message});
+                        kendo.ui.showErrorDialog({message:data.message||""});
                         return;
                     }
                 }).error(errorHandler);
