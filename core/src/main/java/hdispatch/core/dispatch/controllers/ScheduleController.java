@@ -110,7 +110,7 @@ public class ScheduleController extends BaseController {
         HdispatchSchedule s = new HdispatchSchedule();
         s.setFlow_id(fid);
         s.setProject_id(pid);
-        hdispatchScheduleService.delete(s);
+        hdispatchScheduleService.deleteByPrimaryKey(s);
         return scheduleFlowService.unscheduleFlow(schId);
     }
 
@@ -182,7 +182,7 @@ public class ScheduleController extends BaseController {
          map.put("scheduleId", scheduleId);         
         return scheduleFlowService.slaInfo(map);
     }
-    /**
+ /*   *//**
      * 调度
      * @param request
      * @param projectName
@@ -191,7 +191,7 @@ public class ScheduleController extends BaseController {
      * @param isrecurring
      * @return
      * @throws ParseException 
-     */
+     *//*
     @RequestMapping("/schedule")
     @ResponseBody
     public ResultObj schedule(HttpServletRequest request,
@@ -228,7 +228,7 @@ public class ScheduleController extends BaseController {
         System.out.println("-----------------------------"+i);
         return scheduleFlowService.scheduleFlow(obj);
 
-    }
+    }*/
     /**
      * 调度
      * @param request
@@ -243,6 +243,7 @@ public class ScheduleController extends BaseController {
                               @RequestParam("flowId") String flowId,
                               @RequestParam("cronExpression") String cronExpression
     ) throws ParseException {
+        IRequest irequest = createRequestContext(request);
         Map<String, Object> m = new HashMap<>();
         String disabled=request.getParameter("disabled");
         String successEmails=request.getParameter("successEmails");
@@ -287,8 +288,8 @@ public class ScheduleController extends BaseController {
         hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
         hds.setFlow_id(flowId);
         hds.setProject_name(projectName);
-        hdispatchScheduleService.delete(hds);
-        hdispatchScheduleService.insert(hds);
+        hdispatchScheduleService.deleteByPrimaryKey(hds);
+        hdispatchScheduleService.insert(irequest,hds);
         }
         return obj;
 

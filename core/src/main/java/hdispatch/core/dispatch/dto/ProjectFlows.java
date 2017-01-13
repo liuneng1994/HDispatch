@@ -1,37 +1,37 @@
 package hdispatch.core.dispatch.dto;
 
 public class ProjectFlows extends ProjectFlowsKey {
-    private Long modified_time;
+    private Long modifiedTime;
 
-    private Byte encoding_type;
+    private Byte encodingType;
 
     private byte[] json;
 
-    private String project_name;
+    private String projectName;
     
     
     public String getProject_name() {
-		return project_name;
+		return projectName;
 	}
 
 	public void setProject_name(String project_name) {
-		this.project_name = project_name;
+		this.projectName = project_name;
 	}
 
 	public Long getModified_time() {
-        return modified_time;
+        return modifiedTime;
     }
 
     public void setModified_time(Long modified_time) {
-        this.modified_time = modified_time;
+        this.modifiedTime = modified_time;
     }
 
     public Byte getEncoding_type() {
-        return encoding_type;
+        return encodingType;
     }
 
     public void setEncoding_type(Byte encoding_type) {
-        this.encoding_type = encoding_type;
+        this.encodingType = encoding_type;
     }
 
     public byte[] getJson() {

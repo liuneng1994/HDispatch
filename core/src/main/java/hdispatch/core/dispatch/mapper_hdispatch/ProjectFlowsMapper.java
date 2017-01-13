@@ -10,15 +10,7 @@ public interface ProjectFlowsMapper {
 
     int insert(ProjectFlows record);
 
-    int insertSelective(ProjectFlows record);
-
     ProjectFlows selectByPrimaryKey(ProjectFlowsKey key);
-
-    int updateByPrimaryKeySelective(ProjectFlows record);
-
-    int updateByPrimaryKeyWithBLOBs(ProjectFlows record);
-
-    int updateByPrimaryKey(ProjectFlows record);
 
 	List<ProjectFlows> selectAllWithDistinct();
 }

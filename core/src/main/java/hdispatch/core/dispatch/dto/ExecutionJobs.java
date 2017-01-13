@@ -1,15 +1,15 @@
 package hdispatch.core.dispatch.dto;
 
 public class ExecutionJobs extends ExecutionJobsKey {
-    private Integer project_id;
+    private Integer projectId;
 
     private Integer version;
 
-    private String flow_id;
+    private String flowId;
 
-    private Long start_time;
+    private Long startTime;
 
-    private Long end_time;
+    private Long endTime;
 
     private Byte status;
 
@@ -57,11 +57,11 @@ public class ExecutionJobs extends ExecutionJobsKey {
     }
 
     public Integer getProject_id() {
-        return project_id;
+        return projectId;
     }
 
     public void setProject_id(Integer project_id) {
-        this.project_id = project_id;
+        this.projectId = project_id;
     }
 
     public Integer getVersion() {
@@ -73,27 +73,27 @@ public class ExecutionJobs extends ExecutionJobsKey {
     }
 
     public String getFlow_id() {
-        return flow_id;
+        return flowId;
     }
 
     public void setFlow_id(String flow_id) {
-        this.flow_id = flow_id == null ? null : flow_id.trim();
+        this.flowId = flow_id == null ? null : flow_id.trim();
     }
 
     public Long getStart_time() {
-        return start_time;
+        return startTime;
     }
 
     public void setStart_time(Long start_time) {
-        this.start_time = start_time;
+        this.startTime = start_time;
     }
 
     public Long getEnd_time() {
-        return end_time;
+        return endTime;
     }
 
     public void setEnd_time(Long end_time) {
-        this.end_time = end_time;
+        this.endTime = end_time;
     }
 
     public Byte getStatus() {
@@ -115,12 +115,12 @@ public class ExecutionJobs extends ExecutionJobsKey {
     @Override
     public String toString() {
         return "ExecutionJobs{" +
-                "project_id=" + project_id +
+                "project_id=" + projectId +
                 ", version=" + version +
                 ", parentId=" + parentId +
-                ", flow_id='" + flow_id + '\'' +
-                ", start_time=" + start_time +
-                ", end_time=" + end_time +
+                ", flow_id='" + flowId + '\'' +
+                ", start_time=" + startTime +
+                ", end_time=" + endTime +
                 ", status=" + status +
                 ", running='" + running + '\'' +
                 ", lang='" + lang + '\'' +

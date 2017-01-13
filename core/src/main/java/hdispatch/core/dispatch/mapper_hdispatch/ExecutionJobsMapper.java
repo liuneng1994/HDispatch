@@ -13,15 +13,7 @@ public interface ExecutionJobsMapper {
 
     int insert(ExecutionJobsWithBLOBs record);
 
-    int insertSelective(ExecutionJobsWithBLOBs record);
-
     ExecutionJobsWithBLOBs selectByPrimaryKey(ExecutionJobsKey key);
-
-    int updateByPrimaryKeySelective(ExecutionJobsWithBLOBs record);
-
-    int updateByPrimaryKeyWithBLOBs(ExecutionJobsWithBLOBs record);
-
-    int updateByPrimaryKey(ExecutionJobs record);
 
 	List<ExecutionJobs> selectJobsByFlow(ExecutionJobs exe);
 
