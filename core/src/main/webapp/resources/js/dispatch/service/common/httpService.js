@@ -27,11 +27,11 @@
                     params: params,
                     headers: {'X-Requested-With': 'XMLHttpRequest'}
                 }).success(function (data) {
+                    successFunc(data, defered);
                     if (data.success === false) {
                         kendo.ui.showErrorDialog({message:data.message});
                         return;
                     }
-                    successFunc(data, defered);
                 }).error(errorHandler);
                 return defered.promise;
             },
@@ -61,11 +61,11 @@
                         return str.join("&");
                     }
                 }).success(function (data) {
+                    successFunc(data, defered);
                     if (data.success === false) {
                         kendo.ui.showErrorDialog({message:data.message});
                         return;
                     }
-                    successFunc(data, defered);
                 }).error(errorHandler);
                 return defered.promise;
             },
@@ -87,11 +87,11 @@
                     },
                     data: JSON.stringify(JSONdata)
                 }).success(function (data) {
+                    successFunc(data, defered);
                     if (data.success === false) {
                         kendo.ui.showErrorDialog({message:data.message});
                         return;
                     }
-                    successFunc(data, defered);
                 }).error(errorHandler);
                 return defered.promise;
             }

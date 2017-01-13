@@ -71,7 +71,7 @@
                 <form name="flow" novalidate>
                     <div class="panel-body">
                         <div class="row form-horizontal">
-                            <div class="panel-body col-sm-offset-0">
+                            <div class="col-sm-offset-0">
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label class="col-sm-4 control-label"><@spring.message
@@ -145,6 +145,7 @@
                                 ng-click="vm.create('${base.contextPath}/dispatch/workflow/workflow_create.html')">
                             <@spring.message "hdispatch.create"/>
                         </button>
+                        <button class="btn btn-primary" ng-click="vm.generateAll()"><@spring.message "hdispatch.workflow.generate_all"/></button>
                     </div>
                     <div style="clear:both">
                         <kendo-grid id="grid" k-options="vm.gridOptions"></kendo-grid>

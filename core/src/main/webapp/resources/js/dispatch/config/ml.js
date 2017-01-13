@@ -34,3 +34,4 @@ $$l('hdispatch.tip.noAuthority', '没有操作权限', 'do not have operation au
 $$l('hdispatch.tip.noflow','未生成工作流', 'No generated workflow');
 $$l('hdispatch.workflow.scheduleFail','计划失败', 'schedule fail');
 $$l('hdispatch.workflow.scheduleSuccess','计划成功', 'schedule success');
+$$l('hdispatch.workflow.generateAll','是否生成所有任务流', 'Does generate all workflow?');
