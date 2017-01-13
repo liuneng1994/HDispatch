@@ -5,6 +5,7 @@ import hdispatch.core.dispatch.mapper_hdispatch.ExecutionJobsMapper;
 import hdispatch.core.dispatch.service.HdispatchLogCleanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Date;
@@ -27,9 +28,10 @@ public class HdispatchLogCleanServiceImpl implements HdispatchLogCleanService {
     }
 
     @Override
+    @Transactional(transactionManager = "hdispatchTM",rollbackFor = Exception.class)
     public void cleanLogsBefore(Date beforeDate) {
         Assert.notNull(beforeDate);
-        executionJobsMapper.cleanLogsBefore(beforeDate);
-        executionFlowsMapper.cleanLogsBefore(beforeDate);
+        executionJobsMapper.cleanLogsBefore(new Long(beforeDate.getTime()));
+        executionFlowsMapper.cleanLogsBefore(new Long(beforeDate.getTime()));
     }
 }

@@ -214,7 +214,7 @@
       and job_id = #{job_id,jdbcType=VARCHAR}
   </update>
     <!--add by yazheng.yang@hand-china.com-->
-    <delete id="cleanLogsBefore" parameterType="java.util.Date">
+    <delete id="cleanLogsBefore" parameterType="java.lang.Long">
         DELETE FROM execution_jobs
         WHERE #{dateBefore} > end_time
     </delete>
