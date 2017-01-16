@@ -994,6 +994,8 @@
                     var data = getEdictingRowData(rowIndex_grid_edicting);
                     //设置某列的新值
                     data.set("jobSvn",jobSvn_node_checked);
+                    //将kjb和etl文件名作为job默认名称
+                    data.set("jobName",splitSvnFileName(jobSvn_node_checked));
                     //关闭窗口
                     grid_svn_wnd.close();
                 }
