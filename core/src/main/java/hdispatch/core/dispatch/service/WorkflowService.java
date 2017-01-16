@@ -37,4 +37,6 @@ public interface WorkflowService {
     String deleteWorkflow(List<Long> ids);
 
     Map<String, List<String>> getDeptGraph(String flowName);
+
+    long isJobUsed(Long jobId);
 }

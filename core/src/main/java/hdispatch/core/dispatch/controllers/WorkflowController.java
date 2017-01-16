@@ -239,4 +239,11 @@ public class WorkflowController extends BaseController {
         responseData.setMessage(results.toString());
         return responseData;
     }
+
+    @RequestMapping(path = "/queryUseCount", method = RequestMethod.GET)
+    public ResponseData queryJobUsed(@RequestParam(name = "jobId") Long jobId) {
+        ResponseData responseData = new ResponseData();
+        responseData.setMessage(String.valueOf(workflowService.isJobUsed(jobId)));
+        return responseData;
+    }
 }
