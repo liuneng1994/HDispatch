@@ -110,7 +110,7 @@ public class ScheduleController extends BaseController {
         HdispatchSchedule s = new HdispatchSchedule();
         s.setFlow_id(fid);
         s.setProject_id(pid);
-        hdispatchScheduleService.deleteByPrimaryKey(s);
+        hdispatchScheduleService.deleteByProject(s);
         return scheduleFlowService.unscheduleFlow(schId);
     }
 
@@ -288,8 +288,8 @@ public class ScheduleController extends BaseController {
         hds.setProject_id(Integer.parseInt(String.valueOf(projectId)));
         hds.setFlow_id(flowId);
         hds.setProject_name(projectName);
-        hdispatchScheduleService.deleteByPrimaryKey(hds);
-        hdispatchScheduleService.insert(irequest,hds);
+        hdispatchScheduleService.deleteByProject(hds);
+        hdispatchScheduleService.insertByProject(hds);
         }
         return obj;
 

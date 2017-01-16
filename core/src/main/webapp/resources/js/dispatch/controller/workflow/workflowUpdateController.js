@@ -52,6 +52,19 @@
             }
         };
 
+        vm.jobNameChange = function() {
+            vm.jobSources.forEach(function(jobSource) {
+                if (vm.newJob.jobSource == jobSource.jobId) {
+                    vm.newJob.name = jobSource.jobName;
+                    workflowService.queryUseCount(jobSource.jobId).then(function (count) {
+                        if (count > 0) {
+                            kendo.ui.showWarningDialog({message: jobSource.jobName + "在其他任务流中使用过"})
+                        }
+                    });
+                }
+            });
+        };
+
 
         refreshThemes();
         refreshOptThemes();

@@ -10,5 +10,7 @@ import java.util.List;
 public interface WorkflowJobMapper {
     int batchInsert(List<WorkflowJob> jobs);
 
+    int getUsingCount(Long id);
+
     int deleteByWorkflowId(Long workflowId);
 }

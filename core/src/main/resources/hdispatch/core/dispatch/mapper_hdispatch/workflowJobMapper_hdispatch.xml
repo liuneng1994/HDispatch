@@ -13,6 +13,10 @@
     </foreach>
   </insert>
 
+  <select id="getUsingCount" parameterType="long" resultType="int">
+    SELECT COUNT(1) FROM hdispatch_workflow_job WHERE job_source_id = #{id}
+  </select>
+
   <delete id="deleteByWorkflowId">
     DELETE
     FROM
