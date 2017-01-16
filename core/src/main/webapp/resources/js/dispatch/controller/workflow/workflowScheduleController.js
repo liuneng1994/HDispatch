@@ -167,7 +167,6 @@
                 vm.showScheduleGraph = true;
                 for (var item of selectedFlows.values()) {
                     workflowService.queryScheduleInfo(item.name).then(function (data) {
-                        console.log(data.split(' '));
                         vm.cronExp = data.split(' ');
                     });
                 }
@@ -293,6 +292,7 @@
                     }, "error");
                 });
             }
+            $("#grid").data("kendoGrid").clearSelection();
         };
 
         vm.execute = function () {

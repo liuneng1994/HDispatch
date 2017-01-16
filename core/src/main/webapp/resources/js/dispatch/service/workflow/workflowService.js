@@ -120,7 +120,7 @@
             });
         };
 
-        var cronScheduleWorkflow = function(scheduleInfo) {
+        var cronScheduleWorkflow = function (scheduleInfo) {
             return httpService.get(_basePath + '/schedule/schedulecron', scheduleInfo, function (data, defered) {
                 if (data.success) {
                     defered.resolve(scheduleInfo.projectName + '计划成功');
@@ -208,13 +208,16 @@
 
         function queryScheduleInfo(name) {
             var params = {
-                project_name : name,
-                page:1,
-                pagesize:1
+                project_name: name,
+                page: 1,
+                pagesize: 1
             };
-            return httpService.get(_basePath + "/schedule/queryschedule",params,function(data, defered){
+            return httpService.get(_basePath + "/schedule/queryschedule", params, function (data, defered) {
                 if (data.success) {
-                    defered.resolve(data.rows[0].cronExpression);
+                    if (data.rows[0])
+                        defered.resolve(data.rows[0].cronExpression);
+                    else
+                        defered.reject('');
                 }
             });
         }
@@ -223,19 +226,19 @@
             var params = {
                 workflowName: name
             };
-            return httpService.get(_basePath + "/dispatcher/workflow/deptGraph",params,function(data, defered){
-                    defered.resolve(data);
+            return httpService.get(_basePath + "/dispatcher/workflow/deptGraph", params, function (data, defered) {
+                defered.resolve(data);
             });
         }
 
         function generateAll() {
-            return httpService.get(_basePath + "/dispatcher/workflow/generateAll",{},function(data, defered){
+            return httpService.get(_basePath + "/dispatcher/workflow/generateAll", {}, function (data, defered) {
                 defered.resolve(data);
             });
         }
 
         function queryUseCount(id) {
-            return httpService.get(_basePath + "/dispatcher/workflow/queryUseCount",{jobId:id},function(data, defered){
+            return httpService.get(_basePath + "/dispatcher/workflow/queryUseCount", {jobId: id}, function (data, defered) {
                 defered.resolve(parseInt(data.message));
             });
         }
@@ -262,7 +265,7 @@
             createWorkflowMutex: createWorkflowMutex,
             deleteWorkflowMutex: deleteWorkflowMutex,
             operateThemes: operateThemes,
-            queryScheduleInfo:queryScheduleInfo,
+            queryScheduleInfo: queryScheduleInfo,
             deptGraph: deptGraph,
             queryUseCount: queryUseCount
         };
