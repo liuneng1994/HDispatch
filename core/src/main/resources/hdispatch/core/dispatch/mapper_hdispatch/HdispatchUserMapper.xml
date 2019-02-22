@@ -2,8 +2,6 @@
 <!--
 用于分离数据源(分离HAP和本系统的数据源)，将原先表的关联查询变换为分别查询。
 涉及到的是本系统的权限控制（在分配权限中涉及到）
-Created by yyz on 2016/11/2.
-yazheng.yang@hand-china.com
 -->
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"

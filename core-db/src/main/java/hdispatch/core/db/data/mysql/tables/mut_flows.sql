@@ -1,6 +1,6 @@
 -- ----------------------------
 -- Table structure for mut_flows,designed by Deng Zhilong,
--- record by Yazheng Young
+-- record by  Young
 -- ----------------------------
 DROP TABLE IF EXISTS `mut_flows`;
 CREATE TABLE `mut_flows` (

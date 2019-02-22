@@ -1,6 +1,6 @@
 -- ----------------------------
 -- Table structure for dep_flows,designed by Deng Zhilong,
--- record by Yazheng Young
+-- record by  Young
 -- ----------------------------
 DROP TABLE IF EXISTS `dep_flows`;
 CREATE TABLE `dep_flows` (

@@ -114,7 +114,6 @@
       executor_id = #{executorId,jdbcType=INTEGER}
     where exec_id = #{execId,jdbcType=INTEGER}
   </update>
-    <!--add by yazheng.yang@hand-china.com-->
     <delete id="cleanLogsBefore" parameterType="java.lang.Long">
         DELETE FROM execution_flows
         WHERE #{dateBefore} > end_time
