@@ -10,8 +10,6 @@ import javax.persistence.Table;
 
 /**
  * 层次类dto<br>
- * Created by yyz on 2016/9/7.
- * @author yazheng.yang@hand-china.com
  */
 @Table(name = "HDISPATCH_LAYER")
 public class Layer extends BaseDTO{

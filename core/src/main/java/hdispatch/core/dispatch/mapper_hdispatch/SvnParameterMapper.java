@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * 任务运行时参数mapper接口<br>
- * Created by yyz on 2016/9/24.
- * @author yazheng.yang@hand-china.com
  */
 public interface SvnParameterMapper extends Mapper<SvnParameter>{
     /**

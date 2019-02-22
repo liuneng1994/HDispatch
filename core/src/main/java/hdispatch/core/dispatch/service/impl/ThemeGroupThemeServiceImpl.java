@@ -17,8 +17,6 @@ import java.util.Map;
 
 /**
  * 处理主题组和主题映射关系的service接口实现类<br>
- * Created by yyz on 2016/10/18.
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public class ThemeGroupThemeServiceImpl implements ThemeGroupThemeService {

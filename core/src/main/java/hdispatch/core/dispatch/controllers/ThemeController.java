@@ -19,8 +19,6 @@ import java.util.*;
 
 /**
  * 主题控制器<br>
- * Created by yyz on 2016/9/6.
- * yazheng.yang@hand-china.com
  */
 @Controller
 public class ThemeController extends BaseController {

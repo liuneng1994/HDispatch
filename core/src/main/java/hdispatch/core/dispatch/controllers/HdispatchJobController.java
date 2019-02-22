@@ -29,8 +29,6 @@ import java.util.Map;
 /**
  * 任务控制器<br>
  *     note:重新命名，因为在HAP原先的系统中存在JobController这个类，冲突了，改名为HdispatchJobController
- * Created by yyz on 2016/9/11.
- * @author yazheng.yang@hand-china.com
  */
 @Controller
 public class HdispatchJobController extends BaseController {

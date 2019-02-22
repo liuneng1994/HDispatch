@@ -22,8 +22,6 @@ import java.util.Map;
 
 /**
  * 层次控制器<br>
- * Created by yyz on 2016/9/7.
- * yazheng.yang@hand-china.com
  */
 @Controller
 public class LayerController extends BaseController {

@@ -19,9 +19,6 @@ import java.util.List;
 /**
  * ETL调度系统使用的基本服务，已经为数据分源进行适配<br>
  *
- * Created by yyz on 2016/12/2.
- *
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public abstract class HdispatchBaseServiceImpl<T> implements IBaseService<T> {

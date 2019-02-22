@@ -19,7 +19,6 @@ public interface ExecutionJobsMapper {
 
     /**
      * 清空日志,
-     * add by yazheng.yang
      * @param dateBeforeMillisecond
      */
     void cleanLogsBefore(@Param("dateBefore") Long dateBeforeMillisecond);

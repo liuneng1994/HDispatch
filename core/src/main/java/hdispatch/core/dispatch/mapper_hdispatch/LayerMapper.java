@@ -7,8 +7,6 @@ import java.util.List;
 
 /**
  * 层次mapper接口<br>
- * Created by yyz on 2016/9/7.
- * @author yazheng.yang@hand-china.com
  */
 public interface LayerMapper extends Mapper<Layer> {
     /**

@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * 任务运行时参数service接口实现类<br>
- * Created by yyz on 2016/9/24.
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public class SvnParameterServiceImpl extends HdispatchBaseServiceImpl<SvnParameter> implements SvnParameterService {

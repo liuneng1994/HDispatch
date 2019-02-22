@@ -12,8 +12,6 @@ import java.util.Map;
 
 /**
  * 任务运行时参数service接口<br>
- * Created by yyz on 2016/9/24.
- * @author yazheng.yang@hand-china.com
  */
 public interface SvnParameterService extends IBaseService<SvnParameter>, ProxySelf<SvnParameterService> {
     /**

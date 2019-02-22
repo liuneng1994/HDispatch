@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by yyz on 2016/9/1.
- * yazheng.yang@hand-china.com
  */
 public interface RecordService {
     List<String> fetchExecutionJobLogs(String execId, String jobId, int offset, int length);

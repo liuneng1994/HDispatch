@@ -11,8 +11,6 @@ import java.util.Map;
 
 /**
  * 主题service接口<br>
- * Created by yyz on 2016/9/5.
- * yazheng.yang@hand-china.com
  */
 public interface ThemeService extends IBaseService<Theme>, ProxySelf<ThemeService> {
     /**

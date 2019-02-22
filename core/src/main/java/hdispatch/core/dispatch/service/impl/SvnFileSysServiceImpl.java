@@ -17,8 +17,6 @@ import java.util.Vector;
 
 /**
  * 用于获取kettle文件所在服务器的文件目录service接口实现类<br>
- * Created by yyz on 2016/9/14.
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public class SvnFileSysServiceImpl implements SvnFileSysService {

@@ -22,8 +22,6 @@ import java.util.Map;
 
 /**
  * 任务组service接口实现类<br>
- * Created by yyz on 2016/10/17.
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public class ThemeGroupServiceImpl extends HdispatchBaseServiceImpl<ThemeGroup> implements ThemeGroupService {

@@ -20,8 +20,6 @@ import java.util.Map;
 
 /**
  * 任务service接口实现类<br>
- * Created by yyz on 2016/9/11.
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public class JobServiceImpl extends HdispatchBaseServiceImpl<Job> implements JobService {

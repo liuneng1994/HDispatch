@@ -14,9 +14,6 @@ import java.util.Date;
 /**
  * 清理设置的N天前的日志
  *
- * Created by yyz on 2017/1/11.
- *
- * @author yazheng.yang@hand-china.com
  */
 public class HdispatchLogCleaner extends AbstractJob{
     @Autowired

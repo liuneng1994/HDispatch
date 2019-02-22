@@ -11,8 +11,6 @@ import java.util.Date;
 
 /**
  * 任务运行时参数dto<br>
- * Created by yyz on 2016/9/23.
- * @author yazheng.yang@hand-china.com
  */
 @Table(name = "HDISPATCH_FND_SCHEDULE_PARAMETER")
 public class SvnParameter extends BaseDTO {

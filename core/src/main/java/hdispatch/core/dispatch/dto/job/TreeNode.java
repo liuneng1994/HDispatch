@@ -2,8 +2,6 @@ package hdispatch.core.dispatch.dto.job;
 
 /**
  * 用于存放页面树状结构的节点数据<br>
- * Created by yyz on 2016/9/14.
- * @author yazheng.yang@hand-china.com
  */
 public class TreeNode {
     /**

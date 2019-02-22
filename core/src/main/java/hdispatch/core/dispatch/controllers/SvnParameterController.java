@@ -27,9 +27,6 @@ import java.util.Map;
 
 /**
  * 任务运行时参数控制器<br>
- * Created by yyz on 2016/9/24.
- *
- * @author yazheng.yang@hand-china.com
  */
 @Controller
 public class SvnParameterController extends BaseController{
@@ -87,7 +84,6 @@ public class SvnParameterController extends BaseController{
      *
      * description:检查待插入的svnParameter是否已经存在；若存在，给出提示信息；若不存在，执行插入
      *
-     * 修改：2016.10.24 by yazheng.yang@hand-china.com
      *  ,根据subjectName、mappingName、parameterName判断是否已经存在，若存在，直接更新；若不存在，执行插入
      * @param svnParameterList
      * @param result

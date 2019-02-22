@@ -10,8 +10,6 @@ import javax.persistence.Table;
 
 /**
  * 主题组dto<br>
- * Created by yyz on 2016/10/14.
- * @author yazheng.yang@hand-china.com
  */
 @Table(name = "HDISPATCH_THEMEGROUP")
 public class ThemeGroup extends BaseDTO {

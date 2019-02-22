@@ -4,8 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Created by yyz on 2016/9/2.
- * yazheng.yang@hand-china.com
  * 存放流在指定时刻之后的执行数据
  */
 public class RECExecutionSince {

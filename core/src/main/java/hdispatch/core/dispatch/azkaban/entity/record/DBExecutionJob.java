@@ -4,8 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Created by yyz on 2016/9/3.
- * yazheng.yang@hand-china.
  *
  * 存放从数据库中读取被执行的job的日志
  */

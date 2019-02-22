@@ -4,8 +4,6 @@ import com.hand.hap.system.dto.BaseDTO;
 
 /**
  * 存储主题组和主题之间的映射关系的dto类<br>
- * Created by yyz on 2016/10/14.
- * @author yazheng.yang@hand-china.com
  */
 public class ThemeGroupTheme extends BaseDTO {
     private Long themeGroupThemeId;

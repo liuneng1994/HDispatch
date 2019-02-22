@@ -11,9 +11,7 @@ import org.springframework.util.Assert;
 import java.util.Date;
 
 /**
- * Created by yyz on 2017/1/11.
  *
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public class HdispatchLogCleanServiceImpl implements HdispatchLogCleanService {

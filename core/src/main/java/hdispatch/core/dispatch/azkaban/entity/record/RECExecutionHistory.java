@@ -2,8 +2,6 @@ package hdispatch.core.dispatch.azkaban.entity.record;
 
 
 /**
- * Created by yyz on 2016/9/2.
- * yazheng.yang@hand-china.com
  */
 public class RECExecutionHistory extends RECExecutionSince {
     /*

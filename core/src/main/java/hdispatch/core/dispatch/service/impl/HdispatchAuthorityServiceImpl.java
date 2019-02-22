@@ -19,8 +19,6 @@ import java.util.*;
 
 /**
  * 任务调度权限service接口实现类<br>
- * Created by yyz on 2016/10/20.
- * @author yazheng.yang@hand-china.com
  */
 @Service
 public class HdispatchAuthorityServiceImpl implements HdispatchAuthorityService {

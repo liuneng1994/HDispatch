@@ -24,8 +24,6 @@ import java.util.Map;
 /**
  * 主题Service实现类
  * <br>
- * Created by yyz on 2016/9/5.
- * yazheng.yang@hand-china.com
  */
 @Service
 public class ThemeServiceImpl extends HdispatchBaseServiceImpl<Theme> implements ThemeService {

@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * 任务调度系统中查询在主题组和不在主题组的用户<br>
- * Created by yyz on 2016/11/22.
- * @author yazheng.yang@hand-china.com
  */
 public interface HdispatchUserMapper {
     /**

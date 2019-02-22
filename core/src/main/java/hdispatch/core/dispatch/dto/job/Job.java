@@ -10,8 +10,6 @@ import javax.persistence.Table;
 
 /**
  * 任务类<br>
- * Created by yyz on 2016/9/11.
- * @author yazheng.yang@hand-china.com
  */
 @Table(name = "HDISPATCH_JOB")
 public class Job extends BaseDTO {

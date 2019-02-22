@@ -4,8 +4,6 @@ import com.hand.hap.system.dto.BaseDTO;
 
 /**
  * 存储权限信息dto<br>
- * Created by yyz on 2016/10/14.
- * @author yazheng.yang@hand-china.com
  */
 public class HdispatchAuthority extends BaseDTO{
     private Long authorityId;

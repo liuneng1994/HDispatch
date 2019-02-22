@@ -7,8 +7,6 @@ import java.util.List;
 
 /**
  * 处理主题组和主题映射关系的service接口<br>
- * Created by yyz on 2016/10/18.
- * @author yazheng.yang@hand-china.com
  */
 public interface ThemeGroupThemeService {
     /**

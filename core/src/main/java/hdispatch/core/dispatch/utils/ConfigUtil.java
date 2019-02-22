@@ -6,9 +6,6 @@ import java.util.Properties;
 /**
  * 读取本项目中config.properties文件中的配置<br>
  *
- * Created by yyz on 2016/11/3.
- *
- * @author yazheng.yang@hand-china.com
  */
 public class ConfigUtil {
     private static Properties properties;

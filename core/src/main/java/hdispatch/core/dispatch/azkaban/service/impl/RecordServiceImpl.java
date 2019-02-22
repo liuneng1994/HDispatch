@@ -15,8 +15,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by yyz on 2016/9/1.
- * yazheng.yang@hand-china.com
  * <p>
  * 用于获取与执行流相关的记录信息
  */

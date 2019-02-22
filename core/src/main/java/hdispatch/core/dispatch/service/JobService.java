@@ -10,8 +10,6 @@ import java.util.Map;
 
 /**
  * 任务service接口<br>
- * Created by yyz on 2016/9/11.
- * @author yazheng.yang@hand-china.com
  */
 public interface JobService extends IBaseService<Job>, ProxySelf<JobService> {
     /**

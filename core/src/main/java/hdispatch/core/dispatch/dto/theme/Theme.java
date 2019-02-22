@@ -11,8 +11,6 @@ import javax.persistence.Table;
 
 /**
  * 主题类dto<br>
- * Created by yyz on 2016/9/5.
- * @author yazheng.yang@hand-china.com
  */
 @Table(name = "HDISPATCH_THEME")
 public class Theme extends BaseDTO{

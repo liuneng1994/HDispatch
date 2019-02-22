@@ -37,7 +37,6 @@
 ///**
 // * ThemeController Tester.
 // *
-// * @author <Yazheng Young,yazheng.yang@hand-china.com>
 // * @version 1.0
 // * @since <pre>11/03/2016</pre>
 // */

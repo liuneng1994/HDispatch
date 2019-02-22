@@ -7,9 +7,6 @@ import java.util.Map;
 
 /**
  * 主题组和主题映射关系mapper接口<br>
- * Created by yyz on 2016/10/17.
- *
- * @author yazheng.yang@hand-china.com
  */
 public interface ThemeGroupThemeMapper {
     /**
